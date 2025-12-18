@@ -1,0 +1,38 @@
+name: platform_adaptive_widgets
+description: "A new Flutter package project."
+version: 0.0.0
+homepage:
+
+
+
+
+
+
+environment:
+  sdk: ">=3.10.0 <4.0.0"
+  flutter: ">=3.38.0 <4.0.0"
+
+
+
+
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+
+
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+
+
+
+
+flutter:
