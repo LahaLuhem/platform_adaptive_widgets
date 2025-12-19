@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart' show CupertinoNavigationBar, Obstructing
 import 'package:flutter/material.dart' show AppBar;
 import 'package:flutter/widgets.dart';
 
-import '/models/scaffolding/platform_app_bar_data.dart';
+import '/models/layout/platform_app_bar_data.dart';
 
 class PlatformAppBar implements PlatformAppBarData {
   final Key? widgetKey;
@@ -74,6 +74,8 @@ class PlatformAppBar implements PlatformAppBarData {
   @override
   ObstructingPreferredSizeWidget cupertinoBuilder(BuildContext context) =>
       cupertinoNavigationBarData?.heroTag == null
+      // Default is a private implementation.
+      // ignore: prefer-define-hero-tag
       ? CupertinoNavigationBar(
           key: cupertinoNavigationBarData?.widgetKey ?? widgetKey,
           leading: cupertinoNavigationBarData?.leading ?? leading,

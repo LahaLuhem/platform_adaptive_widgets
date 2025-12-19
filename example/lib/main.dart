@@ -19,10 +19,15 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const PlatformScaffold(
-    appBarData: PlatformAppBar(
-      cupertinoNavigationBarData: CupertinoNavigationBarData(),
-      title: Text('Flutter Demo Home Page'),
+    appBarData: PlatformAppBar(title: Text('Flutter Demo Home Page')),
+    materialScaffoldData: MaterialScaffoldData(
+      drawer: Drawer(child: Text('Drawer')),
+      // No nested FABs
+      // ignore: prefer-define-hero-tag
+      floatingActionButton: FloatingActionButton(onPressed: onAddPressed, child: Text('FAB')),
     ),
     body: Center(child: Text('Hello World!')),
   );
 }
+
+void onAddPressed() => debugPrint('FAB pressed');

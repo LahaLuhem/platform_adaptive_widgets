@@ -1,14 +1,16 @@
-// Widgets may need space to compute their scaffolding.
+// Widgets may need space to compute their layout.
 // ignore_for_file: avoid-returning-widgets
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
+@protected
 /// Core widget with compile-time resolution
 abstract class PlatformWidgetBase extends StatelessWidget {
   const PlatformWidgetBase({super.key});
 
   @override
+  @protected
   @nonVirtual
   Widget build(BuildContext context) => switch (defaultTargetPlatform) {
     .android => buildMaterial(context),
