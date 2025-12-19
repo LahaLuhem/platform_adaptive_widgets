@@ -1,4 +1,4 @@
-# example
+# platform_adaptive_widgets_example
 
 A new Flutter project.
 

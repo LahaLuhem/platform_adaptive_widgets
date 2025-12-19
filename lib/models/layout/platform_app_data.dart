@@ -67,7 +67,7 @@ abstract class _BaseAppData {
 }
 
 // For regular (non-router) apps
-sealed class AppData extends _BaseAppData {
+final class AppData extends _BaseAppData {
   final GlobalKey<NavigatorState>? navigatorKey;
   final Widget? home;
   final Map<String, WidgetBuilder> routes;
@@ -115,7 +115,7 @@ sealed class AppData extends _BaseAppData {
 }
 
 // For router-based apps
-sealed class AppRouterData extends _BaseAppData {
+final class AppRouterData extends _BaseAppData {
   final RouteInformationProvider? routeInformationProvider;
   final RouteInformationParser<Object>? routeInformationParser;
   final RouterDelegate<Object>? routerDelegate;
@@ -154,7 +154,7 @@ sealed class AppRouterData extends _BaseAppData {
 }
 
 // Regular Material App (non-router)
-class MaterialAppData extends AppData {
+final class MaterialAppData extends AppData {
   final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey;
   final ThemeData? theme;
   final ThemeData? darkTheme;
@@ -209,7 +209,7 @@ class MaterialAppData extends AppData {
 }
 
 // Router-based Material App
-class MaterialAppRouterData extends AppRouterData {
+final class MaterialAppRouterData extends AppRouterData {
   final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey;
   final ThemeData? theme;
   final ThemeData? darkTheme;
@@ -262,7 +262,7 @@ class MaterialAppRouterData extends AppRouterData {
 }
 
 // Regular Cupertino App (non-router)
-class CupertinoAppData extends AppData {
+final class CupertinoAppData extends AppData {
   final CupertinoThemeData? theme;
 
   const CupertinoAppData({
@@ -299,7 +299,7 @@ class CupertinoAppData extends AppData {
 }
 
 // Router-based Cupertino App
-class CupertinoAppRouterData extends AppRouterData {
+final class CupertinoAppRouterData extends AppRouterData {
   final CupertinoThemeData? theme;
 
   const CupertinoAppRouterData({
