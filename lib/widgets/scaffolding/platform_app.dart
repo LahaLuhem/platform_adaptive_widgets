@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart' show CupertinoApp;
 import 'package:flutter/material.dart' show MaterialApp;
 import 'package:flutter/widgets.dart';
 
-import '/models/layout/platform_app_data.dart';
 import '/models/platform_widget_base.dart';
+import '/models/scaffolding/platform_app_data.dart';
 
 class PlatformApp extends PlatformWidgetBase {
   final AppData? appData;

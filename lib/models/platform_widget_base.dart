@@ -1,4 +1,4 @@
-// Widgets may need space to compute their layout.
+// Widgets may need space to compute their scaffolding.
 // ignore_for_file: avoid-returning-widgets
 
 import 'package:flutter/foundation.dart';
