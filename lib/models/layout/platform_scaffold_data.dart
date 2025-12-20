@@ -24,7 +24,8 @@ abstract class _BaseData {
   });
 }
 
-final class MaterialScaffoldData extends _BaseData {
+@protected
+base class MaterialScaffoldData extends _BaseData {
   final PreferredSizeWidget? appBar;
 
   final Widget? floatingActionButton;
@@ -123,7 +124,8 @@ final class MaterialScaffoldData extends _BaseData {
   });
 }
 
-final class CupertinoScaffoldData extends _BaseData {
+@protected
+base class CupertinoScaffoldData extends _BaseData {
   final ObstructingPreferredSizeWidget? navigationBar;
 
   const CupertinoScaffoldData({

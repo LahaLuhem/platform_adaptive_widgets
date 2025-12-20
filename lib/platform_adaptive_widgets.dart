@@ -1,7 +1,10 @@
+export 'extensions/context_extensions.dart';
 export 'models/layout/platform_app_bar_data.dart';
 export 'models/layout/platform_app_data.dart';
 export 'models/layout/platform_scaffold_data.dart';
+export 'models/layout/platform_tab_scaffold_data.dart';
 export 'widgets/layout/platform_app.dart';
 export 'widgets/layout/platform_app_bar.dart';
 export 'widgets/layout/platform_scaffold.dart';
+export 'widgets/layout/platform_tab_scaffold.dart';
 export 'widgets/platform_widget.dart';

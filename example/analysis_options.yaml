@@ -254,7 +254,7 @@ linter:
     slash_for_doc_comments: true
     sort_child_properties_last: true
     sort_constructors_first: true
-    sort_pub_dependencies: true
+    sort_pub_dependencies: false
     sort_unnamed_constructors_first: true
     specify_nonobvious_local_variable_types: false  # Conflicts with omit_local_variable_types
     specify_nonobvious_property_types: false  # Type inference by the plugin + IDE makes this obsolete

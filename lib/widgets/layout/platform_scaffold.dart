@@ -15,9 +15,9 @@ class PlatformScaffold extends PlatformWidgetBase {
   final bool resizeToAvoidBottomInset;
   final Widget body;
 
+  final PlatformAppBarData? appBarData;
   final MaterialScaffoldData? materialScaffoldData;
   final CupertinoScaffoldData? cupertinoScaffoldData;
-  final PlatformAppBarData? appBarData;
 
   /// [appBarData] has a premade implementation of [PlatformAppBar]
   const PlatformScaffold({
