@@ -26,3 +26,8 @@ abstract class PlatformWidgetBase extends StatelessWidget {
   @visibleForOverriding
   Widget buildCupertino(BuildContext context);
 }
+
+abstract class PlatformWidgetKeyedBase extends PlatformWidgetBase {
+  final Key? widgetKey;
+  const PlatformWidgetKeyedBase({this.widgetKey, super.key});
+}

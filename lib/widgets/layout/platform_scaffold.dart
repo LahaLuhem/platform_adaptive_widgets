@@ -9,8 +9,7 @@ import '/models/layout/platform_app_bar_data.dart';
 import '/models/layout/platform_scaffold_data.dart';
 import '/models/platform_widget_base.dart';
 
-class PlatformScaffold extends PlatformWidgetBase {
-  final Key? widgetKey;
+class PlatformScaffold extends PlatformWidgetKeyedBase {
   final Color? backgroundColor;
   final bool resizeToAvoidBottomInset;
   final Widget body;
@@ -22,12 +21,12 @@ class PlatformScaffold extends PlatformWidgetBase {
   /// [appBarData] has a premade implementation of [PlatformAppBar]
   const PlatformScaffold({
     required this.body,
-    this.widgetKey,
     this.materialScaffoldData,
     this.cupertinoScaffoldData,
     this.appBarData,
     this.backgroundColor,
     this.resizeToAvoidBottomInset = kDefaultResizeToAvoidBottomInset,
+    super.widgetKey,
     super.key,
   });
 

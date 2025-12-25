@@ -5,8 +5,7 @@ import '/models/layout/platform_scaffold_data.dart';
 import '/models/layout/platform_tab_scaffold_data.dart';
 import '/models/platform_widget_base.dart';
 
-class PlatformTabScaffold extends PlatformWidgetBase {
-  final Key? widgetKey;
+class PlatformTabScaffold extends PlatformWidgetKeyedBase {
   final Color? backgroundColor;
   final bool resizeToAvoidBottomInset;
   final String? restorationId;
@@ -23,7 +22,6 @@ class PlatformTabScaffold extends PlatformWidgetBase {
   /// 2. Instead of managing the state internally, you can also provide a [controller] and manage the state externally.
   /// 3. Instead of storing the state internally, you can also provide a [tabBuilder]  to build the tab content (usable in GoRouter's shell route for example).
   const PlatformTabScaffold({
-    this.widgetKey,
     this.materialTabScaffoldData,
     this.cupertinoTabScaffoldData,
     this.tabDestinationsData,
@@ -32,6 +30,7 @@ class PlatformTabScaffold extends PlatformWidgetBase {
     this.backgroundColor,
     this.resizeToAvoidBottomInset = kDefaultResizeToAvoidBottomInset,
     this.restorationId,
+    super.widgetKey,
     super.key,
   });
 
