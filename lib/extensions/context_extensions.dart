@@ -11,7 +11,7 @@ extension ContextExtensions on BuildContext {
         _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
       };
 
-  T? platformValueOrNull<T>({T? material, T? cupertino}) => switch (defaultTargetPlatform) {
+  T? platformValueNullable<T>({T? material, T? cupertino}) => switch (defaultTargetPlatform) {
     TargetPlatform.android => material,
     TargetPlatform.iOS => cupertino,
     _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
