@@ -1,10 +1,13 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
 final class HomeViewModel extends ViewModel {
-  final _checkboxValueNotifier = ValueNotifier<bool?>(false);
+  final _checkboxValueNotifier = ValueNotifier<bool?>(true);
   final _sliderValueNotifier = ValueNotifier<double>(0);
   final _isSwitchEnabledNotifier = ValueNotifier(false);
+
+  final scrollController = ScrollController();
 
   ValueListenable<bool?> get checkboxValueListenable => _checkboxValueNotifier;
   ValueListenable<double> get sliderValueListenable => _sliderValueNotifier;
@@ -35,6 +38,8 @@ final class HomeViewModel extends ViewModel {
   void dispose() {
     _sliderValueNotifier.dispose();
     _isSwitchEnabledNotifier.dispose();
+
+    scrollController.dispose();
 
     super.dispose();
   }
