@@ -2,11 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:pmvvm/pmvvm.dart';
 
 final class HomeViewModel extends ViewModel {
-  final _isSwitchEnabledNotifier = ValueNotifier(false);
   final _sliderValueNotifier = ValueNotifier<double>(0);
+  final _isSwitchEnabledNotifier = ValueNotifier(false);
 
-  ValueListenable<bool> get isSwitchEnabledListenable => _isSwitchEnabledNotifier;
   ValueListenable<double> get sliderValueListenable => _sliderValueNotifier;
+  ValueListenable<bool> get isSwitchEnabledListenable => _isSwitchEnabledNotifier;
 
   // Tear-off signature
   //ignore: avoid_positional_boolean_parameters
@@ -24,8 +24,8 @@ final class HomeViewModel extends ViewModel {
 
   @override
   void dispose() {
-    _isSwitchEnabledNotifier.dispose();
     _sliderValueNotifier.dispose();
+    _isSwitchEnabledNotifier.dispose();
 
     super.dispose();
   }

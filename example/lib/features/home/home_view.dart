@@ -33,20 +33,20 @@ class HomeView extends StatelessWidget {
               SliverList.list(
                 children: [
                   ValueListenableBuilder(
-                    valueListenable: viewModel.isSwitchEnabledListenable,
-                    builder: (_, isSwitchEnabled, _) => PlatformSwitch(
-                      platformSwitchData: PlatformSwitchData(
-                        value: isSwitchEnabled,
-                        onChanged: viewModel.onSwitchChanged,
-                      ),
-                    ),
-                  ),
-                  ValueListenableBuilder(
                     valueListenable: viewModel.sliderValueListenable,
                     builder: (_, sliderValue, _) => PlatformSlider(
                       platformSliderData: PlatformSliderData(
                         value: sliderValue,
                         onChanged: viewModel.onSliderChanged,
+                      ),
+                    ),
+                  ),
+                  ValueListenableBuilder(
+                    valueListenable: viewModel.isSwitchEnabledListenable,
+                    builder: (_, isSwitchEnabled, _) => PlatformSwitch(
+                      platformSwitchData: PlatformSwitchData(
+                        value: isSwitchEnabled,
+                        onChanged: viewModel.onSwitchChanged,
                       ),
                     ),
                   ),
