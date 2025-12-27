@@ -19,7 +19,7 @@ class PlatformSlider extends PlatformWidgetBase {
 
   @override
   Widget buildMaterial(BuildContext context) => Slider(
-    key: materialSliderData?.widgetKey ?? platformSliderData!.widgetKey,
+    key: materialSliderData?.widgetKey ?? platformSliderData?.widgetKey,
     value: materialSliderData?.value ?? platformSliderData!.value,
     onChanged: !(materialSliderData?.isEnabled ?? platformSliderData!.isEnabled)
         ? null
@@ -46,7 +46,7 @@ class PlatformSlider extends PlatformWidgetBase {
 
   @override
   Widget buildCupertino(BuildContext context) => CupertinoSlider(
-    key: cupertinoSliderData?.widgetKey ?? platformSliderData!.widgetKey,
+    key: cupertinoSliderData?.widgetKey ?? platformSliderData?.widgetKey,
     value: cupertinoSliderData?.value ?? platformSliderData!.value,
     onChanged: !(cupertinoSliderData?.isEnabled ?? platformSliderData!.isEnabled)
         ? null

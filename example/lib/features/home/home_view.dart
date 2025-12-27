@@ -33,6 +33,16 @@ class HomeView extends StatelessWidget {
               SliverList.list(
                 children: [
                   ValueListenableBuilder(
+                    valueListenable: viewModel.checkboxValueListenable,
+                    builder: (_, checkboxValue, _) => PlatformCheckbox(
+                      platformCheckboxData: PlatformCheckboxData(
+                        value: checkboxValue,
+                        tristate: true,
+                        onChanged: viewModel.onCheckboxChanged,
+                      ),
+                    ),
+                  ),
+                  ValueListenableBuilder(
                     valueListenable: viewModel.sliderValueListenable,
                     builder: (_, sliderValue, _) => PlatformSlider(
                       platformSliderData: PlatformSliderData(
