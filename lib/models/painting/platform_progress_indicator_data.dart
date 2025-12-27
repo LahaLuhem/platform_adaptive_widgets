@@ -2,14 +2,14 @@
 
 import 'package:flutter/widgets.dart';
 
-abstract class _BaseData {
+abstract final class _PlatformProgressIndicatorData {
   final Key? widgetKey;
   final Color? color;
 
-  const _BaseData({this.widgetKey, this.color});
+  const _PlatformProgressIndicatorData({this.widgetKey, this.color});
 }
 
-final class MaterialProgressIndicatorData extends _BaseData {
+final class MaterialProgressIndicatorData extends _PlatformProgressIndicatorData {
   final Key? key;
   final double? value;
   final Color? backgroundColor;
@@ -44,7 +44,7 @@ final class MaterialProgressIndicatorData extends _BaseData {
   });
 }
 
-final class CupertinoProgressIndicatorData extends _BaseData {
+final class CupertinoProgressIndicatorData extends _PlatformProgressIndicatorData {
   final bool animating;
   final double radius;
 

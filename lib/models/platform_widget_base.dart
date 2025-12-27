@@ -31,3 +31,13 @@ abstract class PlatformWidgetKeyedBase extends PlatformWidgetBase {
   final Key? widgetKey;
   const PlatformWidgetKeyedBase({this.widgetKey, super.key});
 }
+
+abstract class PlatformWidgetBuilderBase extends PlatformWidgetBase {
+  final Widget child;
+  const PlatformWidgetBuilderBase({required this.child, super.key});
+}
+
+abstract class PlatformWidgetKeyedBuilderBase extends PlatformWidgetKeyedBase {
+  final Widget child;
+  const PlatformWidgetKeyedBuilderBase({required this.child, super.widgetKey, super.key});
+}

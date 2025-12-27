@@ -18,7 +18,7 @@ const kMaterialDefaultThemeAnimationCurve = Curves.linear;
 const kDebugShowMaterialGrid = false;
 
 // Common base for both regular and router apps
-abstract class _BaseAppData {
+abstract final class _PlatformAppData {
   final Key? widgetKey;
   final String? title;
   final GenerateAppTitle? onGenerateTitle;
@@ -42,7 +42,7 @@ abstract class _BaseAppData {
   final TransitionBuilder? builder;
   final bool Function(NavigationNotification)? onNavigationNotification;
 
-  const _BaseAppData({
+  const _PlatformAppData({
     this.widgetKey,
     this.title,
     this.onGenerateTitle,
@@ -67,7 +67,7 @@ abstract class _BaseAppData {
 }
 
 // For regular (non-router) apps
-final class AppData extends _BaseAppData {
+final class AppData extends _PlatformAppData {
   final GlobalKey<NavigatorState>? navigatorKey;
   final Widget? home;
   final Map<String, WidgetBuilder> routes;
@@ -115,7 +115,7 @@ final class AppData extends _BaseAppData {
 }
 
 // For router-based apps
-final class AppRouterData extends _BaseAppData {
+final class PlatformAppRouterData extends _PlatformAppData {
   final RouteInformationProvider? routeInformationProvider;
   final RouteInformationParser<Object>? routeInformationParser;
   final RouterDelegate<Object>? routerDelegate;
@@ -123,7 +123,7 @@ final class AppRouterData extends _BaseAppData {
   final BackButtonDispatcher? backButtonDispatcher;
   final List<NavigatorObserver>? navigatorObservers;
 
-  const AppRouterData({
+  const PlatformAppRouterData({
     super.widgetKey,
     super.title,
     super.onGenerateTitle,
@@ -209,7 +209,7 @@ final class MaterialAppData extends AppData {
 }
 
 // Router-based Material App
-final class MaterialAppRouterData extends AppRouterData {
+final class MaterialAppRouterData extends PlatformAppRouterData {
   final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey;
   final ThemeData? theme;
   final ThemeData? darkTheme;
@@ -299,7 +299,7 @@ final class CupertinoAppData extends AppData {
 }
 
 // Router-based Cupertino App
-final class CupertinoAppRouterData extends AppRouterData {
+final class CupertinoAppRouterData extends PlatformAppRouterData {
   final CupertinoThemeData? theme;
 
   const CupertinoAppRouterData({

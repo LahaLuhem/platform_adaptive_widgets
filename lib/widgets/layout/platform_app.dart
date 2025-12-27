@@ -7,7 +7,7 @@ import '/models/platform_widget_base.dart';
 
 class PlatformApp extends PlatformWidgetBase {
   final AppData? appData;
-  final AppRouterData? appRouterData;
+  final PlatformAppRouterData? appRouterData;
 
   final MaterialAppData? materialAppData;
   final MaterialAppRouterData? materialAppRouterData;
