@@ -1,6 +1,7 @@
 export 'extensions/context_extensions.dart';
 export 'models/interaction/platform_checkbox_data.dart';
 export 'models/interaction/platform_scrollbar_data.dart';
+export 'models/interaction/platform_search_bar_data.dart';
 export 'models/interaction/platform_slider_data.dart';
 export 'models/interaction/platform_switch_data.dart';
 export 'models/layout/platform_app_bar_data.dart';
@@ -10,6 +11,7 @@ export 'models/layout/platform_tab_scaffold_data.dart';
 export 'models/painting/platform_progress_indicator_data.dart';
 export 'widgets/interaction/platform_checkbox.dart';
 export 'widgets/interaction/platform_scrollbar.dart';
+export 'widgets/interaction/platform_search_bar.dart';
 export 'widgets/interaction/platform_slider.dart';
 export 'widgets/interaction/platform_switch.dart';
 export 'widgets/layout/platform_app.dart';

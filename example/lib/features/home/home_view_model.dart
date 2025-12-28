@@ -7,6 +7,7 @@ final class HomeViewModel extends ViewModel {
   final _sliderValueNotifier = ValueNotifier<double>(0);
   final _isSwitchEnabledNotifier = ValueNotifier(false);
 
+  final searchController = TextEditingController();
   final scrollController = ScrollController();
 
   ValueListenable<bool?> get checkboxValueListenable => _checkboxValueNotifier;
@@ -19,6 +20,8 @@ final class HomeViewModel extends ViewModel {
     _checkboxValueNotifier.value = value;
     debugPrint('Checkbox changed to $value');
   }
+
+  void onSearchChanged(String query) => debugPrint("Searching for '$query'...");
 
   void onSliderChanged(double value) {
     _sliderValueNotifier.value = value;
@@ -39,6 +42,7 @@ final class HomeViewModel extends ViewModel {
     _sliderValueNotifier.dispose();
     _isSwitchEnabledNotifier.dispose();
 
+    searchController.dispose();
     scrollController.dispose();
 
     super.dispose();
