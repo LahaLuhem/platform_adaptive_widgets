@@ -42,6 +42,18 @@ class HomeView extends StatelessWidget {
                       ),
                     ),
                   ),
+                  ValueListenableBuilder(
+                    valueListenable: viewModel.directionalityListenable,
+                    builder: (context, directionality, _) => PlatformRadioGroup(
+                      platformRadioGroupData: PlatformRadioGroupData(
+                        groupValue: directionality,
+                        groupValues: AxisDirection.values,
+                        groupBuilder: (radioButtons) =>
+                            Row(mainAxisAlignment: .center, children: radioButtons),
+                        onChanged: viewModel.onDirectionalityChanged,
+                      ),
+                    ),
+                  ),
                   PlatformSearchBar(
                     platformSearchBarData: PlatformSearchBarData(
                       hintText: 'Search',

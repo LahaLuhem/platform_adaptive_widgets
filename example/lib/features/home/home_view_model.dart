@@ -4,6 +4,7 @@ import 'package:pmvvm/pmvvm.dart';
 
 final class HomeViewModel extends ViewModel {
   final _checkboxValueNotifier = ValueNotifier<bool?>(true);
+  final _directionalityNotifier = ValueNotifier(AxisDirection.left);
   final _sliderValueNotifier = ValueNotifier<double>(0);
   final _isSwitchEnabledNotifier = ValueNotifier(false);
 
@@ -11,6 +12,7 @@ final class HomeViewModel extends ViewModel {
   final scrollController = ScrollController();
 
   ValueListenable<bool?> get checkboxValueListenable => _checkboxValueNotifier;
+  ValueListenable<AxisDirection> get directionalityListenable => _directionalityNotifier;
   ValueListenable<double> get sliderValueListenable => _sliderValueNotifier;
   ValueListenable<bool> get isSwitchEnabledListenable => _isSwitchEnabledNotifier;
 
@@ -19,6 +21,11 @@ final class HomeViewModel extends ViewModel {
   void onCheckboxChanged(bool? value) {
     _checkboxValueNotifier.value = value;
     debugPrint('Checkbox changed to $value');
+  }
+
+  void onDirectionalityChanged(AxisDirection? value) {
+    _directionalityNotifier.value = value!;
+    debugPrint('Directionality changed to $value');
   }
 
   void onSearchChanged(String query) => debugPrint("Searching for '$query'...");
@@ -39,6 +46,8 @@ final class HomeViewModel extends ViewModel {
 
   @override
   void dispose() {
+    _checkboxValueNotifier.dispose();
+    _directionalityNotifier.dispose();
     _sliderValueNotifier.dispose();
     _isSwitchEnabledNotifier.dispose();
 
