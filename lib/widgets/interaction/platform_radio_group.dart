@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 import '/models/interaction/platform_radio_group_data.dart';
 import '/models/platform_widget_base.dart';
 
-class PlatformRadioGroup<T> extends PlatformWidgetBase {
+class PlatformRadioGroup<T extends Object> extends PlatformWidgetBase {
   final PlatformRadioGroupData<T> platformRadioGroupData;
   final PlatformRadioData<T>? platformRadioData;
   final MaterialRadioData<T>? materialRadioData;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' show MaterialTapTargetSize, VisualDensity;
 import 'package:flutter/widgets.dart';
 
-final class PlatformRadioGroupData<T> {
+final class PlatformRadioGroupData<T extends Object> {
   final T groupValue;
   final Iterable<T> groupValues;
   final Widget Function(List<Widget> radioButtons) groupBuilder;

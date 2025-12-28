@@ -2,8 +2,10 @@ import 'package:flutter/material.dart' show FloatingActionButton, Icons;
 import 'package:flutter/widgets.dart';
 import 'package:persistent_header_adaptive/persistent_header_adaptive.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
+import 'package:platform_adaptive_widgets/widgets/interaction/platform_segment_button.dart';
 import 'package:pmvvm/pmvvm.dart';
 
+import '/utils/pair.dart';
 import 'home_view_model.dart';
 
 class HomeView extends StatelessWidget {
@@ -44,12 +46,25 @@ class HomeView extends StatelessWidget {
                   ),
                   ValueListenableBuilder(
                     valueListenable: viewModel.directionalityListenable,
-                    builder: (context, directionality, _) => PlatformRadioGroup(
+                    builder: (context, directionality, _) => PlatformRadioGroup<AxisDirection>(
+                      materialRadioData: const MaterialRadioData(visualDensity: .compact),
                       platformRadioGroupData: PlatformRadioGroupData(
                         groupValue: directionality,
                         groupValues: AxisDirection.values,
-                        groupBuilder: (radioButtons) =>
-                            Row(mainAxisAlignment: .center, children: radioButtons),
+                        groupBuilder: (radioButtons) => Row(
+                          spacing: 16,
+                          mainAxisAlignment: .center,
+                          children: [
+                            for (final directionAndButton in zip(
+                              AxisDirection.values,
+                              radioButtons,
+                            ))
+                              Row(
+                                mainAxisSize: .min,
+                                children: [directionAndButton.b, Text(directionAndButton.a.name)],
+                              ),
+                          ],
+                        ),
                         onChanged: viewModel.onDirectionalityChanged,
                       ),
                     ),
@@ -61,6 +76,18 @@ class HomeView extends StatelessWidget {
                       onSubmitted: viewModel.onSearchChanged,
                     ),
                     materialSearchBarData: const MaterialSearchBarData(leading: Icon(Icons.search)),
+                  ),
+                  Padding(
+                    padding: const .symmetric(vertical: 16),
+                    child: ValueListenableBuilder(
+                      valueListenable: viewModel.directionalityListenable,
+                      builder: (_, directionality, _) => PlatformSegmentButton<AxisDirection>(
+                        choices: AxisDirection.values,
+                        segmentBuilder: (direction) => Text(direction.name),
+                        selectedChoice: directionality,
+                        onSelectionChanged: viewModel.onDirectionalityChanged,
+                      ),
+                    ),
                   ),
                   ValueListenableBuilder(
                     valueListenable: viewModel.sliderValueListenable,
