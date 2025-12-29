@@ -2,7 +2,6 @@ import 'package:flutter/material.dart' show FloatingActionButton, Icons;
 import 'package:flutter/widgets.dart';
 import 'package:persistent_header_adaptive/persistent_header_adaptive.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
-import 'package:platform_adaptive_widgets/widgets/interaction/platform_segment_button.dart';
 import 'package:pmvvm/pmvvm.dart';
 
 import '/utils/pair.dart';
@@ -44,6 +43,14 @@ class HomeView extends StatelessWidget {
                       ),
                     ),
                   ),
+                  PlatformExpansionTile(
+                    title: const Text('Expansion tile'),
+                    controller: viewModel.expansibleController,
+                    cupertinoExpansionTileData: const CupertinoExpansionTileData(
+                      transitionMode: .scroll,
+                    ),
+                    child: const Text('Expansion tile content'),
+                  ),
                   ValueListenableBuilder(
                     valueListenable: viewModel.directionalityListenable,
                     builder: (context, directionality, _) => PlatformRadioGroup<AxisDirection>(
@@ -81,7 +88,7 @@ class HomeView extends StatelessWidget {
                     padding: const .symmetric(vertical: 16),
                     child: ValueListenableBuilder(
                       valueListenable: viewModel.directionalityListenable,
-                      builder: (_, directionality, _) => PlatformSegmentButton<AxisDirection>(
+                      builder: (_, directionality, _) => PlatformSegmentButton(
                         choices: AxisDirection.values,
                         segmentBuilder: (direction) => Text(direction.name),
                         selectedChoice: directionality,
