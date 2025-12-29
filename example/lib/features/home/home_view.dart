@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show FloatingActionButton, Icons;
+import 'package:flutter/material.dart' show FloatingActionButton, Icons, InputDecoration;
 import 'package:flutter/widgets.dart';
 import 'package:persistent_header_adaptive/persistent_header_adaptive.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
@@ -124,6 +124,18 @@ class HomeView extends StatelessWidget {
                         controller: viewModel.scrollController,
                         itemBuilder: (context, index) => Text('Item $index'),
                       ),
+                    ),
+                  ),
+                  PlatformTextField(
+                    platformTextFieldData: PlatformTextFieldData(
+                      controller: viewModel.textFieldController,
+                      onSubmitted: viewModel.onTextSubmitted,
+                    ),
+                    materialTextFieldData: const MaterialTextFieldData(
+                      decoration: InputDecoration(labelText: 'Text field hint'),
+                    ),
+                    cupertinoTextFieldData: const CupertinoTextFieldData(
+                      placeholder: 'Text field hint',
                     ),
                   ),
                 ],

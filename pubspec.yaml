@@ -29,3 +29,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  # Analysis
+  # dart_code_metrics:metrics check-unused-files lib --disable-sunset-warning
+  # dependency_validator
+  # Selectively on/off due to https://github.com/huanghui1998hhh/prefer_shorthands/issues/7
+#  prefer_shorthands: ^0.4.7

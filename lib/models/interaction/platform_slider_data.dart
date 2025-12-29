@@ -3,9 +3,9 @@ import 'package:flutter/widgets.dart';
 
 final class PlatformSliderData {
   final Key? widgetKey;
-  final double value;
+  final double? value;
   final bool isEnabled;
-  final ValueChanged<double> onChanged;
+  final ValueChanged<double>? onChanged;
 
   final ValueChanged<double>? onChangeStart;
   final ValueChanged<double>? onChangeEnd;
@@ -19,8 +19,8 @@ final class PlatformSliderData {
   static const kDefaultMax = 1.0;
 
   const PlatformSliderData({
-    required this.value,
-    required this.onChanged,
+    this.value,
+    this.onChanged,
     this.widgetKey,
     this.isEnabled = true,
     this.onChangeStart,
@@ -49,8 +49,8 @@ final class MaterialSliderData extends PlatformSliderData {
   static const kDefaultAutofocus = false;
 
   const MaterialSliderData({
-    required super.value,
-    required super.onChanged,
+    super.value,
+    super.onChanged,
     super.widgetKey,
     super.isEnabled,
     super.onChangeStart,

@@ -15,7 +15,7 @@ class PlatformSegmentButton<T extends Object> extends PlatformWidgetKeyedBase {
 
   final T? _selectedChoice;
 
-  /// Android: Only supports single selection since it uses [CupertinoSegmentedControl]
+  /// Android: Only supports single selection due to use in [CupertinoSlidingSegmentedControl]
   const PlatformSegmentButton({
     required this.choices,
     required this.segmentBuilder,

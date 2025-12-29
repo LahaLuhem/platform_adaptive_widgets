@@ -31,7 +31,7 @@ class PlatformApp extends PlatformWidgetBase {
 
   @override
   MaterialApp buildMaterial(BuildContext context) => materialAppRouterData != null
-      ? MaterialApp.router(
+      ? .router(
           key: materialAppRouterData?.widgetKey ?? appRouterData?.widgetKey,
           routeInformationProvider:
               materialAppRouterData?.routeInformationProvider ??
@@ -176,7 +176,7 @@ class PlatformApp extends PlatformWidgetBase {
 
   @override
   CupertinoApp buildCupertino(BuildContext context) => cupertinoAppRouterData != null
-      ? CupertinoApp.router(
+      ? .router(
           key: cupertinoAppRouterData?.widgetKey ?? appRouterData?.widgetKey,
           routeInformationProvider:
               cupertinoAppRouterData?.routeInformationProvider ??

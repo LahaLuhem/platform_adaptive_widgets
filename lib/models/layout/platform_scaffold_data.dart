@@ -10,7 +10,7 @@ import 'package:flutter/widgets.dart';
 
 const kDefaultResizeToAvoidBottomInset = true;
 
-abstract class _BaseData {
+base class _BaseData {
   final Key? widgetKey;
   final Color? backgroundColor;
   final bool resizeToAvoidBottomInset;

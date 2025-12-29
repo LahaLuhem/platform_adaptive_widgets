@@ -9,8 +9,8 @@ import 'package:flutter/widgets.dart';
 final class PlatformSwitchData {
   final Key? widgetKey;
   final bool isEnabled;
-  final bool value;
-  final ValueChanged<bool> onChanged;
+  final bool? value;
+  final ValueChanged<bool>? onChanged;
 
   final Color? activeThumbColor;
   final Color? activeTrackColor;
@@ -40,8 +40,8 @@ final class PlatformSwitchData {
   /// [activeThumbColor] is used for `thumbColor` property of [CupertinoSwitch].
   /// [mouseCursor] is not proxied through a [WidgetStateProperty] for [Switch]. It is defined by matching the same template/behaviour.
   const PlatformSwitchData({
-    required this.value,
-    required this.onChanged,
+    this.value,
+    this.onChanged,
     this.isEnabled = true,
     this.activeThumbColor,
     this.activeTrackColor,
@@ -77,8 +77,8 @@ final class MaterialSwitchData extends PlatformSwitchData {
   /// [isEnabled] is a convenience property for setting [onChanged] == null automatically.
   /// [mouseCursor] is not proxied through a [WidgetStateProperty] for [Switch]. It is defined by matching the same template/behaviour.
   const MaterialSwitchData({
-    required super.value,
-    required super.onChanged,
+    super.value,
+    super.onChanged,
     super.widgetKey,
     super.isEnabled,
     super.activeThumbColor,
@@ -116,8 +116,8 @@ final class CupertinoSwitchData extends PlatformSwitchData {
   /// [isEnabled] is a convenience property for setting [onChanged] == null automatically.
   /// [activeThumbColor] is synonymous with `thumbColor` property of [CupertinoSwitch].
   const CupertinoSwitchData({
-    required super.value,
-    required super.onChanged,
+    super.value,
+    super.onChanged,
     super.widgetKey,
     super.isEnabled,
     super.activeThumbColor,

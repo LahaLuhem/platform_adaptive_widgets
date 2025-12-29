@@ -11,6 +11,7 @@ final class HomeViewModel extends ViewModel {
   final expansibleController = ExpansibleController();
   final searchController = TextEditingController();
   final scrollController = ScrollController();
+  final textFieldController = TextEditingController();
 
   ValueListenable<bool?> get checkboxValueListenable => _checkboxValueNotifier;
   ValueListenable<AxisDirection> get directionalityListenable => _directionalityNotifier;
@@ -43,6 +44,8 @@ final class HomeViewModel extends ViewModel {
     debugPrint('Switch changed to $value');
   }
 
+  void onTextSubmitted(String value) => debugPrint('Text-field submitted: $value');
+
   void onAddPressed() => debugPrint('FAB pressed');
 
   @override
@@ -55,6 +58,7 @@ final class HomeViewModel extends ViewModel {
     expansibleController.dispose();
     searchController.dispose();
     scrollController.dispose();
+    textFieldController.dispose();
 
     super.dispose();
   }

@@ -6,7 +6,7 @@ final class PlatformCheckboxData {
   final bool? value;
   final bool tristate;
   final bool isEnabled;
-  final ValueChanged<bool?> onChanged;
+  final ValueChanged<bool?>? onChanged;
   final MouseCursor? mouseCursor;
   final Color? activeColor;
   final WidgetStateProperty<Color?>? fillColor;
@@ -21,8 +21,8 @@ final class PlatformCheckboxData {
   static const kDefaultAutofocus = false;
 
   const PlatformCheckboxData({
-    required this.onChanged,
-    required this.value,
+    this.onChanged,
+    this.value,
     this.tristate = false,
     this.isEnabled = true,
     this.widgetKey,
@@ -50,8 +50,8 @@ final class MaterialCheckboxData extends PlatformCheckboxData {
   static const kDefaultIsError = false;
 
   const MaterialCheckboxData({
-    required super.onChanged,
-    required super.value,
+    super.onChanged,
+    super.value,
     super.tristate,
     super.isEnabled,
     super.widgetKey,
@@ -78,8 +78,8 @@ final class CupertinoCheckboxData extends PlatformCheckboxData {
   final Size? tapTargetSize;
 
   const CupertinoCheckboxData({
-    required super.onChanged,
-    required super.value,
+    super.onChanged,
+    super.value,
     super.tristate,
     super.isEnabled,
     super.widgetKey,

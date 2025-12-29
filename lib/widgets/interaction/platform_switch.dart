@@ -20,7 +20,7 @@ class PlatformSwitch extends PlatformWidgetKeyedBase {
   @override
   Widget buildMaterial(BuildContext context) => Switch(
     key: materialSwitchData?.widgetKey ?? platformSwitchData!.widgetKey,
-    value: materialSwitchData?.value ?? platformSwitchData!.value,
+    value: materialSwitchData?.value ?? platformSwitchData!.value!,
     onChanged: !(materialSwitchData?.isEnabled ?? platformSwitchData!.isEnabled)
         ? null
         : materialSwitchData?.onChanged ?? platformSwitchData!.onChanged,
@@ -72,7 +72,7 @@ class PlatformSwitch extends PlatformWidgetKeyedBase {
   @override
   Widget buildCupertino(BuildContext context) => CupertinoSwitch(
     key: cupertinoSwitchData?.widgetKey ?? platformSwitchData!.widgetKey,
-    value: cupertinoSwitchData?.value ?? platformSwitchData!.value,
+    value: cupertinoSwitchData?.value ?? platformSwitchData!.value!,
     onChanged: !(cupertinoSwitchData?.isEnabled ?? platformSwitchData!.isEnabled)
         ? null
         : cupertinoSwitchData?.onChanged ?? platformSwitchData!.onChanged,
