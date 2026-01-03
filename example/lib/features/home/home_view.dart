@@ -107,6 +107,18 @@ class HomeView extends StatelessWidget {
                         leading: Icon(Icons.search),
                       ),
                     ),
+                    SizedBox(
+                      height: 120,
+                      child: PlatformScrollbar(
+                        thumbVisibility: true,
+                        controller: viewModel.scrollController,
+                        child: ListView.builder(
+                          itemCount: 100, // Needed for scrollbar to be visible
+                          controller: viewModel.scrollController,
+                          itemBuilder: (context, index) => Text('Item $index'),
+                        ),
+                      ),
+                    ),
                     Padding(
                       padding: const .symmetric(vertical: 16),
                       child: ValueListenableBuilder(
@@ -134,18 +146,6 @@ class HomeView extends StatelessWidget {
                         platformSwitchData: PlatformSwitchData(
                           value: isSwitchEnabled,
                           onChanged: viewModel.onSwitchChanged,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 120,
-                      child: PlatformScrollbar(
-                        thumbVisibility: true,
-                        controller: viewModel.scrollController,
-                        child: ListView.builder(
-                          itemCount: 100, // Needed for scrollbar to be visible
-                          controller: viewModel.scrollController,
-                          itemBuilder: (context, index) => Text('Item $index'),
                         ),
                       ),
                     ),

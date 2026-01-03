@@ -9,8 +9,8 @@ final class HomeViewModel extends ViewModel {
   final _isSwitchEnabledNotifier = ValueNotifier(false);
 
   final expansibleController = ExpansibleController()..expand();
-  final searchController = TextEditingController();
   final scrollController = ScrollController();
+  final searchController = TextEditingController();
   final textFieldController = TextEditingController();
 
   ValueListenable<bool?> get checkboxValueListenable => _checkboxValueNotifier;

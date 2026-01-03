@@ -1,39 +1,48 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+# Platform Adaptive Widgets
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+A spiritual rewrite and continuation of [flutter_platform_widgets](https://pub.dev/packages/flutter_platform_widgets) library.
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+- Platform progress indicator
+- Platform list tile
+- Platform theme
+- Platform context extensions (value, valueLazy, nullable)
+- Platform checkbox
+- Platform expansion list tile
+- Platform radio group
+- Platform search bar
+- Platform segment button
+- Platform slider
+- Platform switch
+- Platform scrollbar
+- Platform text-field
+## Contributors
+<a href="https://github.com/LahaLuhem/platform_adaptive_widgets/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=LahaLuhem/platform_adaptive_widgets" />
+</a>
 
-## Getting started
+Made with [contrib.rocks](https://contrib.rocks).
+## Authors
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+- [@LahaLuhem](https://www.github.com/LahaLuhem)
 
-## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+## Badges
 
-```dart
-const like = 'sample';
-```
+Add badges from somewhere like: [shields.io](https://shields.io/)
 
-## Additional information
+![MIT License](https://img.shields.io/badge/License-MIT-green.svg)
+## Used By
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+This project is used by the following companies:
+
+- Didata Automatisering B.V
+
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
+
