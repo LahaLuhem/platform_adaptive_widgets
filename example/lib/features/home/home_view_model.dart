@@ -8,7 +8,7 @@ final class HomeViewModel extends ViewModel {
   final _sliderValueNotifier = ValueNotifier<double>(0);
   final _isSwitchEnabledNotifier = ValueNotifier(false);
 
-  final expansibleController = ExpansibleController();
+  final expansibleController = ExpansibleController()..expand();
   final searchController = TextEditingController();
   final scrollController = ScrollController();
   final textFieldController = TextEditingController();

@@ -8,28 +8,28 @@ final class PlatformTheme {
 
   const PlatformTheme.of(this.context);
 
-  Color get barBackgroundColor => context.platformValue(
-    material: Theme.of(context).appBarTheme.backgroundColor ?? const Color(0x00000000),
-    cupertino: CupertinoTheme.of(context).barBackgroundColor,
+  Color get barBackgroundColor => context.platformLazyValue(
+    material: () => Theme.of(context).appBarTheme.backgroundColor ?? const Color(0x00000000),
+    cupertino: () => CupertinoTheme.of(context).barBackgroundColor,
   );
 
-  Color get primaryColor => context.platformValue(
-    material: Theme.of(context).primaryColor,
-    cupertino: CupertinoTheme.of(context).primaryColor,
+  Color get primaryColor => context.platformLazyValue(
+    material: () => Theme.of(context).primaryColor,
+    cupertino: () => CupertinoTheme.of(context).primaryColor,
   );
 
-  Color get primaryContrastingColor => context.platformValue(
-    material: Theme.of(context).colorScheme.onPrimary,
-    cupertino: CupertinoTheme.of(context).primaryContrastingColor,
+  Color get primaryContrastingColor => context.platformLazyValue(
+    material: () => Theme.of(context).colorScheme.onPrimary,
+    cupertino: () => CupertinoTheme.of(context).primaryContrastingColor,
   );
 
-  Color get scaffoldBackgroundColor => context.platformValue(
-    material: Theme.of(context).scaffoldBackgroundColor,
-    cupertino: CupertinoTheme.of(context).scaffoldBackgroundColor,
+  Color get scaffoldBackgroundColor => context.platformLazyValue(
+    material: () => Theme.of(context).scaffoldBackgroundColor,
+    cupertino: () => CupertinoTheme.of(context).scaffoldBackgroundColor,
   );
 
-  Color get selectionHandleColor => context.platformValue(
-    material: Theme.of(context).colorScheme.onSurface,
-    cupertino: CupertinoTheme.of(context).selectionHandleColor,
+  Color get selectionHandleColor => context.platformLazyValue(
+    material: () => Theme.of(context).colorScheme.onSurface,
+    cupertino: () => CupertinoTheme.of(context).selectionHandleColor,
   );
 }
