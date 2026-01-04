@@ -35,13 +35,27 @@ class HomeView extends StatelessWidget {
                 const _SectionHeader(title: 'Dialogs'),
                 SliverList.list(
                   children: [
-                    GestureDetector(
-                      onTap: viewModel.onShowDatePickerPressed,
-                      child: ValueListenableBuilder(
-                        valueListenable: viewModel.selectedDateListenable,
-                        builder: (_, selectedDate, _) =>
-                            Text(selectedDate?.toString() ?? 'No date selected'),
-                      ),
+                    Row(
+                      mainAxisAlignment: .center,
+                      spacing: 16,
+                      children: [
+                        GestureDetector(
+                          onTap: viewModel.onShowDatePickerPressed,
+                          child: ValueListenableBuilder(
+                            valueListenable: viewModel.selectedDateListenable,
+                            builder: (_, selectedDate, _) =>
+                                Text(selectedDate?.toString() ?? 'No date selected'),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: viewModel.onShowTimePickerPressed,
+                          child: ValueListenableBuilder(
+                            valueListenable: viewModel.selectedTimeListenable,
+                            builder: (_, selectedTime, _) =>
+                                Text(selectedTime?.toString() ?? 'No time selected'),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

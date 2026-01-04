@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' show TimeOfDay;
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
@@ -9,6 +10,7 @@ final class HomeViewModel extends ViewModel {
   final _directionalityNotifier = ValueNotifier(AxisDirection.left);
   final _sliderValueNotifier = ValueNotifier<double>(0);
   final _isSwitchEnabledNotifier = ValueNotifier(false);
+  final _selectedTimeNotifier = ValueNotifier<TimeOfDay?>(null);
 
   final expansibleController = ExpansibleController()..expand();
   final scrollController = ScrollController();
@@ -20,6 +22,7 @@ final class HomeViewModel extends ViewModel {
   ValueListenable<AxisDirection> get directionalityListenable => _directionalityNotifier;
   ValueListenable<double> get sliderValueListenable => _sliderValueNotifier;
   ValueListenable<bool> get isSwitchEnabledListenable => _isSwitchEnabledNotifier;
+  ValueListenable<TimeOfDay?> get selectedTimeListenable => _selectedTimeNotifier;
 
   // Tear-off signature
   //ignore: avoid_positional_boolean_parameters
@@ -40,6 +43,14 @@ final class HomeViewModel extends ViewModel {
       lastDate: Date.now().add(const Duration(days: 365)),
     );
     debugPrint('Date picker selected: ${selectedDateListenable.value}');
+  }
+
+  Future<void> onShowTimePickerPressed() async {
+    _selectedTimeNotifier.value = await showPlatformTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    debugPrint('Time picker selected: ${selectedTimeListenable.value}');
   }
 
   void onSearchChanged(String query) => debugPrint("Searching for '$query'...");
@@ -67,6 +78,7 @@ final class HomeViewModel extends ViewModel {
     _directionalityNotifier.dispose();
     _sliderValueNotifier.dispose();
     _isSwitchEnabledNotifier.dispose();
+    _selectedTimeNotifier.dispose();
 
     expansibleController.dispose();
     searchController.dispose();
