@@ -1,4 +1,6 @@
 export 'extensions/context_extensions.dart';
+export 'extensions/date_time_extensions.dart';
+export 'models/date.dart';
 export 'models/dialogs/platform_date_picker_data.dart';
 export 'models/interaction/platform_checkbox_data.dart';
 export 'models/interaction/platform_expansion_tile_data.dart';

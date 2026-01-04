@@ -5,7 +5,7 @@ import 'package:pmvvm/pmvvm.dart';
 
 final class HomeViewModel extends ViewModel {
   final _checkboxValueNotifier = ValueNotifier<bool?>(true);
-  final _selectedDateNotifier = ValueNotifier<DateTime?>(null);
+  final _selectedDateNotifier = ValueNotifier<Date?>(null);
   final _directionalityNotifier = ValueNotifier(AxisDirection.left);
   final _sliderValueNotifier = ValueNotifier<double>(0);
   final _isSwitchEnabledNotifier = ValueNotifier(false);
@@ -16,7 +16,7 @@ final class HomeViewModel extends ViewModel {
   final textFieldController = TextEditingController();
 
   ValueListenable<bool?> get checkboxValueListenable => _checkboxValueNotifier;
-  ValueListenable<DateTime?> get selectedDateListenable => _selectedDateNotifier;
+  ValueListenable<Date?> get selectedDateListenable => _selectedDateNotifier;
   ValueListenable<AxisDirection> get directionalityListenable => _directionalityNotifier;
   ValueListenable<double> get sliderValueListenable => _sliderValueNotifier;
   ValueListenable<bool> get isSwitchEnabledListenable => _isSwitchEnabledNotifier;
@@ -36,8 +36,8 @@ final class HomeViewModel extends ViewModel {
   Future<void> onShowDatePickerPressed() async {
     _selectedDateNotifier.value = await showPlatformDatePicker(
       context: context,
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
+      firstDate: const Date(year: 1900),
+      lastDate: Date.now().add(const Duration(days: 365)),
     );
     debugPrint('Date picker selected: ${selectedDateListenable.value}');
   }

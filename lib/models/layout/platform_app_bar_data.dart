@@ -9,7 +9,7 @@ abstract class PlatformAppBarData {
 
 const kAutoImplyLeading = true;
 
-abstract final class _BaseData {
+abstract final class _PlatformAppBarData {
   final Key? widgetKey;
 
   final Widget? leading;
@@ -19,7 +19,7 @@ abstract final class _BaseData {
   final Color? backgroundColor;
   final bool automaticallyImplyLeading;
 
-  const _BaseData({
+  const _PlatformAppBarData({
     this.widgetKey,
     this.title,
     this.backgroundColor,
@@ -29,7 +29,7 @@ abstract final class _BaseData {
   });
 }
 
-final class MaterialAppBarData extends _BaseData {
+final class MaterialAppBarData extends _PlatformAppBarData {
   final List<Widget>? actions;
   final Widget? flexibleSpace;
 
@@ -108,7 +108,7 @@ final class MaterialAppBarData extends _BaseData {
   });
 }
 
-final class CupertinoNavigationBarData extends _BaseData {
+final class CupertinoNavigationBarData extends _PlatformAppBarData {
   final bool automaticallyImplyMiddle;
   final String? previousPageTitle;
   final Widget? trailing;

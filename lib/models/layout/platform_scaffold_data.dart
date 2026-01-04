@@ -10,13 +10,13 @@ import 'package:flutter/widgets.dart';
 
 const kDefaultResizeToAvoidBottomInset = true;
 
-base class _BaseData {
+base class _PlatformScaffoldData {
   final Key? widgetKey;
   final Color? backgroundColor;
   final bool resizeToAvoidBottomInset;
   final Widget? body;
 
-  const _BaseData({
+  const _PlatformScaffoldData({
     this.widgetKey,
     this.backgroundColor,
     this.resizeToAvoidBottomInset = kDefaultResizeToAvoidBottomInset,
@@ -25,7 +25,7 @@ base class _BaseData {
 }
 
 @protected
-base class MaterialScaffoldData extends _BaseData {
+base class MaterialScaffoldData extends _PlatformScaffoldData {
   final PreferredSizeWidget? appBar;
 
   final Widget? floatingActionButton;
@@ -125,7 +125,7 @@ base class MaterialScaffoldData extends _BaseData {
 }
 
 @protected
-base class CupertinoScaffoldData extends _BaseData {
+base class CupertinoScaffoldData extends _PlatformScaffoldData {
   final ObstructingPreferredSizeWidget? navigationBar;
 
   const CupertinoScaffoldData({
