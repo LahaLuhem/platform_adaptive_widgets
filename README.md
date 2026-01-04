@@ -5,11 +5,14 @@ A spiritual rewrite and continuation of [flutter_platform_widgets](https://pub.d
 
 
 ## Features
-
+### Dialogs
+- Date picker
+- Time picker
+- Menu picker
+### Painting
 - Platform progress indicator
 - Platform list tile
-- Platform theme
-- Platform context extensions (value, valueLazy, nullable)
+### Interaction
 - Platform checkbox
 - Platform expansion list tile
 - Platform radio group
@@ -19,9 +22,18 @@ A spiritual rewrite and continuation of [flutter_platform_widgets](https://pub.d
 - Platform switch
 - Platform scrollbar
 - Platform text-field
+### Layout
+- Platform app
+- Platform app bar
+- Platform scaffold
+- Platform tab scaffold
+### Utils
+- Platform theme
+- Platform context extensions (value, valueLazy, nullable)
+
 ## Contributors
 <a href="https://github.com/LahaLuhem/platform_adaptive_widgets/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=LahaLuhem/platform_adaptive_widgets" />
+  <img src="https://contrib.rocks/image?repo=LahaLuhem/platform_adaptive_widgets"  alt="Contributors"/>
 </a>
 
 Made with [contrib.rocks](https://contrib.rocks).
@@ -40,6 +52,7 @@ Add badges from somewhere like: [shields.io](https://shields.io/)
 This project is used by the following companies:
 
 - Didata Automatisering B.V
+- Dimerce B.V
 
 
 ## License

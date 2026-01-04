@@ -1,6 +1,8 @@
 ## Unreleased
 ### Added
-- date picker
+- Date picker
+- Time picker
+- Menu picker
 
 ## 0.0.2 - 2026-01-03
 ### Added

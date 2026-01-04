@@ -57,6 +57,17 @@ class HomeView extends StatelessWidget {
                         ),
                       ],
                     ),
+                    ValueListenableBuilder(
+                      valueListenable: viewModel.directionalityListenable,
+                      builder: (context, directionality, _) => PlatformMenuPicker(
+                        items: AxisDirection.values,
+                        currentValue: directionality,
+                        labelText: 'Menu picker',
+                        leadingIcon: const PlatformIcon(PlatformIcons.crop),
+                        valueTransformer: (direction) => direction.name,
+                        onSelected: viewModel.onDirectionalityChanged,
+                      ),
+                    ),
                   ],
                 ),
                 const _SectionHeader(title: 'Painting'),
@@ -139,7 +150,8 @@ class HomeView extends StatelessWidget {
                         thumbVisibility: true,
                         controller: viewModel.scrollController,
                         child: ListView.builder(
-                          itemCount: 100, // Needed for scrollbar to be visible
+                          itemCount: 100,
+                          // Needed for scrollbar to be visible
                           controller: viewModel.scrollController,
                           itemBuilder: (context, index) => Text('Item $index'),
                         ),
