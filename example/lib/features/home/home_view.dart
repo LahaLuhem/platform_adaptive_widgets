@@ -6,7 +6,6 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:platform_icons/platform_icons.dart';
 import 'package:pmvvm/pmvvm.dart';
 
-import '/utils/pair.dart';
 import 'home_view_model.dart';
 
 class HomeView extends StatelessWidget {
@@ -92,17 +91,17 @@ class HomeView extends StatelessWidget {
                         platformRadioGroupData: PlatformRadioGroupData(
                           groupValue: directionality,
                           groupValues: AxisDirection.values,
-                          groupBuilder: (radioButtons) => Row(
+                          groupBuilder: (directionsAndButtons) => Row(
                             spacing: 16,
                             mainAxisAlignment: .center,
                             children: [
-                              for (final directionAndButton in zip(
-                                AxisDirection.values,
-                                radioButtons,
-                              ))
+                              for (final directionAndButton in directionsAndButtons)
                                 Row(
                                   mainAxisSize: .min,
-                                  children: [directionAndButton.b, Text(directionAndButton.a.name)],
+                                  children: [
+                                    directionAndButton.button,
+                                    Text(directionAndButton.value.name),
+                                  ],
                                 ),
                             ],
                           ),

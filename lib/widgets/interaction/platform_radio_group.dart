@@ -11,6 +11,8 @@ class PlatformRadioGroup<T extends Object> extends PlatformWidgetBase {
   final MaterialRadioData<T>? materialRadioData;
   final CupertinoRadioData<T>? cupertinoRadioData;
 
+  /// `groupValue` and `onChanged` params are deprecated and moved to a parent [RadioGroup] instead.
+  /// Breaking the widget hierarchy prevents finding the [RadioGroup] ancestor. So need to compose the tree directly.
   const PlatformRadioGroup({
     required this.platformRadioGroupData,
     this.platformRadioData,
@@ -52,30 +54,33 @@ class PlatformRadioGroup<T extends Object> extends PlatformWidgetBase {
     );
 
     return RadioGroup(
+      key: resolvedMaterialRadioData.widgetKey,
       groupValue: platformRadioGroupData.groupValue,
       onChanged: platformRadioGroupData.onChanged,
       child: platformRadioGroupData.groupBuilder.call([
         for (final value in platformRadioGroupData.groupValues)
-          Radio(
-            key: resolvedMaterialRadioData.widgetKey,
+          (
             value: value,
-            mouseCursor: resolvedMaterialRadioData.mouseCursor,
-            toggleable: resolvedMaterialRadioData.toggleable,
-            activeColor: resolvedMaterialRadioData.activeColor,
-            fillColor: resolvedMaterialRadioData.fillColor,
-            focusColor: resolvedMaterialRadioData.focusColor,
-            hoverColor: resolvedMaterialRadioData.hoverColor,
-            overlayColor: resolvedMaterialRadioData.overlayColor,
-            splashRadius: resolvedMaterialRadioData.splashRadius,
-            materialTapTargetSize: resolvedMaterialRadioData.materialTapTargetSize,
-            visualDensity: resolvedMaterialRadioData.visualDensity,
-            focusNode: resolvedMaterialRadioData.focusNode,
-            autofocus: resolvedMaterialRadioData.autofocus,
-            enabled: resolvedMaterialRadioData.enabled,
-            groupRegistry: resolvedMaterialRadioData.groupRegistry,
-            backgroundColor: resolvedMaterialRadioData.backgroundColor,
-            side: resolvedMaterialRadioData.side,
-            innerRadius: resolvedMaterialRadioData.innerRadius,
+            button: Radio(
+              value: value,
+              mouseCursor: resolvedMaterialRadioData.mouseCursor,
+              toggleable: resolvedMaterialRadioData.toggleable,
+              activeColor: resolvedMaterialRadioData.activeColor,
+              fillColor: resolvedMaterialRadioData.fillColor,
+              focusColor: resolvedMaterialRadioData.focusColor,
+              hoverColor: resolvedMaterialRadioData.hoverColor,
+              overlayColor: resolvedMaterialRadioData.overlayColor,
+              splashRadius: resolvedMaterialRadioData.splashRadius,
+              materialTapTargetSize: resolvedMaterialRadioData.materialTapTargetSize,
+              visualDensity: resolvedMaterialRadioData.visualDensity,
+              focusNode: resolvedMaterialRadioData.focusNode,
+              autofocus: resolvedMaterialRadioData.autofocus,
+              enabled: resolvedMaterialRadioData.enabled,
+              groupRegistry: resolvedMaterialRadioData.groupRegistry,
+              backgroundColor: resolvedMaterialRadioData.backgroundColor,
+              side: resolvedMaterialRadioData.side,
+              innerRadius: resolvedMaterialRadioData.innerRadius,
+            ),
           ),
       ]),
     );
@@ -109,24 +114,27 @@ class PlatformRadioGroup<T extends Object> extends PlatformWidgetBase {
     );
 
     return RadioGroup(
+      key: resolvedCupertinoRadioData.widgetKey,
       groupValue: platformRadioGroupData.groupValue,
       onChanged: platformRadioGroupData.onChanged,
       child: platformRadioGroupData.groupBuilder.call([
         for (final value in platformRadioGroupData.groupValues)
-          CupertinoRadio(
-            key: resolvedCupertinoRadioData.widgetKey,
+          (
             value: value,
-            mouseCursor: resolvedCupertinoRadioData.mouseCursor,
-            toggleable: resolvedCupertinoRadioData.toggleable,
-            activeColor: resolvedCupertinoRadioData.activeColor,
-            inactiveColor: resolvedCupertinoRadioData.inactiveColor,
-            fillColor: resolvedCupertinoRadioData.fillColor,
-            focusColor: resolvedCupertinoRadioData.focusColor,
-            focusNode: resolvedCupertinoRadioData.focusNode,
-            autofocus: resolvedCupertinoRadioData.autofocus,
-            useCheckmarkStyle: resolvedCupertinoRadioData.useCheckmarkStyle,
-            enabled: resolvedCupertinoRadioData.enabled,
-            groupRegistry: resolvedCupertinoRadioData.groupRegistry,
+            button: CupertinoRadio(
+              value: value,
+              mouseCursor: resolvedCupertinoRadioData.mouseCursor,
+              toggleable: resolvedCupertinoRadioData.toggleable,
+              activeColor: resolvedCupertinoRadioData.activeColor,
+              inactiveColor: resolvedCupertinoRadioData.inactiveColor,
+              fillColor: resolvedCupertinoRadioData.fillColor,
+              focusColor: resolvedCupertinoRadioData.focusColor,
+              focusNode: resolvedCupertinoRadioData.focusNode,
+              autofocus: resolvedCupertinoRadioData.autofocus,
+              useCheckmarkStyle: resolvedCupertinoRadioData.useCheckmarkStyle,
+              enabled: resolvedCupertinoRadioData.enabled,
+              groupRegistry: resolvedCupertinoRadioData.groupRegistry,
+            ),
           ),
       ]),
     );
