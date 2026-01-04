@@ -1,4 +1,5 @@
 export 'extensions/context_extensions.dart';
+export 'models/dialogs/platform_date_picker_data.dart';
 export 'models/interaction/platform_checkbox_data.dart';
 export 'models/interaction/platform_expansion_tile_data.dart';
 export 'models/interaction/platform_radio_group_data.dart';
@@ -15,6 +16,7 @@ export 'models/layout/platform_tab_scaffold_data.dart';
 export 'models/painting/platform_list_tile_data.dart';
 export 'models/painting/platform_progress_indicator_data.dart';
 export 'models/painting/platform_theme.dart';
+export 'widgets/dialogs/platform_date_picker.dart';
 export 'widgets/interaction/platform_checkbox.dart';
 export 'widgets/interaction/platform_expansion_tile.dart';
 export 'widgets/interaction/platform_radio_group.dart';

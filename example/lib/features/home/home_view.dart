@@ -33,6 +33,19 @@ class HomeView extends StatelessWidget {
             padding: const .all(16),
             child: CustomScrollView(
               slivers: [
+                const _SectionHeader(title: 'Dialogs'),
+                SliverList.list(
+                  children: [
+                    GestureDetector(
+                      onTap: viewModel.onShowDatePickerPressed,
+                      child: ValueListenableBuilder(
+                        valueListenable: viewModel.selectedDateListenable,
+                        builder: (_, selectedDate, _) =>
+                            Text(selectedDate?.toString() ?? 'No date selected'),
+                      ),
+                    ),
+                  ],
+                ),
                 const _SectionHeader(title: 'Painting'),
                 SliverList.list(
                   children: [

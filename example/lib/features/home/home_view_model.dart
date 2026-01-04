@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
 final class HomeViewModel extends ViewModel {
   final _checkboxValueNotifier = ValueNotifier<bool?>(true);
+  final _selectedDateNotifier = ValueNotifier<DateTime?>(null);
   final _directionalityNotifier = ValueNotifier(AxisDirection.left);
   final _sliderValueNotifier = ValueNotifier<double>(0);
   final _isSwitchEnabledNotifier = ValueNotifier(false);
@@ -14,6 +16,7 @@ final class HomeViewModel extends ViewModel {
   final textFieldController = TextEditingController();
 
   ValueListenable<bool?> get checkboxValueListenable => _checkboxValueNotifier;
+  ValueListenable<DateTime?> get selectedDateListenable => _selectedDateNotifier;
   ValueListenable<AxisDirection> get directionalityListenable => _directionalityNotifier;
   ValueListenable<double> get sliderValueListenable => _sliderValueNotifier;
   ValueListenable<bool> get isSwitchEnabledListenable => _isSwitchEnabledNotifier;
@@ -28,6 +31,15 @@ final class HomeViewModel extends ViewModel {
   void onDirectionalityChanged(AxisDirection? value) {
     _directionalityNotifier.value = value!;
     debugPrint('Directionality changed to $value');
+  }
+
+  Future<void> onShowDatePickerPressed() async {
+    _selectedDateNotifier.value = await showPlatformDatePicker(
+      context: context,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    debugPrint('Date picker selected: ${selectedDateListenable.value}');
   }
 
   void onSearchChanged(String query) => debugPrint("Searching for '$query'...");
@@ -51,6 +63,7 @@ final class HomeViewModel extends ViewModel {
   @override
   void dispose() {
     _checkboxValueNotifier.dispose();
+    _selectedDateNotifier.dispose();
     _directionalityNotifier.dispose();
     _sliderValueNotifier.dispose();
     _isSwitchEnabledNotifier.dispose();
