@@ -8,9 +8,8 @@ import 'package:flutter/widgets.dart';
 import '/extensions/context_extensions.dart';
 import '/extensions/date_time_extensions.dart';
 import '/models/date.dart';
+import '/models/dialogs/const_values.dart';
 import '/models/dialogs/platform_date_picker_data.dart';
-
-const _kDefaultUseRootNavigator = true;
 
 Future<Date?> showPlatformDatePicker({
   required BuildContext context,
@@ -21,7 +20,7 @@ Future<Date?> showPlatformDatePicker({
   Color? barrierColor,
   bool? barrierDismissible,
   RouteSettings? routeSettings,
-  bool useRootNavigator = _kDefaultUseRootNavigator,
+  bool useRootNavigator = kDefaultUseRootNavigator,
   SelectableDayPredicate? selectableDayPredicate,
   TransitionBuilder? builder,
   MaterialDatePickerData? materialDatePickerData,
@@ -42,7 +41,7 @@ Future<Date?> showPlatformDatePicker({
       barrierDismissible:
           materialDatePickerData?.barrierDismissible ??
           barrierDismissible ??
-          MaterialDatePickerData.kDefaultBarrierDismissible,
+          kMaterialBarrierDismissible,
       routeSettings: materialDatePickerData?.routeSettings ?? routeSettings,
       useRootNavigator: materialDatePickerData?.useRootNavigator ?? useRootNavigator,
       selectableDayPredicate:
@@ -117,7 +116,7 @@ Future<Date?> showPlatformDatePicker({
         barrierDismissible:
             cupertinoDatePickerData?.barrierDismissible ??
             barrierDismissible ??
-            CupertinoDatePickerData.kDefaultBarrierDismissible,
+            kCupertinoBarrierDismissible,
         routeSettings: cupertinoDatePickerData?.routeSettings ?? routeSettings,
         useRootNavigator: cupertinoDatePickerData?.useRootNavigator ?? useRootNavigator,
         filter: cupertinoDatePickerData?.filter,

@@ -7,10 +7,9 @@ import 'package:flutter/widgets.dart';
 
 import '/extensions/context_extensions.dart';
 import '/extensions/time_of_day_extensions.dart';
+import '/models/dialogs/const_values.dart';
 import '/models/dialogs/platform_date_picker_data.dart';
 import '/models/dialogs/platform_time_picker_data.dart';
-
-const _kDefaultUseRootNavigator = true;
 
 Future<TimeOfDay?> showPlatformTimePicker({
   required BuildContext context,
@@ -19,7 +18,7 @@ Future<TimeOfDay?> showPlatformTimePicker({
   Color? barrierColor,
   bool? barrierDismissible,
   RouteSettings? routeSettings,
-  bool useRootNavigator = _kDefaultUseRootNavigator,
+  bool useRootNavigator = kDefaultUseRootNavigator,
   TransitionBuilder? builder,
   MaterialTimePickerData? materialTimePickerData,
   CupertinoDatePickerData? cupertinoTimePickerData,
@@ -33,7 +32,7 @@ Future<TimeOfDay?> showPlatformTimePicker({
     barrierDismissible:
         materialTimePickerData?.barrierDismissible ??
         barrierDismissible ??
-        MaterialDatePickerData.kDefaultBarrierDismissible,
+        kMaterialBarrierDismissible,
     routeSettings: materialTimePickerData?.routeSettings ?? routeSettings,
     onEntryModeChanged: materialTimePickerData?.onEntryModeChanged,
     useRootNavigator: materialTimePickerData?.useRootNavigator ?? useRootNavigator,
@@ -91,7 +90,7 @@ Future<TimeOfDay?> showPlatformTimePicker({
       barrierDismissible:
           cupertinoTimePickerData?.barrierDismissible ??
           barrierDismissible ??
-          CupertinoDatePickerData.kDefaultBarrierDismissible,
+          kCupertinoBarrierDismissible,
       routeSettings: cupertinoTimePickerData?.routeSettings ?? routeSettings,
       useRootNavigator: cupertinoTimePickerData?.useRootNavigator ?? useRootNavigator,
       filter: cupertinoTimePickerData?.filter,

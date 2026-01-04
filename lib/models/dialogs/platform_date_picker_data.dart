@@ -8,6 +8,8 @@ import 'package:flutter/material.dart'
     show CalendarDelegate, DatePickerEntryMode, DatePickerMode, GregorianCalendarDelegate;
 import 'package:flutter/widgets.dart';
 
+import 'const_values.dart';
+
 final class _PlatformDatePickerData {
   final Offset? anchorPoint;
   final Color? barrierColor;
@@ -49,7 +51,6 @@ final class MaterialDatePickerData extends _PlatformDatePickerData {
   final Icon? switchToCalendarEntryModeIcon;
   final CalendarDelegate<DateTime> calendarDelegate;
 
-  static const kDefaultBarrierDismissible = false;
   static const kDefaultInitialEntryMode = DatePickerEntryMode.calendar;
   static const kDefaultInitialDatePickerMode = DatePickerMode.day;
   static const kDefaultCalendarDelegate = GregorianCalendarDelegate();
@@ -57,7 +58,7 @@ final class MaterialDatePickerData extends _PlatformDatePickerData {
   const MaterialDatePickerData({
     super.anchorPoint,
     super.barrierColor,
-    super.barrierDismissible = kDefaultBarrierDismissible,
+    super.barrierDismissible = kMaterialBarrierDismissible,
     super.routeSettings,
     super.useRootNavigator,
     super.selectableDayPredicate,
@@ -100,7 +101,6 @@ final class CupertinoDatePickerData extends _PlatformDatePickerData {
   final bool showTimeSeparator;
   final bool use24hFormat;
 
-  static const kDefaultBarrierDismissible = true;
   static const kDefaultModalBarrierColor = CupertinoDynamicColor.withBrightness(
     color: Color(0x33000000),
     darkColor: Color(0x7A000000),

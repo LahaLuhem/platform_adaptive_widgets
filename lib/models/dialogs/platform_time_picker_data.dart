@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart' show TimePickerEntryMode;
 import 'package:flutter/widgets.dart';
 
+import 'const_values.dart';
+
 final class _PlatformTimePickerData {
   final Offset? anchorPoint;
   final Color? barrierColor;
@@ -37,14 +39,13 @@ final class MaterialTimePickerData extends _PlatformTimePickerData {
   final Icon? switchToTimerEntryModeIcon;
   final bool emptyInitialInput;
 
-  static const kDefaultBarrierDismissible = false;
   static const kDefaultInitialEntryMode = TimePickerEntryMode.dial;
   static const kDefaultEmptyInitialInput = false;
 
   const MaterialTimePickerData({
     super.anchorPoint,
     super.barrierColor,
-    super.barrierDismissible = kDefaultBarrierDismissible,
+    super.barrierDismissible = kMaterialBarrierDismissible,
     super.routeSettings,
     super.useRootNavigator,
     super.builder,
