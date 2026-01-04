@@ -40,6 +40,22 @@ class HomeView extends StatelessWidget {
                       spacing: 16,
                       children: [
                         GestureDetector(
+                          onTap: viewModel.onShowGeneralDialogPressed,
+                          child: const Text('Show general dialog', maxLines: 2),
+                        ),
+                      ].map((button) => Flexible(child: button)).toList(growable: false),
+                    ),
+                    Center(
+                      child: GestureDetector(
+                        onTap: viewModel.onShowGeneralBottomSheetPressed,
+                        child: const Text('Show general bottom sheet', maxLines: 2),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: .center,
+                      spacing: 16,
+                      children: [
+                        GestureDetector(
                           onTap: viewModel.onShowDatePickerPressed,
                           child: ValueListenableBuilder(
                             valueListenable: viewModel.selectedDateListenable,

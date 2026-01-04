@@ -18,22 +18,33 @@ final class HomeViewModel extends ViewModel {
   final textFieldController = TextEditingController();
 
   ValueListenable<bool?> get checkboxValueListenable => _checkboxValueNotifier;
+
   ValueListenable<Date?> get selectedDateListenable => _selectedDateNotifier;
+
   ValueListenable<AxisDirection> get directionalityListenable => _directionalityNotifier;
+
   ValueListenable<double> get sliderValueListenable => _sliderValueNotifier;
+
   ValueListenable<bool> get isSwitchEnabledListenable => _isSwitchEnabledNotifier;
+
   ValueListenable<TimeOfDay?> get selectedTimeListenable => _selectedTimeNotifier;
 
-  // Tear-off signature
-  //ignore: avoid_positional_boolean_parameters
-  void onCheckboxChanged(bool? value) {
-    _checkboxValueNotifier.value = value;
-    debugPrint('Checkbox changed to $value');
+  Future<void> onShowGeneralDialogPressed() {
+    debugPrint('General dialog pressed');
+
+    return showPlatformDialog(
+      context: context,
+      builder: (_) => const Center(child: Text('General dialog pressed')),
+    );
   }
 
-  void onDirectionalityChanged(AxisDirection? value) {
-    _directionalityNotifier.value = value!;
-    debugPrint('Directionality changed to $value');
+  Future<void> onShowGeneralBottomSheetPressed() {
+    debugPrint('General bottom sheet pressed');
+
+    return showPlatformModalBottomSheet(
+      context: context,
+      builder: (_) => const Center(child: Text('General bottom sheet pressed')),
+    );
   }
 
   Future<void> onShowDatePickerPressed() async {
@@ -51,6 +62,18 @@ final class HomeViewModel extends ViewModel {
       initialTime: TimeOfDay.now(),
     );
     debugPrint('Time picker selected: ${selectedTimeListenable.value}');
+  }
+
+  // Tear-off signature
+  //ignore: avoid_positional_boolean_parameters
+  void onCheckboxChanged(bool? value) {
+    _checkboxValueNotifier.value = value;
+    debugPrint('Checkbox changed to $value');
+  }
+
+  void onDirectionalityChanged(AxisDirection? value) {
+    _directionalityNotifier.value = value!;
+    debugPrint('Directionality changed to $value');
   }
 
   void onSearchChanged(String query) => debugPrint("Searching for '$query'...");
