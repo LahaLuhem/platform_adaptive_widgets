@@ -27,6 +27,7 @@ export 'widgets/dialogs/platform_date_picker.dart';
 export 'widgets/dialogs/platform_dialog.dart';
 export 'widgets/dialogs/platform_menu_picker.dart';
 export 'widgets/dialogs/platform_modal_bottom_sheet.dart';
+export 'widgets/dialogs/platform_simple_alert.dart';
 export 'widgets/dialogs/platform_time_picker.dart';
 export 'widgets/interaction/platform_checkbox.dart';
 export 'widgets/interaction/platform_expansion_tile.dart';

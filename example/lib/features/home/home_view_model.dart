@@ -70,6 +70,16 @@ final class HomeViewModel extends ViewModel {
     );
   }
 
+  Future<void> onShowSimpleAlertPressed() {
+    debugPrint('Simple alert pressed');
+
+    return showPlatformSimpleAlert(
+      context: context,
+      message: 'Simple alert message',
+      cupertinoOkLabel: 'Ok',
+    );
+  }
+
   Future<void> onShowGeneralBottomSheetPressed() {
     debugPrint('General bottom sheet pressed');
 
