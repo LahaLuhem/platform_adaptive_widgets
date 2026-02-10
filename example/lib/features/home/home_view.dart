@@ -11,6 +11,8 @@ import 'home_view_model.dart';
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
+  static const _shrunkCupertinoButtonData = CupertinoButtonData(padding: .zero);
+
   @override
   Widget build(BuildContext context) {
     final platformTheme = PlatformTheme.of(context);
@@ -35,27 +37,39 @@ class HomeView extends StatelessWidget {
                 const _SectionHeader(title: 'Dialogs'),
                 SliverList.list(
                   children: [
-                    Row(
-                      mainAxisAlignment: .center,
-                      spacing: 8,
+                    Wrap(
+                      spacing: 16,
                       children: [
-                        GestureDetector(
-                          onTap: viewModel.onShowGeneralDialogPressed,
+                        PlatformButton(
+                          onPressed: viewModel.onShowGeneralDialogPressed,
+                          cupertinoButtonData: _shrunkCupertinoButtonData,
                           child: const Text('show general dialog', maxLines: 2),
                         ),
-                        GestureDetector(
-                          onTap: viewModel.onShowAlertDialogPressed,
+                        PlatformButton(
+                          onPressed: viewModel.onShowAlertDialogPressed,
+                          cupertinoButtonData: _shrunkCupertinoButtonData,
                           child: const Text('show alert dialog', maxLines: 2),
                         ),
-                        GestureDetector(
-                          onTap: viewModel.onShowSimpleAlertPressed,
+                        PlatformButton(
+                          onPressed: viewModel.onShowSimpleAlertPressed,
+                          cupertinoButtonData: _shrunkCupertinoButtonData,
                           child: const Text('show simple alert', maxLines: 2),
                         ),
-                      ].map((button) => Flexible(child: button)).toList(growable: false),
+                        PlatformButton(
+                          isEnabled: false,
+                          // Will always be disabled for showcase
+                          // ignore: no-empty-block
+                          onPressed: () {},
+                          cupertinoButtonData: _shrunkCupertinoButtonData,
+                          child: const Text('Disabled', maxLines: 2),
+                        ),
+                      ],
                     ),
                     Center(
-                      child: GestureDetector(
-                        onTap: viewModel.onShowGeneralBottomSheetPressed,
+                      child: PlatformButton(
+                        onPressed: viewModel.onShowGeneralBottomSheetPressed,
+                        materialButtonVariant: .outlined,
+                        cupertinoButtonVariant: .filled,
                         child: const Text('show general bottom sheet', maxLines: 2),
                       ),
                     ),
@@ -63,16 +77,20 @@ class HomeView extends StatelessWidget {
                       mainAxisAlignment: .center,
                       spacing: 16,
                       children: [
-                        GestureDetector(
-                          onTap: viewModel.onShowDatePickerPressed,
+                        PlatformButton(
+                          onPressed: viewModel.onShowDatePickerPressed,
+                          materialButtonVariant: .text,
+                          cupertinoButtonVariant: .tinted,
                           child: ValueListenableBuilder(
                             valueListenable: viewModel.selectedDateListenable,
                             builder: (_, selectedDate, _) =>
                                 Text(selectedDate?.toString() ?? 'No date selected'),
                           ),
                         ),
-                        GestureDetector(
-                          onTap: viewModel.onShowTimePickerPressed,
+                        PlatformButton(
+                          onPressed: viewModel.onShowTimePickerPressed,
+                          materialButtonVariant: .text,
+                          cupertinoButtonVariant: .tinted,
                           child: ValueListenableBuilder(
                             valueListenable: viewModel.selectedTimeListenable,
                             builder: (_, selectedTime, _) =>
