@@ -34,7 +34,39 @@ final class HomeViewModel extends ViewModel {
 
     return showPlatformDialog(
       context: context,
-      builder: (_) => const Center(child: Text('General dialog pressed')),
+      builder: (_) => const Center(child: Text('General dialog content')),
+    );
+  }
+
+  Future<void> onShowAlertDialogPressed() {
+    debugPrint('Alert dialog pressed');
+
+    return showPlatformAlertDialog(
+      context: context,
+      title: const Text('Example alert dialog'),
+      content: const Text('Change the number of actions to see how the layout changes'),
+      actions: [
+        PlatformAlertDialogActionButton(
+          child: const Text('Normal'),
+          onPressed: (context) => Navigator.of(context).pop(),
+        ),
+        PlatformAlertDialogActionButton(
+          isDefaultAction: true,
+          onPressed: (context) => Navigator.of(context).pop(),
+          child: const Text('Default'),
+        ),
+        PlatformAlertDialogActionButton(
+          isDestructiveAction: true,
+          onPressed: (context) => Navigator.of(context).pop(),
+          child: const Text('Destructive'),
+        ),
+        PlatformAlertDialogActionButton(
+          isDefaultAction: true,
+          isDestructiveAction: true,
+          onPressed: (context) => Navigator.of(context).pop(),
+          child: const Text('Default & Destructive'),
+        ),
+      ],
     );
   }
 
@@ -43,7 +75,7 @@ final class HomeViewModel extends ViewModel {
 
     return showPlatformModalBottomSheet(
       context: context,
-      builder: (_) => const Center(child: Text('General bottom sheet pressed')),
+      builder: (_) => const Center(child: Text('General bottom sheet content')),
     );
   }
 

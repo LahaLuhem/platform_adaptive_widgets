@@ -1,12 +1,18 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart' show showCupertinoDialog;
-import 'package:flutter/material.dart' show Dialog, showDialog;
+import 'package:flutter/cupertino.dart'
+    show CupertinoAlertDialog, CupertinoDialogAction, showCupertinoDialog;
+import 'package:flutter/material.dart'
+    show AlertDialog, ButtonTheme, Colors, Dialog, TextButton, showDialog;
 import 'package:flutter/widgets.dart';
 
 import '/extensions/context_extensions.dart';
 import '/models/dialogs/const_values.dart';
 import '/models/dialogs/platform_dialog_data.dart';
+import '../../models/dialogs/platform_alert_dialog_data.dart';
+import '../../models/platform_widget_base.dart';
+
+part 'platform_alert_dialog.dart';
 
 /// Conveniently wraps the `builder` in a [Dialog] for Material.
 /// The following params only have an effect for `materialDialogData.fullscreenDialog == false`:

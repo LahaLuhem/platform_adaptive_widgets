@@ -2,6 +2,7 @@ export 'extensions/context_extensions.dart';
 export 'extensions/date_time_extensions.dart';
 export 'extensions/time_of_day_extensions.dart';
 export 'models/date.dart';
+export 'models/dialogs/platform_alert_dialog_data.dart';
 export 'models/dialogs/platform_date_picker_data.dart';
 export 'models/dialogs/platform_dialog_data.dart';
 export 'models/dialogs/platform_menu_picker_data.dart';

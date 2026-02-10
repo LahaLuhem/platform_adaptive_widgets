@@ -41,14 +41,18 @@ class HomeView extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: viewModel.onShowGeneralDialogPressed,
-                          child: const Text('Show general dialog', maxLines: 2),
+                          child: const Text('show general dialog', maxLines: 2),
+                        ),
+                        GestureDetector(
+                          onTap: viewModel.onShowAlertDialogPressed,
+                          child: const Text('show alert dialog', maxLines: 2),
                         ),
                       ].map((button) => Flexible(child: button)).toList(growable: false),
                     ),
                     Center(
                       child: GestureDetector(
                         onTap: viewModel.onShowGeneralBottomSheetPressed,
-                        child: const Text('Show general bottom sheet', maxLines: 2),
+                        child: const Text('show general bottom sheet', maxLines: 2),
                       ),
                     ),
                     Row(
