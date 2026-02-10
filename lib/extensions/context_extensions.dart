@@ -1,9 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-extension ContextExtensions on BuildContext {
+// Purely for name-spacing collisions
+// ignore: prefer-match-file-name
+extension PlatformAdaptiveContextExtensions on BuildContext {
   IconData platformIcon({required IconData material, required IconData cupertino}) =>
       platformValue(material: material, cupertino: cupertino);
+
   T platformValue<T>({required T material, required T cupertino}) =>
       _valueProvider(material: material, cupertino: cupertino);
 
