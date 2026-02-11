@@ -82,7 +82,6 @@ analyzer:
     always_use_package_imports: ignore
     avoid_setters_without_getters: ignore
     sort_constructors_first: ignore
-    public_member_api_docs: ignore
     require_trailing_commas: ignore
     type_annotate_public_apis: ignore
 
