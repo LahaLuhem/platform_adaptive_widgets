@@ -5,11 +5,38 @@ import 'package:flutter/widgets.dart';
 import '/models/interaction/platform_search_bar_data.dart';
 import '/models/platform_widget_base.dart';
 
+/// A platform-adaptive search bar that renders Material SearchBar on Android
+/// and CupertinoSearchTextField on iOS.
+///
+/// This widget automatically selects the appropriate search bar implementation based on the target platform:
+/// - On Android: renders Material Design SearchBar
+/// - On iOS: renders CupertinoSearchTextField
+///
+/// The search bar can be configured with platform-specific data through [materialSearchBarData]
+/// and [cupertinoSearchBarData], or with common properties.
+///
+/// Example:
+/// ```dart
+/// PlatformSearchBar(
+///   platformSearchBarData: PlatformSearchBarData(
+///     hintText: 'Search...',
+///     onChanged: (value) => print('Searching: $value'),
+///   ),
+/// )
+/// ```
 class PlatformSearchBar extends PlatformWidgetBase {
+  /// Platform-shared search bar configuration.
   final PlatformSearchBarData? platformSearchBarData;
+
+  /// Material-specific search bar data.
   final MaterialSearchBarData? materialSearchBarData;
+
+  /// Cupertino-specific search bar data.
   final CupertinoSearchBarData? cupertinoSearchBarData;
 
+  /// Creates a platform-adaptive search bar.
+  ///
+  /// The search bar will render as a Material SearchBar on Android and a CupertinoSearchTextField on iOS.
   const PlatformSearchBar({
     this.platformSearchBarData,
     this.materialSearchBarData,

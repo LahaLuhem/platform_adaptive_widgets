@@ -11,6 +11,23 @@ import '/models/dialogs/const_values.dart';
 import '/models/dialogs/platform_date_picker_data.dart';
 import '/models/dialogs/platform_time_picker_data.dart';
 
+/// Shows a platform-adaptive time picker that renders Material showTimePicker on Android
+/// and CupertinoDatePicker (in time mode) on iOS.
+///
+/// This function automatically selects the appropriate time picker implementation based on the target platform:
+/// - On Android: shows a Material Design time picker
+/// - On iOS: shows a Cupertino date picker configured for time selection
+///
+/// The time picker can be configured with platform-specific data through [materialTimePickerData]
+/// and [cupertinoTimePickerData], or with common properties.
+///
+/// Example:
+/// ```dart
+/// final selectedTime = await showPlatformTimePicker(
+///   context: context,
+///   initialTime: TimeOfDay.now(),
+/// );
+/// ```
 Future<TimeOfDay?> showPlatformTimePicker({
   required BuildContext context,
   required TimeOfDay initialTime,

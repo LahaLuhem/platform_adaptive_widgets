@@ -5,14 +5,45 @@ import 'package:flutter/widgets.dart';
 import '/models/interaction/platform_expansion_tile_data.dart';
 import '/models/platform_widget_base.dart';
 
+/// A platform-adaptive expansion tile that renders Material ExpansionTile on Android
+/// and CupertinoExpansionTile on iOS.
+///
+/// This widget automatically selects the appropriate expansion tile implementation based on the target platform:
+/// - On Android: renders Material Design ExpansionTile
+/// - On iOS: renders CupertinoExpansionTile
+///
+/// The expansion tile can be configured with platform-specific data through [materialExpansionTileData]
+/// and [cupertinoExpansionTileData], or with common properties.
+///
+/// Example:
+/// ```dart
+/// PlatformExpansionTile(
+///   title: Text('Settings'),
+///   child: ListTile(
+///     leading: Icon(Icons.settings),
+///     title: Text('Advanced Settings'),
+///   ),
+/// )
+/// ```
 class PlatformExpansionTile extends PlatformWidgetKeyedBase {
+  /// The title widget displayed on the expansion tile.
   final Widget? title;
+
+  /// The child widget that is shown when the tile is expanded.
   final Widget? child;
+
+  /// Controller for managing the expansion state.
   final ExpansibleController? controller;
 
+  /// Material-specific expansion tile data.
   final MaterialExpansionTileData? materialExpansionTileData;
+
+  /// Cupertino-specific expansion tile data.
   final CupertinoExpansionTileData? cupertinoExpansionTileData;
 
+  /// Creates a platform-adaptive expansion tile.
+  ///
+  /// The expansion tile will render as a Material ExpansionTile on Android and a CupertinoExpansionTile on iOS.
   const PlatformExpansionTile({
     this.title,
     this.child,

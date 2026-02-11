@@ -4,17 +4,60 @@ import 'package:flutter/widgets.dart';
 
 import '/models/layout/platform_app_bar_data.dart';
 
+/// A platform-adaptive app bar that renders Material AppBar on Android
+/// and CupertinoNavigationBar on iOS.
+///
+/// This widget automatically selects the appropriate app bar implementation based on the target platform:
+/// - On Android: renders Material Design AppBar
+/// - On iOS: renders CupertinoNavigationBar
+///
+/// The app bar can be configured with platform-specific data through [materialAppBarData]
+/// and [cupertinoNavigationBarData], or with common properties.
+///
+/// Example:
+/// ```dart
+/// PlatformAppBar(
+///   title: Text('My App'),
+///   leading: IconButton(
+///     icon: Icon(Icons.menu),
+///     onPressed: () => Scaffold.of(context).openDrawer(),
+///   ),
+/// )
+/// ```
 class PlatformAppBar implements PlatformAppBarData {
+  /// Optional key for the app bar widget.
   final Key? widgetKey;
+
+  /// Widget to display before the title.
+  ///
+  /// Typically used for navigation or menu icons.
   final Widget? leading;
+
+  /// The primary title of the app bar.
   final Widget? title;
+
+  /// Widget to display below the app bar.
+  ///
+  /// Typically used for tabs or other supplementary content.
   final PreferredSizeWidget? bottom;
+
+  /// Background color of the app bar.
   final Color? backgroundColor;
+
+  /// Whether to automatically imply a leading widget.
+  ///
+  /// If true, a back button will be automatically added when appropriate.
   final bool automaticallyImplyLeading;
 
+  /// Material-specific app bar data.
   final MaterialAppBarData? materialAppBarData;
+
+  /// Cupertino-specific navigation bar data.
   final CupertinoNavigationBarData? cupertinoNavigationBarData;
 
+  /// Creates a platform-adaptive app bar.
+  ///
+  /// The app bar will render as a Material AppBar on Android and a CupertinoNavigationBar on iOS.
   const PlatformAppBar({
     this.widgetKey,
     this.materialAppBarData,

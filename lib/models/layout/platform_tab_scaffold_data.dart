@@ -6,16 +6,28 @@ import 'package:flutter/widgets.dart';
 
 import 'platform_scaffold_data.dart';
 
+/// Data for a single destination in a tab-based navigation structure.
 final class TabDestinationData {
+  /// An optional key for the destination.
   final Key? key;
+
+  /// The icon to display when the destination is inactive.
   final Widget inactiveIcon;
+
+  /// The icon to display when the destination is active.
   final Widget? activeIcon;
+
+  /// The widget to display as the content for this destination.
   final Widget? view;
 
+  /// A label to display for the destination.
   final String label;
+
+  /// A tooltip to display for the destination.
   final String? tooltip;
 
   //TODO(lahaluhem): account for material's `enabled` property
+  /// Creates a [TabDestinationData].
   const TabDestinationData({
     required this.inactiveIcon,
     this.view,
@@ -26,12 +38,19 @@ final class TabDestinationData {
   });
 }
 
+/// Material-specific data for a tab-based scaffold.
 final class MaterialTabScaffoldData extends MaterialScaffoldData {
+  /// A list of destinations to display in the tab bar.
   final List<TabDestinationData>? tabDestinationsData;
+
+  /// A controller for the tab bar.
   final TabController? controller;
+
+  /// A builder for the content of each tab.
   final IndexedWidgetBuilder? tabBuilder;
 
   //TODO(lahaluhem): `bottomSheetScrimBuilder` is missing
+  /// Creates a [MaterialTabScaffoldData].
   const MaterialTabScaffoldData({
     super.widgetKey,
     super.backgroundColor,
@@ -64,13 +83,21 @@ final class MaterialTabScaffoldData extends MaterialScaffoldData {
   });
 }
 
+/// Cupertino-specific data for a tab-based scaffold.
 final class CupertinoTabScaffoldData extends CupertinoScaffoldData {
+  /// A list of destinations to display in the tab bar.
   final List<TabDestinationData>? tabDestinationsData;
+
+  /// A controller for the tab bar.
   final CupertinoTabController? controller;
+
+  /// A builder for the content of each tab.
   final IndexedWidgetBuilder? tabBuilder;
 
+  /// A restoration ID for the tab scaffold.
   final String? restorationId;
 
+  /// Creates a [CupertinoTabScaffoldData].
   const CupertinoTabScaffoldData({
     super.widgetKey,
     super.backgroundColor,
@@ -91,10 +118,12 @@ final class PlatformTabController extends ChangeNotifier {
   int _index;
   final List<VoidCallback> _cleanupCallbacks = [];
 
+  /// Creates a [PlatformTabController].
   PlatformTabController({int initialIndex = 0})
     : _index = initialIndex,
       assert(initialIndex >= 0, 'initialIndex must be greater than or equal to 0');
 
+  /// The index of the currently selected tab.
   int get index => _index;
   set index(int value) {
     assert(value >= 0, 'index must be greater than or equal to 0');
@@ -115,9 +144,10 @@ final class PlatformTabController extends ChangeNotifier {
   }
 }
 
+/// An extension on [PlatformTabController] to create platform-specific controllers.
+@protected
 extension TabControllerExtensions on PlatformTabController {
-  /// Creates a Material TabController that follows this platform controller
-  @protected
+  /// Creates a Material [TabController] that follows this platform controller.
   TabController toMaterialController({required TickerProvider vsync, required int length}) {
     final controller = TabController(initialIndex: index, length: length, vsync: vsync);
 
@@ -137,8 +167,7 @@ extension TabControllerExtensions on PlatformTabController {
     return controller;
   }
 
-  /// Creates a CupertinoTabController that follows this platform controller
-  @protected
+  /// Creates a Cupertino [CupertinoTabController] that follows this platform controller.
   CupertinoTabController toCupertinoController() {
     final controller = CupertinoTabController(initialIndex: index);
 

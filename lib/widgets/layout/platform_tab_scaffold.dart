@@ -5,16 +5,31 @@ import '/models/layout/platform_scaffold_data.dart';
 import '/models/layout/platform_tab_scaffold_data.dart';
 import '/models/platform_widget_base.dart';
 
+/// A platform-adaptive tab scaffold that renders a Material scaffold with a
+/// navigation bar on Android, and a Cupertino tab scaffold on iOS.
 class PlatformTabScaffold extends PlatformWidgetKeyedBase {
+  /// The background color of the scaffold.
   final Color? backgroundColor;
+
+  /// Whether the scaffold should resize to avoid the bottom inset.
   final bool resizeToAvoidBottomInset;
+
+  /// A restoration ID to save and restore the state of the scaffold.
   final String? restorationId;
 
+  /// A list of destinations to display in the tab bar.
   final List<TabDestinationData>? tabDestinationsData;
+
+  /// A controller for the tab bar.
   final PlatformTabController? controller;
+
+  /// A builder for the content of each tab.
   final IndexedWidgetBuilder? tabBuilder;
 
+  /// Material-specific data for the tab scaffold.
   final MaterialTabScaffoldData? materialTabScaffoldData;
+
+  /// Cupertino-specific data for the tab scaffold.
   final CupertinoTabScaffoldData? cupertinoTabScaffoldData;
 
   /// 3 modes for state management:

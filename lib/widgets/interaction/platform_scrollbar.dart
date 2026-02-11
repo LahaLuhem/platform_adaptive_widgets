@@ -5,16 +5,55 @@ import 'package:flutter/widgets.dart';
 import '/models/interaction/platform_scrollbar_data.dart';
 import '/models/platform_widget_base.dart';
 
+/// A platform-adaptive scrollbar that renders Material Scrollbar on Android
+/// and CupertinoScrollbar on iOS.
+///
+/// This widget automatically selects the appropriate scrollbar implementation based on the target platform:
+/// - On Android: renders Material Design Scrollbar
+/// - On iOS: renders CupertinoScrollbar
+///
+/// The scrollbar can be configured with platform-specific data through [materialScrollbarData]
+/// and [cupertinoScrollbarData], or with common properties.
+///
+/// Example:
+/// ```dart
+/// PlatformScrollbar(
+///   controller: _scrollController,
+///   thumbVisibility: true,
+///   child: SingleChildScrollView(
+///     controller: _scrollController,
+///     child: Text('Scrollable content'),
+///   ),
+/// )
+/// ```
 class PlatformScrollbar extends PlatformWidgetKeyedBuilderBase {
+  /// The scroll controller to attach the scrollbar to.
   final ScrollController? controller;
+
+  /// Whether the scrollbar thumb should be visible.
   final bool? thumbVisibility;
+
+  /// The thickness of the scrollbar.
   final double? thickness;
+
+  /// The radius of the scrollbar corners.
   final Radius? radius;
+
+  /// Predicate for determining which scroll notifications to respond to.
   final ScrollNotificationPredicate? notificationPredicate;
+
+  /// The orientation of the scrollbar.
   final ScrollbarOrientation? scrollbarOrientation;
 
+  /// Material-specific scrollbar data.
   final MaterialScrollbarData? materialScrollbarData;
+
+  /// Cupertino-specific scrollbar data.
   final CupertinoScrollbarData? cupertinoScrollbarData;
+
+  /// Creates a platform-adaptive scrollbar.
+  ///
+  /// The scrollbar will render as a Material Scrollbar on Android and a CupertinoScrollbar on iOS.
   const PlatformScrollbar({
     required super.child,
     super.widgetKey,

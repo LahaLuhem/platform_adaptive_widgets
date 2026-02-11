@@ -14,16 +14,50 @@ import '../../models/platform_widget_base.dart';
 
 part 'platform_alert_dialog.dart';
 
-/// Conveniently wraps the `builder` in a [Dialog] for Material.
-/// The following params only have an effect for `materialDialogData.fullscreenDialog == false`:
-/// - [materialAlignment]
-/// - [materialShape]
-/// - [materialClipBehavior]
-/// - [materialConstraints]
-/// - [materialElevation]
-/// - [materialInsetPadding]
-/// - [materialShadowColor]
-/// - [materialSurfaceTintColor]
+/// Shows a platform-adaptive dialog that renders Material dialogs on Android
+/// and Cupertino dialogs on iOS.
+///
+/// This function automatically selects the appropriate dialog implementation based on the target platform:
+/// - On Android: shows a Material dialog using [showDialog]
+/// - On iOS: shows a Cupertino dialog using [showCupertinoDialog]
+///
+/// The dialog can be configured with platform-specific data through [materialDialogData]
+/// and [cupertinoDialogData], or with common properties through [platformDialogData].
+///
+/// For Material dialogs, the builder is wrapped in a [Dialog] widget unless
+/// `materialDialogData.fullscreenDialog` is true.
+///
+/// Example:
+/// ```dart
+/// showPlatformDialog(
+///   context: context,
+///   builder: (context) => PlatformAlertDialog(
+///     title: Text('Confirm'),
+///     content: Text('Are you sure?'),
+///     actions: [
+///       PlatformDialogAction(
+///         child: Text('Cancel'),
+///         onPressed: () => Navigator.pop(context),
+///       ),
+///       PlatformDialogAction(
+///         child: Text('OK'),
+///         onPressed: () => Navigator.pop(context),
+///       ),
+///     ],
+///   ),
+/// )
+/// ```
+///
+/// The following parameters only have an effect for Material dialogs when
+/// `materialDialogData.fullscreenDialog` is false:
+/// - [materialAlignment]: Alignment of the dialog
+/// - [materialShape]: Shape of the dialog
+/// - [materialClipBehavior]: Clip behavior of the dialog
+/// - [materialConstraints]: Size constraints of the dialog
+/// - [materialElevation]: Elevation of the dialog
+/// - [materialInsetPadding]: Padding around the dialog
+/// - [materialShadowColor]: Shadow color of the dialog
+/// - [materialSurfaceTintColor]: Surface tint color of the dialog
 Future<T?> showPlatformDialog<T>({
   required BuildContext context,
   WidgetBuilder? builder,

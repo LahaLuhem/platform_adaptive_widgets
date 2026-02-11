@@ -9,16 +9,50 @@ import '/models/layout/platform_app_bar_data.dart';
 import '/models/layout/platform_scaffold_data.dart';
 import '/models/platform_widget_base.dart';
 
+/// A platform-adaptive scaffold that renders Material Scaffold on Android
+/// and CupertinoPageScaffold on iOS.
+///
+/// This widget automatically selects the appropriate scaffold implementation based on the target platform:
+/// - On Android: renders Material Design Scaffold
+/// - On iOS: renders CupertinoPageScaffold
+///
+/// The scaffold can be configured with platform-specific data through [materialScaffoldData]
+/// and [cupertinoScaffoldData], or with common properties.
+///
+/// Example:
+/// ```dart
+/// PlatformScaffold(
+///   appBarData: PlatformAppBarData(
+///     title: Text('My App'),
+///   ),
+///   body: Center(child: Text('Hello World')),
+/// )
+/// ```
 class PlatformScaffold extends PlatformWidgetKeyedBase {
+  /// Background color of the scaffold.
   final Color? backgroundColor;
+
+  /// Whether the scaffold should resize to avoid the bottom inset.
   final bool resizeToAvoidBottomInset;
+
+  /// The main content of the scaffold.
   final Widget body;
 
+  /// Platform-shared app bar data.
+  ///
+  /// Has a premade implementation of [PlatformAppBar].
   final PlatformAppBarData? appBarData;
+
+  /// Material-specific scaffold data.
   final MaterialScaffoldData? materialScaffoldData;
+
+  /// Cupertino-specific scaffold data.
   final CupertinoScaffoldData? cupertinoScaffoldData;
 
-  /// [appBarData] has a premade implementation of [PlatformAppBar]
+  /// Creates a platform-adaptive scaffold.
+  ///
+  /// The scaffold will render as a Material Scaffold on Android and a CupertinoPageScaffold on iOS.
+  /// [appBarData] has a premade implementation of [PlatformAppBar].
   const PlatformScaffold({
     required this.body,
     this.materialScaffoldData,

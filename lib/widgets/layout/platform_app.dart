@@ -5,21 +5,75 @@ import 'package:flutter/widgets.dart';
 import '/models/layout/platform_app_data.dart';
 import '/models/platform_widget_base.dart';
 
+/// A platform-adaptive app widget that renders MaterialApp on Android
+/// and CupertinoApp on iOS.
+///
+/// This widget automatically selects the appropriate app implementation based on the target platform:
+/// - On Android: renders MaterialApp
+/// - On iOS: renders CupertinoApp
+///
+/// The app can be configured with platform-specific data through [materialAppData]
+/// and [cupertinoAppData], or with common properties through [appData].
+///
+/// Use the named constructor `PlatformApp.router` for apps using Flutter's router API.
+///
+/// Example:
+/// ```dart
+/// PlatformApp(
+///   appData: AppData(
+///     title: 'My App',
+///     home: MyHomePage(),
+///   ),
+/// )
+/// ```
 class PlatformApp extends PlatformWidgetBase {
+  /// Common app data that applies to both platforms.
+  ///
+  /// These properties will be used unless overridden by platform-specific data.
   final AppData? appData;
+
+  /// Common router app data that applies to both platforms.
+  ///
+  /// These properties will be used unless overridden by platform-specific router data.
   final PlatformAppRouterData? appRouterData;
 
+  /// Platform-specific data for MaterialApp.
+  ///
+  /// If provided, these properties will override the common properties when
+  /// rendering on Android. See [MaterialAppData] for available options.
   final MaterialAppData? materialAppData;
+
+  /// Platform-specific data for MaterialApp.router.
+  ///
+  /// If provided, these properties will override the common properties when
+  /// rendering on Android with router. See [MaterialAppRouterData] for available options.
   final MaterialAppRouterData? materialAppRouterData;
 
+  /// Platform-specific data for CupertinoApp.
+  ///
+  /// If provided, these properties will override the common properties when
+  /// rendering on iOS. See [CupertinoAppData] for available options.
   final CupertinoAppData? cupertinoAppData;
+
+  /// Platform-specific data for CupertinoApp.router.
+  ///
+  /// If provided, these properties will override the common properties when
+  /// rendering on iOS with router. See [CupertinoAppRouterData] for available options.
   final CupertinoAppRouterData? cupertinoAppRouterData;
 
+  /// Creates a platform-adaptive app.
+  ///
+  /// The app will render as a MaterialApp on Android and a CupertinoApp on iOS.
+  /// Use [appData] for common properties, or override with platform-specific data.
   const PlatformApp({this.appData, this.materialAppData, this.cupertinoAppData, super.key})
     : appRouterData = null,
       materialAppRouterData = null,
       cupertinoAppRouterData = null;
 
+  /// Creates a platform-adaptive app using Flutter's router API.
+  ///
+  /// The app will render as a MaterialApp.router on Android and a CupertinoApp.router on iOS.
+  /// Use [appRouterData] for common properties, or override with platform-specific router data.
   const PlatformApp.router({
     this.appRouterData,
     this.materialAppRouterData,

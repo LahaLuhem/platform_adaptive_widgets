@@ -6,22 +6,100 @@ import 'package:flutter/widgets.dart';
 import '../../models/interaction/platform_button_data.dart';
 import '../../models/platform_widget_base.dart';
 
+/// A platform-adaptive button that renders Material Design buttons on Android
+/// and Cupertino buttons on iOS.
+///
+/// This widget automatically selects the appropriate button type based on the target platform:
+/// - On Android: renders Material buttons (TextButton, ElevatedButton, OutlinedButton, FilledButton)
+/// - On iOS: renders Cupertino buttons (CupertinoButton, CupertinoButton.filled, CupertinoButton.tinted)
+///
+/// The button can be configured with platform-specific data through [materialButtonData]
+/// and [cupertinoButtonData], or with common properties that work across platforms.
+///
+/// Example:
+/// ```dart
+/// PlatformButton(
+///   onPressed: () => print('Button pressed'),
+///   child: Text('Adaptive Button'),
+///   materialButtonVariant: MaterialButtonVariant.elevated,
+///   cupertinoButtonVariant: CupertinoButtonVariant.filled,
+/// )
+/// ```
 class PlatformButton extends PlatformWidgetKeyedBase {
+  /// Whether the button is enabled and can be pressed.
+  ///
+  /// When false, the button will be disabled and [onPressed] will be ignored.
+  /// Defaults to true.
   final bool isEnabled;
+
+  /// Callback that is called when the button is pressed.
+  ///
+  /// If null, the button will be disabled. The button is also disabled when
+  /// [isEnabled] is false, even if [onPressed] is provided.
   final VoidCallback? onPressed;
+
+  /// Callback that is called when the button is long-pressed.
+  ///
+  /// If null, the button will not respond to long presses.
   final VoidCallback? onLongPress;
+
+  /// The cursor to display when the mouse hovers over the button.
+  ///
+  /// If null, the platform's default cursor will be used.
   final MouseCursor? mouseCursor;
+
+  /// The focus node for the button.
+  ///
+  /// If null, a default focus node will be created.
   final FocusNode? focusNode;
+
+  /// Whether the button should automatically focus when it's first displayed.
+  ///
+  /// If null, defaults to platform-specific behavior.
   final bool? autofocus;
 
+  /// The widget to display as the button's label.
+  ///
+  /// This can be a Text widget, Icon, or any other widget. For Material buttons,
+  /// this is mutually exclusive with providing an icon through [materialButtonData].
   final Widget? child;
 
+  /// Platform-specific data for Material Design buttons.
+  ///
+  /// If provided, these properties will override the common properties when
+  /// rendering on Android. See [MaterialButtonData] for available options.
   final MaterialButtonData? materialButtonData;
+
+  /// Platform-specific data for Cupertino buttons.
+  ///
+  /// If provided, these properties will override the common properties when
+  /// rendering on iOS. See [CupertinoButtonData] for available options.
   final CupertinoButtonData? cupertinoButtonData;
 
+  /// The type of Material Design button to render on Android.
+  ///
+  /// Defaults to [MaterialButtonVariant.elevated].
+  /// Each variant renders a different Material button type:
+  /// - [MaterialButtonVariant.text]: TextButton
+  /// - [MaterialButtonVariant.elevated]: ElevatedButton
+  /// - [MaterialButtonVariant.outlined]: OutlinedButton
+  /// - [MaterialButtonVariant.filled]: FilledButton
   final MaterialButtonVariant materialButtonVariant;
+
+  /// The type of Cupertino button to render on iOS.
+  ///
+  /// Defaults to [CupertinoButtonVariant.normal].
+  /// Each variant renders a different Cupertino button type:
+  /// - [CupertinoButtonVariant.normal]: CupertinoButton
+  /// - [CupertinoButtonVariant.filled]: CupertinoButton.filled
+  /// - [CupertinoButtonVariant.tinted]: CupertinoButton.tinted
   final CupertinoButtonVariant cupertinoButtonVariant;
 
+  /// Creates a platform-adaptive button.
+  ///
+  /// The button will render as a Material button on Android and a Cupertino button on iOS.
+  /// Use [materialButtonVariant] and [cupertinoButtonVariant] to specify the button style
+  /// for each platform.
   const PlatformButton({
     this.materialButtonVariant = .elevated,
     this.cupertinoButtonVariant = .normal,
@@ -249,6 +327,40 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   };
 }
 
-enum MaterialButtonVariant { text, elevated, outlined, filled }
+/// Material Design button variants available for [PlatformButton].
+///
+/// Each variant corresponds to a different Material Design button type:
+/// - [text]: Renders as TextButton
+/// - [elevated]: Renders as ElevatedButton (default)
+/// - [outlined]: Renders as OutlinedButton
+/// - [filled]: Renders as FilledButton
+enum MaterialButtonVariant {
+  /// Renders as a TextButton with no background.
+  text,
 
-enum CupertinoButtonVariant { normal, filled, tinted }
+  /// Renders as an ElevatedButton with elevation and fill.
+  elevated,
+
+  /// Renders as an OutlinedButton with a border.
+  outlined,
+
+  /// Renders as a FilledButton with a solid background.
+  filled,
+}
+
+/// Cupertino button variants available for [PlatformButton].
+///
+/// Each variant corresponds to a different Cupertino button style:
+/// - [normal]: Renders as CupertinoButton (default)
+/// - [filled]: Renders as CupertinoButton.filled with a solid background
+/// - [tinted]: Renders as CupertinoButton.tinted with a subtle background
+enum CupertinoButtonVariant {
+  /// Renders as a standard CupertinoButton with no background.
+  normal,
+
+  /// Renders as a CupertinoButton.filled with a solid background color.
+  filled,
+
+  /// Renders as a CupertinoButton.tinted with a subtle background tint.
+  tinted,
+}

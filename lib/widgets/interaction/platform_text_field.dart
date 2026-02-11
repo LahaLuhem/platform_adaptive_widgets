@@ -5,11 +5,47 @@ import 'package:flutter/widgets.dart';
 import '/models/interaction/platform_text_field_data.dart';
 import '/models/platform_widget_base.dart';
 
+/// A platform-adaptive text field that renders Material TextField on Android
+/// and CupertinoTextField on iOS.
+///
+/// This widget automatically selects the appropriate text field implementation based on the target platform:
+/// - On Android: renders Material Design TextField
+/// - On iOS: renders CupertinoTextField
+///
+/// The text field can be configured with platform-specific data through [materialTextFieldData]
+/// and [cupertinoTextFieldData], or with common properties through [platformTextFieldData].
+///
+/// Example:
+/// ```dart
+/// PlatformTextField(
+///   platformTextFieldData: PlatformTextFieldData(
+///     controller: _textController,
+///     placeholder: 'Enter your name',
+///   ),
+/// )
+/// ```
 class PlatformTextField extends PlatformWidgetBase {
+  /// Common text field data that applies to both platforms.
+  ///
+  /// These properties will be used unless overridden by platform-specific data.
   final PlatformTextFieldData? platformTextFieldData;
+
+  /// Platform-specific data for Material Design text fields.
+  ///
+  /// If provided, these properties will override the common properties when
+  /// rendering on Android. See [MaterialTextFieldData] for available options.
   final MaterialTextFieldData? materialTextFieldData;
+
+  /// Platform-specific data for Cupertino text fields.
+  ///
+  /// If provided, these properties will override the common properties when
+  /// rendering on iOS. See [CupertinoTextFieldData] for available options.
   final CupertinoTextFieldData? cupertinoTextFieldData;
 
+  /// Creates a platform-adaptive text field.
+  ///
+  /// The text field will render as a Material TextField on Android and a CupertinoTextField on iOS.
+  /// Use [platformTextFieldData] for common properties, or override with platform-specific data.
   const PlatformTextField({
     this.platformTextFieldData,
     this.materialTextFieldData,

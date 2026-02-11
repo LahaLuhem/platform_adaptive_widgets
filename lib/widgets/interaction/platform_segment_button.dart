@@ -5,17 +5,50 @@ import 'package:flutter/widgets.dart';
 import '/models/interaction/platform_segment_button_data.dart';
 import '/models/platform_widget_base.dart';
 
+/// A platform-adaptive segmented button that renders Material SegmentedButton on Android
+/// and CupertinoSlidingSegmentedControl on iOS.
+///
+/// This widget automatically selects the appropriate segmented button implementation based on the target platform:
+/// - On Android: renders Material Design SegmentedButton
+/// - On iOS: renders CupertinoSlidingSegmentedControl
+///
+/// The segmented button can be configured with platform-specific data through [materialSegmentButtonData]
+/// and [cupertinoSegmentButtonData], or with common properties.
+///
+/// Note: On Android, only supports single selection due to use in CupertinoSlidingSegmentedControl.
+///
+/// Example:
+/// ```dart
+/// PlatformSegmentButton<String>(
+///   choices: ['Day', 'Week', 'Month'],
+///   selectedChoice: _selectedView,
+///   onSelectionChanged: (choice) => setState(() => _selectedView = choice),
+///   segmentBuilder: (choice) => Text(choice),
+/// )
+/// ```
 class PlatformSegmentButton<T extends Object> extends PlatformWidgetKeyedBase {
+  /// The list of choices to display as segments.
   final Iterable<T>? choices;
+
+  /// Builder function for creating the widget representation of each segment.
   final Widget Function(T choice)? segmentBuilder;
+
+  /// Callback when the selected segment changes.
   final ValueChanged<T?>? onSelectionChanged;
 
+  /// Material-specific segmented button data.
   final MaterialSegmentButtonData<T>? materialSegmentButtonData;
+
+  /// Cupertino-specific segmented button data.
   final CupertinoSegmentButtonData<T>? cupertinoSegmentButtonData;
 
+  /// The currently selected choice.
   final T? _selectedChoice;
 
-  /// Android: Only supports single selection due to use in [CupertinoSlidingSegmentedControl]
+  /// Creates a platform-adaptive segmented button.
+  ///
+  /// The segmented button will render as a Material SegmentedButton on Android and a CupertinoSlidingSegmentedControl on iOS.
+  /// Android: Only supports single selection due to use in CupertinoSlidingSegmentedControl.
   const PlatformSegmentButton({
     required this.choices,
     required this.segmentBuilder,

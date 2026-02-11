@@ -11,19 +11,63 @@ import '/models/date.dart';
 import '/models/dialogs/const_values.dart';
 import '/models/dialogs/platform_date_picker_data.dart';
 
+/// Shows a platform-adaptive date picker that renders Material showDatePicker on Android
+/// and CupertinoDatePicker on iOS.
+///
+/// This function automatically selects the appropriate date picker implementation based on the target platform:
+/// - On Android: shows a Material Design date picker
+/// - On iOS: shows a Cupertino date picker
+///
+/// The date picker can be configured with platform-specific data through [materialDatePickerData]
+/// and [cupertinoDatePickerData], or with common properties.
+///
+/// Example:
+/// ```dart
+/// final selectedDate = await showPlatformDatePicker(
+///   context: context,
+///   firstDate: Date(2023, 1, 1),
+///   lastDate: Date(2023, 12, 31),
+///   initialDate: Date.now(),
+/// );
+/// ```
 Future<Date?> showPlatformDatePicker({
+  /// The build context for showing the date picker.
   required BuildContext context,
+
+  /// The earliest selectable date.
   required Date firstDate,
+
+  /// The latest selectable date.
   required Date lastDate,
+
+  /// The initially selected date.
   Date? initialDate,
+
+  /// The anchor point for positioning the date picker.
   Offset? anchorPoint,
+
+  /// Color of the modal barrier behind the date picker.
   Color? barrierColor,
+
+  /// Whether tapping the barrier dismisses the date picker.
   bool? barrierDismissible,
+
+  /// Route settings for the date picker route.
   RouteSettings? routeSettings,
+
+  /// Whether to use the root navigator for the date picker route.
   bool useRootNavigator = kDefaultUseRootNavigator,
+
+  /// Predicate for determining which days are selectable.
   SelectableDayPredicate? selectableDayPredicate,
+
+  /// Builder for customizing the date picker appearance.
   TransitionBuilder? builder,
+
+  /// Material-specific date picker data.
   MaterialDatePickerData? materialDatePickerData,
+
+  /// Cupertino-specific date picker data.
   CupertinoDatePickerData? cupertinoDatePickerData,
 }) {
   final initialDateTime = initialDate?.toDateTime();

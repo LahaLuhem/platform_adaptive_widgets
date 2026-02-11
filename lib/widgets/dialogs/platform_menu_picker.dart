@@ -14,22 +14,59 @@ import 'package:pull_down_button/pull_down_button.dart';
 import '/models/dialogs/platform_menu_picker_data.dart';
 import '/models/platform_widget_base.dart';
 
+/// A platform-adaptive menu picker that renders Material DropdownMenu on Android
+/// and CupertinoPicker with CupertinoListTile on iOS.
+///
+/// This widget automatically selects the appropriate menu picker implementation based on the target platform:
+/// - On Android: renders Material Design DropdownMenu
+/// - On iOS: renders CupertinoPicker with CupertinoListTile items
+///
+/// The menu picker can be configured with platform-specific data through [materialMenuPickerData]
+/// and [cupertinoMenuPickerData], or with common properties.
+///
+/// Example:
+/// ```dart
+/// PlatformMenuPicker<String>(
+///   items: ['Option 1', 'Option 2', 'Option 3'],
+///   currentValue: _selectedOption,
+///   onSelected: (value) => setState(() => _selectedOption = value),
+///   labelText: 'Choose an option',
+/// )
+/// ```
 class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
+  /// The list of items to display in the menu.
   final Iterable<T> items;
+
+  /// The currently selected value.
   final T? currentValue;
 
+  /// Whether the menu picker is enabled and interactive.
   final bool isEnabled;
+
+  /// Icon to display before the menu items.
   final Widget? leadingIcon;
+
+  /// Label text to display above the menu items.
   final String? labelText;
 
+  /// Callback when an item is selected.
   final ValueChanged<T>? onSelected;
+
+  /// Function to transform the selected value to a string representation.
   final String Function(T choice) valueTransformer;
 
+  /// Material-specific menu picker data.
   final MaterialMenuPickerData? materialMenuPickerData;
+
+  /// Cupertino-specific menu picker data.
   final CupertinoMenuPickerData? cupertinoMenuPickerData;
 
+  /// Default transformer that converts choices to strings.
   static String _defaultTransformer<T>(T choice) => choice.toString();
 
+  /// Creates a platform-adaptive menu picker.
+  ///
+  /// The menu picker will render as a Material DropdownMenu on Android and a CupertinoPicker on iOS.
   const PlatformMenuPicker({
     required this.items,
     this.currentValue,

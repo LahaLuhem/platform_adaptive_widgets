@@ -33,6 +33,7 @@ Future<void> showPlatformSimpleAlert({
   VoidCallback? materialOnVisible,
   DismissDirection? materialDismissDirection,
   Clip materialClipBehavior = Clip.hardEdge,
+  String? cupertinoTitle,
   PlatformDialogData? cupertinoDialogData,
 }) => context.platformLazyValue(
   material: () => ScaffoldMessenger.of(context)
@@ -63,6 +64,7 @@ Future<void> showPlatformSimpleAlert({
   cupertino: () => showCupertinoDialog(
     context: context,
     builder: (context) => CupertinoAlertDialog(
+      title: cupertinoTitle == null ? null : Text(cupertinoTitle),
       content: Text(message),
       actions: [
         PlatformAlertDialogActionButton(

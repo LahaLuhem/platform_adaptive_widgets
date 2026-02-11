@@ -5,11 +5,38 @@ import 'package:flutter/widgets.dart';
 import '/models/interaction/platform_slider_data.dart';
 import '/models/platform_widget_base.dart';
 
+/// A platform-adaptive slider that renders Material Slider on Android
+/// and CupertinoSlider on iOS.
+///
+/// This widget automatically selects the appropriate slider implementation based on the target platform:
+/// - On Android: renders Material Design Slider
+/// - On iOS: renders CupertinoSlider
+///
+/// The slider can be configured with platform-specific data through [materialSliderData]
+/// and [cupertinoSliderData], or with common properties.
+///
+/// Example:
+/// ```dart
+/// PlatformSlider(
+///   platformSliderData: PlatformSliderData(
+///     value: _sliderValue,
+///     onChanged: (value) => setState(() => _sliderValue = value),
+///   ),
+/// )
+/// ```
 class PlatformSlider extends PlatformWidgetBase {
+  /// Cupertino-specific slider data.
   final PlatformSliderData? cupertinoSliderData;
+
+  /// Platform-shared slider data.
   final PlatformSliderData? platformSliderData;
+
+  /// Material-specific slider data.
   final MaterialSliderData? materialSliderData;
 
+  /// Creates a platform-adaptive slider.
+  ///
+  /// The slider will render as a Material Slider on Android and a CupertinoSlider on iOS.
   const PlatformSlider({
     this.platformSliderData,
     this.materialSliderData,

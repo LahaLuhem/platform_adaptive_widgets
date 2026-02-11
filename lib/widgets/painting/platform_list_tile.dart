@@ -7,19 +7,60 @@ import 'package:flutter/widgets.dart';
 import '/models/painting/platform_list_tile_data.dart';
 import '/models/platform_widget_base.dart';
 
+/// A platform-adaptive list tile that renders Material ListTile on Android
+/// and CupertinoListTile on iOS.
+///
+/// This widget automatically selects the appropriate list tile implementation based on the target platform:
+/// - On Android: renders Material Design ListTile
+/// - On iOS: renders CupertinoListTile
+///
+/// The list tile can be configured with platform-specific data through [materialListTileData]
+/// and [cupertinoListTileData], or with common properties.
+///
+/// Example:
+/// ```dart
+/// PlatformListTile(
+///   title: Text('Settings'),
+///   leading: Icon(Icons.settings),
+///   onTap: () => print('Tapped settings'),
+/// )
+/// ```
 class PlatformListTile extends PlatformWidgetKeyedBase {
+  /// The primary title of the list tile.
   final Widget? title;
+
+  /// The subtitle of the list tile.
   final Widget? subtitle;
+
+  /// The widget to display before the title.
   final Widget? leading;
+
+  /// The widget to display after the title.
   final Widget? trailing;
-  // Needed for CupertinoListTile
+
+  /// Callback when the list tile is tapped.
+  ///
+  // Needed for CupertinoListTile compatibility.
   //ignore: avoid_futureor_void
   final FutureOr<void> Function()? onTap;
+
+  /// Width of the leading widget.
+  ///
+  /// Corresponds to `minLeadingWidth` for [ListTile] and `leadingSize` for [CupertinoListTile].
   final double? leadingWidth;
+
+  /// Background color of the list tile.
+  ///
+  /// Corresponds to `tileColor` for [ListTile] and `backgroundColor` for [CupertinoListTile].
   final Color? color;
+
+  /// Padding around the list tile content.
   final EdgeInsetsGeometry? padding;
 
+  /// Material-specific list tile data.
   final MaterialListTileData? materialListTileData;
+
+  /// Cupertino-specific list tile data.
   final CupertinoListTileData? cupertinoListTileData;
 
   /// [leadingWidth] corresponds to `minLeadingWidth` for [ListTile] and `leadingSize` for [CupertinoListTile]. Purely convenience.

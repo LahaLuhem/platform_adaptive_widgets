@@ -3,6 +3,12 @@
 - Date picker
 - Time picker
 - Menu picker
+- A lot of new widgets (see README.md for the catalog)
+- example catalog
+- Documentation
+
+### Changed
+- Much better Readme
 
 ## 0.0.2 - 2026-01-03
 ### Added

@@ -2,6 +2,34 @@
 
 part of 'platform_dialog.dart';
 
+/// Shows a platform-adaptive alert dialog that renders Material AlertDialog on Android
+/// and CupertinoAlertDialog on iOS.
+///
+/// This function automatically selects the appropriate alert dialog implementation based on the target platform:
+/// - On Android: shows a Material Design AlertDialog
+/// - On iOS: shows a CupertinoAlertDialog
+///
+/// The alert dialog can be configured with platform-specific data through [materialAlertDialogData]
+/// and [cupertinoAlertDialogData], or with common properties.
+///
+/// Example:
+/// ```dart
+/// showPlatformAlertDialog(
+///   context: context,
+///   title: Text('Confirm'),
+///   content: Text('Are you sure you want to continue?'),
+///   actions: [
+///     PlatformDialogAction(
+///       child: Text('Cancel'),
+///       onPressed: () => Navigator.pop(context),
+///     ),
+///     PlatformDialogAction(
+///       child: Text('OK'),
+///       onPressed: () => Navigator.pop(context),
+///     ),
+///   ],
+/// )
+/// ```
 Future<T?> showPlatformAlertDialog<T>({
   required BuildContext context,
   PlatformDialogData? platformDialogData,
@@ -65,9 +93,30 @@ Future<T?> showPlatformAlertDialog<T>({
   cupertinoDialogData: cupertinoDialogData,
 );
 
+/// A platform-adaptive dialog action button that renders TextButton on Android
+/// and CupertinoDialogAction on iOS.
+///
+/// This widget automatically selects the appropriate button implementation based on the target platform:
+/// - On Android: renders a Material Design TextButton
+/// - On iOS: renders a CupertinoDialogAction
+///
+/// Default actions will have bold text but only on cupertino.
+/// Destructive actions will be rendered in red text on cupertino and with a red filled background on material.
+/// Using the `context` of [onPressed] allows to have a reference to the dialog context.
+/// Customize the [ButtonTheme].colorScheme.error to change the color of destructive actions.
 class PlatformAlertDialogActionButton extends PlatformWidgetKeyedBuilderBase {
+  /// Callback when the action button is pressed.
   final ValueChanged<BuildContext>? onPressed;
+
+  /// Whether this action represents a destructive action.
+  ///
+  /// Destructive actions are styled differently (typically red) to indicate they
+  /// may cause data loss or other negative consequences.
   final bool isDestructiveAction;
+
+  /// Whether this is the default action.
+  ///
+  /// Default actions may receive special styling or behavior.
   final bool isDefaultAction;
 
   /// Creates a new platform aware dialog action.

@@ -5,11 +5,38 @@ import 'package:flutter/widgets.dart';
 import '/models/interaction/platform_switch_data.dart';
 import '/models/platform_widget_base.dart';
 
+/// A platform-adaptive switch that renders Material Switch on Android
+/// and CupertinoSwitch on iOS.
+///
+/// This widget automatically selects the appropriate switch implementation based on the target platform:
+/// - On Android: renders Material Design Switch
+/// - On iOS: renders CupertinoSwitch
+///
+/// The switch can be configured with platform-specific data through [materialSwitchData]
+/// and [cupertinoSwitchData], or with common properties.
+///
+/// Example:
+/// ```dart
+/// PlatformSwitch(
+///   platformSwitchData: PlatformSwitchData(
+///     value: _isSwitchOn,
+///     onChanged: (value) => setState(() => _isSwitchOn = value),
+///   ),
+/// )
+/// ```
 class PlatformSwitch extends PlatformWidgetKeyedBase {
+  /// Platform-shared switch data.
   final PlatformSwitchData? platformSwitchData;
+
+  /// Material-specific switch data.
   final MaterialSwitchData? materialSwitchData;
+
+  /// Cupertino-specific switch data.
   final CupertinoSwitchData? cupertinoSwitchData;
 
+  /// Creates a platform-adaptive switch.
+  ///
+  /// The switch will render as a Material Switch on Android and a CupertinoSwitch on iOS.
   const PlatformSwitch({
     this.platformSwitchData,
     this.materialSwitchData,

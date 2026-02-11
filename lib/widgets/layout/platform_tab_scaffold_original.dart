@@ -30,14 +30,21 @@ import 'package:flutter/widgets.dart';
 import '../../models/platform_widget_base.dart';
 import 'platform_app_bar.dart';
 
+/// Base class for scaffold data.
 abstract class _BaseScaffoldOriginalData {
+  /// Creates a [_BaseScaffoldOriginalData].
   _BaseScaffoldOriginalData({this.widgetKey, this.backgroundColor});
 
+  /// The background color of the scaffold.
   final Color? backgroundColor;
+
+  /// A key to identify the widget.
   final Key? widgetKey;
 }
 
+/// Material-specific data for a tab scaffold.
 class MaterialTabScaffoldOriginalData extends _BaseScaffoldOriginalData {
+  /// Creates a [MaterialTabScaffoldOriginalData].
   MaterialTabScaffoldOriginalData({
     super.backgroundColor,
     super.widgetKey,
@@ -71,37 +78,94 @@ class MaterialTabScaffoldOriginalData extends _BaseScaffoldOriginalData {
     this.persistentFooterDecoration,
   });
 
+  /// A builder for the body of the scaffold.
   final Widget Function(BuildContext context, int index)? bodyBuilder;
+
+  /// A controller for the tab bar.
   final MaterialTabController? controller;
+
+  /// A builder for the app bar.
   final PreferredSizeWidget? Function(BuildContext context, int index)? appBarBuilder;
+
+  /// A drawer to display.
   final Widget? drawer;
+
+  /// An end drawer to display.
   final Widget? endDrawer;
+
+  /// A floating action button to display.
   final Widget? floatingActionButton;
+
+  /// An animator for the floating action button.
   final FloatingActionButtonAnimator? floatingActionButtonAnimator;
+
+  /// The location of the floating action button.
   final FloatingActionButtonLocation? floatingActionButtonLocation;
+
+  /// A list of persistent footer buttons to display.
   final List<Widget>? persistentFooterButtons;
+
+  /// Whether this scaffold is the primary scaffold.
   final bool? primary;
+
+  /// A bottom sheet to display.
   final Widget? bottomSheet;
+
+  /// The drag start behavior for the drawer.
   final DragStartBehavior? drawerDragStartBehavior;
+
+  /// Whether to extend the body of the scaffold.
   final bool? extendBody;
+
+  /// Whether to resize the body of the scaffold to avoid the bottom inset.
   final bool? resizeToAvoidBottomInset;
+
+  /// The color of the scrim that is applied to the background of the drawer.
   final Color? drawerScrimColor;
+
+  /// The width of the area that can be used to drag the drawer.
   final double? drawerEdgeDragWidth;
+
+  /// Whether to extend the body of the scaffold behind the app bar.
   final bool? extendBodyBehindAppBar;
+
+  /// The background color of the tabs.
   final Color? tabsBackgroundColor;
+
+  /// Whether to enable the open drag gesture for the drawer.
   final bool? drawerEnableOpenDragGesture;
+
+  /// Whether to enable the open drag gesture for the end drawer.
   final bool? endDrawerEnableOpenDragGesture;
+
+  /// A restoration ID to save and restore the state of the scaffold.
   final String? restorationId;
+
+  /// A callback that is called when the drawer is opened or closed.
   final DrawerCallback? onDrawerChanged;
+
+  /// A callback that is called when the end drawer is opened or closed.
   final DrawerCallback? onEndDrawerChanged;
+
+  /// The alignment of the persistent footer buttons.
   final AlignmentDirectional? persistentFooterAlignment;
+
+  /// The height of the scaffold.
   final double? height;
+
+  /// A builder for the bottom sheet scrim.
   final Widget? Function(BuildContext, Animation<double>)? bottomSheetScrimBuilder;
+
+  /// Whether the drawer can be dismissed by tapping the scrim.
   final bool? drawerBarrierDismissible;
+
+  /// The decoration to apply to the persistent footer buttons.
   final BoxDecoration? persistentFooterDecoration;
 }
 
+/// Base class for tab bar data.
 abstract class _BaseTabBarData {
+  /// Creates a [_BaseTabBarData].
   _BaseTabBarData({
     this.widgetKey,
     this.items,
@@ -113,17 +177,34 @@ abstract class _BaseTabBarData {
     this.height,
   });
 
+  /// A key to identify the widget.
   final Key? widgetKey;
+
+  /// The items to display in the tab bar.
   final List<BottomNavigationBarItem>? items;
+
+  /// The background color of the tab bar.
   final Color? backgroundColor;
+
+  /// The size of the icons in the tab bar.
   final double? iconSize;
+
+  /// The color of the active item in the tab bar.
   final Color? activeColor;
+
+  /// The index of the currently selected item.
   final int? currentIndex;
+
+  /// A callback that is called when an item is tapped.
   final void Function(int)? itemChanged;
+
+  /// The height of the tab bar.
   final double? height;
 }
 
+/// Data for a Cupertino tab view.
 class CupertinoTabViewData {
+  /// Creates a [CupertinoTabViewData].
   CupertinoTabViewData({
     this.defaultTitle,
     this.navigatorKey,
@@ -133,15 +214,28 @@ class CupertinoTabViewData {
     this.routes,
   });
 
+  /// The default title to display in the tab view.
   final String? defaultTitle;
+
+  /// A key to identify the navigator.
   final GlobalKey<NavigatorState>? navigatorKey;
+
+  /// A list of navigator observers to apply to the tab view.
   final List<NavigatorObserver>? navigatorObservers;
+
+  /// A callback that is called when a route is generated.
   final RouteFactory? onGenerateRoute;
+
+  /// A callback that is called when a route is unknown.
   final RouteFactory? onUnknownRoute;
+
+  /// A map of routes to display in the tab view.
   final Map<String, WidgetBuilder>? routes;
 }
 
+/// Cupertino-specific data for a tab scaffold.
 class CupertinoTabScaffoldOriginalData extends _BaseScaffoldOriginalData {
+  /// Creates a [CupertinoTabScaffoldOriginalData].
   CupertinoTabScaffoldOriginalData({
     super.backgroundColor,
     super.widgetKey,
@@ -158,22 +252,43 @@ class CupertinoTabScaffoldOriginalData extends _BaseScaffoldOriginalData {
     this.navBarHeight,
   });
 
+  /// The items to display in the tab bar.
   final List<BottomNavigationBarItem>? items;
 
+  /// A builder for the tab view data.
   final CupertinoTabViewData Function(BuildContext context, int index)? tabViewDataBuilder;
 
+  /// A builder for the body of the scaffold.
   final Widget Function(BuildContext context, int index)? bodyBuilder;
+
+  /// A builder for the app bar.
   final ObstructingPreferredSizeWidget? Function(BuildContext context, int index)? appBarBuilder;
+
+  /// Whether to resize the body of the scaffold to avoid the bottom inset.
   final bool? resizeToAvoidBottomInset;
+
+  /// Whether to resize the tab view to avoid the bottom inset.
   final bool? resizeToAvoidBottomInsetTab;
+
+  /// The background color of the tabs.
   final Color? tabsBackgroundColor;
+
+  /// A controller for the tab bar.
   final CupertinoTabController? controller;
+
+  /// A restoration ID to save and restore the state of the scaffold.
   final String? restorationId;
+
+  /// A restoration scope ID to save and restore the state of the tab view.
   final String? restorationScopeIdTabView;
+
+  /// The height of the navigation bar.
   final double? navBarHeight;
 }
 
+/// Cupertino-specific data for a tab bar.
 class CupertinoTabBarData extends _BaseTabBarData {
+  /// Creates a [CupertinoTabBarData].
   CupertinoTabBarData({
     super.backgroundColor,
     super.items,
@@ -187,11 +302,16 @@ class CupertinoTabBarData extends _BaseTabBarData {
     this.border,
   });
 
+  /// The color of the inactive items in the tab bar.
   final Color? inactiveColor;
+
+  /// The border to display at the top of the tab bar.
   final Border? border;
 }
 
+/// Material-specific data for a navigation bar.
 class MaterialNavigationBarData {
+  /// Creates a [MaterialNavigationBarData].
   MaterialNavigationBarData({
     this.widgetKey,
     this.items,
@@ -212,26 +332,61 @@ class MaterialNavigationBarData {
     this.maintainBottomViewPadding,
   });
 
+  /// A key to identify the widget.
   final Key? widgetKey;
+
+  /// The destinations to display in the navigation bar.
   final List<NavigationDestination>? items;
+
+  /// The height of the navigation bar.
   final double? height;
+
+  /// The duration of the animation to play when an item is selected.
   final Duration? animationDuration;
+
+  /// The background color of the navigation bar.
   final Color? backgroundColor;
+
+  /// The elevation of the navigation bar.
   final double? elevation;
+
+  /// The color of the indicator that is displayed around the selected item.
   final Color? indicatorColor;
+
+  /// The shape of the indicator that is displayed around the selected item.
   final ShapeBorder? indicatorShape;
+
+  /// The behavior of the labels in the navigation bar.
   final NavigationDestinationLabelBehavior? labelBehavior;
+
+  /// A callback that is called when a destination is selected.
   final ValueChanged<int>? onDestinationSelected;
+
+  /// The index of the currently selected destination.
   final int? selectedIndex;
+
+  /// The color of the shadow that is displayed below the navigation bar.
   final Color? shadowColor;
+
+  /// The color of the surface tint that is applied to the navigation bar.
   final Color? surfaceTintColor;
+
+  /// The color of the overlay that is displayed when an item is pressed.
   final WidgetStateProperty<Color?>? overlayColor;
+
+  /// The padding to apply to the labels.
   final EdgeInsetsGeometry? labelPadding;
+
+  /// The text style to apply to the labels.
   final WidgetStateProperty<TextStyle?>? labelTextStyle;
+
+  /// Whether to maintain the bottom view padding.
   final bool? maintainBottomViewPadding;
 }
 
+/// Material-specific data for a navigation bar.
 class MaterialNavBarData extends _BaseTabBarData {
+  /// Creates a [MaterialNavBarData].
   MaterialNavBarData({
     super.items,
     super.backgroundColor,
@@ -266,58 +421,127 @@ class MaterialNavBarData extends _BaseTabBarData {
     this.shadowColor,
   }) : super(activeColor: fixedColor);
 
+  /// The font size of the selected item.
   final double? selectedFontSize;
+
+  /// The elevation of the navigation bar.
   final double? elevation;
+
+  /// The type of the navigation bar.
   final BottomNavigationBarType? type;
+
+  /// A key to identify the bottom navigation bar.
   final Key? bottomNavigationBarKey;
+
+  /// The shape of the navigation bar.
   final NotchedShape? shape;
+
+  /// The clip behavior of the navigation bar.
   final Clip? clipBehavior;
+
+  /// The margin of the notch in the navigation bar.
   final double? notchMargin;
+
+  /// The color of the selected item.
   final Color? selectedItemColor;
+
+  /// Whether to show the labels of the selected items.
   final bool? showSelectedLabels;
+
+  /// Whether to show the labels of the unselected items.
   final bool? showUnselectedLabels;
+
+  /// The font size of the unselected items.
   final double? unselectedFontSize;
+
+  /// The color of the unselected items.
   final Color? unselectedItemColor;
+
+  /// The theme of the selected icons.
   final IconThemeData? selectedIconTheme;
+
+  /// The text style of the selected labels.
   final TextStyle? selectedLabelStyle;
+
+  /// The theme of the unselected icons.
   final IconThemeData? unselectedIconTheme;
+
+  /// The text style of the unselected labels.
   final TextStyle? unselectedLabelStyle;
+
+  /// The mouse cursor to display when the navigation bar is hovered.
   final MouseCursor? mouseCursor;
+
+  /// Whether to enable feedback when an item is tapped.
   final bool? enableFeedback;
+
+  /// The layout of the navigation bar in landscape mode.
   final BottomNavigationBarLandscapeLayout? landscapeLayout;
+
+  /// Whether to use the legacy color scheme.
   final bool useLegacyColorScheme;
+
+  /// The padding to apply to the navigation bar.
   final EdgeInsetsGeometry? padding;
+
+  /// The color of the surface tint that is applied to the navigation bar.
   final Color? surfaceTintColor;
+
+  /// The color of the shadow that is displayed below the navigation bar.
   final Color? shadowColor;
 }
 
 /// Exists as a temporary solution for [not working with go-router issue](https://github.com/flutter/flutter/issues/113757)
 class PlatformTabScaffoldOriginal extends PlatformWidgetBase {
+  /// A key to identify the widget.
   final Key? widgetKey;
 
+  /// A builder for the body of the scaffold.
   final Widget Function(BuildContext context, int index)? bodyBuilder;
+
+  /// The background color of the page.
   final Color? pageBackgroundColor;
+
+  /// The background color of the tabs.
   final Color? tabsBackgroundColor;
+
+  /// A callback that is called when an item is tapped.
   final void Function(int index)? itemChanged;
 
+  /// Material-specific data for the scaffold.
   final MaterialTabScaffoldOriginalData? material;
+
+  /// A builder for the Material-specific data for the scaffold.
   final MaterialTabScaffoldOriginalData Function(int index)? materialBuilder;
 
+  /// Material-specific data for the tabs.
   final MaterialNavBarData? materialTabs;
+
+  /// Material 3-specific data for the tabs.
   final MaterialNavigationBarData? material3Tabs;
 
+  /// Cupertino-specific data for the scaffold.
   final CupertinoTabScaffoldOriginalData? cupertino;
 
+  /// Cupertino-specific data for the tabs.
   final CupertinoTabBarData? cupertinoTabs;
+
+  /// A controller for the tab bar.
   final PlatformTabController? tabController;
 
+  /// The items to display in the tab bar.
   final List<BottomNavigationBarItem>? items;
 
+  /// A builder for the app bar.
   final PlatformAppBar? Function(BuildContext context, int index)? appBarBuilder;
 
+  /// A restoration ID to save and restore the state of the scaffold.
   final String? restorationId;
+
+  /// The height of the navigation bar.
   final double? navBarHeight;
 
+  /// Creates a [PlatformTabScaffoldOriginal].
   const PlatformTabScaffoldOriginal({
     super.key,
     this.widgetKey,
@@ -607,19 +831,27 @@ const _kBottomSheetDominatesPercentage = 0.3;
 const _kMinBottomSheetScrimOpacity = 0.1;
 const _kMaxBottomSheetScrimOpacity = 0.6;
 
+/// Data for a Material tab controller.
 class MaterialTabControllerData {
+  /// Creates a [MaterialTabControllerData].
   MaterialTabControllerData({this.initialIndex});
 
+  /// The initial index of the tab controller.
   final int? initialIndex;
 }
 
+/// Data for a Cupertino tab controller.
 class CupertinoTabControllerData {
+  /// Creates a [CupertinoTabControllerData].
   CupertinoTabControllerData({this.initialIndex});
 
+  /// The initial index of the tab controller.
   final int? initialIndex;
 }
 
+/// A controller for a Material tab bar.
 class MaterialTabController extends ChangeNotifier {
+  /// Creates a [MaterialTabController].
   MaterialTabController({int initialIndex = 0})
     : _index = initialIndex,
       assert(
@@ -627,6 +859,7 @@ class MaterialTabController extends ChangeNotifier {
         'initialIndex must be non-negative. Got initialIndex = $initialIndex',
       );
 
+  /// The index of the currently selected tab.
   int get index => _index;
   int _index;
 
@@ -641,15 +874,20 @@ class MaterialTabController extends ChangeNotifier {
 }
 
 // In the same file so that the private android or ios controllers can be accessed
+/// A controller for a platform-adaptive tab bar.
 class PlatformTabController extends ChangeNotifier {
   MaterialTabController? _materialController;
   CupertinoTabController? _cupertinoController;
 
+  /// Android-specific data for the tab controller.
   final MaterialTabControllerData? android;
+
+  /// iOS-specific data for the tab controller.
   final CupertinoTabControllerData? ios;
 
   final int _initialIndex;
 
+  /// Creates a [PlatformTabController].
   PlatformTabController({int initialIndex = 0, this.android, this.ios})
     : _initialIndex = initialIndex,
       assert(
@@ -669,12 +907,14 @@ class PlatformTabController extends ChangeNotifier {
     return _materialController;
   }
 
+  /// Returns the index of the currently selected tab.
   int index() {
     _init();
 
     return _materialController?.index ?? _cupertinoController?.index ?? 0;
   }
 
+  /// Sets the index of the currently selected tab.
   void setIndex(int index) {
     assert(index >= 0, 'Tab index must be non-negative. Got index = $index');
 

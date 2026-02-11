@@ -5,10 +5,18 @@ import 'package:flutter/widgets.dart';
 import '/models/interaction/platform_radio_group_data.dart';
 import '/models/platform_widget_base.dart';
 
+/// A platform-adaptive radio group that renders Material RadioGroup on Android
 class PlatformRadioGroup<T extends Object> extends PlatformWidgetBase {
+  /// Platform-shared radio group data.
   final PlatformRadioGroupData<T> platformRadioGroupData;
+
+  /// Platform-shared radio data.
   final PlatformRadioData<T>? platformRadioData;
+
+  /// Material-specific radio data.
   final MaterialRadioData<T>? materialRadioData;
+
+  /// Cupertino-specific radio data.
   final CupertinoRadioData<T>? cupertinoRadioData;
 
   /// `groupValue` and `onChanged` params are deprecated and moved to a parent [RadioGroup] instead.

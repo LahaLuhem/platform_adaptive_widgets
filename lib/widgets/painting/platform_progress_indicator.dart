@@ -5,12 +5,35 @@ import 'package:flutter/widgets.dart';
 import '/models/painting/platform_progress_indicator_data.dart';
 import '/models/platform_widget_base.dart';
 
+/// A platform-adaptive progress indicator that renders Material CircularProgressIndicator on Android
+/// and CupertinoActivityIndicator on iOS.
+///
+/// This widget automatically selects the appropriate progress indicator implementation based on the target platform:
+/// - On Android: renders Material Design CircularProgressIndicator
+/// - On iOS: renders CupertinoActivityIndicator
+///
+/// The progress indicator can be configured with platform-specific data through [materialProgressIndicatorData]
+/// and [cupertinoProgressIndicatorData], or with common properties.
+///
+/// Example:
+/// ```dart
+/// PlatformProgressIndicator(
+///   color: Colors.blue,
+/// )
+/// ```
 class PlatformProgressIndicator extends PlatformWidgetKeyedBase {
+  /// Color of the progress indicator.
   final Color? color;
 
+  /// Material-specific progress indicator data.
   final MaterialProgressIndicatorData? materialProgressIndicatorData;
+
+  /// Cupertino-specific progress indicator data.
   final CupertinoProgressIndicatorData? cupertinoProgressIndicatorData;
 
+  /// Creates a platform-adaptive progress indicator.
+  ///
+  /// The progress indicator will render as a Material CircularProgressIndicator on Android and a CupertinoActivityIndicator on iOS.
   const PlatformProgressIndicator({
     this.color,
     this.materialProgressIndicatorData,
