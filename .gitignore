@@ -1,5 +1,6 @@
-# FVM Version Cache
+# Custom
 .fvm/
+.idea/studiobot.xml
 
 # Created by https://www.toptal.com/developers/gitignore/api/flutter,dart,androidstudio,visualstudiocode,windows,macos,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=flutter,dart,androidstudio,visualstudiocode,windows,macos,linux

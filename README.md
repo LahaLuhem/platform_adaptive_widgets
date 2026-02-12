@@ -107,6 +107,7 @@ Extensions on `BuildContext` for inline platform-specific values:
 | Model | Description |
 |---|---|
 | `Date` | An immutable gregorian calendar date (`year`, `month`, `day`) with comparison, arithmetic, and conversion utilities. |
+| `PlatformAdaptiveIcons` | A class that provides adaptive icons based on the current platform. |
 
 ---
 

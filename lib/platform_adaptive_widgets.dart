@@ -24,6 +24,7 @@ export 'models/layout/platform_tab_scaffold_data.dart';
 export 'models/painting/platform_list_tile_data.dart';
 export 'models/painting/platform_progress_indicator_data.dart';
 export 'models/painting/platform_theme.dart';
+export 'models/platform_adaptive_icons.dart';
 export 'widgets/dialogs/platform_date_picker.dart';
 export 'widgets/dialogs/platform_dialog.dart';
 export 'widgets/dialogs/platform_menu_picker.dart';

@@ -6,6 +6,7 @@
 - A lot of new widgets (see README.md for the catalog)
 - example catalog
 - Documentation
+- Platform Adaptive Icons legacy class
 
 ### Changed
 - Much better Readme
