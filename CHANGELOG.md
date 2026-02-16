@@ -7,6 +7,7 @@
 - example catalog
 - Documentation
 - Platform Adaptive Icons legacy class
+- New options to configure PlatformMenuPicker's items
 
 ### Changed
 - Much better Readme

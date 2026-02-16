@@ -32,3 +32,18 @@ final class CupertinoMenuPickerData extends _PlatformMenuPickerData {
   /// Creates Cupertino-specific menu picker configuration.
   const CupertinoMenuPickerData({super.leadingIcon, super.labelText, this.backgroundColor});
 }
+
+/// Represents an item in a menu picker.
+///
+/// The [iconData] will be ignored on iOS if the number of items forces the use of a modal picker as per
+/// **medium-to-long lists of items ** from https://developer.apple.com/design/human-interface-guidelines/pickers#Best-practices
+final class MenuPickerItem<T extends Object> {
+  /// Label text to display for the item.
+  final String? label;
+
+  /// Icon to display for the item.
+  final IconData? iconData;
+
+  /// Creates a menu picker item.
+  const MenuPickerItem({this.label, this.iconData});
+}

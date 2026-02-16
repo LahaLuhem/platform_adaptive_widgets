@@ -6,6 +6,7 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:platform_icons/platform_icons.dart';
 import 'package:pmvvm/pmvvm.dart';
 
+import '../core/data/extensions/platform_adaptive_icons_extension.dart';
 import 'home_view_model.dart';
 
 class HomeView extends StatelessWidget {
@@ -102,11 +103,20 @@ class HomeView extends StatelessWidget {
                     ValueListenableBuilder(
                       valueListenable: viewModel.directionalityListenable,
                       builder: (context, directionality, _) => PlatformMenuPicker(
+                        // Replace with `const [...AxisDirection.values, ...AxisDirection.values]` to see the other picker variant
                         items: AxisDirection.values,
                         currentValue: directionality,
                         labelText: 'Menu picker',
                         leadingIcon: const PlatformIcon(PlatformIcons.crop),
-                        valueTransformer: (direction) => direction.name,
+                        menuPickerItemTransformer: (direction) => MenuPickerItem(
+                          label: direction.name,
+                          iconData: switch (direction) {
+                            AxisDirection.left => Icons.adaptive.arrow_back,
+                            AxisDirection.right => Icons.adaptive.arrow_forward,
+                            AxisDirection.up => context.platformAdaptiveIcons.arrowUpward,
+                            AxisDirection.down => context.platformAdaptiveIcons.arrowDownward,
+                          },
+                        ),
                         onSelected: viewModel.onDirectionalityChanged,
                       ),
                     ),

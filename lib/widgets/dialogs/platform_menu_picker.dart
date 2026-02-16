@@ -19,7 +19,9 @@ import '/models/platform_widget_base.dart';
 ///
 /// This widget automatically selects the appropriate menu picker implementation based on the target platform:
 /// - On Android: renders Material Design DropdownMenu
-/// - On iOS: renders CupertinoPicker with CupertinoListTile items
+/// - On iOS: depends on the number of items (see https://developer.apple.com/design/human-interface-guidelines/pickers#Best-practices).
+///     - For 5 or less, it uses PullDownButton.
+///     - For more, it uses showCupertinoModalPopup.
 ///
 /// The menu picker can be configured with platform-specific data through [materialMenuPickerData]
 /// and [cupertinoMenuPickerData], or with common properties.
@@ -52,8 +54,8 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
   /// Callback when an item is selected.
   final ValueChanged<T>? onSelected;
 
-  /// Function to transform the selected value to a string representation.
-  final String Function(T choice) valueTransformer;
+  /// Function to transform the selected value to a [MenuPickerItem] representation.
+  final MenuPickerItem<T> Function(T choice) menuPickerItemTransformer;
 
   /// Material-specific menu picker data.
   final MaterialMenuPickerData? materialMenuPickerData;
@@ -62,7 +64,8 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
   final CupertinoMenuPickerData? cupertinoMenuPickerData;
 
   /// Default transformer that converts choices to strings.
-  static String _defaultTransformer<T>(T choice) => choice.toString();
+  static MenuPickerItem<T> _defaultMenuPickerItemTransformer<T extends Object>(T choice) =>
+      MenuPickerItem(label: choice.toString());
 
   /// Creates a platform-adaptive menu picker.
   ///
@@ -74,12 +77,12 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
     this.leadingIcon,
     this.labelText,
     this.onSelected,
-    String Function(T choice)? valueTransformer,
+    MenuPickerItem<T> Function(T choice)? menuPickerItemTransformer,
     this.materialMenuPickerData,
     this.cupertinoMenuPickerData,
     super.widgetKey,
     super.key,
-  }) : valueTransformer = valueTransformer ?? _defaultTransformer;
+  }) : menuPickerItemTransformer = menuPickerItemTransformer ?? _defaultMenuPickerItemTransformer;
 
   @override
   Widget buildMaterial(BuildContext context) => DropdownMenu(
@@ -91,7 +94,17 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
     label: labelText == null ? null : Text(labelText!),
     onSelected: (newValue) => newValue == null ? null : onSelected?.call(newValue),
     dropdownMenuEntries: [
-      for (final item in items) DropdownMenuEntry(value: item, label: valueTransformer.call(item)),
+      for (final valuesAndMenuPickerItems in _Pair.zip(
+        items.toList(growable: false),
+        items.map(menuPickerItemTransformer).toList(growable: false),
+      ))
+        DropdownMenuEntry(
+          value: valuesAndMenuPickerItems.a,
+          label: valuesAndMenuPickerItems.b.label ?? '',
+          leadingIcon: valuesAndMenuPickerItems.b.iconData == null
+              ? null
+              : Icon(valuesAndMenuPickerItems.b.iconData),
+        ),
     ],
   );
 
@@ -103,19 +116,19 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
     leadingIcon: leadingIcon,
     labelText: labelText,
     cupertinoBackgroundColor: cupertinoMenuPickerData?.backgroundColor,
-    valueTransformer: valueTransformer,
+    menuPickerItemTransformer: menuPickerItemTransformer,
     onSelected: onSelected,
   );
 }
 
-final class _CupertinoPickerCommon<T> extends StatelessWidget {
+final class _CupertinoPickerCommon<T extends Object> extends StatelessWidget {
   final Iterable<T> items;
   final T? currentValue;
   final bool isEnabled;
   final Widget? leadingIcon;
   final String? labelText;
   final Color? cupertinoBackgroundColor;
-  final String Function(T choice) valueTransformer;
+  final MenuPickerItem<T> Function(T choice) menuPickerItemTransformer;
   final ValueChanged<T>? onSelected;
 
   static const _smallItemCountThreshold = 5;
@@ -128,7 +141,7 @@ final class _CupertinoPickerCommon<T> extends StatelessWidget {
     required this.labelText,
     required this.cupertinoBackgroundColor,
     required this.onSelected,
-    required this.valueTransformer,
+    required this.menuPickerItemTransformer,
   });
 
   @override
@@ -140,7 +153,7 @@ final class _CupertinoPickerCommon<T> extends StatelessWidget {
           leadingIcon: leadingIcon,
           labelText: labelText,
           cupertinoBackgroundColor: cupertinoBackgroundColor,
-          valueTransformer: valueTransformer,
+          menuPickerItemTransformer: menuPickerItemTransformer,
           onSelected: onSelected,
         )
       : _LargeItemCupertinoPicker(
@@ -150,63 +163,19 @@ final class _CupertinoPickerCommon<T> extends StatelessWidget {
           leadingIcon: leadingIcon,
           labelText: labelText,
           cupertinoBackgroundColor: cupertinoBackgroundColor,
-          valueTransformer: valueTransformer,
+          menuPickerItemTransformer: menuPickerItemTransformer,
           onSelected: onSelected,
         );
 }
 
-final class _CupertinoPickerField<T> extends StatelessWidget {
-  final T? value;
-  final String Function(T choice) valueTransformer;
-  final bool isEnabled;
-  final String? labelText;
-
-  // Library accepts only that
-  //ignore: avoid_futureor_void
-  final FutureOr<void> Function()? onTap;
-  final Color? backgroundColor;
-  final Widget? leading;
-
-  const _CupertinoPickerField({
-    required this.value,
-    required this.valueTransformer,
-    required this.isEnabled,
-    this.labelText,
-    this.onTap,
-    this.backgroundColor,
-    this.leading,
-  });
-
-  @override
-  Widget build(BuildContext context) => CupertinoListTile(
-    onTap: !isEnabled ? null : onTap,
-    title: Text(labelText ?? ''),
-    padding: const .only(left: 8, right: 12),
-    leadingToTitle: 8,
-    additionalInfo: value == null ? null : Text(valueTransformer.call(value as T)),
-    trailing: IconTheme(
-      data: IconThemeData(color: isEnabled ? null : CupertinoColors.inactiveGray),
-      child: const Column(
-        mainAxisSize: .min,
-        children: [
-          Icon(CupertinoIcons.chevron_up, size: 12),
-          Icon(CupertinoIcons.chevron_down, size: 12),
-        ],
-      ),
-    ),
-    backgroundColor: backgroundColor,
-    leading: leading,
-  );
-}
-
-final class _SmallItemCupertinoPicker<T> extends StatelessWidget {
+final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget {
   final Iterable<T> items;
   final T? currentValue;
   final bool isEnabled;
   final Widget? leadingIcon;
   final String? labelText;
   final Color? cupertinoBackgroundColor;
-  final String Function(T choice) valueTransformer;
+  final MenuPickerItem<T> Function(T choice) menuPickerItemTransformer;
   final ValueChanged<T>? onSelected;
 
   const _SmallItemCupertinoPicker({
@@ -216,7 +185,7 @@ final class _SmallItemCupertinoPicker<T> extends StatelessWidget {
     required this.leadingIcon,
     required this.labelText,
     required this.cupertinoBackgroundColor,
-    required this.valueTransformer,
+    required this.menuPickerItemTransformer,
     required this.onSelected,
   });
 
@@ -224,7 +193,7 @@ final class _SmallItemCupertinoPicker<T> extends StatelessWidget {
   Widget build(BuildContext context) => PullDownButton(
     buttonBuilder: (context, showMenu) => _CupertinoPickerField(
       value: currentValue,
-      valueTransformer: valueTransformer,
+      menuPickerItemTransformer: menuPickerItemTransformer,
       labelText: labelText,
       leading: leadingIcon,
       backgroundColor: cupertinoBackgroundColor,
@@ -232,17 +201,21 @@ final class _SmallItemCupertinoPicker<T> extends StatelessWidget {
       onTap: showMenu,
     ),
     itemBuilder: (context) => [
-      for (final item in items)
+      for (final valuesAndMenuPickerItems in _Pair.zip(
+        items.toList(growable: false),
+        items.map(menuPickerItemTransformer).toList(growable: false),
+      ))
         PullDownMenuItem.selectable(
-          onTap: () => onSelected?.call(item),
-          selected: item == currentValue,
-          title: valueTransformer.call(item),
+          onTap: () => onSelected?.call(valuesAndMenuPickerItems.a),
+          selected: valuesAndMenuPickerItems.a == currentValue,
+          title: valuesAndMenuPickerItems.b.label ?? '',
+          icon: valuesAndMenuPickerItems.b.iconData,
         ),
     ],
   );
 }
 
-final class _LargeItemCupertinoPicker<T> extends StatelessWidget {
+final class _LargeItemCupertinoPicker<T extends Object> extends StatelessWidget {
   final List<T> items;
   final T? currentValue;
   final bool isEnabled;
@@ -251,7 +224,7 @@ final class _LargeItemCupertinoPicker<T> extends StatelessWidget {
   final String? labelText;
   final Color? cupertinoBackgroundColor;
 
-  final String Function(T choice) valueTransformer;
+  final MenuPickerItem<T> Function(T choice) menuPickerItemTransformer;
   final ValueChanged<T>? onSelected;
 
   const _LargeItemCupertinoPicker({
@@ -261,14 +234,14 @@ final class _LargeItemCupertinoPicker<T> extends StatelessWidget {
     required this.leadingIcon,
     required this.labelText,
     required this.cupertinoBackgroundColor,
-    required this.valueTransformer,
+    required this.menuPickerItemTransformer,
     required this.onSelected,
   });
 
   @override
   Widget build(BuildContext context) => _CupertinoPickerField(
     value: currentValue,
-    valueTransformer: valueTransformer,
+    menuPickerItemTransformer: menuPickerItemTransformer,
     labelText: labelText,
     leading: leadingIcon,
     backgroundColor: cupertinoBackgroundColor,
@@ -283,9 +256,9 @@ final class _LargeItemCupertinoPicker<T> extends StatelessWidget {
       context: context,
       builder: (context) => Container(
         height: 216,
-        padding: const EdgeInsets.only(top: 6),
+        padding: const .only(top: 6),
         // The Bottom margin is provided to align the popup above the system navigation bar.
-        margin: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        margin: .only(bottom: MediaQuery.of(context).viewInsets.bottom),
         // Provide a background color for the popup.
         color: CupertinoColors.systemBackground.resolveFrom(context),
         // Use a SafeArea widget to avoid system overlaps.
@@ -295,14 +268,88 @@ final class _LargeItemCupertinoPicker<T> extends StatelessWidget {
             itemExtent: 32,
             onSelectedItemChanged: (valueIndex) => highlightedValue = items[valueIndex],
             scrollController: FixedExtentScrollController(
-              initialItem: currentValue == null ? 0 : items.indexOf(currentValue as T),
+              initialItem: currentValue == null ? 0 : items.indexOf(currentValue!),
             ),
-            children: [for (final item in items) Center(child: Text(valueTransformer.call(item)))],
+            children: [
+              for (final menuPickerItem in items.map(menuPickerItemTransformer))
+                Text(menuPickerItem.label ?? ''),
+            ],
           ),
         ),
       ),
     );
 
     onSelected?.call(highlightedValue);
+  }
+}
+
+final class _CupertinoPickerField<T extends Object> extends StatelessWidget {
+  final T? value;
+  final MenuPickerItem<T> Function(T choice) menuPickerItemTransformer;
+  final bool isEnabled;
+  final String? labelText;
+
+  // Library accepts only that
+  //ignore: avoid_futureor_void
+  final FutureOr<void> Function()? onTap;
+  final Color? backgroundColor;
+  final Widget? leading;
+
+  const _CupertinoPickerField({
+    required this.value,
+    required this.menuPickerItemTransformer,
+    required this.isEnabled,
+    this.labelText,
+    this.onTap,
+    this.backgroundColor,
+    this.leading,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final menuPickerItemForAdditionalInfo = value == null
+        ? null
+        : menuPickerItemTransformer.call(value!);
+
+    return CupertinoListTile(
+      onTap: !isEnabled ? null : onTap,
+      title: Text(labelText ?? ''),
+      padding: const .only(left: 8, right: 12),
+      leadingToTitle: 8,
+      additionalInfo: menuPickerItemForAdditionalInfo?.label == null
+          ? null
+          : Text(menuPickerItemForAdditionalInfo!.label!),
+      trailing: IconTheme(
+        data: IconThemeData(color: isEnabled ? null : CupertinoColors.inactiveGray),
+        child: const Column(
+          mainAxisSize: .min,
+          children: [
+            Icon(CupertinoIcons.chevron_up, size: 12),
+            Icon(CupertinoIcons.chevron_down, size: 12),
+          ],
+        ),
+      ),
+      backgroundColor: backgroundColor,
+      leading: leading,
+    );
+  }
+}
+
+final class _Pair<A, B> {
+  const _Pair(this.a, this.b);
+
+  /// Iterable 1
+  final A a;
+
+  /// Iterable 2
+  final B b;
+
+  /// Zips up the given Iterables for parallel iteration, and yielding
+  /// Only to be used when the lengths of the data-sources do not change after creation, because 'lazy'
+  static Iterable<_Pair<A, B>> zip<A, B>(List<A> listA, List<B> listB) sync* {
+    assert(listA.length == listB.length, 'For zipping, lengths of the lists must match');
+    for (var i = 0; i < listA.length; i++) {
+      yield _Pair(listA[i], listB[i]);
+    }
   }
 }
