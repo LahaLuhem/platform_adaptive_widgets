@@ -2,6 +2,7 @@ import 'dart:async' show FutureOr;
 
 import 'package:flutter/cupertino.dart'
     show
+        CupertinoButton,
         CupertinoColors,
         CupertinoIcons,
         CupertinoListTile,
@@ -87,6 +88,9 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
   @override
   Widget buildMaterial(BuildContext context) => DropdownMenu(
     expandedInsets: materialMenuPickerData?.expandedInsets,
+    showTrailingIcon:
+        materialMenuPickerData?.showTrailingIcon ?? MaterialMenuPickerData.kDefaultShowTrailingIcon,
+    inputDecorationTheme: materialMenuPickerData?.inputDecorationThemeData,
     enabled: isEnabled,
     initialSelection: currentValue,
     leadingIcon: leadingIcon,
@@ -113,6 +117,9 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
     items: items,
     currentValue: currentValue,
     isEnabled: isEnabled,
+    useIconButtonVariant:
+        cupertinoMenuPickerData?.useIconButtonVariant ??
+        CupertinoMenuPickerData.kDefaultUseIconButtonVariant,
     leadingIcon: leadingIcon,
     labelText: labelText,
     cupertinoBackgroundColor: cupertinoMenuPickerData?.backgroundColor,
@@ -125,6 +132,7 @@ final class _CupertinoPickerCommon<T extends Object> extends StatelessWidget {
   final Iterable<T> items;
   final T? currentValue;
   final bool isEnabled;
+  final bool useIconButtonVariant;
   final Widget? leadingIcon;
   final String? labelText;
   final Color? cupertinoBackgroundColor;
@@ -137,6 +145,7 @@ final class _CupertinoPickerCommon<T extends Object> extends StatelessWidget {
     required this.items,
     required this.currentValue,
     required this.isEnabled,
+    required this.useIconButtonVariant,
     required this.leadingIcon,
     required this.labelText,
     required this.cupertinoBackgroundColor,
@@ -150,6 +159,7 @@ final class _CupertinoPickerCommon<T extends Object> extends StatelessWidget {
           items: items,
           currentValue: currentValue,
           isEnabled: isEnabled,
+          useIconButtonVariant: useIconButtonVariant,
           leadingIcon: leadingIcon,
           labelText: labelText,
           cupertinoBackgroundColor: cupertinoBackgroundColor,
@@ -160,6 +170,7 @@ final class _CupertinoPickerCommon<T extends Object> extends StatelessWidget {
           items: items.toList(growable: false),
           currentValue: currentValue,
           isEnabled: isEnabled,
+          useIconButtonVariant: useIconButtonVariant,
           leadingIcon: leadingIcon,
           labelText: labelText,
           cupertinoBackgroundColor: cupertinoBackgroundColor,
@@ -172,6 +183,7 @@ final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget 
   final Iterable<T> items;
   final T? currentValue;
   final bool isEnabled;
+  final bool useIconButtonVariant;
   final Widget? leadingIcon;
   final String? labelText;
   final Color? cupertinoBackgroundColor;
@@ -182,6 +194,7 @@ final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget 
     required this.items,
     required this.currentValue,
     required this.isEnabled,
+    required this.useIconButtonVariant,
     required this.leadingIcon,
     required this.labelText,
     required this.cupertinoBackgroundColor,
@@ -198,6 +211,7 @@ final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget 
       leading: leadingIcon,
       backgroundColor: cupertinoBackgroundColor,
       isEnabled: isEnabled,
+      useIconButtonVariant: useIconButtonVariant,
       onTap: showMenu,
     ),
     itemBuilder: (context) => [
@@ -219,6 +233,7 @@ final class _LargeItemCupertinoPicker<T extends Object> extends StatelessWidget 
   final List<T> items;
   final T? currentValue;
   final bool isEnabled;
+  final bool useIconButtonVariant;
 
   final Widget? leadingIcon;
   final String? labelText;
@@ -231,6 +246,7 @@ final class _LargeItemCupertinoPicker<T extends Object> extends StatelessWidget 
     required this.items,
     required this.currentValue,
     required this.isEnabled,
+    required this.useIconButtonVariant,
     required this.leadingIcon,
     required this.labelText,
     required this.cupertinoBackgroundColor,
@@ -246,6 +262,7 @@ final class _LargeItemCupertinoPicker<T extends Object> extends StatelessWidget 
     leading: leadingIcon,
     backgroundColor: cupertinoBackgroundColor,
     isEnabled: isEnabled,
+    useIconButtonVariant: useIconButtonVariant,
     onTap: () => _showModalPicker(context),
   );
 
@@ -287,6 +304,7 @@ final class _CupertinoPickerField<T extends Object> extends StatelessWidget {
   final T? value;
   final MenuPickerItem<T> Function(T choice) menuPickerItemTransformer;
   final bool isEnabled;
+  final bool useIconButtonVariant;
   final String? labelText;
 
   // Library accepts only that
@@ -299,6 +317,7 @@ final class _CupertinoPickerField<T extends Object> extends StatelessWidget {
     required this.value,
     required this.menuPickerItemTransformer,
     required this.isEnabled,
+    required this.useIconButtonVariant,
     this.labelText,
     this.onTap,
     this.backgroundColor,
@@ -311,37 +330,37 @@ final class _CupertinoPickerField<T extends Object> extends StatelessWidget {
         ? null
         : menuPickerItemTransformer.call(value!);
 
-    return CupertinoListTile(
-      onTap: !isEnabled ? null : onTap,
-      title: Text(labelText ?? ''),
-      padding: const .only(left: 8, right: 12),
-      leadingToTitle: 8,
-      additionalInfo: menuPickerItemForAdditionalInfo?.label == null
-          ? null
-          : Text(menuPickerItemForAdditionalInfo!.label!),
-      trailing: IconTheme(
-        data: IconThemeData(color: isEnabled ? null : CupertinoColors.inactiveGray),
-        child: const Column(
-          mainAxisSize: .min,
-          children: [
-            Icon(CupertinoIcons.chevron_up, size: 12),
-            Icon(CupertinoIcons.chevron_down, size: 12),
-          ],
-        ),
-      ),
-      backgroundColor: backgroundColor,
-      leading: leading,
-    );
+    return useIconButtonVariant && leading != null
+        ? CupertinoButton(onPressed: onTap, sizeStyle: .medium, padding: .zero, child: leading!)
+        : CupertinoListTile(
+            onTap: !isEnabled ? null : onTap,
+            title: Text(labelText ?? ''),
+            padding: const .only(left: 8, right: 12),
+            leadingToTitle: 8,
+            additionalInfo: menuPickerItemForAdditionalInfo?.label == null
+                ? null
+                : Text(menuPickerItemForAdditionalInfo!.label!),
+            trailing: IconTheme(
+              data: IconThemeData(color: isEnabled ? null : CupertinoColors.inactiveGray),
+              child: const Column(
+                mainAxisSize: .min,
+                children: [
+                  Icon(CupertinoIcons.chevron_up, size: 12),
+                  Icon(CupertinoIcons.chevron_down, size: 12),
+                ],
+              ),
+            ),
+            backgroundColor: backgroundColor,
+            leading: leading,
+          );
   }
 }
 
 final class _Pair<A, B> {
   const _Pair(this.a, this.b);
 
-  /// Iterable 1
   final A a;
 
-  /// Iterable 2
   final B b;
 
   /// Zips up the given Iterables for parallel iteration, and yielding
