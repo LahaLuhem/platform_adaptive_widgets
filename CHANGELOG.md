@@ -8,6 +8,7 @@
 - Documentation
 - Platform Adaptive Icons legacy class
 - New options to configure PlatformMenuPicker's items
+- Platform check utilities
 
 ### Changed
 - Much better Readme
