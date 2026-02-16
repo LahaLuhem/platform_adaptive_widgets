@@ -164,7 +164,7 @@ final class CupertinoButtonData extends _PlatformButtonData {
   final BorderRadius? borderRadius;
 
   /// Alignment of the button content.
-  final AlignmentGeometry alignment;
+  final AlignmentGeometry? alignment;
 
   /// Callback when the focus state changes.
   final ValueChanged<bool>? onFocusChange;
