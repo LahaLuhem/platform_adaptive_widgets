@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../models/platform_adaptive_icons.dart';
+import '../utils/target_platform.dart';
 
 /// Extensions on [BuildContext] for resolving platform-specific values.
 ///
@@ -47,16 +48,15 @@ extension PlatformAdaptiveContextExtensions on BuildContext {
   T? platformLazyNullable<T>({ValueGetter<T>? material, ValueGetter<T>? cupertino}) =>
       _valueProviderNullable(material: material, cupertino: cupertino)?.call();
 
-  T _valueProvider<T>({required T material, required T cupertino}) =>
-      switch (defaultTargetPlatform) {
-        .android => material,
-        .iOS => cupertino,
-        _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
-      };
-
-  T? _valueProviderNullable<T>({T? material, T? cupertino}) => switch (defaultTargetPlatform) {
+  T _valueProvider<T>({required T material, required T cupertino}) => switch (targetPlatform) {
     .android => material,
     .iOS => cupertino,
-    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+    _ => throw UnsupportedError('This platform is not supported: $targetPlatform'),
+  };
+
+  T? _valueProviderNullable<T>({T? material, T? cupertino}) => switch (targetPlatform) {
+    .android => material,
+    .iOS => cupertino,
+    _ => throw UnsupportedError('This platform is not supported: $targetPlatform'),
   };
 }

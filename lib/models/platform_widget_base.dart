@@ -4,7 +4,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-@protected
+import '../utils/target_platform.dart';
+
 /// Abstract base class for platform-adaptive widgets.
 ///
 /// Subclasses override [buildMaterial] and [buildCupertino] to provide
@@ -13,6 +14,7 @@ import 'package:flutter/widgets.dart';
 ///
 /// On Android, [buildMaterial] is called. On iOS, [buildCupertino] is called.
 /// Other platforms throw an [UnsupportedError].
+@protected
 abstract class PlatformWidgetBase extends StatelessWidget {
   /// Creates a platform-adaptive widget.
   const PlatformWidgetBase({super.key});
@@ -20,10 +22,10 @@ abstract class PlatformWidgetBase extends StatelessWidget {
   @override
   @protected
   @nonVirtual
-  Widget build(BuildContext context) => switch (defaultTargetPlatform) {
+  Widget build(BuildContext context) => switch (targetPlatform) {
     .android => buildMaterial(context),
     .iOS => buildCupertino(context),
-    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+    _ => throw UnsupportedError('This platform is not supported: $targetPlatform'),
   };
 
   /// Builds the Material Design (Android) variant of this widget.

@@ -11,7 +11,6 @@ import 'package:flutter/cupertino.dart'
         CupertinoTabScaffold,
         CupertinoTabView,
         ObstructingPreferredSizeWidget;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart'
     show
@@ -28,6 +27,7 @@ import 'package:flutter/material.dart'
 import 'package:flutter/widgets.dart';
 
 import '../../models/platform_widget_base.dart';
+import '../../utils/target_platform.dart';
 import 'platform_app_bar.dart';
 
 /// Base class for scaffold data.
@@ -925,7 +925,7 @@ class PlatformTabController extends ChangeNotifier {
   }
 
   void _init() {
-    switch (defaultTargetPlatform) {
+    switch (targetPlatform) {
       case .android:
         var useIndex = android?.initialIndex ?? _initialIndex;
         if (_cupertinoController != null) {
