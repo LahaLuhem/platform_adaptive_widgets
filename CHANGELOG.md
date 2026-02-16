@@ -13,6 +13,9 @@
 ### Changed
 - Much better Readme
 
+### Fixed
+- exception when something other than base child is used in platform button
+
 ## 0.0.2 - 2026-01-03
 ### Added
 - Readme

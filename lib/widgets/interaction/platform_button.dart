@@ -33,14 +33,11 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   final bool isEnabled;
 
   /// Callback that is called when the button is pressed.
-  ///
-  /// If null, the button will be disabled. The button is also disabled when
-  /// [isEnabled] is false, even if [onPressed] is provided.
+  /// The button is disabled when [isEnabled] is false, even if [onPressed] is provided.
   final VoidCallback? onPressed;
 
   /// Callback that is called when the button is long-pressed.
-  ///
-  /// If null, the button will not respond to long presses.
+  /// The button is disabled when [isEnabled] is false, even if [onLongPress] is provided.
   final VoidCallback? onLongPress;
 
   /// The cursor to display when the mouse hovers over the button.
@@ -157,7 +154,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         clipBehavior: resolvedMaterialButtonData.clipBehavior,
         statesController: resolvedMaterialButtonData.statesController,
         isSemanticButton: resolvedMaterialButtonData.isSemanticButton,
-        child: child!,
+        child: resolvedMaterialButtonData.child!,
       ),
       (.text, false) => TextButton.icon(
         key: widgetKey,
@@ -185,7 +182,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         style: resolvedMaterialButtonData.style,
         clipBehavior: resolvedMaterialButtonData.clipBehavior,
         statesController: resolvedMaterialButtonData.statesController,
-        child: child,
+        child: resolvedMaterialButtonData.child,
       ),
       (.elevated, false) => ElevatedButton.icon(
         key: widgetKey,
@@ -213,7 +210,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         style: resolvedMaterialButtonData.style,
         clipBehavior: resolvedMaterialButtonData.clipBehavior,
         statesController: resolvedMaterialButtonData.statesController,
-        child: child,
+        child: resolvedMaterialButtonData.child,
       ),
       (.outlined, false) => OutlinedButton.icon(
         key: widgetKey,
@@ -242,7 +239,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         style: resolvedMaterialButtonData.style,
         clipBehavior: resolvedMaterialButtonData.clipBehavior,
         statesController: resolvedMaterialButtonData.statesController,
-        child: child,
+        child: resolvedMaterialButtonData.child,
       ),
       (.filled, false) => FilledButton.icon(
         key: widgetKey,
