@@ -49,9 +49,6 @@ final class MaterialListTileData extends _PlatformListTileData {
   /// The cursor to display when hovering over the tile.
   final MouseCursor? mouseCursor;
 
-  /// Whether the tile should be visually dense.
-  final bool? dense;
-
   /// Whether the tile should autofocus when possible.
   final bool autofocus;
 
@@ -157,7 +154,6 @@ final class MaterialListTileData extends _PlatformListTileData {
     super.padding,
     this.statesController,
     this.mouseCursor,
-    this.dense,
     this.autofocus = kDefaultAutoFocus,
     this.enabled = kDefaultEnabled,
     this.enableFeedback,

@@ -93,7 +93,6 @@ class PlatformListTile extends PlatformWidgetKeyedBase {
     contentPadding: materialListTileData?.padding ?? padding,
     statesController: materialListTileData?.statesController,
     mouseCursor: materialListTileData?.mouseCursor,
-    dense: materialListTileData?.dense,
     autofocus: materialListTileData?.autofocus ?? MaterialListTileData.kDefaultAutoFocus,
     enabled: materialListTileData?.enabled ?? MaterialListTileData.kDefaultEnabled,
     enableFeedback: materialListTileData?.enableFeedback,

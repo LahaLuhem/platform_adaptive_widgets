@@ -89,7 +89,6 @@ class PlatformExpansionTile extends PlatformWidgetKeyedBase {
     collapsedShape: materialExpansionTileData?.collapsedShape,
     clipBehavior: materialExpansionTileData?.clipBehavior,
     controlAffinity: materialExpansionTileData?.controlAffinity,
-    dense: materialExpansionTileData?.dense,
     splashColor: materialExpansionTileData?.splashColor,
     visualDensity: materialExpansionTileData?.visualDensity,
     minTileHeight: materialExpansionTileData?.minTileHeight,
