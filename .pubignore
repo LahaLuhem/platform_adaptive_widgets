@@ -1,3 +1,8 @@
 .fvmrc
 analysis_options.yaml
+example/android/
+example/ios/
+example/test/
+example/pubspec.yaml
+example/README.md
 test/
