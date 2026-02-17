@@ -92,9 +92,6 @@ final class MaterialExpansionTileData extends _PlatformExpansionTileData {
   /// Position of the expand/collapse control.
   final ListTileControlAffinity? controlAffinity;
 
-  /// Whether the tile uses a dense layout.
-  final bool? dense;
-
   /// Splash color for the tile.
   final Color? splashColor;
 
@@ -168,7 +165,6 @@ final class MaterialExpansionTileData extends _PlatformExpansionTileData {
     this.collapsedShape,
     this.clipBehavior,
     this.controlAffinity,
-    this.dense,
     this.splashColor,
     this.visualDensity,
     this.minTileHeight,
