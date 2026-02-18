@@ -40,11 +40,18 @@ final class TabDestinationData {
 
 /// Material-specific data for a tab-based scaffold.
 final class MaterialTabScaffoldData extends MaterialScaffoldData {
+  /// The index of the currently selected tab. Needed when not using a [tabDestinationsData].view
+  /// and the state is managed/rebuilt externally.
+  final int selectedIndex;
+
   /// A list of destinations to display in the tab bar.
   final List<TabDestinationData>? tabDestinationsData;
 
   /// A controller for the tab bar.
   final TabController? controller;
+
+  /// A callback that is called when a tab destination is tapped.
+  final ValueChanged<int>? onTabDestinationTap;
 
   /// A builder for the content of each tab.
   final IndexedWidgetBuilder? tabBuilder;
@@ -77,14 +84,20 @@ final class MaterialTabScaffoldData extends MaterialScaffoldData {
     super.drawerEnableOpenDragGesture = MaterialScaffoldData.kDrawerEnableOpenDragGesture,
     super.endDrawerEnableOpenDragGesture = MaterialScaffoldData.kEndDrawerEnableOpenDragGesture,
     super.restorationId,
+    this.selectedIndex = 0,
     this.tabDestinationsData,
     this.controller,
+    this.onTabDestinationTap,
     this.tabBuilder,
   });
 }
 
 /// Cupertino-specific data for a tab-based scaffold.
 final class CupertinoTabScaffoldData extends CupertinoScaffoldData {
+  /// The index of the currently selected tab. Needed when not using a [tabDestinationsData].view
+  /// and the state is managed/rebuilt externally.
+  final int selectedIndex;
+
   /// A list of destinations to display in the tab bar.
   final List<TabDestinationData>? tabDestinationsData;
 
@@ -94,6 +107,9 @@ final class CupertinoTabScaffoldData extends CupertinoScaffoldData {
   /// A builder for the content of each tab.
   final IndexedWidgetBuilder? tabBuilder;
 
+  /// A callback that is called when a tab destination is tapped.
+  final ValueChanged<int>? onTabDestinationTap;
+
   /// A restoration ID for the tab scaffold.
   final String? restorationId;
 
@@ -102,13 +118,13 @@ final class CupertinoTabScaffoldData extends CupertinoScaffoldData {
     super.widgetKey,
     super.backgroundColor,
     super.resizeToAvoidBottomInset,
-    super.body,
-    super.navigationBar,
+    this.selectedIndex = 0,
     this.tabDestinationsData,
     this.controller,
     this.tabBuilder,
+    this.onTabDestinationTap,
     this.restorationId,
-  });
+  }) : super(body: null, navigationBar: null);
 }
 
 /// A unified tab controller that works for both Material and Cupertino tabs
@@ -125,6 +141,7 @@ final class PlatformTabController extends ChangeNotifier {
 
   /// The index of the currently selected tab.
   int get index => _index;
+
   set index(int value) {
     assert(value >= 0, 'index must be greater than or equal to 0');
     if (_index == value) return;

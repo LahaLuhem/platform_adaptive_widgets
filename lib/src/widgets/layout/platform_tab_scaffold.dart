@@ -142,7 +142,7 @@ class _MaterialTabScaffold extends StatefulWidget {
   final MaterialTabScaffoldData materialTabScaffoldData;
   final PlatformTabController? platformTabController;
 
-  /// [platformTabController] is passed separately as 'vsync'context is needed for conversion to native.
+  /// [platformTabController] is passed separately as 'vsync' context is needed for conversion to native.
   const _MaterialTabScaffold({
     required this.materialTabScaffoldData,
     required this.platformTabController,
