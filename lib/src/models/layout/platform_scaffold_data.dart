@@ -2,10 +2,12 @@
 // ignore_for_file: avoid_positional_boolean_parameters
 // ignore_for_file: prefer-match-file-name
 
+import 'dart:math' as math;
+
 import 'package:flutter/cupertino.dart' show ObstructingPreferredSizeWidget;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart'
-    show FloatingActionButtonAnimator, FloatingActionButtonLocation;
+    show Colors, FloatingActionButtonAnimator, FloatingActionButtonLocation;
 import 'package:flutter/widgets.dart';
 
 /// Default value for whether scaffold should resize to avoid bottom inset.
@@ -134,6 +136,29 @@ base class MaterialScaffoldData extends _PlatformScaffoldData {
   /// Default value for end drawer enable open drag gesture.
   static const kEndDrawerEnableOpenDragGesture = true;
 
+  /// Default builder for the scrim that appears behind bottom sheets.
+  static Widget kDefaultBottomSheetScrimBuilder(BuildContext _, Animation<double> animation) =>
+      AnimatedBuilder(
+        animation: animation,
+        builder: (context, child) {
+          final extentRemaining = _kBottomSheetDominatesPercentage * (1.0 - animation.value);
+          final floatingButtonVisibilityValue =
+              extentRemaining * _kBottomSheetDominatesPercentage * 10;
+
+          final double opacity = math.max(
+            _kMinBottomSheetScrimOpacity,
+            _kMaxBottomSheetScrimOpacity - floatingButtonVisibilityValue,
+          );
+
+          // Flutter needs to migrate the method first
+          //ignore: deprecated_member_use
+          return ModalBarrier(dismissible: false, color: Colors.black.withOpacity(opacity));
+        },
+      );
+  static const _kBottomSheetDominatesPercentage = 0.3;
+  static const _kMinBottomSheetScrimOpacity = 0.1;
+  static const _kMaxBottomSheetScrimOpacity = 0.6;
+
   /// Creates Material-specific scaffold data.
   const MaterialScaffoldData({
     super.widgetKey,
@@ -158,37 +183,7 @@ base class MaterialScaffoldData extends _PlatformScaffoldData {
     this.drawerBarrierDismissible = kDrawerBarrierDismissible,
     this.extendBodyBehindAppBar = kExtendBodyBehindAppBar,
     this.drawerScrimColor,
-    this.drawerEdgeDragWidth,
-    this.drawerEnableOpenDragGesture = kDrawerEnableOpenDragGesture,
-    this.endDrawerEnableOpenDragGesture = kEndDrawerEnableOpenDragGesture,
-    this.restorationId,
-  }) : bottomSheetScrimBuilder = null;
-
-  /// Creates Material-specific scaffold data with a bottom sheet scrim builder.
-  const MaterialScaffoldData.withBottomSheetScrimBuilder({
-    required this.bottomSheetScrimBuilder,
-    super.widgetKey,
-    super.backgroundColor,
-    super.resizeToAvoidBottomInset,
-    super.body,
-    this.appBar,
-    this.floatingActionButton,
-    this.floatingActionButtonLocation,
-    this.floatingActionButtonAnimator,
-    this.persistentFooterButtons,
-    this.persistentFooterAlignment = kDefaultPersistentFooterAlignment,
-    this.persistentFooterDecoration,
-    this.drawer,
-    this.onDrawerChanged,
-    this.endDrawer,
-    this.onEndDrawerChanged,
-    this.bottomSheet,
-    this.primary = kPrimary,
-    this.drawerDragStartBehavior = kDrawerDragStartBehavior,
-    this.extendBody = kExtendBody,
-    this.drawerBarrierDismissible = kDrawerBarrierDismissible,
-    this.extendBodyBehindAppBar = kExtendBodyBehindAppBar,
-    this.drawerScrimColor,
+    this.bottomSheetScrimBuilder,
     this.drawerEdgeDragWidth,
     this.drawerEnableOpenDragGesture = kDrawerEnableOpenDragGesture,
     this.endDrawerEnableOpenDragGesture = kEndDrawerEnableOpenDragGesture,

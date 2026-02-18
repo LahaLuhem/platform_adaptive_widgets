@@ -185,103 +185,49 @@ class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> with TickerP
   }
 
   @override
-  Widget build(BuildContext context) =>
-      widget.materialTabScaffoldData.bottomSheetScrimBuilder == null
-      ? Scaffold(
-          key: widget.materialTabScaffoldData.widgetKey,
-          backgroundColor: widget.materialTabScaffoldData.backgroundColor,
-          resizeToAvoidBottomInset: widget.materialTabScaffoldData.resizeToAvoidBottomInset,
-          floatingActionButton: widget.materialTabScaffoldData.floatingActionButton,
-          floatingActionButtonLocation: widget.materialTabScaffoldData.floatingActionButtonLocation,
-          floatingActionButtonAnimator: widget.materialTabScaffoldData.floatingActionButtonAnimator,
-          persistentFooterButtons: widget.materialTabScaffoldData.persistentFooterButtons,
-          persistentFooterAlignment: widget.materialTabScaffoldData.persistentFooterAlignment,
-          persistentFooterDecoration: widget.materialTabScaffoldData.persistentFooterDecoration,
-          drawer: widget.materialTabScaffoldData.drawer,
-          onDrawerChanged: widget.materialTabScaffoldData.onDrawerChanged,
-          endDrawer: widget.materialTabScaffoldData.endDrawer,
-          onEndDrawerChanged: widget.materialTabScaffoldData.onEndDrawerChanged,
-          bottomSheet: widget.materialTabScaffoldData.bottomSheet,
-          primary: widget.materialTabScaffoldData.primary,
-          drawerDragStartBehavior: widget.materialTabScaffoldData.drawerDragStartBehavior,
-          extendBody: widget.materialTabScaffoldData.extendBody,
-          drawerBarrierDismissible: widget.materialTabScaffoldData.drawerBarrierDismissible,
-          extendBodyBehindAppBar: widget.materialTabScaffoldData.extendBodyBehindAppBar,
-          drawerScrimColor: widget.materialTabScaffoldData.drawerScrimColor,
-          drawerEdgeDragWidth: widget.materialTabScaffoldData.drawerEdgeDragWidth,
-          drawerEnableOpenDragGesture: widget.materialTabScaffoldData.drawerEnableOpenDragGesture,
-          endDrawerEnableOpenDragGesture:
-              widget.materialTabScaffoldData.endDrawerEnableOpenDragGesture,
-          restorationId: widget.materialTabScaffoldData.restorationId,
-          bottomNavigationBar: ListenableBuilder(
-            listenable: _resolvedTabController,
-            builder: (_, _) => _MaterialNavigationBar(
-              selectedIndex: _resolvedTabController.index,
-              onDestinationSelected: _onDestinationSelected,
-              tabDestinationsData: widget.materialTabScaffoldData.tabDestinationsData!,
-            ),
-          ),
-          body: ListenableBuilder(
-            listenable: _resolvedTabController,
-            builder: (_, _) =>
-                widget.materialTabScaffoldData.tabBuilder?.call(
-                  context,
-                  _resolvedTabController.index,
-                ) ??
-                widget
-                    .materialTabScaffoldData
-                    .tabDestinationsData![_resolvedTabController.index]
-                    .view!,
-          ),
-        )
-      : Scaffold(
-          key: widget.materialTabScaffoldData.widgetKey,
-          backgroundColor: widget.materialTabScaffoldData.backgroundColor,
-          resizeToAvoidBottomInset: widget.materialTabScaffoldData.resizeToAvoidBottomInset,
-          floatingActionButton: widget.materialTabScaffoldData.floatingActionButton,
-          floatingActionButtonLocation: widget.materialTabScaffoldData.floatingActionButtonLocation,
-          floatingActionButtonAnimator: widget.materialTabScaffoldData.floatingActionButtonAnimator,
-          persistentFooterButtons: widget.materialTabScaffoldData.persistentFooterButtons,
-          persistentFooterAlignment: widget.materialTabScaffoldData.persistentFooterAlignment,
-          persistentFooterDecoration: widget.materialTabScaffoldData.persistentFooterDecoration,
-          drawer: widget.materialTabScaffoldData.drawer,
-          onDrawerChanged: widget.materialTabScaffoldData.onDrawerChanged,
-          endDrawer: widget.materialTabScaffoldData.endDrawer,
-          onEndDrawerChanged: widget.materialTabScaffoldData.onEndDrawerChanged,
-          bottomSheet: widget.materialTabScaffoldData.bottomSheet,
-          primary: widget.materialTabScaffoldData.primary,
-          drawerDragStartBehavior: widget.materialTabScaffoldData.drawerDragStartBehavior,
-          extendBody: widget.materialTabScaffoldData.extendBody,
-          drawerBarrierDismissible: widget.materialTabScaffoldData.drawerBarrierDismissible,
-          extendBodyBehindAppBar: widget.materialTabScaffoldData.extendBodyBehindAppBar,
-          drawerScrimColor: widget.materialTabScaffoldData.drawerScrimColor,
-          bottomSheetScrimBuilder: widget.materialTabScaffoldData.bottomSheetScrimBuilder!,
-          drawerEdgeDragWidth: widget.materialTabScaffoldData.drawerEdgeDragWidth,
-          drawerEnableOpenDragGesture: widget.materialTabScaffoldData.drawerEnableOpenDragGesture,
-          endDrawerEnableOpenDragGesture:
-              widget.materialTabScaffoldData.endDrawerEnableOpenDragGesture,
-          restorationId: widget.materialTabScaffoldData.restorationId,
-          bottomNavigationBar: ListenableBuilder(
-            listenable: _resolvedTabController,
-            builder: (_, _) => _MaterialNavigationBar(
-              selectedIndex: _resolvedTabController.index,
-              onDestinationSelected: _onDestinationSelected,
-              tabDestinationsData: widget.materialTabScaffoldData.tabDestinationsData!,
-            ),
-          ),
-          body: ListenableBuilder(
-            listenable: _resolvedTabController,
-            builder: (_, _) =>
-                widget.materialTabScaffoldData.tabBuilder?.call(
-                  context,
-                  _resolvedTabController.index,
-                ) ??
-                widget
-                    .materialTabScaffoldData
-                    .tabDestinationsData![_resolvedTabController.index]
-                    .view!,
-          ),
-        );
+  Widget build(BuildContext context) => Scaffold(
+    key: widget.materialTabScaffoldData.widgetKey,
+    backgroundColor: widget.materialTabScaffoldData.backgroundColor,
+    resizeToAvoidBottomInset: widget.materialTabScaffoldData.resizeToAvoidBottomInset,
+    floatingActionButton: widget.materialTabScaffoldData.floatingActionButton,
+    floatingActionButtonLocation: widget.materialTabScaffoldData.floatingActionButtonLocation,
+    floatingActionButtonAnimator: widget.materialTabScaffoldData.floatingActionButtonAnimator,
+    persistentFooterButtons: widget.materialTabScaffoldData.persistentFooterButtons,
+    persistentFooterAlignment: widget.materialTabScaffoldData.persistentFooterAlignment,
+    persistentFooterDecoration: widget.materialTabScaffoldData.persistentFooterDecoration,
+    drawer: widget.materialTabScaffoldData.drawer,
+    onDrawerChanged: widget.materialTabScaffoldData.onDrawerChanged,
+    endDrawer: widget.materialTabScaffoldData.endDrawer,
+    onEndDrawerChanged: widget.materialTabScaffoldData.onEndDrawerChanged,
+    bottomSheet: widget.materialTabScaffoldData.bottomSheet,
+    primary: widget.materialTabScaffoldData.primary,
+    drawerDragStartBehavior: widget.materialTabScaffoldData.drawerDragStartBehavior,
+    extendBody: widget.materialTabScaffoldData.extendBody,
+    drawerBarrierDismissible: widget.materialTabScaffoldData.drawerBarrierDismissible,
+    extendBodyBehindAppBar: widget.materialTabScaffoldData.extendBodyBehindAppBar,
+    drawerScrimColor: widget.materialTabScaffoldData.drawerScrimColor,
+    bottomSheetScrimBuilder:
+        widget.materialTabScaffoldData.bottomSheetScrimBuilder ??
+        MaterialScaffoldData.kDefaultBottomSheetScrimBuilder,
+    drawerEdgeDragWidth: widget.materialTabScaffoldData.drawerEdgeDragWidth,
+    drawerEnableOpenDragGesture: widget.materialTabScaffoldData.drawerEnableOpenDragGesture,
+    endDrawerEnableOpenDragGesture: widget.materialTabScaffoldData.endDrawerEnableOpenDragGesture,
+    restorationId: widget.materialTabScaffoldData.restorationId,
+    bottomNavigationBar: ListenableBuilder(
+      listenable: _resolvedTabController,
+      builder: (_, _) => _MaterialNavigationBar(
+        selectedIndex: _resolvedTabController.index,
+        onDestinationSelected: _onDestinationSelected,
+        tabDestinationsData: widget.materialTabScaffoldData.tabDestinationsData!,
+      ),
+    ),
+    body: ListenableBuilder(
+      listenable: _resolvedTabController,
+      builder: (_, _) =>
+          widget.materialTabScaffoldData.tabBuilder?.call(context, _resolvedTabController.index) ??
+          widget.materialTabScaffoldData.tabDestinationsData![_resolvedTabController.index].view!,
+    ),
+  );
 
   // intended to be a common callback
   //ignore: use_setters_to_change_properties
