@@ -1,8 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show TimeOfDay;
 import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
+
+import '/app/router/app_route.dart';
 
 final class HomeViewModel extends ViewModel {
   final _checkboxValueNotifier = ValueNotifier<bool?>(true);
@@ -78,6 +81,12 @@ final class HomeViewModel extends ViewModel {
       message: 'Simple alert message',
       cupertinoOkLabel: 'Ok',
     );
+  }
+
+  Future<void> onSubRoutePressed() {
+    debugPrint('Sub-route pressed');
+
+    return context.pushNamed(AppRoute.homeL1.name);
   }
 
   Future<void> onShowGeneralBottomSheetPressed() {

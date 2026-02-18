@@ -10,7 +10,9 @@ import '../core/data/extensions/platform_adaptive_icons_extension.dart';
 import 'home_view_model.dart';
 
 class HomeView extends StatelessWidget {
-  const HomeView({super.key});
+  final HomeViewArgs args;
+
+  const HomeView({required this.args, super.key});
 
   static const _shrunkCupertinoButtonData = CupertinoButtonData(padding: .zero);
 
@@ -64,6 +66,12 @@ class HomeView extends StatelessWidget {
                           cupertinoButtonData: _shrunkCupertinoButtonData,
                           child: const Text('Disabled', maxLines: 2),
                         ),
+                        if (args.isUsingGoRouter)
+                          PlatformButton(
+                            onPressed: viewModel.onSubRoutePressed,
+                            cupertinoButtonData: _shrunkCupertinoButtonData,
+                            child: const Text('Sub-route', maxLines: 2),
+                          ),
                       ],
                     ),
                     Center(
@@ -277,4 +285,10 @@ final class _SectionHeader extends StatelessWidget {
       child: Text(title),
     ),
   );
+}
+
+final class HomeViewArgs {
+  final bool isUsingGoRouter;
+
+  const HomeViewArgs({this.isUsingGoRouter = false});
 }

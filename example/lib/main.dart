@@ -8,15 +8,15 @@ import 'features/home/home_view.dart';
 import 'features/settings/settings_view.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const _MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class _MyApp extends StatelessWidget {
+  const _MyApp();
 
   @override
   Widget build(BuildContext context) => PlatformApp(
-    appData: const AppData(title: 'Flutter Demo', home: MyHomePage()),
+    appData: const AppData(title: 'Flutter Demo', home: _MyRootPage()),
     materialAppData: MaterialAppData(
       theme: ConstTheme.materialLightThemeData,
       darkTheme: ConstTheme.materialDarkThemeData,
@@ -24,15 +24,15 @@ class MyApp extends StatelessWidget {
   );
 }
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
+class _MyRootPage extends StatelessWidget {
+  const _MyRootPage();
 
   @override
   Widget build(BuildContext context) => PlatformTabScaffold(
     materialTabScaffoldData: const MaterialTabScaffoldData(drawer: Drawer(child: Text('Drawer'))),
     tabDestinationsData: [
       TabDestinationData(
-        view: const HomeView(),
+        view: const HomeView(args: HomeViewArgs()),
         inactiveIcon: Icon(
           context.platformIcon(material: Icons.home, cupertino: CupertinoIcons.home),
         ),
