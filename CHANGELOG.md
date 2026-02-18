@@ -1,3 +1,7 @@
+## Unreleased
+### Fixed
+- router type not detected if not giving in specific data
+
 ## 0.1.0 - 2026-02-17
 ### Added
 - Date picker

@@ -76,8 +76,8 @@ class PlatformApp extends PlatformWidgetBase {
   /// Use [appRouterData] for common properties, or override with platform-specific router data.
   const PlatformApp.router({
     this.appRouterData,
-    this.materialAppRouterData,
-    this.cupertinoAppRouterData,
+    this.materialAppRouterData = const MaterialAppRouterData(),
+    this.cupertinoAppRouterData = const CupertinoAppRouterData(),
     super.key,
   }) : appData = null,
        materialAppData = null,
