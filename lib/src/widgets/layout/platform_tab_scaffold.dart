@@ -25,9 +25,6 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
   /// A list of destinations to display in the tab bar.
   final List<TabDestination>? tabDestinations;
 
-  /// A controller for the tab bar.
-  final PlatformTabController? controller;
-
   /// A callback that is called when a tab destination is tapped.
   final ValueChanged<int>? onTabDestinationTap;
 
@@ -53,7 +50,6 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
   const PlatformTabScaffold({
     this.selectedIndex = 0,
     this.tabDestinations,
-    this.controller,
     this.onTabDestinationTap,
     this.tabBodyBuilder,
     this.backgroundColor,
@@ -85,7 +81,6 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
       backgroundColor: materialTabScaffoldData?.backgroundColor ?? backgroundColor,
       restorationId: materialTabScaffoldData?.restorationId ?? restorationId,
       resolvedTabDestinations: resolvedTabDestinations,
-      controller: controller,
       onTabDestinationTap: onTabDestinationTap,
       resolvedTabBodyBuilder: resolvedTabBodyBuilder,
       materialTabScaffoldData: materialTabScaffoldData,
@@ -141,8 +136,6 @@ class _MaterialTabScaffold extends StatefulWidget {
 
   final List<TabDestination> resolvedTabDestinations;
 
-  final PlatformTabController? controller;
-
   final ValueChanged<int>? onTabDestinationTap;
 
   final IndexedWidgetBuilder? resolvedTabBodyBuilder;
@@ -157,7 +150,6 @@ class _MaterialTabScaffold extends StatefulWidget {
     required this.resolvedTabDestinations,
     this.backgroundColor,
     this.restorationId,
-    this.controller,
     this.onTabDestinationTap,
     this.resolvedTabBodyBuilder,
     this.materialTabScaffoldData,

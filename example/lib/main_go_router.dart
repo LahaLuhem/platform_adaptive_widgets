@@ -3,8 +3,7 @@
 
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
-import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart'
-    hide PlatformTabController;
+import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:platform_icons/platform_icons.dart';
 
 import 'app/router/app_router.dart';

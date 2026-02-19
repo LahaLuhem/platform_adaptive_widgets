@@ -9,6 +9,9 @@
 - router type not detected if not giving in specific data
 - state holding by PlatformTabScaffold
 
+### Removed
+- PlatformTabController for simplicity
+
 ## 0.1.0 - 2026-02-17
 ### Added
 - Date picker

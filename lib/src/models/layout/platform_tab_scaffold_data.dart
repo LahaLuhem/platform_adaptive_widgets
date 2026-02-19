@@ -1,7 +1,6 @@
 // ignore_for_file: prefer-match-file-name
 
 import 'package:flutter/cupertino.dart' show CupertinoTabController;
-import 'package:flutter/material.dart' show TabController;
 import 'package:flutter/widgets.dart';
 
 import 'platform_scaffold_data.dart';
@@ -47,9 +46,6 @@ final class MaterialTabScaffoldData extends MaterialScaffoldData {
   /// A list of destinations to display in the tab bar.
   final List<TabDestination>? tabDestinations;
 
-  /// A controller for the tab bar.
-  final TabController? controller;
-
   /// A callback that is called when a tab destination is tapped.
   final ValueChanged<int>? onTabDestinationTap;
 
@@ -86,7 +82,6 @@ final class MaterialTabScaffoldData extends MaterialScaffoldData {
     super.restorationId,
     this.selectedIndex = 0,
     this.tabDestinations,
-    this.controller,
     this.onTabDestinationTap,
     this.tabBodyBuilder,
   });
@@ -125,81 +120,4 @@ final class CupertinoTabScaffoldData extends CupertinoScaffoldData {
     this.onTabDestinationTap,
     this.restorationId,
   }) : super(body: null, navigationBar: null);
-}
-
-/// A unified tab controller that works for both Material and Cupertino tabs
-/// Simplified version based on CupertinoTabController with essential features
-/// Uses WeakReference pattern to avoid memory leaks:
-final class PlatformTabController extends ChangeNotifier {
-  int _index;
-  final List<VoidCallback> _cleanupCallbacks = [];
-
-  /// Creates a [PlatformTabController].
-  PlatformTabController({int initialIndex = 0})
-    : _index = initialIndex,
-      assert(initialIndex >= 0, 'initialIndex must be greater than or equal to 0');
-
-  /// The index of the currently selected tab.
-  int get index => _index;
-
-  set index(int value) {
-    assert(value >= 0, 'index must be greater than or equal to 0');
-    if (_index == value) return;
-
-    _index = value;
-    notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    for (final cleanup in _cleanupCallbacks) {
-      cleanup();
-    }
-    _cleanupCallbacks.clear();
-
-    super.dispose();
-  }
-}
-
-/// An extension on [PlatformTabController] to create platform-specific controllers.
-@protected
-extension TabControllerExtensions on PlatformTabController {
-  /// Creates a Material [TabController] that follows this platform controller.
-  TabController toMaterialController({required TickerProvider vsync, required int length}) {
-    final controller = TabController(initialIndex: index, length: length, vsync: vsync);
-
-    // Create synchronization callback (one-way only)
-    void syncToMaterial() {
-      if (controller.index != index) controller.index = index;
-    }
-
-    addListener(syncToMaterial);
-
-    // Store cleanup callback
-    _cleanupCallbacks.add(() {
-      removeListener(syncToMaterial);
-      controller.dispose();
-    });
-
-    return controller;
-  }
-
-  /// Creates a Cupertino [CupertinoTabController] that follows this platform controller.
-  CupertinoTabController toCupertinoController() {
-    final controller = CupertinoTabController(initialIndex: index);
-
-    // Create synchronization callback (one-way only)
-    void syncToCupertino() {
-      if (controller.index != index) controller.index = index;
-    }
-
-    addListener(syncToCupertino);
-
-    _cleanupCallbacks.add(() {
-      removeListener(syncToCupertino);
-      controller.dispose();
-    });
-
-    return controller;
-  }
 }
