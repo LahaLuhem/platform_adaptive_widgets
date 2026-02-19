@@ -78,64 +78,18 @@ class PlatformTabScaffold2 extends PlatformWidgetKeyedBase {
       'Either provide a tabBodyBuilder or a view for each tab destination.',
     );
 
-    return Scaffold(
-      key: materialTabScaffoldData?.widgetKey ?? widgetKey,
-      backgroundColor: materialTabScaffoldData?.backgroundColor ?? backgroundColor,
+    return _MaterialTabScaffold(
+      resolvedWidgetKey: materialTabScaffoldData?.widgetKey ?? widgetKey,
+      resolvedSelectedIndex: selectedIndex,
       resizeToAvoidBottomInset:
           materialTabScaffoldData?.resizeToAvoidBottomInset ?? resizeToAvoidBottomInset,
-      floatingActionButton: materialTabScaffoldData?.floatingActionButton,
-      floatingActionButtonLocation: materialTabScaffoldData?.floatingActionButtonLocation,
-      floatingActionButtonAnimator: materialTabScaffoldData?.floatingActionButtonAnimator,
-      persistentFooterButtons: materialTabScaffoldData?.persistentFooterButtons,
-      persistentFooterAlignment:
-          materialTabScaffoldData?.persistentFooterAlignment ??
-          MaterialScaffoldData.kDefaultPersistentFooterAlignment,
-      persistentFooterDecoration: materialTabScaffoldData?.persistentFooterDecoration,
-      drawer: materialTabScaffoldData?.drawer,
-      onDrawerChanged: materialTabScaffoldData?.onDrawerChanged,
-      endDrawer: materialTabScaffoldData?.endDrawer,
-      onEndDrawerChanged: materialTabScaffoldData?.onEndDrawerChanged,
-      bottomSheet: materialTabScaffoldData?.bottomSheet,
-      primary: materialTabScaffoldData?.primary ?? MaterialScaffoldData.kPrimary,
-      drawerDragStartBehavior:
-          materialTabScaffoldData?.drawerDragStartBehavior ??
-          MaterialScaffoldData.kDrawerDragStartBehavior,
-      extendBody: materialTabScaffoldData?.extendBody ?? MaterialScaffoldData.kExtendBody,
-      drawerBarrierDismissible:
-          materialTabScaffoldData?.drawerBarrierDismissible ??
-          MaterialScaffoldData.kDrawerBarrierDismissible,
-      extendBodyBehindAppBar:
-          materialTabScaffoldData?.extendBodyBehindAppBar ??
-          MaterialScaffoldData.kExtendBodyBehindAppBar,
-      drawerScrimColor: materialTabScaffoldData?.drawerScrimColor,
-      bottomSheetScrimBuilder:
-          materialTabScaffoldData?.bottomSheetScrimBuilder ??
-          MaterialScaffoldData.kDefaultBottomSheetScrimBuilder,
-      drawerEdgeDragWidth: materialTabScaffoldData?.drawerEdgeDragWidth,
-      drawerEnableOpenDragGesture:
-          materialTabScaffoldData?.drawerEnableOpenDragGesture ??
-          MaterialScaffoldData.kDrawerEnableOpenDragGesture,
-      endDrawerEnableOpenDragGesture:
-          materialTabScaffoldData?.endDrawerEnableOpenDragGesture ??
-          MaterialScaffoldData.kEndDrawerEnableOpenDragGesture,
+      backgroundColor: materialTabScaffoldData?.backgroundColor ?? backgroundColor,
       restorationId: materialTabScaffoldData?.restorationId ?? restorationId,
-      //TODO(lahaluhem): Wrap conditionally with `ListenableBuilder` when `resolvedTabBodyBuilder` is not provided => state must be internally managed
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: selectedIndex,
-        onDestinationSelected: materialTabScaffoldData?.onTabDestinationTap ?? onTabDestinationTap,
-        destinations: [
-          for (final tabDestinationData in resolvedTabDestinations)
-            NavigationDestination(
-              icon: tabDestinationData.inactiveIcon,
-              selectedIcon: tabDestinationData.activeIcon,
-              label: tabDestinationData.label,
-              tooltip: tabDestinationData.tooltip,
-            ),
-        ],
-      ),
-      body:
-          resolvedTabBodyBuilder?.call(context, selectedIndex) ??
-          resolvedTabDestinations[selectedIndex].view!,
+      resolvedTabDestinations: resolvedTabDestinations,
+      controller: controller,
+      onTabDestinationTap: onTabDestinationTap,
+      resolvedTabBodyBuilder: resolvedTabBodyBuilder,
+      materialTabScaffoldData: materialTabScaffoldData,
     );
   }
 
@@ -176,4 +130,159 @@ class PlatformTabScaffold2 extends PlatformWidgetKeyedBase {
           CupertinoTabView(builder: (_) => resolvedTabDestinations[index].view!),
     );
   }
+}
+
+class _MaterialTabScaffold extends StatefulWidget {
+  final int resolvedSelectedIndex;
+
+  final Color? backgroundColor;
+
+  final bool resizeToAvoidBottomInset;
+
+  final String? restorationId;
+
+  final List<TabDestinationData> resolvedTabDestinations;
+
+  final PlatformTabController? controller;
+
+  final ValueChanged<int>? onTabDestinationTap;
+
+  final IndexedWidgetBuilder? resolvedTabBodyBuilder;
+
+  final MaterialTabScaffoldData? materialTabScaffoldData;
+
+  final Key? resolvedWidgetKey;
+
+  const _MaterialTabScaffold({
+    required this.resolvedSelectedIndex,
+    required this.resizeToAvoidBottomInset,
+    required this.resolvedTabDestinations,
+    this.backgroundColor,
+    this.restorationId,
+    this.controller,
+    this.onTabDestinationTap,
+    this.resolvedTabBodyBuilder,
+    this.materialTabScaffoldData,
+    this.resolvedWidgetKey,
+  });
+
+  @override
+  State<_MaterialTabScaffold> createState() => _MaterialTabScaffoldState();
+}
+
+class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> {
+  late final ValueNotifier<int>? _selectedIndexNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _selectedIndexNotifier = widget.resolvedTabBodyBuilder != null
+        ? null
+        : ValueNotifier(widget.resolvedSelectedIndex);
+  }
+
+  @override
+  void dispose() {
+    _selectedIndexNotifier?.dispose();
+    _selectedIndexNotifier = null;
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    key: widget.resolvedWidgetKey,
+    backgroundColor: widget.materialTabScaffoldData?.backgroundColor ?? widget.backgroundColor,
+    resizeToAvoidBottomInset:
+        widget.materialTabScaffoldData?.resizeToAvoidBottomInset ?? widget.resizeToAvoidBottomInset,
+    floatingActionButton: widget.materialTabScaffoldData?.floatingActionButton,
+    floatingActionButtonLocation: widget.materialTabScaffoldData?.floatingActionButtonLocation,
+    floatingActionButtonAnimator: widget.materialTabScaffoldData?.floatingActionButtonAnimator,
+    persistentFooterButtons: widget.materialTabScaffoldData?.persistentFooterButtons,
+    persistentFooterAlignment:
+        widget.materialTabScaffoldData?.persistentFooterAlignment ??
+        MaterialScaffoldData.kDefaultPersistentFooterAlignment,
+    persistentFooterDecoration: widget.materialTabScaffoldData?.persistentFooterDecoration,
+    drawer: widget.materialTabScaffoldData?.drawer,
+    onDrawerChanged: widget.materialTabScaffoldData?.onDrawerChanged,
+    endDrawer: widget.materialTabScaffoldData?.endDrawer,
+    onEndDrawerChanged: widget.materialTabScaffoldData?.onEndDrawerChanged,
+    bottomSheet: widget.materialTabScaffoldData?.bottomSheet,
+    primary: widget.materialTabScaffoldData?.primary ?? MaterialScaffoldData.kPrimary,
+    drawerDragStartBehavior:
+        widget.materialTabScaffoldData?.drawerDragStartBehavior ??
+        MaterialScaffoldData.kDrawerDragStartBehavior,
+    extendBody: widget.materialTabScaffoldData?.extendBody ?? MaterialScaffoldData.kExtendBody,
+    drawerBarrierDismissible:
+        widget.materialTabScaffoldData?.drawerBarrierDismissible ??
+        MaterialScaffoldData.kDrawerBarrierDismissible,
+    extendBodyBehindAppBar:
+        widget.materialTabScaffoldData?.extendBodyBehindAppBar ??
+        MaterialScaffoldData.kExtendBodyBehindAppBar,
+    drawerScrimColor: widget.materialTabScaffoldData?.drawerScrimColor,
+    bottomSheetScrimBuilder:
+        widget.materialTabScaffoldData?.bottomSheetScrimBuilder ??
+        MaterialScaffoldData.kDefaultBottomSheetScrimBuilder,
+    drawerEdgeDragWidth: widget.materialTabScaffoldData?.drawerEdgeDragWidth,
+    drawerEnableOpenDragGesture:
+        widget.materialTabScaffoldData?.drawerEnableOpenDragGesture ??
+        MaterialScaffoldData.kDrawerEnableOpenDragGesture,
+    endDrawerEnableOpenDragGesture:
+        widget.materialTabScaffoldData?.endDrawerEnableOpenDragGesture ??
+        MaterialScaffoldData.kEndDrawerEnableOpenDragGesture,
+    restorationId: widget.materialTabScaffoldData?.restorationId ?? widget.restorationId,
+    bottomNavigationBar:
+        _selectedIndexNotifier ==
+            null // => resolvedTabBodyBuilder != null
+        ? _MaterialNavigationBar(
+            selectedIndex: widget.resolvedSelectedIndex,
+            tabDestinations: widget.resolvedTabDestinations,
+            onTabDestinationTap: widget.onTabDestinationTap,
+          )
+        : ValueListenableBuilder(
+            valueListenable: _selectedIndexNotifier,
+            builder: (_, selectedIndex, _) => _MaterialNavigationBar(
+              selectedIndex: selectedIndex,
+              tabDestinations: widget.resolvedTabDestinations,
+              onTabDestinationTap: (tabIndex) {
+                _selectedIndexNotifier.value = tabIndex;
+                widget.onTabDestinationTap?.call(tabIndex);
+              },
+            ),
+          ),
+    body:
+        widget.resolvedTabBodyBuilder?.call(context, widget.resolvedSelectedIndex) ??
+        ValueListenableBuilder(
+          valueListenable: _selectedIndexNotifier!,
+          builder: (_, selectedIndex, _) => widget.resolvedTabDestinations[selectedIndex].view!,
+        ),
+  );
+}
+
+class _MaterialNavigationBar extends StatelessWidget {
+  final int selectedIndex;
+  final List<TabDestinationData> tabDestinations;
+  final ValueChanged<int>? onTabDestinationTap;
+
+  const _MaterialNavigationBar({
+    required this.selectedIndex,
+    required this.tabDestinations,
+    this.onTabDestinationTap,
+  });
+
+  @override
+  Widget build(BuildContext context) => NavigationBar(
+    selectedIndex: selectedIndex,
+    onDestinationSelected: onTabDestinationTap,
+    destinations: [
+      for (final tabDestination in tabDestinations)
+        NavigationDestination(
+          icon: tabDestination.inactiveIcon,
+          selectedIcon: tabDestination.activeIcon,
+          label: tabDestination.label,
+          tooltip: tabDestination.tooltip,
+        ),
+    ],
+  );
 }
