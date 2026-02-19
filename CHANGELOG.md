@@ -1,4 +1,4 @@
-## Unreleased
+## 1.0.0 - 2026-02-19
 ### Added
 - usage with GoRouter example
 
@@ -9,10 +9,11 @@
 ### Fixed
 - router type not detected if not giving in specific data
 - state holding by PlatformTabScaffold
-- maxLines &gt; minLines assertion error when data empty
+- maxLines > minLines assertion error when data empty
 
 ### Removed
 - PlatformTabController for simplicity
+- PlatformTabScaffoldOriginal impl
 
 ## 0.1.0 - 2026-02-17
 ### Added
