@@ -9,6 +9,7 @@
 ### Fixed
 - router type not detected if not giving in specific data
 - state holding by PlatformTabScaffold
+- maxLines &gt; minLines assertion error when data empty
 
 ### Removed
 - PlatformTabController for simplicity

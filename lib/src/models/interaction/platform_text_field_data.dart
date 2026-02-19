@@ -77,7 +77,7 @@ final class PlatformTextFieldData {
   final bool enableSuggestions;
 
   /// Maximum number of lines.
-  final int maxLines;
+  final int? maxLines;
 
   /// Minimum number of lines.
   final int? minLines;
@@ -274,7 +274,7 @@ final class PlatformTextFieldData {
     this.smartDashesType,
     this.smartQuotesType,
     this.enableSuggestions = kDefaultEnableSuggestions,
-    this.maxLines = kDefaultMaxLines,
+    this.maxLines,
     this.minLines,
     this.expands = kDefaultExpands,
     this.maxLength,
