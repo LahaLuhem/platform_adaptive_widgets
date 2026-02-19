@@ -4,6 +4,7 @@
 
 ### Changed
 - rename TabDestinationData -> TabDestination
+- Material side of PlatformTabScaffold also handles the caching internally, preventing rebuilds when switching tabs
 
 ### Fixed
 - router type not detected if not giving in specific data
