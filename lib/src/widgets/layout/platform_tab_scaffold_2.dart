@@ -9,7 +9,7 @@ import '/src/models/platform_widget_base.dart';
 
 /// A platform-adaptive tab scaffold
 class PlatformTabScaffold2 extends PlatformWidgetKeyedBase {
-  /// The index of the currently selected tab. Needed when not using a [tabDestinationsData].view
+  /// The index of the currently selected tab. Needed when not using a [tabDestinations].view
   /// and the state is managed/rebuilt externally.
   final int selectedIndex;
 
@@ -23,7 +23,7 @@ class PlatformTabScaffold2 extends PlatformWidgetKeyedBase {
   final String? restorationId;
 
   /// A list of destinations to display in the tab bar.
-  final List<TabDestinationData>? tabDestinationsData;
+  final List<TabDestination>? tabDestinations;
 
   /// A controller for the tab bar.
   final PlatformTabController? controller;
@@ -43,16 +43,16 @@ class PlatformTabScaffold2 extends PlatformWidgetKeyedBase {
   /// Creates a platform-adaptive tab scaffold.
   ///
   /// [tabBodyBuilder] is central to determining how state is managed. When it is provided, it is assumed that the state is managed externally
-  /// ([tabDestinationsData].view is ignored/not needed in this case).
-  /// When it is not provided, it is assumed that the state is managed internally and [tabDestinationsData].view is used to build the tab content.
+  /// ([tabDestinations].view is ignored/not needed in this case).
+  /// When it is not provided, it is assumed that the state is managed internally and [tabDestinations].view is used to build the tab content.
   ///
   /// Cupertino already has [CupertinoTabView] that makes it trivial to be able to handle state internally.
-  /// That is used when [tabDestinationsData].view is provided.
+  /// That is used when [tabDestinations].view is provided.
   ///
   /// Material revolves around using a `selectedIndex`
   const PlatformTabScaffold2({
     this.selectedIndex = 0,
-    this.tabDestinationsData,
+    this.tabDestinations,
     this.controller,
     this.onTabDestinationTap,
     this.tabBodyBuilder,
@@ -69,8 +69,7 @@ class PlatformTabScaffold2 extends PlatformWidgetKeyedBase {
   Widget buildMaterial(BuildContext context) {
     final selectedIndex = materialTabScaffoldData?.selectedIndex ?? this.selectedIndex;
     final resolvedTabBodyBuilder = materialTabScaffoldData?.tabBodyBuilder ?? tabBodyBuilder;
-    final resolvedTabDestinations =
-        materialTabScaffoldData?.tabDestinationsData ?? tabDestinationsData!;
+    final resolvedTabDestinations = materialTabScaffoldData?.tabDestinations ?? tabDestinations!;
 
     assert(
       (resolvedTabBodyBuilder != null) ^
@@ -95,8 +94,7 @@ class PlatformTabScaffold2 extends PlatformWidgetKeyedBase {
 
   @override
   Widget buildCupertino(BuildContext context) {
-    final resolvedTabDestinations =
-        cupertinoTabScaffoldData?.tabDestinationsData ?? tabDestinationsData!;
+    final resolvedTabDestinations = cupertinoTabScaffoldData?.tabDestinations ?? tabDestinations!;
     final resolvedTabBodyBuilder = cupertinoTabScaffoldData?.tabBodyBuilder ?? tabBodyBuilder;
 
     assert(
@@ -141,7 +139,7 @@ class _MaterialTabScaffold extends StatefulWidget {
 
   final String? restorationId;
 
-  final List<TabDestinationData> resolvedTabDestinations;
+  final List<TabDestination> resolvedTabDestinations;
 
   final PlatformTabController? controller;
 
@@ -262,7 +260,7 @@ class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> {
 
 class _MaterialNavigationBar extends StatelessWidget {
   final int selectedIndex;
-  final List<TabDestinationData> tabDestinations;
+  final List<TabDestination> tabDestinations;
   final ValueChanged<int>? onTabDestinationTap;
 
   const _MaterialNavigationBar({

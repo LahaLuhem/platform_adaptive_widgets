@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'platform_scaffold_data.dart';
 
 /// Data for a single destination in a tab-based navigation structure.
-final class TabDestinationData {
+final class TabDestination {
   /// An optional key for the destination.
   final Key? key;
 
@@ -27,8 +27,8 @@ final class TabDestinationData {
   final String? tooltip;
 
   //TODO(lahaluhem): account for material's `enabled` property
-  /// Creates a [TabDestinationData].
-  const TabDestinationData({
+  /// Creates a [TabDestination].
+  const TabDestination({
     required this.inactiveIcon,
     this.view,
     this.activeIcon,
@@ -40,12 +40,12 @@ final class TabDestinationData {
 
 /// Material-specific data for a tab-based scaffold.
 final class MaterialTabScaffoldData extends MaterialScaffoldData {
-  /// The index of the currently selected tab. Needed when not using a [tabDestinationsData].view
+  /// The index of the currently selected tab. Needed when not using a [tabDestinations].view
   /// and the state is managed/rebuilt externally.
   final int selectedIndex;
 
   /// A list of destinations to display in the tab bar.
-  final List<TabDestinationData>? tabDestinationsData;
+  final List<TabDestination>? tabDestinations;
 
   /// A controller for the tab bar.
   final TabController? controller;
@@ -85,7 +85,7 @@ final class MaterialTabScaffoldData extends MaterialScaffoldData {
     super.endDrawerEnableOpenDragGesture = MaterialScaffoldData.kEndDrawerEnableOpenDragGesture,
     super.restorationId,
     this.selectedIndex = 0,
-    this.tabDestinationsData,
+    this.tabDestinations,
     this.controller,
     this.onTabDestinationTap,
     this.tabBodyBuilder,
@@ -94,12 +94,12 @@ final class MaterialTabScaffoldData extends MaterialScaffoldData {
 
 /// Cupertino-specific data for a tab-based scaffold.
 final class CupertinoTabScaffoldData extends CupertinoScaffoldData {
-  /// The index of the currently selected tab. Needed when not using a [tabDestinationsData].view
+  /// The index of the currently selected tab. Needed when not using a [tabDestinations].view
   /// and the state is managed/rebuilt externally.
   final int selectedIndex;
 
   /// A list of destinations to display in the tab bar.
-  final List<TabDestinationData>? tabDestinationsData;
+  final List<TabDestination>? tabDestinations;
 
   /// A controller for the tab bar.
   final CupertinoTabController? controller;
@@ -119,7 +119,7 @@ final class CupertinoTabScaffoldData extends CupertinoScaffoldData {
     super.backgroundColor,
     super.resizeToAvoidBottomInset,
     this.selectedIndex = 0,
-    this.tabDestinationsData,
+    this.tabDestinations,
     this.controller,
     this.tabBodyBuilder,
     this.onTabDestinationTap,

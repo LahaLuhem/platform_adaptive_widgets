@@ -1,4 +1,10 @@
 ## Unreleased
+### Added
+- usage with GoRouter example
+
+### Changed
+- rename TabDestinationData -> TabDestination
+
 ### Fixed
 - router type not detected if not giving in specific data
 

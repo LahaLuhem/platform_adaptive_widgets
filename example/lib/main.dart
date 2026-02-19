@@ -30,15 +30,15 @@ class _MyRootPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => PlatformTabScaffold(
     materialTabScaffoldData: const MaterialTabScaffoldData(drawer: Drawer(child: Text('Drawer'))),
-    tabDestinationsData: [
-      TabDestinationData(
+    tabDestinations: [
+      TabDestination(
         view: const HomeView(args: HomeViewArgs()),
         inactiveIcon: Icon(
           context.platformIcon(material: Icons.home, cupertino: CupertinoIcons.home),
         ),
         label: 'Home',
       ),
-      TabDestinationData(
+      TabDestination(
         view: const SettingsView(),
         inactiveIcon: Icon(
           context.platformIcon(material: Icons.settings, cupertino: CupertinoIcons.settings),

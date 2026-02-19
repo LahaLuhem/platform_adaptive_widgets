@@ -18,7 +18,7 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
   final String? restorationId;
 
   /// A list of destinations to display in the tab bar.
-  final List<TabDestinationData>? tabDestinationsData;
+  final List<TabDestination>? tabDestinations;
 
   /// A controller for the tab bar.
   final PlatformTabController? controller;
@@ -33,13 +33,13 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
   final CupertinoTabScaffoldData? cupertinoTabScaffoldData;
 
   /// 3 modes for state management:
-  /// 1. [tabDestinationsData] with the `view` property defined: direct definition of tab content. State is both stored and managed internally in this case.
+  /// 1. [tabDestinations] with the `view` property defined: direct definition of tab content. State is both stored and managed internally in this case.
   /// 2. Instead of managing the state internally, you can also provide a [controller] and manage the state externally.
   /// 3. Instead of storing the state internally, you can also provide a [tabBodyBuilder]  to build the tab content (usable in GoRouter's shell route for example).
   const PlatformTabScaffold({
     this.materialTabScaffoldData,
     this.cupertinoTabScaffoldData,
-    this.tabDestinationsData,
+    this.tabDestinations,
     this.controller,
     this.tabBodyBuilder,
     this.backgroundColor,
@@ -53,10 +53,8 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
   Widget buildMaterial(BuildContext context) => _MaterialTabScaffold(
     platformTabController: controller,
     materialTabScaffoldData: MaterialTabScaffoldData(
-      tabDestinationsData:
-          materialTabScaffoldData?.tabDestinationsData ??
-          tabDestinationsData ??
-          <TabDestinationData>[],
+      tabDestinations:
+          materialTabScaffoldData?.tabDestinations ?? tabDestinations ?? <TabDestination>[],
       controller: materialTabScaffoldData?.controller,
       tabBodyBuilder: materialTabScaffoldData?.tabBodyBuilder ?? tabBodyBuilder,
       widgetKey: materialTabScaffoldData?.widgetKey ?? widgetKey,
@@ -101,14 +99,12 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
 
   @override
   Widget buildCupertino(BuildContext context) {
-    final resolvedTabDestinationsData =
-        cupertinoTabScaffoldData?.tabDestinationsData ??
-        tabDestinationsData ??
-        <TabDestinationData>[];
+    final resolvedTabDestinations =
+        cupertinoTabScaffoldData?.tabDestinations ?? tabDestinations ?? <TabDestination>[];
     final resolvedTabBodyBuilder = cupertinoTabScaffoldData?.tabBodyBuilder ?? tabBodyBuilder;
 
     assert(
-      (resolvedTabBodyBuilder != null) ^ (resolvedTabDestinationsData.every((e) => e.view != null)),
+      (resolvedTabBodyBuilder != null) ^ (resolvedTabDestinations.every((e) => e.view != null)),
       'Either provide a tabBodyBuilder or a view for each tab destination.',
     );
 
@@ -121,7 +117,7 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
       controller: cupertinoTabScaffoldData?.controller ?? controller?.toCupertinoController(),
       tabBar: CupertinoTabBar(
         items: [
-          for (final tabDestinationData in resolvedTabDestinationsData)
+          for (final tabDestinationData in resolvedTabDestinations)
             BottomNavigationBarItem(
               icon: tabDestinationData.inactiveIcon,
               activeIcon: tabDestinationData.activeIcon,
@@ -132,8 +128,7 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
       ),
       tabBuilder: (_, index) => CupertinoTabView(
         builder: (context) =>
-            resolvedTabBodyBuilder?.call(context, index) ??
-            resolvedTabDestinationsData[index].view!,
+            resolvedTabBodyBuilder?.call(context, index) ?? resolvedTabDestinations[index].view!,
       ),
     );
   }
@@ -158,12 +153,9 @@ class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> with TickerP
       widget.materialTabScaffoldData.controller ??
       widget.platformTabController?.toMaterialController(
         vsync: this,
-        length: widget.materialTabScaffoldData.tabDestinationsData!.length,
+        length: widget.materialTabScaffoldData.tabDestinations!.length,
       ) ??
-      TabController(
-        length: widget.materialTabScaffoldData.tabDestinationsData!.length,
-        vsync: this,
-      );
+      TabController(length: widget.materialTabScaffoldData.tabDestinations!.length, vsync: this);
 
   @override
   void initState() {
@@ -171,8 +163,7 @@ class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> with TickerP
 
     assert(
       (widget.materialTabScaffoldData.tabBodyBuilder != null) ^
-          (widget.materialTabScaffoldData.tabDestinationsData?.every((e) => e.view != null) ??
-              false),
+          (widget.materialTabScaffoldData.tabDestinations?.every((e) => e.view != null) ?? false),
       'Either provide a tabBodyBuilder or a view for each tab destination.',
     );
   }
@@ -219,7 +210,7 @@ class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> with TickerP
       builder: (_, _) => _MaterialNavigationBar(
         selectedIndex: _resolvedTabController.index,
         onDestinationSelected: _onDestinationSelected,
-        tabDestinationsData: widget.materialTabScaffoldData.tabDestinationsData!,
+        tabDestinations: widget.materialTabScaffoldData.tabDestinations!,
       ),
     ),
     body: ListenableBuilder(
@@ -229,7 +220,7 @@ class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> with TickerP
             context,
             _resolvedTabController.index,
           ) ??
-          widget.materialTabScaffoldData.tabDestinationsData![_resolvedTabController.index].view!,
+          widget.materialTabScaffoldData.tabDestinations![_resolvedTabController.index].view!,
     ),
   );
 
@@ -241,11 +232,11 @@ class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> with TickerP
 class _MaterialNavigationBar extends NavigationBar {
   _MaterialNavigationBar({
     required super.selectedIndex,
-    required List<TabDestinationData> tabDestinationsData,
+    required List<TabDestination> tabDestinations,
     required super.onDestinationSelected,
   }) : super(
          destinations: [
-           for (final tabDestinationData in tabDestinationsData)
+           for (final tabDestinationData in tabDestinations)
              NavigationDestination(
                icon: tabDestinationData.inactiveIcon,
                selectedIcon: tabDestinationData.activeIcon,
