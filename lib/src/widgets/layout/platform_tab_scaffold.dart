@@ -222,9 +222,8 @@ class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> {
         widget.materialTabScaffoldData?.endDrawerEnableOpenDragGesture ??
         MaterialScaffoldData.kEndDrawerEnableOpenDragGesture,
     restorationId: widget.materialTabScaffoldData?.restorationId ?? widget.restorationId,
-    bottomNavigationBar:
-        _selectedIndexNotifier ==
-            null // => resolvedTabBodyBuilder != null
+    // Implies that resolvedTabBodyBuilder != null
+    bottomNavigationBar: _selectedIndexNotifier == null
         ? _MaterialNavigationBar(
             selectedIndex: widget.resolvedSelectedIndex,
             tabDestinations: widget.resolvedTabDestinations,

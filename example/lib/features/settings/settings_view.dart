@@ -5,8 +5,16 @@ class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
 
   @override
-  Widget build(BuildContext context) => const PlatformScaffold(
-    appBarData: PlatformAppBar(title: Text('Settings Page')),
-    body: Center(child: Text('World!')),
+  Widget build(BuildContext context) => PlatformScaffold(
+    appBarData: const PlatformAppBar(title: Text('Settings Page')),
+    body: Center(
+      child: Column(
+        mainAxisAlignment: .center,
+        children: [
+          const Text('This can be used to check for any rebuilds'),
+          Text('${DateTime.now().hashCode}'),
+        ],
+      ),
+    ),
   );
 }
