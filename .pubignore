@@ -1,12 +1,5 @@
 .fvmrc
 analysis_options.yaml
-example/android/
-example/ios/
-example/lib/app/
-example/lib/features/
-example/test/
-example/pubspec.yaml
-example/README.md
 ios/**
 **/ios/Flutter/Generated.xcconfig
 **/ios/Flutter/flutter_export_environment.sh
