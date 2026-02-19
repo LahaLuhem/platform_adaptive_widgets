@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart'
     hide PlatformTabController;
-import 'package:platform_adaptive_widgets/src/widgets/layout/platform_tab_scaffold_2.dart';
 import 'package:platform_icons/platform_icons.dart';
 
 import 'app/router/app_router.dart';
@@ -37,7 +36,7 @@ class MyGoRouterRootPage extends StatelessWidget {
   const MyGoRouterRootPage({required this.navigationShell, required this.children, super.key});
 
   @override
-  Widget build(BuildContext context) => PlatformTabScaffold2(
+  Widget build(BuildContext context) => PlatformTabScaffold(
     selectedIndex: navigationShell.currentIndex,
     onTabDestinationTap: navigationShell.goBranch,
     tabBodyBuilder: (_, index) => children[index],

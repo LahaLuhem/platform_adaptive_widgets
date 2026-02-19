@@ -7,6 +7,7 @@
 
 ### Fixed
 - router type not detected if not giving in specific data
+- state holding by PlatformTabScaffold
 
 ## 0.1.0 - 2026-02-17
 ### Added
