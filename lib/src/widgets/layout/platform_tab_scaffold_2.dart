@@ -32,7 +32,7 @@ class PlatformTabScaffold2 extends PlatformWidgetKeyedBase {
   final ValueChanged<int>? onTabDestinationTap;
 
   /// A builder for the content of each tab.
-  final IndexedWidgetBuilder? tabBuilder;
+  final IndexedWidgetBuilder? tabBodyBuilder;
 
   /// Material-specific data for the tab scaffold.
   final MaterialTabScaffoldData? materialTabScaffoldData;
@@ -42,7 +42,7 @@ class PlatformTabScaffold2 extends PlatformWidgetKeyedBase {
 
   /// Creates a platform-adaptive tab scaffold.
   ///
-  /// [tabBuilder] is central to determining how state is managed. When it is provided, it is assumed that the state is managed externally
+  /// [tabBodyBuilder] is central to determining how state is managed. When it is provided, it is assumed that the state is managed externally
   /// ([tabDestinationsData].view is ignored/not needed in this case).
   /// When it is not provided, it is assumed that the state is managed internally and [tabDestinationsData].view is used to build the tab content.
   ///
@@ -55,7 +55,7 @@ class PlatformTabScaffold2 extends PlatformWidgetKeyedBase {
     this.tabDestinationsData,
     this.controller,
     this.onTabDestinationTap,
-    this.tabBuilder,
+    this.tabBodyBuilder,
     this.backgroundColor,
     this.resizeToAvoidBottomInset = kDefaultResizeToAvoidBottomInset,
     this.restorationId,
@@ -68,14 +68,14 @@ class PlatformTabScaffold2 extends PlatformWidgetKeyedBase {
   @override
   Widget buildMaterial(BuildContext context) {
     final selectedIndex = materialTabScaffoldData?.selectedIndex ?? this.selectedIndex;
-    final resolvedTabBuilder = materialTabScaffoldData?.tabBuilder ?? tabBuilder;
+    final resolvedTabBodyBuilder = materialTabScaffoldData?.tabBodyBuilder ?? tabBodyBuilder;
     final resolvedTabDestinations =
         materialTabScaffoldData?.tabDestinationsData ?? tabDestinationsData!;
 
     assert(
-      (resolvedTabBuilder != null) ^
+      (resolvedTabBodyBuilder != null) ^
           (resolvedTabDestinations.every((tabDest) => tabDest.view != null)),
-      'Either provide a tabBuilder or a view for each tab destination.',
+      'Either provide a tabBodyBuilder or a view for each tab destination.',
     );
 
     return Scaffold(
@@ -119,7 +119,7 @@ class PlatformTabScaffold2 extends PlatformWidgetKeyedBase {
           materialTabScaffoldData?.endDrawerEnableOpenDragGesture ??
           MaterialScaffoldData.kEndDrawerEnableOpenDragGesture,
       restorationId: materialTabScaffoldData?.restorationId ?? restorationId,
-      //TODO(lahaluhem): Wrap conditionally with `ListenableBuilder` when `resolvedTabBuilder` is not provided => state must be internally managed
+      //TODO(lahaluhem): Wrap conditionally with `ListenableBuilder` when `resolvedTabBodyBuilder` is not provided => state must be internally managed
       bottomNavigationBar: NavigationBar(
         selectedIndex: selectedIndex,
         onDestinationSelected: materialTabScaffoldData?.onTabDestinationTap ?? onTabDestinationTap,
@@ -134,7 +134,7 @@ class PlatformTabScaffold2 extends PlatformWidgetKeyedBase {
         ],
       ),
       body:
-          resolvedTabBuilder?.call(context, selectedIndex) ??
+          resolvedTabBodyBuilder?.call(context, selectedIndex) ??
           resolvedTabDestinations[selectedIndex].view!,
     );
   }
@@ -143,12 +143,12 @@ class PlatformTabScaffold2 extends PlatformWidgetKeyedBase {
   Widget buildCupertino(BuildContext context) {
     final resolvedTabDestinations =
         cupertinoTabScaffoldData?.tabDestinationsData ?? tabDestinationsData!;
-    final resolvedTabBuilder = cupertinoTabScaffoldData?.tabBuilder ?? tabBuilder;
+    final resolvedTabBodyBuilder = cupertinoTabScaffoldData?.tabBodyBuilder ?? tabBodyBuilder;
 
     assert(
-      (resolvedTabBuilder != null) ^
+      (resolvedTabBodyBuilder != null) ^
           (resolvedTabDestinations.every((tabDest) => tabDest.view != null)),
-      'Either provide a tabBuilder or a view for each tab destination.',
+      'Either provide a tabBodyBuilder or a view for each tab destination.',
     );
 
     return CupertinoTabScaffold(
@@ -172,7 +172,7 @@ class PlatformTabScaffold2 extends PlatformWidgetKeyedBase {
         ],
       ),
       tabBuilder: (context, index) =>
-          resolvedTabBuilder?.call(context, index) ??
+          resolvedTabBodyBuilder?.call(context, index) ??
           CupertinoTabView(builder: (_) => resolvedTabDestinations[index].view!),
     );
   }

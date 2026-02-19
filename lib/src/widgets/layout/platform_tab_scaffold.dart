@@ -24,7 +24,7 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
   final PlatformTabController? controller;
 
   /// A builder for the content of each tab.
-  final IndexedWidgetBuilder? tabBuilder;
+  final IndexedWidgetBuilder? tabBodyBuilder;
 
   /// Material-specific data for the tab scaffold.
   final MaterialTabScaffoldData? materialTabScaffoldData;
@@ -35,13 +35,13 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
   /// 3 modes for state management:
   /// 1. [tabDestinationsData] with the `view` property defined: direct definition of tab content. State is both stored and managed internally in this case.
   /// 2. Instead of managing the state internally, you can also provide a [controller] and manage the state externally.
-  /// 3. Instead of storing the state internally, you can also provide a [tabBuilder]  to build the tab content (usable in GoRouter's shell route for example).
+  /// 3. Instead of storing the state internally, you can also provide a [tabBodyBuilder]  to build the tab content (usable in GoRouter's shell route for example).
   const PlatformTabScaffold({
     this.materialTabScaffoldData,
     this.cupertinoTabScaffoldData,
     this.tabDestinationsData,
     this.controller,
-    this.tabBuilder,
+    this.tabBodyBuilder,
     this.backgroundColor,
     this.resizeToAvoidBottomInset = kDefaultResizeToAvoidBottomInset,
     this.restorationId,
@@ -58,7 +58,7 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
           tabDestinationsData ??
           <TabDestinationData>[],
       controller: materialTabScaffoldData?.controller,
-      tabBuilder: materialTabScaffoldData?.tabBuilder ?? tabBuilder,
+      tabBodyBuilder: materialTabScaffoldData?.tabBodyBuilder ?? tabBodyBuilder,
       widgetKey: materialTabScaffoldData?.widgetKey ?? widgetKey,
       backgroundColor: materialTabScaffoldData?.backgroundColor ?? backgroundColor,
       resizeToAvoidBottomInset:
@@ -105,11 +105,11 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
         cupertinoTabScaffoldData?.tabDestinationsData ??
         tabDestinationsData ??
         <TabDestinationData>[];
-    final resolvedTabBuilder = cupertinoTabScaffoldData?.tabBuilder ?? tabBuilder;
+    final resolvedTabBodyBuilder = cupertinoTabScaffoldData?.tabBodyBuilder ?? tabBodyBuilder;
 
     assert(
-      (resolvedTabBuilder != null) ^ (resolvedTabDestinationsData.every((e) => e.view != null)),
-      'Either provide a tabBuilder or a view for each tab destination.',
+      (resolvedTabBodyBuilder != null) ^ (resolvedTabDestinationsData.every((e) => e.view != null)),
+      'Either provide a tabBodyBuilder or a view for each tab destination.',
     );
 
     return CupertinoTabScaffold(
@@ -132,7 +132,8 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
       ),
       tabBuilder: (_, index) => CupertinoTabView(
         builder: (context) =>
-            resolvedTabBuilder?.call(context, index) ?? resolvedTabDestinationsData[index].view!,
+            resolvedTabBodyBuilder?.call(context, index) ??
+            resolvedTabDestinationsData[index].view!,
       ),
     );
   }
@@ -169,10 +170,10 @@ class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> with TickerP
     super.initState();
 
     assert(
-      (widget.materialTabScaffoldData.tabBuilder != null) ^
+      (widget.materialTabScaffoldData.tabBodyBuilder != null) ^
           (widget.materialTabScaffoldData.tabDestinationsData?.every((e) => e.view != null) ??
               false),
-      'Either provide a tabBuilder or a view for each tab destination.',
+      'Either provide a tabBodyBuilder or a view for each tab destination.',
     );
   }
 
@@ -224,7 +225,10 @@ class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> with TickerP
     body: ListenableBuilder(
       listenable: _resolvedTabController,
       builder: (_, _) =>
-          widget.materialTabScaffoldData.tabBuilder?.call(context, _resolvedTabController.index) ??
+          widget.materialTabScaffoldData.tabBodyBuilder?.call(
+            context,
+            _resolvedTabController.index,
+          ) ??
           widget.materialTabScaffoldData.tabDestinationsData![_resolvedTabController.index].view!,
     ),
   );

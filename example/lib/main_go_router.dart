@@ -40,7 +40,7 @@ class MyGoRouterRootPage extends StatelessWidget {
   Widget build(BuildContext context) => PlatformTabScaffold2(
     selectedIndex: navigationShell.currentIndex,
     onTabDestinationTap: navigationShell.goBranch,
-    tabBuilder: (_, index) => children[index],
+    tabBodyBuilder: (_, index) => children[index],
     tabDestinationsData: const [
       TabDestinationData(inactiveIcon: PlatformIcon(PlatformIcons.home), label: 'Home'),
       TabDestinationData(inactiveIcon: PlatformIcon(PlatformIcons.settings), label: 'Settings'),

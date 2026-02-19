@@ -54,7 +54,7 @@ final class MaterialTabScaffoldData extends MaterialScaffoldData {
   final ValueChanged<int>? onTabDestinationTap;
 
   /// A builder for the content of each tab.
-  final IndexedWidgetBuilder? tabBuilder;
+  final IndexedWidgetBuilder? tabBodyBuilder;
 
   //TODO(lahaluhem): `bottomSheetScrimBuilder` is missing
   /// Creates a [MaterialTabScaffoldData].
@@ -88,7 +88,7 @@ final class MaterialTabScaffoldData extends MaterialScaffoldData {
     this.tabDestinationsData,
     this.controller,
     this.onTabDestinationTap,
-    this.tabBuilder,
+    this.tabBodyBuilder,
   });
 }
 
@@ -105,7 +105,7 @@ final class CupertinoTabScaffoldData extends CupertinoScaffoldData {
   final CupertinoTabController? controller;
 
   /// A builder for the content of each tab.
-  final IndexedWidgetBuilder? tabBuilder;
+  final IndexedWidgetBuilder? tabBodyBuilder;
 
   /// A callback that is called when a tab destination is tapped.
   final ValueChanged<int>? onTabDestinationTap;
@@ -121,7 +121,7 @@ final class CupertinoTabScaffoldData extends CupertinoScaffoldData {
     this.selectedIndex = 0,
     this.tabDestinationsData,
     this.controller,
-    this.tabBuilder,
+    this.tabBodyBuilder,
     this.onTabDestinationTap,
     this.restorationId,
   }) : super(body: null, navigationBar: null);
