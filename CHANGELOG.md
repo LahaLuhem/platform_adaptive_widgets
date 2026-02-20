@@ -1,3 +1,7 @@
+## 1.0.1 - 2026-02-20
+### Changed
+- Use the new material\_ui and cupertino\_ui packages instead
+
 ## 1.0.0 - 2026-02-19
 ### Added
 - usage with GoRouter example

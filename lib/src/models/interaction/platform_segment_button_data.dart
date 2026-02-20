@@ -1,8 +1,8 @@
 // ignore_for_file: prefer-match-file-name
 
-import 'package:flutter/cupertino.dart' show CupertinoColors, CupertinoDynamicColor;
-import 'package:flutter/material.dart' show ButtonStyle;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoColors, CupertinoDynamicColor;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show ButtonStyle;
 
 /// Common configuration for platform-adaptive segmented buttons.
 abstract final class _PlatformSegmentButtonData<T extends Object> {

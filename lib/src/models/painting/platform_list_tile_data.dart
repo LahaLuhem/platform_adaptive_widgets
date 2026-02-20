@@ -1,13 +1,14 @@
-/// @docImport 'package:flutter/cupertino.dart';
-/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:cupertino_ui/cupertino_ui.dart';
+/// @docImport 'package:material_ui/material_ui.dart';
 // ignore_for_file: prefer-match-file-name
 
 library;
 
 import 'dart:async';
 
-import 'package:flutter/material.dart' show ListTileStyle, ListTileTitleAlignment, VisualDensity;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart'
+    show ListTileStyle, ListTileTitleAlignment, VisualDensity;
 
 abstract final class _PlatformListTileData {
   final Key? widgetKey;

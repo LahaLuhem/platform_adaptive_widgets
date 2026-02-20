@@ -1,8 +1,8 @@
 // ignore_for_file: prefer-match-file-name
 
-import 'package:flutter/cupertino.dart' show ExpansionTileTransitionMode;
-import 'package:flutter/material.dart' show ListTileControlAffinity, VisualDensity;
+import 'package:cupertino_ui/cupertino_ui.dart' show ExpansionTileTransitionMode;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show ListTileControlAffinity, VisualDensity;
 
 /// Common configuration for platform-adaptive expansion tiles.
 abstract final class _PlatformExpansionTileData {

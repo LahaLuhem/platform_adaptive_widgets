@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart' show CupertinoExpansionTile;
-import 'package:flutter/material.dart' show ExpansionTile;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoExpansionTile;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show ExpansionTile;
 
 import '/src/models/interaction/platform_expansion_tile_data.dart';
 import '/src/models/platform_widget_base.dart';

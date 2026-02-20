@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart' show CupertinoScrollbar;
-import 'package:flutter/material.dart' show Scrollbar;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoScrollbar;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Scrollbar;
 
 import '/src/models/interaction/platform_scrollbar_data.dart';
 import '/src/models/platform_widget_base.dart';

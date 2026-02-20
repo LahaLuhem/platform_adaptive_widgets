@@ -3,8 +3,8 @@
 library;
 
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart' show MaterialTapTargetSize;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show MaterialTapTargetSize;
 
 /// Platform-shared configuration for a switch widget.
 ///

@@ -1,9 +1,9 @@
 // ignore_for_file: prefer-match-file-name
 
-import 'package:flutter/cupertino.dart' show CupertinoThemeData;
-import 'package:flutter/material.dart'
-    show ScaffoldMessengerState, ThemeData, ThemeMode, kThemeAnimationDuration;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoThemeData;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart'
+    show ScaffoldMessengerState, ThemeData, ThemeMode, kThemeAnimationDuration;
 
 /// Default value for `showPerformanceOverlay in app data classes.
 const kDefaultShowPerformanceOverlay = false;

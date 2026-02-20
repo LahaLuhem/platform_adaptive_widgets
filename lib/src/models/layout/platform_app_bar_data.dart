@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart' show ObstructingPreferredSizeWidget;
+import 'package:cupertino_ui/cupertino_ui.dart' show ObstructingPreferredSizeWidget;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 

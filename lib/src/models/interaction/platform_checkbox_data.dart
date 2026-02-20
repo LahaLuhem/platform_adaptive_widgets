@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart' show MaterialTapTargetSize, VisualDensity;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show MaterialTapTargetSize, VisualDensity;
 
 /// Platform-shared configuration for a checkbox widget.
 ///

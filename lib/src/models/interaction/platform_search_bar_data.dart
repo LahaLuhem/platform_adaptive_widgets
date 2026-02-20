@@ -1,4 +1,5 @@
-import 'package:flutter/cupertino.dart' show CupertinoColors, CupertinoIcons, OverlayVisibilityMode;
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show CupertinoColors, CupertinoIcons, OverlayVisibilityMode;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 

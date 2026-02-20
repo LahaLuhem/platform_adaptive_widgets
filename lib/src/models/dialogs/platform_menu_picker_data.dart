@@ -1,7 +1,7 @@
 // ignore_for_file: prefer-match-file-name
 
-import 'package:flutter/material.dart' show InputBorder, InputDecorationThemeData;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show InputBorder, InputDecorationThemeData;
 
 /// Common configuration for platform-adaptive menu pickers.
 abstract final class _PlatformMenuPickerData {

@@ -1,9 +1,9 @@
 /// @docImport 'platform_app_bar.dart';
 library;
 
-import 'package:flutter/cupertino.dart' show CupertinoPageScaffold;
-import 'package:flutter/material.dart' show Scaffold;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoPageScaffold;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Scaffold;
 
 import '/src/models/layout/platform_app_bar_data.dart';
 import '/src/models/layout/platform_scaffold_data.dart';

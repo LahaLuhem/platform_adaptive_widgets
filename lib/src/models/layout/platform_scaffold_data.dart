@@ -4,11 +4,11 @@
 
 import 'dart:math' as math;
 
-import 'package:flutter/cupertino.dart' show ObstructingPreferredSizeWidget;
+import 'package:cupertino_ui/cupertino_ui.dart' show ObstructingPreferredSizeWidget;
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart'
-    show Colors, FloatingActionButtonAnimator, FloatingActionButtonLocation;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart'
+    show Colors, FloatingActionButtonAnimator, FloatingActionButtonLocation;
 
 /// Default value for whether scaffold should resize to avoid bottom inset.
 const kDefaultResizeToAvoidBottomInset = true;

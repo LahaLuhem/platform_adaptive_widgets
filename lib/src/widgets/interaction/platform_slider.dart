@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart' show CupertinoColors, CupertinoSlider;
-import 'package:flutter/material.dart' show Slider;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Slider;
 
 import '/src/models/interaction/platform_slider_data.dart';
 import '/src/models/platform_widget_base.dart';

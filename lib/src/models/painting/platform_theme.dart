@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart' show CupertinoTheme;
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoTheme;
+import 'package:material_ui/material_ui.dart';
 
 import '/src/extensions/context_extensions.dart';
 

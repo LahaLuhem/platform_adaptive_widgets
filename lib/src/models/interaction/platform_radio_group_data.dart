@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart' show MaterialTapTargetSize, VisualDensity;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show MaterialTapTargetSize, VisualDensity;
 
 /// A record pairing a value with its corresponding radio button widget.
 typedef ValueAndButton<T extends Object> = ({T value, Widget button});

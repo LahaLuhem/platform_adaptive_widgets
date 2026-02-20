@@ -1,7 +1,7 @@
 // ignore_for_file: prefer-match-file-name
 
-import 'package:flutter/material.dart' show TimePickerEntryMode;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show TimePickerEntryMode;
 
 import 'const_values.dart';
 

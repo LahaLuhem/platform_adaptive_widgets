@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart' show CupertinoSlidingSegmentedControl;
-import 'package:flutter/material.dart' show ButtonSegment, SegmentedButton;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoSlidingSegmentedControl;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show ButtonSegment, SegmentedButton;
 
 import '/src/models/interaction/platform_segment_button_data.dart';
 import '/src/models/platform_widget_base.dart';
