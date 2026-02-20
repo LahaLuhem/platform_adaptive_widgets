@@ -1,6 +1,6 @@
 // ignore_for_file: prefer-match-file-name
 
-import 'package:flutter/cupertino.dart' show CupertinoTabController;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoTabController;
 import 'package:flutter/widgets.dart';
 
 import 'platform_scaffold_data.dart';

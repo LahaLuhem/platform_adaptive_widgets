@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart' show CupertinoIcons;
-import 'package:flutter/material.dart' show FloatingActionButton, Icons, InputDecoration;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show FloatingActionButton, Icons, InputDecoration;
 import 'package:persistent_header_adaptive/persistent_header_adaptive.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:platform_icons/platform_icons.dart';
@@ -110,12 +110,14 @@ class HomeView extends StatelessWidget {
                     ),
                     ValueListenableBuilder(
                       valueListenable: viewModel.directionalityListenable,
-                      builder: (context, directionality, _) => PlatformMenuPicker(
+                      child: const PlatformIcon(PlatformIcons.crop),
+                      builder: (context, directionality, leadingIcon) => PlatformMenuPicker(
                         // Replace with `const [...AxisDirection.values, ...AxisDirection.values]` to see the other picker variant
                         items: AxisDirection.values,
                         currentValue: directionality,
+                        onSelected: viewModel.onDirectionalityChanged,
                         labelText: 'Menu picker',
-                        leadingIcon: const PlatformIcon(PlatformIcons.crop),
+                        leadingIcon: leadingIcon,
                         menuPickerItemTransformer: (direction) => MenuPickerItem(
                           label: direction.name,
                           iconData: switch (direction) {
@@ -125,7 +127,6 @@ class HomeView extends StatelessWidget {
                             AxisDirection.down => context.platformAdaptiveIcons.arrowDownward,
                           },
                         ),
-                        onSelected: viewModel.onDirectionalityChanged,
                       ),
                     ),
                   ],

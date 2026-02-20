@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart' show SemanticFormatterCallback, SliderInteraction;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show SemanticFormatterCallback, SliderInteraction;
 
 /// Platform-shared configuration for a slider widget.
 ///

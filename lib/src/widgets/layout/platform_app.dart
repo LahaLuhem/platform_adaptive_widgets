@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart' show CupertinoApp;
-import 'package:flutter/material.dart' show MaterialApp;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoApp;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show MaterialApp;
 
 import '/src/models/layout/platform_app_data.dart';
 import '/src/models/platform_widget_base.dart';

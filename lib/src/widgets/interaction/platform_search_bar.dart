@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart' show CupertinoSearchTextField;
-import 'package:flutter/material.dart' show SearchBar;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoSearchTextField;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show SearchBar;
 
 import '/src/models/interaction/platform_search_bar_data.dart';
 import '/src/models/platform_widget_base.dart';

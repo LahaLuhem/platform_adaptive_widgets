@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart' show CupertinoSwitch;
-import 'package:flutter/material.dart' show Switch;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoSwitch;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Switch;
 
 import '/src/models/interaction/platform_switch_data.dart';
 import '/src/models/platform_widget_base.dart';

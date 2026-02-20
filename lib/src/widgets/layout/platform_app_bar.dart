@@ -1,6 +1,7 @@
-import 'package:flutter/cupertino.dart' show CupertinoNavigationBar, ObstructingPreferredSizeWidget;
-import 'package:flutter/material.dart' show AppBar;
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show CupertinoNavigationBar, ObstructingPreferredSizeWidget;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show AppBar;
 
 import '/src/models/layout/platform_app_bar_data.dart';
 

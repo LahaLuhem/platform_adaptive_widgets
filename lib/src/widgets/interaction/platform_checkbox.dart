@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart' show CupertinoCheckbox;
-import 'package:flutter/material.dart' show Checkbox;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoCheckbox;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Checkbox;
 
 import '/src/models/interaction/platform_checkbox_data.dart';
 import '/src/models/platform_widget_base.dart';

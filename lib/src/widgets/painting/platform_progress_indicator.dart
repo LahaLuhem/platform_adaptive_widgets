@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
-import 'package:flutter/material.dart' show CircularProgressIndicator;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show CircularProgressIndicator;
 
 import '/src/models/painting/platform_progress_indicator_data.dart';
 import '/src/models/platform_widget_base.dart';

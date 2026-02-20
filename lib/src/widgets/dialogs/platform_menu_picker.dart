@@ -1,6 +1,6 @@
 import 'dart:async' show FutureOr;
 
-import 'package:flutter/cupertino.dart'
+import 'package:cupertino_ui/cupertino_ui.dart'
     show
         CupertinoButton,
         CupertinoColors,
@@ -8,8 +8,8 @@ import 'package:flutter/cupertino.dart'
         CupertinoListTile,
         CupertinoPicker,
         showCupertinoModalPopup;
-import 'package:flutter/material.dart' show DropdownMenu, DropdownMenuEntry;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show DropdownMenu, DropdownMenuEntry;
 import 'package:pull_down_button/pull_down_button.dart';
 
 import '/src/models/dialogs/platform_menu_picker_data.dart';

@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart' show CupertinoAlertDialog, showCupertinoDialog;
-import 'package:flutter/material.dart'
-    show ScaffoldMessenger, SnackBar, SnackBarAction, SnackBarBehavior;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoAlertDialog, showCupertinoDialog;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart'
+    show ScaffoldMessenger, SnackBar, SnackBarAction, SnackBarBehavior;
 
 import '/src/extensions/context_extensions.dart';
 import '/src/models/dialogs/const_values.dart';

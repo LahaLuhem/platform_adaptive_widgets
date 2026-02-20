@@ -1,10 +1,10 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart' show OverlayVisibilityMode;
+import 'package:cupertino_ui/cupertino_ui.dart' show OverlayVisibilityMode;
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart' show InputCounterWidgetBuilder, InputDecoration;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show InputCounterWidgetBuilder, InputDecoration;
 
 /// Platform-shared configuration for a text field widget.
 ///
