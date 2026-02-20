@@ -1,3 +1,7 @@
+## 1.0.2 - 2026-02-20
+### Fixed
+- common-level specification do not override platform-level specs for PlatformApp
+
 ## 1.0.1 - 2026-02-20
 ### Changed
 - Use the new material\_ui and cupertino\_ui packages instead

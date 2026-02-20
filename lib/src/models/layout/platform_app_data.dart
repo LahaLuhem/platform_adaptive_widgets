@@ -61,22 +61,22 @@ abstract final class _PlatformAppData {
   final LocaleResolutionCallback? localeResolutionCallback;
 
   /// The list of locales that this app has been localized for.
-  final Iterable<Locale> supportedLocales;
+  final Iterable<Locale>? supportedLocales;
 
   /// Whether to show the performance overlay.
-  final bool showPerformanceOverlay;
+  final bool? showPerformanceOverlay;
 
   /// Whether to checkerboard raster cache images.
-  final bool checkerboardRasterCacheImages;
+  final bool? checkerboardRasterCacheImages;
 
   /// Whether to checkerboard layers rendered to offscreen bitmaps.
-  final bool checkerboardOffscreenLayers;
+  final bool? checkerboardOffscreenLayers;
 
   /// Whether to show the semantics debugger.
-  final bool showSemanticsDebugger;
+  final bool? showSemanticsDebugger;
 
   /// Whether to show a "DEBUG" banner.
-  final bool debugShowCheckedModeBanner;
+  final bool? debugShowCheckedModeBanner;
 
   /// The default map of keyboard shortcuts.
   final Map<LogicalKeySet, Intent>? shortcuts;
@@ -106,12 +106,12 @@ abstract final class _PlatformAppData {
     this.localizationsDelegates,
     this.localeListResolutionCallback,
     this.localeResolutionCallback,
-    this.supportedLocales = kDefaultSupportedLocales,
-    this.showPerformanceOverlay = kDefaultShowPerformanceOverlay,
-    this.checkerboardRasterCacheImages = kDefaultCheckerboardRasterCacheImages,
-    this.checkerboardOffscreenLayers = kDefaultCheckerboardOffscreenLayers,
-    this.showSemanticsDebugger = kDefaultShowSemanticsDebugger,
-    this.debugShowCheckedModeBanner = kDefaultDebugShowCheckedModeBanner,
+    this.supportedLocales,
+    this.showPerformanceOverlay,
+    this.checkerboardRasterCacheImages,
+    this.checkerboardOffscreenLayers,
+    this.showSemanticsDebugger,
+    this.debugShowCheckedModeBanner,
     this.shortcuts,
     this.actions,
     this.restorationScopeId,
@@ -132,7 +132,7 @@ final class AppData extends _PlatformAppData {
   final Widget? home;
 
   /// Named routes for the app.
-  final Map<String, WidgetBuilder> routes;
+  final Map<String, WidgetBuilder>? routes;
 
   /// Initial route name.
   final String? initialRoute;
@@ -149,7 +149,7 @@ final class AppData extends _PlatformAppData {
   final RouteFactory? onUnknownRoute;
 
   /// List of navigator observers.
-  final List<NavigatorObserver> navigatorObservers;
+  final List<NavigatorObserver>? navigatorObservers;
 
   /// Default value for [navigatorObservers].
   static const kDefaultNavigationObservers = <NavigatorObserver>[];
@@ -181,12 +181,12 @@ final class AppData extends _PlatformAppData {
     super.onNavigationNotification,
     this.navigatorKey,
     this.home,
-    this.routes = kDefaultAppRoutes,
+    this.routes,
     this.initialRoute,
     this.onGenerateRoute,
     this.onGenerateInitialRoutes,
     this.onUnknownRoute,
-    this.navigatorObservers = kDefaultNavigationObservers,
+    this.navigatorObservers,
   });
 }
 
@@ -268,13 +268,13 @@ final class MaterialAppData extends AppData {
   final ThemeMode? themeMode;
 
   /// Duration for theme transitions.
-  final Duration themeAnimationDuration;
+  final Duration? themeAnimationDuration;
 
   /// Animation curve for theme transitions.
-  final Curve themeAnimationCurve;
+  final Curve? themeAnimationCurve;
 
   /// Whether to show the Material design grid overlay.
-  final bool debugShowMaterialGrid;
+  final bool? debugShowMaterialGrid;
 
   /// Animation style for theme transitions.
   final AnimationStyle? themeAnimationStyle;
@@ -348,13 +348,13 @@ final class MaterialAppRouterData extends PlatformAppRouterData {
   final ThemeMode? themeMode;
 
   /// Duration for theme transitions.
-  final Duration themeAnimationDuration;
+  final Duration? themeAnimationDuration;
 
   /// Animation curve for theme transitions.
-  final Curve themeAnimationCurve;
+  final Curve? themeAnimationCurve;
 
   /// Whether to show the Material design grid overlay.
-  final bool debugShowMaterialGrid;
+  final bool? debugShowMaterialGrid;
 
   /// Animation style for theme transitions.
   final AnimationStyle? themeAnimationStyle;
