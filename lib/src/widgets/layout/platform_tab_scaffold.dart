@@ -1,5 +1,5 @@
 import 'package:cupertino_ui/cupertino_ui.dart'
-    show CupertinoTabBar, CupertinoTabScaffold, CupertinoTabView;
+    show CupertinoTabBar, CupertinoTabController, CupertinoTabScaffold, CupertinoTabView;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show NavigationBar, NavigationDestination, Scaffold;
 
@@ -95,6 +95,8 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
 
   @override
   Widget buildCupertino(BuildContext context) {
+    final resolvedSelectedIndex =
+        cupertinoTabScaffoldData?.selectedIndex ?? selectedIndex ?? _kDefaultSelectedIndex;
     final resolvedTabDestinations = cupertinoTabScaffoldData?.tabDestinations ?? tabDestinations!;
     final resolvedTabBodyBuilder = cupertinoTabScaffoldData?.tabBodyBuilder ?? tabBodyBuilder;
 
@@ -110,10 +112,9 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
       resizeToAvoidBottomInset:
           cupertinoTabScaffoldData?.resizeToAvoidBottomInset ?? resizeToAvoidBottomInset,
       restorationId: cupertinoTabScaffoldData?.restorationId ?? restorationId,
-      controller: cupertinoTabScaffoldData?.controller,
+      controller: CupertinoTabController(initialIndex: resolvedSelectedIndex),
       tabBar: CupertinoTabBar(
-        currentIndex:
-            cupertinoTabScaffoldData?.selectedIndex ?? selectedIndex ?? _kDefaultSelectedIndex,
+        currentIndex: resolvedSelectedIndex,
         onTap: cupertinoTabScaffoldData?.onTabDestinationTap ?? onTabDestinationTap,
         items: [
           for (final tabDestinationData in resolvedTabDestinations)

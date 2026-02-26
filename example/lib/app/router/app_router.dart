@@ -11,6 +11,8 @@ final _homeShellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'Home Shell
 final _settingsShellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'Settings Shell');
 
 final class AppRouter {
+  static const _homeViewArgs = HomeViewArgs(isUsingGoRouter: true);
+
   static final router = GoRouter(
     initialLocation: AppRoute.home.routeAddress,
     routes: [
@@ -25,12 +27,12 @@ final class AppRouter {
               GoRoute(
                 name: AppRoute.home.name,
                 path: AppRoute.home.routeAddress,
-                builder: (_, _) => const HomeView(args: HomeViewArgs(isUsingGoRouter: true)),
+                builder: (_, _) => const HomeView(args: _homeViewArgs),
                 routes: [
                   GoRoute(
                     name: AppRoute.homeL1.name,
                     path: AppRoute.homeL1.routeAddress,
-                    builder: (_, _) => const HomeL1View(),
+                    builder: (_, _) => const HomeL1View(homeViewArgs: _homeViewArgs),
                   ),
                 ],
               ),

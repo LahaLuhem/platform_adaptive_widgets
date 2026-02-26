@@ -1,3 +1,7 @@
+## 1.0.4 - 2026-02-26
+### Removed
+- CupertinoTabController from PlatformTabScaffold data. This causes issues with an external tab-management solution like GoRouter
+
 ## 1.0.3 - 2026-02-26
 ### Fixed
 - \[iOS\] navigation shell not switching when rebuilt with a different index

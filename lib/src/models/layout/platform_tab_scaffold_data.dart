@@ -1,6 +1,5 @@
 // ignore_for_file: prefer-match-file-name
 
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoTabController;
 import 'package:flutter/widgets.dart';
 
 import 'platform_scaffold_data.dart';
@@ -96,9 +95,6 @@ final class CupertinoTabScaffoldData extends CupertinoScaffoldData {
   /// A list of destinations to display in the tab bar.
   final List<TabDestination>? tabDestinations;
 
-  /// A controller for the tab bar.
-  final CupertinoTabController? controller;
-
   /// A builder for the content of each tab.
   final IndexedWidgetBuilder? tabBodyBuilder;
 
@@ -115,7 +111,6 @@ final class CupertinoTabScaffoldData extends CupertinoScaffoldData {
     super.resizeToAvoidBottomInset,
     this.selectedIndex,
     this.tabDestinations,
-    this.controller,
     this.tabBodyBuilder,
     this.onTabDestinationTap,
     this.restorationId,
