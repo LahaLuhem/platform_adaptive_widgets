@@ -41,7 +41,7 @@ final class TabDestination {
 final class MaterialTabScaffoldData extends MaterialScaffoldData {
   /// The index of the currently selected tab. Needed when not using a [tabDestinations].view
   /// and the state is managed/rebuilt externally.
-  final int selectedIndex;
+  final int? selectedIndex;
 
   /// A list of destinations to display in the tab bar.
   final List<TabDestination>? tabDestinations;
@@ -80,7 +80,7 @@ final class MaterialTabScaffoldData extends MaterialScaffoldData {
     super.drawerEnableOpenDragGesture = MaterialScaffoldData.kDrawerEnableOpenDragGesture,
     super.endDrawerEnableOpenDragGesture = MaterialScaffoldData.kEndDrawerEnableOpenDragGesture,
     super.restorationId,
-    this.selectedIndex = 0,
+    this.selectedIndex,
     this.tabDestinations,
     this.onTabDestinationTap,
     this.tabBodyBuilder,
@@ -91,7 +91,7 @@ final class MaterialTabScaffoldData extends MaterialScaffoldData {
 final class CupertinoTabScaffoldData extends CupertinoScaffoldData {
   /// The index of the currently selected tab. Needed when not using a [tabDestinations].view
   /// and the state is managed/rebuilt externally.
-  final int selectedIndex;
+  final int? selectedIndex;
 
   /// A list of destinations to display in the tab bar.
   final List<TabDestination>? tabDestinations;
@@ -113,7 +113,7 @@ final class CupertinoTabScaffoldData extends CupertinoScaffoldData {
     super.widgetKey,
     super.backgroundColor,
     super.resizeToAvoidBottomInset,
-    this.selectedIndex = 0,
+    this.selectedIndex,
     this.tabDestinations,
     this.controller,
     this.tabBodyBuilder,

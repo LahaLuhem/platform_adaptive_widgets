@@ -11,7 +11,7 @@ import '/src/models/platform_widget_base.dart';
 class PlatformTabScaffold extends PlatformWidgetKeyedBase {
   /// The index of the currently selected tab. Needed when not using a [tabDestinations].view
   /// and the state is managed/rebuilt externally.
-  final int selectedIndex;
+  final int? selectedIndex;
 
   /// The background color of the scaffold.
   final Color? backgroundColor;
@@ -64,6 +64,8 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
     super.key,
   });
 
+  static const _kDefaultSelectedIndex = 0;
+
   @override
   Widget buildMaterial(BuildContext context) {
     final selectedIndex = materialTabScaffoldData?.selectedIndex ?? this.selectedIndex;
@@ -78,7 +80,8 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
 
     return _MaterialTabScaffold(
       resolvedWidgetKey: materialTabScaffoldData?.widgetKey ?? widgetKey,
-      resolvedSelectedIndex: selectedIndex,
+      resolvedSelectedIndex:
+          materialTabScaffoldData?.selectedIndex ?? selectedIndex ?? _kDefaultSelectedIndex,
       resizeToAvoidBottomInset:
           materialTabScaffoldData?.resizeToAvoidBottomInset ?? resizeToAvoidBottomInset,
       backgroundColor: materialTabScaffoldData?.backgroundColor ?? backgroundColor,
@@ -109,7 +112,8 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
       restorationId: cupertinoTabScaffoldData?.restorationId ?? restorationId,
       controller: cupertinoTabScaffoldData?.controller,
       tabBar: CupertinoTabBar(
-        currentIndex: cupertinoTabScaffoldData?.selectedIndex ?? selectedIndex,
+        currentIndex:
+            cupertinoTabScaffoldData?.selectedIndex ?? selectedIndex ?? _kDefaultSelectedIndex,
         onTap: cupertinoTabScaffoldData?.onTabDestinationTap ?? onTabDestinationTap,
         items: [
           for (final tabDestinationData in resolvedTabDestinations)

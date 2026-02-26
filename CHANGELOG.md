@@ -1,3 +1,7 @@
+## 1.0.3 - 2026-02-26
+### Fixed
+- \[iOS\] navigation shell not switching when rebuilt with a different index
+
 ## 1.0.2 - 2026-02-20
 ### Fixed
 - common-level specification do not override platform-level specs for PlatformApp
