@@ -83,6 +83,10 @@ final class HomeViewModel extends ViewModel {
     );
   }
 
+  void onActionsMenuItemPressed(String actionName) {
+    debugPrint('Action $actionName pressed');
+  }
+
   Future<void> onSubRoutePressed() {
     debugPrint('Sub-route pressed');
 

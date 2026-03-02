@@ -1,3 +1,6 @@
+/// @docImport 'platform_actions_menu.dart';
+library;
+
 import 'dart:async' show FutureOr;
 
 import 'package:cupertino_ui/cupertino_ui.dart'
@@ -14,14 +17,15 @@ import 'package:pull_down_button/pull_down_button.dart';
 
 import '/src/models/dialogs/platform_menu_picker_data.dart';
 import '/src/models/platform_widget_base.dart';
+import 'const_values.dart';
 
 /// A platform-adaptive menu picker that renders Material DropdownMenu on Android
 /// and CupertinoPicker with CupertinoListTile on iOS.
 ///
 /// This widget automatically selects the appropriate menu picker implementation based on the target platform:
 /// - On Android: renders Material Design DropdownMenu
-/// - On iOS: depends on the number of items (see https://developer.apple.com/design/human-interface-guidelines/pickers#Best-practices).
-///     - For 5 or less, it uses PullDownButton.
+/// - On iOS: depends on the number of items See [HIG best-practices](https://developer.apple.com/design/human-interface-guidelines/pickers#Best-practices).
+///     - For [ConstValues.smallItemCountThreshold] or less, it uses PullDownButton.
 ///     - For more, it uses showCupertinoModalPopup.
 ///
 /// The menu picker can be configured with platform-specific data through [materialMenuPickerData]
@@ -71,6 +75,8 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
   /// Creates a platform-adaptive menu picker.
   ///
   /// The menu picker will render as a Material DropdownMenu on Android and a CupertinoPicker on iOS.
+  ///
+  /// For action-based (instead of choice-based) pickers, consider using [PlatformActionsMenu] instead.
   const PlatformMenuPicker({
     required this.items,
     this.currentValue,
@@ -139,8 +145,6 @@ final class _CupertinoPickerCommon<T extends Object> extends StatelessWidget {
   final MenuPickerItem Function(T choice) menuPickerItemTransformer;
   final ValueChanged<T>? onSelected;
 
-  static const _smallItemCountThreshold = 5;
-
   const _CupertinoPickerCommon({
     required this.items,
     required this.currentValue,
@@ -154,7 +158,7 @@ final class _CupertinoPickerCommon<T extends Object> extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => items.length <= _smallItemCountThreshold
+  Widget build(BuildContext context) => items.length <= ConstValues.smallItemCountThreshold
       ? _SmallItemCupertinoPicker(
           items: items,
           currentValue: currentValue,
@@ -190,8 +194,6 @@ final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget 
   final MenuPickerItem Function(T choice) menuPickerItemTransformer;
   final ValueChanged<T>? onSelected;
 
-  /// [HIG best-practices](https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons#Best-practices)
-  /// mention using this widget for atleast 3 items ('Balance menu length with ease of use' section)
   const _SmallItemCupertinoPicker({
     required this.items,
     required this.currentValue,
@@ -203,9 +205,9 @@ final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget 
     required this.menuPickerItemTransformer,
     required this.onSelected,
   }) : assert(
-         items.length >= 3,
-         'Must use minimum 3 items for this widget. Consider alternative'
-         ' design elements for the elements instead',
+         items.length >= ConstValues.minNumCupertinoPullDownButtonItems,
+         'Must use minimum 3 items for this widget. Consider alternative design elements '
+         'for the elements instead',
        );
 
   @override

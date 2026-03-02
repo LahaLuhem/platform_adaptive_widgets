@@ -58,6 +58,23 @@ class HomeView extends StatelessWidget {
                           cupertinoButtonData: _shrunkCupertinoButtonData,
                           child: const Text('show simple alert', maxLines: 2),
                         ),
+                        PlatformActionsMenu(
+                          anchorBuilder: (context, onTap) => PlatformButton(
+                            onPressed: onTap,
+                            cupertinoButtonData: _shrunkCupertinoButtonData,
+                            child: const Text('show actions menu', maxLines: 2),
+                          ),
+                          items: List.generate(
+                            5, // Change this to switch between pull-down and modal (iOS)
+                            (index) => PlatformActionsMenuItem(
+                              label: 'Action $index',
+                              cupertinoIsDefault: index % 3 == 0,
+                              cupertinoIsDestructive: index % 5 == 0,
+                              onPressed: () => viewModel.onActionsMenuItemPressed('$index'),
+                            ),
+                            growable: false,
+                          ),
+                        ),
                         PlatformButton(
                           isEnabled: false,
                           // Will always be disabled for showcase

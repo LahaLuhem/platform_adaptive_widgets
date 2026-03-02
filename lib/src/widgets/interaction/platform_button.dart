@@ -1,10 +1,11 @@
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoButton, CupertinoColors;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoButton;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart'
     show ElevatedButton, FilledButton, OutlinedButton, TextButton;
 
 import '/src/models/interaction/platform_button_data.dart';
 import '/src/models/platform_widget_base.dart';
+import '../dialogs/const_values.dart';
 
 /// A platform-adaptive button that renders Material Design buttons on Android
 /// and Cupertino buttons on iOS.
@@ -273,7 +274,9 @@ class PlatformButton extends PlatformWidgetKeyedBase {
       color: cupertinoButtonData?.color,
       onFocusChange: cupertinoButtonData?.onFocusChange,
       foregroundColor: cupertinoButtonData?.foregroundColor,
-      disabledColor: cupertinoButtonData?.disabledColor ?? CupertinoColors.quaternarySystemFill,
+      disabledColor:
+          cupertinoButtonData?.disabledColor ??
+          ConstValues.kCupertinoButtonDefaultDisabledColorPlain,
       minimumSize: cupertinoButtonData?.minimumSize,
       pressedOpacity: cupertinoButtonData?.pressedOpacity,
       borderRadius: cupertinoButtonData?.borderRadius,
@@ -293,7 +296,9 @@ class PlatformButton extends PlatformWidgetKeyedBase {
       color: cupertinoButtonData?.color,
       onFocusChange: cupertinoButtonData?.onFocusChange,
       foregroundColor: cupertinoButtonData?.foregroundColor,
-      disabledColor: cupertinoButtonData?.disabledColor ?? CupertinoColors.tertiarySystemFill,
+      disabledColor:
+          cupertinoButtonData?.disabledColor ??
+          ConstValues.kCupertinoButtonDefaultDisabledColorColoured,
       minimumSize: cupertinoButtonData?.minimumSize,
       pressedOpacity: cupertinoButtonData?.pressedOpacity,
       borderRadius: cupertinoButtonData?.borderRadius,
@@ -313,7 +318,9 @@ class PlatformButton extends PlatformWidgetKeyedBase {
       color: cupertinoButtonData?.color,
       onFocusChange: cupertinoButtonData?.onFocusChange,
       foregroundColor: cupertinoButtonData?.foregroundColor,
-      disabledColor: cupertinoButtonData?.disabledColor ?? CupertinoColors.tertiarySystemFill,
+      disabledColor:
+          cupertinoButtonData?.disabledColor ??
+          ConstValues.kCupertinoButtonDefaultDisabledColorColoured,
       minimumSize: cupertinoButtonData?.minimumSize,
       pressedOpacity: cupertinoButtonData?.pressedOpacity,
       borderRadius: cupertinoButtonData?.borderRadius,
