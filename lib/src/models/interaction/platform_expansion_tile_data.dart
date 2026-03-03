@@ -172,7 +172,7 @@ final class MaterialExpansionTileData extends _PlatformExpansionTileData {
     this.enabled = kDefaultEnabled,
     this.expansionAnimationStyle,
     this.internalAddSemanticForOnTap = kDefaultInternalAddSemanticForOnTap,
-  }) : assert((child != null) ^ (children != null), 'child and children are mutually exclusive.');
+  });
 }
 
 /// Cupertino-specific configuration for a platform expansion tile.

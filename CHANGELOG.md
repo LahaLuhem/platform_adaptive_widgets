@@ -1,6 +1,9 @@
-## Unreleased
+## 1.0.5 - 2026-03-03
 ### Changed
 - (Cupertino) Add a minimum length assertion to the items for MenuPicker
+
+### Fixed
+- (Material) remove unnecessary assertion from ExpansionTile
 
 ## 1.0.4 - 2026-02-26
 ### Removed
