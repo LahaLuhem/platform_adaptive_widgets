@@ -1,3 +1,7 @@
+## Unreleased
+### Changed
+- (Cupertino) Add a minimum length assertion to the items for MenuPicker
+
 ## 1.0.4 - 2026-02-26
 ### Removed
 - CupertinoTabController from PlatformTabScaffold data. This causes issues with an external tab-management solution like GoRouter

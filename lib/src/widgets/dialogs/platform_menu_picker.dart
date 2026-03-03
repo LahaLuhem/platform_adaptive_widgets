@@ -38,7 +38,7 @@ import '/src/models/platform_widget_base.dart';
 /// ```
 class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
   /// The list of items to display in the menu.
-  final Iterable<T> items;
+  final List<T> items;
 
   /// The currently selected value.
   final T? currentValue;
@@ -99,7 +99,7 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
     onSelected: (newValue) => newValue == null ? null : onSelected?.call(newValue),
     dropdownMenuEntries: [
       for (final valuesAndMenuPickerItems in _Pair.zip(
-        items.toList(growable: false),
+        items,
         items.map(menuPickerItemTransformer).toList(growable: false),
       ))
         DropdownMenuEntry(
@@ -129,7 +129,7 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
 }
 
 final class _CupertinoPickerCommon<T extends Object> extends StatelessWidget {
-  final Iterable<T> items;
+  final List<T> items;
   final T? currentValue;
   final bool isEnabled;
   final bool useIconButtonVariant;
@@ -167,7 +167,7 @@ final class _CupertinoPickerCommon<T extends Object> extends StatelessWidget {
           onSelected: onSelected,
         )
       : _LargeItemCupertinoPicker(
-          items: items.toList(growable: false),
+          items: items,
           currentValue: currentValue,
           isEnabled: isEnabled,
           useIconButtonVariant: useIconButtonVariant,
@@ -180,7 +180,7 @@ final class _CupertinoPickerCommon<T extends Object> extends StatelessWidget {
 }
 
 final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget {
-  final Iterable<T> items;
+  final List<T> items;
   final T? currentValue;
   final bool isEnabled;
   final bool useIconButtonVariant;
@@ -190,6 +190,8 @@ final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget 
   final MenuPickerItem Function(T choice) menuPickerItemTransformer;
   final ValueChanged<T>? onSelected;
 
+  /// [HIG best-practices](https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons#Best-practices)
+  /// mention using this widget for atleast 3 items ('Balance menu length with ease of use' section)
   const _SmallItemCupertinoPicker({
     required this.items,
     required this.currentValue,
@@ -200,7 +202,11 @@ final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget 
     required this.cupertinoBackgroundColor,
     required this.menuPickerItemTransformer,
     required this.onSelected,
-  });
+  }) : assert(
+         items.length >= 3,
+         'Must use minimum 3 items for this widget. Consider alternative'
+         ' design elements for the elements instead',
+       );
 
   @override
   Widget build(BuildContext context) => PullDownButton(
@@ -216,7 +222,7 @@ final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget 
     ),
     itemBuilder: (context) => [
       for (final valuesAndMenuPickerItems in _Pair.zip(
-        items.toList(growable: false),
+        items,
         items.map(menuPickerItemTransformer).toList(growable: false),
       ))
         PullDownMenuItem.selectable(
