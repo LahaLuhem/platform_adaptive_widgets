@@ -56,7 +56,7 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
   final ValueChanged<T>? onSelected;
 
   /// Function to transform the selected value to a [MenuPickerItem] representation.
-  final MenuPickerItem<T> Function(T choice) menuPickerItemTransformer;
+  final MenuPickerItem Function(T choice) menuPickerItemTransformer;
 
   /// Material-specific menu picker data.
   final MaterialMenuPickerData? materialMenuPickerData;
@@ -65,7 +65,7 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
   final CupertinoMenuPickerData? cupertinoMenuPickerData;
 
   /// Default transformer that converts choices to strings.
-  static MenuPickerItem<T> _defaultMenuPickerItemTransformer<T extends Object>(T choice) =>
+  static MenuPickerItem _defaultMenuPickerItemTransformer<T extends Object>(T choice) =>
       MenuPickerItem(label: choice.toString());
 
   /// Creates a platform-adaptive menu picker.
@@ -78,7 +78,7 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
     this.leadingIcon,
     this.labelText,
     this.onSelected,
-    MenuPickerItem<T> Function(T choice)? menuPickerItemTransformer,
+    MenuPickerItem Function(T choice)? menuPickerItemTransformer,
     this.materialMenuPickerData,
     this.cupertinoMenuPickerData,
     super.widgetKey,
@@ -136,7 +136,7 @@ final class _CupertinoPickerCommon<T extends Object> extends StatelessWidget {
   final Widget? leadingIcon;
   final String? labelText;
   final Color? cupertinoBackgroundColor;
-  final MenuPickerItem<T> Function(T choice) menuPickerItemTransformer;
+  final MenuPickerItem Function(T choice) menuPickerItemTransformer;
   final ValueChanged<T>? onSelected;
 
   static const _smallItemCountThreshold = 5;
@@ -187,7 +187,7 @@ final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget 
   final Widget? leadingIcon;
   final String? labelText;
   final Color? cupertinoBackgroundColor;
-  final MenuPickerItem<T> Function(T choice) menuPickerItemTransformer;
+  final MenuPickerItem Function(T choice) menuPickerItemTransformer;
   final ValueChanged<T>? onSelected;
 
   const _SmallItemCupertinoPicker({
@@ -239,7 +239,7 @@ final class _LargeItemCupertinoPicker<T extends Object> extends StatelessWidget 
   final String? labelText;
   final Color? cupertinoBackgroundColor;
 
-  final MenuPickerItem<T> Function(T choice) menuPickerItemTransformer;
+  final MenuPickerItem Function(T choice) menuPickerItemTransformer;
   final ValueChanged<T>? onSelected;
 
   const _LargeItemCupertinoPicker({
@@ -302,7 +302,7 @@ final class _LargeItemCupertinoPicker<T extends Object> extends StatelessWidget 
 
 final class _CupertinoPickerField<T extends Object> extends StatelessWidget {
   final T? value;
-  final MenuPickerItem<T> Function(T choice) menuPickerItemTransformer;
+  final MenuPickerItem Function(T choice) menuPickerItemTransformer;
   final bool isEnabled;
   final bool useIconButtonVariant;
   final String? labelText;
