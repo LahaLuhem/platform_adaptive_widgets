@@ -4,8 +4,8 @@ import 'package:material_ui/material_ui.dart'
     show ScaffoldMessenger, SnackBar, SnackBarAction, SnackBarBehavior;
 
 import '/src/extensions/context_extensions.dart';
-import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_dialog_data.dart';
+import '/src/models/dialogs/widget_param_defaults.dart';
 import 'platform_dialog.dart';
 
 /// A pure convenience method for showing a simple alert.

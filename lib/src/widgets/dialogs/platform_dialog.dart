@@ -7,9 +7,9 @@ import 'package:material_ui/material_ui.dart'
     show AlertDialog, ButtonTheme, Colors, Dialog, TextButton, showDialog;
 
 import '/src/extensions/context_extensions.dart';
-import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_alert_dialog_data.dart';
 import '/src/models/dialogs/platform_dialog_data.dart';
+import '/src/models/dialogs/widget_param_defaults.dart';
 import '/src/models/platform_widget_base.dart';
 
 part 'platform_alert_dialog.dart';

@@ -3,7 +3,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show TimePickerEntryMode;
 
-import 'const_values.dart';
+import 'widget_param_defaults.dart';
 
 /// Common configuration for platform-adaptive time pickers.
 final class _PlatformTimePickerData {
