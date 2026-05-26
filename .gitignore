@@ -3,6 +3,10 @@
 .idea/studiobot.xml
 ios/**
 
+# AI symlinks point into adjacent .ai/ folders; targets are committed, symlinks are not.
+/AGENTS.md
+/CLAUDE.md
+
 # Created by https://www.toptal.com/developers/gitignore/api/flutter,dart,androidstudio,visualstudiocode,windows,macos,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=flutter,dart,androidstudio,visualstudiocode,windows,macos,linux
 

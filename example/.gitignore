@@ -1,3 +1,6 @@
+# AI symlink points into the adjacent .ai/ folder; target is committed, symlink is not.
+/AGENTS.md
+
 # Created by https://www.toptal.com/developers/gitignore/api/dart,swift,xcode,kotlin,android,flutter,objective-c,androidstudio,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=dart,swift,xcode,kotlin,android,flutter,objective-c,androidstudio,visualstudiocode
 

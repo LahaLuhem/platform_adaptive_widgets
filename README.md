@@ -124,6 +124,45 @@ All platform widgets extend one of these base classes, which use compile-time `d
 
 ---
 
+## Contributing
+
+Issues and PRs welcome at
+<https://github.com/LahaLuhem/platform_adaptive_widgets>. Before sending a
+non-trivial change, read [`CODESTYLE.md`](./CODESTYLE.md) for the house style,
+[`.ai/AGENTS.md`](./.ai/AGENTS.md) for the hard rules and contributor / AI-agent
+guidelines, and [`APPENDIX.md`](./APPENDIX.md) for the design rationale.
+
+### Optional: AI-agent discovery symlinks
+
+The canonical text for `AGENTS.md` and `CLAUDE.md` lives under `.ai/`. The repo root
+holds **gitignored symlinks** (`AGENTS.md → .ai/AGENTS.md`,
+`CLAUDE.md → .ai/CLAUDE.md`, `example/AGENTS.md → example/.ai/AGENTS.md`) so coding
+agents that auto-discover root-level guidance files (Claude Code, Codex, Cursor,
+Copilot, …) find them without polluting the file tree with two extra Markdown files at
+each level. The arrangement is opt-in per contributor:
+
+- **If you use a coding agent**, set the symlinks up once from the repo root:
+
+  ```bash
+  ln -s .ai/AGENTS.md AGENTS.md
+  ln -s .ai/CLAUDE.md CLAUDE.md
+  ln -s .ai/AGENTS.md example/AGENTS.md
+  ```
+
+- **If you don't use one**, skip the step entirely. The canonical files under `.ai/`
+  are committed; nothing in the build, lint, or test pipeline depends on the symlinks
+  existing.
+- **If you want different agent guidance for your own workflow**, drop a real
+  `AGENTS.md` or `CLAUDE.md` at the repo root. A real file beats the symlink
+  convention — your agent reads the root file you put there instead of the canonical
+  one under `.ai/`. The committed `.ai/` copies remain the project default for
+  everyone else.
+
+The `CODESTYLE.md` files are not symlinked — they sit directly at the repo root and at
+`example/`, since style serves humans and agents alike and is not AI-specific. See
+[`APPENDIX.md`](./APPENDIX.md#ai-files-symlinked) for the rationale
+behind the `.ai/` arrangement.
+
 ## Contributors
 
 <a href="https://github.com/LahaLuhem/platform_adaptive_widgets/graphs/contributors">
