@@ -52,13 +52,13 @@ class PlatformSegmentButton<T extends Object> extends PlatformWidgetKeyedBase {
   const PlatformSegmentButton({
     required this.choices,
     required this.segmentBuilder,
-    required T? selectedChoice,
+    required this._selectedChoice,
     required this.onSelectionChanged,
     this.materialSegmentButtonData,
     this.cupertinoSegmentButtonData,
     super.widgetKey,
     super.key,
-  }) : _selectedChoice = selectedChoice;
+  });
 
   @override
   Widget buildMaterial(BuildContext context) {
