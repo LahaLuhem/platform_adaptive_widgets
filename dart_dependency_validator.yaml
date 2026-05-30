@@ -1,0 +1,8 @@
+# Config for `dart pub global run dependency_validator`. Scoped to the root
+# package only — `example/` and `tool/size_harness/` are separate Flutter
+# sub-packages with their own pubspec.yaml; their deps shouldn't get folded
+# into the root package's check.
+
+exclude:
+  - "example/**"
+  - "tool/size_harness/**"
