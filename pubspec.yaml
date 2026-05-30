@@ -41,8 +41,6 @@ dependencies:
 
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
   # AOT-pruning regression guard — see test/aot_pruning_regression_test.dart.
   analyzer: ^8.4.0
   test: ^1.26.0

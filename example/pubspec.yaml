@@ -11,20 +11,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.9
+  platform_adaptive_widgets:
+    path: ../
+
   cupertino_ui: ^0.0.1
   go_router: ^17.2.3
   material_ui: ^0.0.1
   persistent_header_adaptive: ^2.1.3
   platform_icons: ^0.1.1
   pmvvm: ^4.0.1
-
-  platform_adaptive_widgets:
-    path: ../
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
 
 flutter:
   uses-material-design: true
