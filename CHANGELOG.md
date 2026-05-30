@@ -1,3 +1,7 @@
+## Unreleased
+### Changed
+- Use the new CupertinoMenuAnchor instead of (deprecated) PullDownButton
+
 ## 1.0.5 - 2026-03-03
 ### Changed
 - (Cupertino) Add a minimum length assertion to the items for MenuPicker

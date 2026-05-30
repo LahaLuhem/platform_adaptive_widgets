@@ -34,7 +34,6 @@ dependencies:
     sdk: flutter
   material_ui: ^0.0.1
   cupertino_ui: ^0.0.1
-  pull_down_button: ^0.10.2
 
 
 

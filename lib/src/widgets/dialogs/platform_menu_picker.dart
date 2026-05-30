@@ -6,11 +6,12 @@ import 'package:cupertino_ui/cupertino_ui.dart'
         CupertinoColors,
         CupertinoIcons,
         CupertinoListTile,
+        CupertinoMenuAnchor,
+        CupertinoMenuItem,
         CupertinoPicker,
         showCupertinoModalPopup;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show DropdownMenu, DropdownMenuEntry;
-import 'package:pull_down_button/pull_down_button.dart';
 
 import '/src/models/dialogs/platform_menu_picker_data.dart';
 import '/src/models/platform_widget_base.dart';
@@ -21,7 +22,7 @@ import '/src/models/platform_widget_base.dart';
 /// This widget automatically selects the appropriate menu picker implementation based on the target platform:
 /// - On Android: renders Material Design DropdownMenu
 /// - On iOS: depends on the number of items (see https://developer.apple.com/design/human-interface-guidelines/pickers#Best-practices).
-///     - For 5 or less, it uses PullDownButton.
+///     - For 5 or less, it uses [CupertinoMenuAnchor].
 ///     - For more, it uses showCupertinoModalPopup.
 ///
 /// The menu picker can be configured with platform-specific data through [materialMenuPickerData]
@@ -209,8 +210,8 @@ final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget 
        );
 
   @override
-  Widget build(BuildContext context) => PullDownButton(
-    buttonBuilder: (context, showMenu) => _CupertinoPickerField(
+  Widget build(BuildContext context) => CupertinoMenuAnchor(
+    builder: (context, controller, _) => _CupertinoPickerField(
       value: currentValue,
       menuPickerItemTransformer: menuPickerItemTransformer,
       labelText: labelText,
@@ -218,18 +219,22 @@ final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget 
       backgroundColor: cupertinoBackgroundColor,
       isEnabled: isEnabled,
       useIconButtonVariant: useIconButtonVariant,
-      onTap: showMenu,
+      onTap: () => controller.open(),
     ),
-    itemBuilder: (context) => [
+    menuChildren: [
       for (final valuesAndMenuPickerItems in _Pair.zip(
         items,
         items.map(menuPickerItemTransformer).toList(growable: false),
       ))
-        PullDownMenuItem.selectable(
-          onTap: () => onSelected?.call(valuesAndMenuPickerItems.a),
-          selected: valuesAndMenuPickerItems.a == currentValue,
-          title: valuesAndMenuPickerItems.b.label ?? '',
-          icon: valuesAndMenuPickerItems.b.iconData,
+        CupertinoMenuItem(
+          onPressed: () => onSelected?.call(valuesAndMenuPickerItems.a),
+          leading: valuesAndMenuPickerItems.b.iconData == null
+              ? null
+              : Icon(valuesAndMenuPickerItems.b.iconData),
+          trailing: valuesAndMenuPickerItems.a == currentValue
+              ? const Icon(CupertinoIcons.check_mark)
+              : null,
+          child: Text(valuesAndMenuPickerItems.b.label ?? ''),
         ),
     ],
   );
