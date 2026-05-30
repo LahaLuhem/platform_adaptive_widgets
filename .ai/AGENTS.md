@@ -142,6 +142,13 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    `platform*` extension helpers stay around for callers who knowingly accept
    the size cost; internally we always inline. See
    [`APPENDIX.md#aot-pruning-rules`](../APPENDIX.md#aot-pruning-rules).
+   **Enforced on every PR** by two CI guards:
+   [`test/aot_pruning_regression_test.dart`](../test/aot_pruning_regression_test.dart)
+   (static AST lint over `lib/src/`) and
+   [`tool/check_size_regression.dart`](../tool/check_size_regression.dart)
+   (size benchmark over an Android build of `tool/size_harness/`). A regression
+   trips at least one of them. Don't disable or weaken either without an
+   explicit conversation.
 8. **`CHANGELOG.md` and `version:` move together with the release tag.** Routine
    CHANGELOG appends are bot-driven (`changelog.yml` + `cider`), but cutting a
    release — bumping `version:`, finalising the `[Unreleased]` section, committing,

@@ -1,0 +1,21 @@
+name: size_harness
+description: >-
+  Minimal Flutter app built by the size-regression CI job to verify that AOT
+  pruning still strips Cupertino code from an Android build of code that
+  consumes the package. Not shipped. Platform scaffolding (android/, ios/) is
+  generated on demand by `flutter create --platforms=android .` in CI.
+publish_to: 'none'
+version: 0.0.1
+
+environment:
+  sdk: ">=3.12.0 <4.0.0"
+  flutter: ">=3.44.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  platform_adaptive_widgets:
+    path: ../..
+
+flutter:
+  uses-material-design: true
