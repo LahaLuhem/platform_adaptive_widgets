@@ -27,6 +27,7 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/source/line_info.dart';
+import 'package:checks/checks.dart';
 import 'package:test/test.dart';
 
 const _helperHomeBasename = 'context_extensions.dart';
@@ -52,17 +53,16 @@ void main() {
         parsed.unit.accept(visitor);
         offenders.addAll(visitor.offenders);
       }
-      expect(
-        offenders,
-        isEmpty,
-        reason:
+      check(
+        because:
             'Files in lib/src/ call the dispatch helpers '
             '($_forbiddenHelperNames). These take both Material and Cupertino '
             'values/closures as parameters, so the unused arm stays lexically '
             'reachable and AOT pruning cannot drop it. Use inline '
             '`switch (defaultTargetPlatform)` at the call site instead. See '
             'APPENDIX.md#aot-pruning-rules.',
-      );
+        offenders,
+      ).isEmpty();
     });
 
     test('no private helper in lib/src takes both material* and cupertino* '
@@ -78,10 +78,8 @@ void main() {
         parsed.unit.accept(visitor);
         offenders.addAll(visitor.offenders);
       }
-      expect(
-        offenders,
-        isEmpty,
-        reason:
+      check(
+        because:
             'Found private function(s) that take both a material*-named and '
             'a cupertino*-named function-typed parameter. This shape '
             'constructs both closures at the call site, defeating AOT '
@@ -90,7 +88,8 @@ void main() {
             'helpers (e.g. `_runMaterialDialog` vs `_runCupertinoDialog`) '
             'that each take only one builder. See '
             'APPENDIX.md#aot-pruning-rules.',
-      );
+        offenders,
+      ).isEmpty();
     });
   });
 }
