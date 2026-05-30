@@ -33,3 +33,49 @@ jobs:
       - uses: ./.github/actions/setup-flutter
       - run: dart pub global activate dependency_validator
       - run: dart pub global run dependency_validator
+
+  test:
+    name: Tests (AOT pruning guard)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-flutter
+      - run: flutter --no-version-check test
+
+  size-regression:
+    name: AOT pruning size regression
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-flutter
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      # `flutter create` fills in the android/ scaffolding without touching
+      # the checked-in pubspec.yaml or lib/main.dart (it skips existing
+      # files unless --overwrite is passed). See tool/size_harness/.gitignore
+      # for the full list of regenerated paths.
+      - name: Generate Android scaffolding for size harness
+        working-directory: tool/size_harness
+        run: |
+          flutter --no-version-check create \
+            --platforms=android \
+            --org=com.example.sizeharness \
+            --project-name=size_harness \
+            .
+      - name: Resolve harness deps
+        working-directory: tool/size_harness
+        run: flutter --no-version-check pub get
+      - name: Build release APK with size analysis
+        working-directory: tool/size_harness
+        run: |
+          flutter --no-version-check build apk \
+            --release \
+            --analyze-size \
+            --target-platform=android-arm64
+      - name: Check size regression
+        run: |
+          json_file=$(ls -t "$HOME/.flutter-devtools/"apk-code-size-analysis_*.json | head -1)
+          echo "Using $json_file"
+          dart tool/check_size_regression.dart "$json_file"
