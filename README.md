@@ -1,7 +1,30 @@
+[![Package checks](https://github.com/LahaLuhem/platform_adaptive_widgets/actions/workflows/package.yml/badge.svg?branch=master)](https://github.com/LahaLuhem/platform_adaptive_widgets/actions/workflows/package.yml)
+[![Pub Version](https://img.shields.io/pub/v/platform_adaptive_widgets.svg)](https://pub.dev/packages/platform_adaptive_widgets)
+[![Pub Points](https://img.shields.io/pub/points/platform_adaptive_widgets?logo=dart)](https://pub.dev/packages/platform_adaptive_widgets/score)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
-# Platform Adaptive Widgets
+<!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 
-![MIT License](https://img.shields.io/badge/License-MIT-green.svg)
+- [Widgets Catalog](#widgets-catalog)
+  * [Dialogs](#dialogs)
+  * [Interaction](#interaction)
+  * [Layout](#layout)
+  * [Painting](#painting)
+  * [Utilities](#utilities)
+    + [Generic Platform Widgets](#generic-platform-widgets)
+    + [Platform Theme](#platform-theme)
+    + [Context Extensions](#context-extensions)
+    + [Other Extensions](#other-extensions)
+    + [Models](#models)
+- [Base Classes](#base-classes)
+- [Compile-time platform pruning, verified](#compile-time-platform-pruning-verified)
+- [Contributing](#contributing)
+  * [Optional: AI-agent discovery symlinks](#optional-ai-agent-discovery-symlinks)
+- [Contributors](#contributors)
+- [Authors](#authors)
+- [Used By](#used-by)
+
+<!-- TOC end -->
 
 A spiritual rewrite and continuation of [flutter_platform_widgets](https://pub.dev/packages/flutter_platform_widgets) library.
 
@@ -198,8 +221,3 @@ This project is used by the following companies:
 
 - Didata Automatisering B.V
 - Dimerce B.V
-
-## License
-
-[MIT](https://choosealicense.com/licenses/mit/)
-
