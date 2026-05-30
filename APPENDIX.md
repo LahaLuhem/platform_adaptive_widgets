@@ -248,6 +248,36 @@ Callers who relied on the public `targetPlatform` symbol should import
 `isIOS` continue to be exported from
 `package:platform_adaptive_widgets/platform_adaptive_widgets.dart`.
 
+### Enforcement: regression guards on every PR
+
+Two complementary CI checks defend the pruning contract; both run on every PR
+via `.github/workflows/package.yml`.
+
+1. **Static AST lint** — [`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart).
+   Walks `lib/src/` and fails if any file (other than
+   [`context_extensions.dart`](./lib/src/extensions/context_extensions.dart),
+   where they're defined) calls `platformValue` / `platformLazyValue` /
+   `platformValueNullable` / `platformLazyNullable`, or if any private helper
+   declares both a `material*`- and a `cupertino*`-named function-typed
+   parameter. Catches the dominant regression modes — re-using the
+   closure-arg helpers, or factoring dispatch into a sub-helper — in
+   sub-second wall time, locally and in CI.
+2. **AOT size benchmark** — [`tool/check_size_regression.dart`](./tool/check_size_regression.dart)
+   over [`tool/size_harness/`](./tool/size_harness/). CI builds the harness
+   for `android-arm64` with `--analyze-size`, walks the symbol JSON, and
+   fails if the total bytes whose path contains "cupertino" exceed the
+   budget set at the top of the parser. The harness exercises every
+   `showPlatformXxx`, one `PlatformWidgetBase` subclass, the
+   `context.platformIcon` extension, and the `isAndroid` getter — so a
+   pruning failure on any of those surfaces fails the build empirically,
+   even if it slips past the static lint.
+
+Necessary-but-not-sufficient (static) plus empirical (size) is the two-layer
+contract. When the size budget needs raising because a Flutter SDK update
+genuinely grew the Cupertino baseline, retune the constant in
+`check_size_regression.dart` — never to silence a real leak, only to
+re-baseline noise.
+
 ---
 
 <a id="two-entry-point-example"></a>

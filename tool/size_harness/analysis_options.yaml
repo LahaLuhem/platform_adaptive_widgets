@@ -1,0 +1,8 @@
+# Checked-in to override the `flutter create`-generated default, which
+# `include:`s `package:flutter_lints/flutter.yaml` — unresolvable from the
+# root package's context and noisy under `dart format .` / `dart fix`.
+#
+# The harness is a one-file demo; default Dart lints are enough.
+
+formatter:
+  page_width: 100

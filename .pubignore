@@ -5,3 +5,5 @@ ios/**
 **/ios/Flutter/flutter_export_environment.sh
 **/ios/Runner/GeneratedPluginRegistrant.*
 test/
+tool/
+*.iml
