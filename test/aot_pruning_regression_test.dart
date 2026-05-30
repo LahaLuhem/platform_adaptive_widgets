@@ -107,27 +107,27 @@ Iterable<File> _dartFilesIn(String dir) sync* {
 }
 
 class _HelperCallVisitor extends RecursiveAstVisitor<void> {
-  _HelperCallVisitor(this.filePath, this.lineInfo);
+  _HelperCallVisitor(this._filePath, this._lineInfo);
 
-  final String filePath;
-  final LineInfo lineInfo;
+  final String _filePath;
+  final LineInfo _lineInfo;
   final List<String> offenders = [];
 
   @override
   void visitMethodInvocation(MethodInvocation node) {
     if (_forbiddenHelperNames.contains(node.methodName.name)) {
-      final loc = lineInfo.getLocation(node.offset);
-      offenders.add('$filePath:${loc.lineNumber}: calls ${node.methodName.name}(...)');
+      final loc = _lineInfo.getLocation(node.offset);
+      offenders.add('$_filePath:${loc.lineNumber}: calls ${node.methodName.name}(...)');
     }
     super.visitMethodInvocation(node);
   }
 }
 
 class _DispatchHelperVisitor extends RecursiveAstVisitor<void> {
-  _DispatchHelperVisitor(this.filePath, this.lineInfo);
+  _DispatchHelperVisitor(this._filePath, this._lineInfo);
 
-  final String filePath;
-  final LineInfo lineInfo;
+  final String _filePath;
+  final LineInfo _lineInfo;
   final List<String> offenders = [];
 
   @override
@@ -159,9 +159,9 @@ class _DispatchHelperVisitor extends RecursiveAstVisitor<void> {
       if (pname.startsWith('cupertino')) hasCupertino = true;
     }
     if (hasMaterial && hasCupertino) {
-      final loc = lineInfo.getLocation(offset);
+      final loc = _lineInfo.getLocation(offset);
       offenders.add(
-        '$filePath:${loc.lineNumber}: private function `$name` takes both '
+        '$_filePath:${loc.lineNumber}: private function `$name` takes both '
         'material* and cupertino* function-typed params',
       );
     }
