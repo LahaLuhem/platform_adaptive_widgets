@@ -95,7 +95,7 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    `PlatformWidgetBuilderBase` / `PlatformWidgetKeyedBuilderBase` from
    [`lib/src/models/platform_widget_base.dart`](../lib/src/models/platform_widget_base.dart).
 2. Overrides `buildMaterial(context)` and `buildCupertino(context)`. The abstract base's
-   `build` is `@nonVirtual` — it switches on `targetPlatform` and delegates. Don't
+   `build` is `@nonVirtual` — it switches on `defaultTargetPlatform` and delegates. Don't
    override `build` directly.
 3. Accepts three (sometimes two) data classes in its constructor:
    `PlatformXxxData` for params that apply to both platforms, `MaterialXxxData` for
@@ -130,6 +130,18 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    every new `PlatformXxx` widget.** Do not override `build`; override `buildMaterial`
    and `buildCupertino`. The base hierarchy enforces the dispatch invariant — see
    [`APPENDIX.md#platform-widget-base-hierarchy`](../APPENDIX.md#platform-widget-base-hierarchy).
+8. **Inline `switch (defaultTargetPlatform)` for platform dispatch outside
+   `PlatformWidgetBase`.** For top-level helpers like `showPlatformXxx`, route the
+   switch directly at the construction site and call only the matching-platform
+   private helper from each arm — do not pass both platforms' values/closures into
+   `context.platformLazyValue(material: …, cupertino: …)` or any other
+   argument-taking helper from internal code. Closure args are evaluated at the
+   call site before the helper's switch runs, which defeats AOT pruning of the
+   unused-platform branch (verified empirically — recovering pruning shaved
+   ~192 KB from the example's Android `libapp.so` on 2026-05-30). The public
+   `platform*` extension helpers stay around for callers who knowingly accept
+   the size cost; internally we always inline. See
+   [`APPENDIX.md#aot-pruning-rules`](../APPENDIX.md#aot-pruning-rules).
 8. **`CHANGELOG.md` and `version:` move together with the release tag.** Routine
    CHANGELOG appends are bot-driven (`changelog.yml` + `cider`), but cutting a
    release — bumping `version:`, finalising the `[Unreleased]` section, committing,

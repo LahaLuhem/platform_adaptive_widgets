@@ -1,9 +1,9 @@
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoAlertDialog, showCupertinoDialog;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart'
     show ScaffoldMessenger, SnackBar, SnackBarAction, SnackBarBehavior;
 
-import '/src/extensions/context_extensions.dart';
 import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_dialog_data.dart';
 import 'platform_dialog.dart';
@@ -35,33 +35,34 @@ Future<void> showPlatformSimpleAlert({
   Clip materialClipBehavior = Clip.hardEdge,
   String? cupertinoTitle,
   PlatformDialogData? cupertinoDialogData,
-}) => context.platformLazyValue(
-  material: () => ScaffoldMessenger.of(context)
-      .showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: materialBackgroundColor,
-          elevation: materialElevation,
-          margin: materialMargin,
-          padding: materialPadding,
-          width: materialWidth,
-          shape: materialShape,
-          hitTestBehavior: materialHitTestBehavior,
-          behavior: materialSnackBarBehavior,
-          action: materialAction,
-          actionOverflowThreshold: materialActionOverflowThreshold,
-          showCloseIcon: materialShowCloseIcon,
-          closeIconColor: materialCloseIconColor,
-          clipBehavior: materialClipBehavior,
-          duration: materialDuration,
-          persist: materialPersist,
-          animation: materialAnimation,
-          onVisible: materialOnVisible,
-          dismissDirection: materialDismissDirection,
-        ),
-      )
-      .closed,
-  cupertino: () => showCupertinoDialog(
+}) => switch (defaultTargetPlatform) {
+  .android =>
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: materialBackgroundColor,
+            elevation: materialElevation,
+            margin: materialMargin,
+            padding: materialPadding,
+            width: materialWidth,
+            shape: materialShape,
+            hitTestBehavior: materialHitTestBehavior,
+            behavior: materialSnackBarBehavior,
+            action: materialAction,
+            actionOverflowThreshold: materialActionOverflowThreshold,
+            showCloseIcon: materialShowCloseIcon,
+            closeIconColor: materialCloseIconColor,
+            clipBehavior: materialClipBehavior,
+            duration: materialDuration,
+            persist: materialPersist,
+            animation: materialAnimation,
+            onVisible: materialOnVisible,
+            dismissDirection: materialDismissDirection,
+          ),
+        )
+        .closed,
+  .iOS => showCupertinoDialog(
     context: context,
     builder: (context) => CupertinoAlertDialog(
       title: cupertinoTitle == null ? null : Text(cupertinoTitle),
@@ -81,6 +82,7 @@ Future<void> showPlatformSimpleAlert({
     useRootNavigator: cupertinoDialogData?.useRootNavigator ?? kDefaultUseRootNavigator,
     requestFocus: cupertinoDialogData?.requestFocus,
   ),
-);
+  _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+};
 
 const _snackBarDisplayDuration = Duration(seconds: 4);

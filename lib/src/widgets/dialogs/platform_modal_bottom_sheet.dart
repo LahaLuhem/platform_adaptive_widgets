@@ -1,8 +1,7 @@
 import 'package:cupertino_ui/cupertino_ui.dart' show showCupertinoModalPopup;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show showModalBottomSheet;
-
-import '/src/extensions/context_extensions.dart';
 
 /// Shows a platform-adaptive modal bottom sheet that renders Material showModalBottomSheet on Android
 /// and showCupertinoModalPopup on iOS.
@@ -26,7 +25,8 @@ import '/src/extensions/context_extensions.dart';
 Future<T?> showPlatformModalBottomSheet<T>({
   required BuildContext context,
   required WidgetBuilder builder,
-}) => context.platformLazyValue(
-  material: () => showModalBottomSheet<T>(context: context, builder: builder),
-  cupertino: () => showCupertinoModalPopup<T>(context: context, builder: builder),
-);
+}) => switch (defaultTargetPlatform) {
+  .android => showModalBottomSheet<T>(context: context, builder: builder),
+  .iOS => showCupertinoModalPopup<T>(context: context, builder: builder),
+  _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+};

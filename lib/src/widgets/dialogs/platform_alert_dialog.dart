@@ -41,57 +41,64 @@ Future<T?> showPlatformAlertDialog<T>({
   Widget? content,
   List<Widget>? actions,
   Key? key,
-}) => _showBasePlatformDialog<T>(
-  context: context,
-  materialBuilder: (context) => AlertDialog(
-    key: materialAlertDialogData?.widgetKey ?? key,
-    title: materialAlertDialogData?.title ?? title,
-    content: materialAlertDialogData?.content ?? content,
-    actions: materialAlertDialogData?.actions ?? actions,
-    icon: materialAlertDialogData?.icon,
-    iconPadding: materialAlertDialogData?.iconPadding,
-    iconColor: materialAlertDialogData?.iconColor,
-    titlePadding: materialAlertDialogData?.titlePadding,
-    titleTextStyle: materialAlertDialogData?.titleTextStyle,
-    contentPadding: materialAlertDialogData?.contentPadding,
-    contentTextStyle: materialAlertDialogData?.contentTextStyle,
-    actionsPadding: materialAlertDialogData?.actionsPadding,
-    actionsAlignment: materialAlertDialogData?.actionsAlignment,
-    actionsOverflowAlignment: materialAlertDialogData?.actionsOverflowAlignment,
-    actionsOverflowDirection: materialAlertDialogData?.actionsOverflowDirection,
-    actionsOverflowButtonSpacing: materialAlertDialogData?.actionsOverflowButtonSpacing,
-    buttonPadding: materialAlertDialogData?.buttonPadding,
-    backgroundColor: materialAlertDialogData?.backgroundColor,
-    elevation: materialAlertDialogData?.elevation,
-    shadowColor: materialAlertDialogData?.shadowColor,
-    surfaceTintColor: materialAlertDialogData?.surfaceTintColor,
-    semanticLabel: materialAlertDialogData?.semanticLabel,
-    insetPadding: materialAlertDialogData?.insetPadding,
-    clipBehavior: materialAlertDialogData?.clipBehavior,
-    shape: materialAlertDialogData?.shape,
-    alignment: materialAlertDialogData?.alignment,
-    constraints: materialAlertDialogData?.constraints,
-    scrollable: materialAlertDialogData?.scrollable ?? MaterialAlertDialogData.kDefaultScrollable,
+}) => switch (defaultTargetPlatform) {
+  .android => _runMaterialDialog<T>(
+    context: context,
+    materialBuilder: (context) => AlertDialog(
+      key: materialAlertDialogData?.widgetKey ?? key,
+      title: materialAlertDialogData?.title ?? title,
+      content: materialAlertDialogData?.content ?? content,
+      actions: materialAlertDialogData?.actions ?? actions,
+      icon: materialAlertDialogData?.icon,
+      iconPadding: materialAlertDialogData?.iconPadding,
+      iconColor: materialAlertDialogData?.iconColor,
+      titlePadding: materialAlertDialogData?.titlePadding,
+      titleTextStyle: materialAlertDialogData?.titleTextStyle,
+      contentPadding: materialAlertDialogData?.contentPadding,
+      contentTextStyle: materialAlertDialogData?.contentTextStyle,
+      actionsPadding: materialAlertDialogData?.actionsPadding,
+      actionsAlignment: materialAlertDialogData?.actionsAlignment,
+      actionsOverflowAlignment: materialAlertDialogData?.actionsOverflowAlignment,
+      actionsOverflowDirection: materialAlertDialogData?.actionsOverflowDirection,
+      actionsOverflowButtonSpacing: materialAlertDialogData?.actionsOverflowButtonSpacing,
+      buttonPadding: materialAlertDialogData?.buttonPadding,
+      backgroundColor: materialAlertDialogData?.backgroundColor,
+      elevation: materialAlertDialogData?.elevation,
+      shadowColor: materialAlertDialogData?.shadowColor,
+      surfaceTintColor: materialAlertDialogData?.surfaceTintColor,
+      semanticLabel: materialAlertDialogData?.semanticLabel,
+      insetPadding: materialAlertDialogData?.insetPadding,
+      clipBehavior: materialAlertDialogData?.clipBehavior,
+      shape: materialAlertDialogData?.shape,
+      alignment: materialAlertDialogData?.alignment,
+      constraints: materialAlertDialogData?.constraints,
+      scrollable: materialAlertDialogData?.scrollable ?? MaterialAlertDialogData.kDefaultScrollable,
+    ),
+    platformDialogData: platformDialogData,
+    materialDialogData: materialDialogData,
   ),
-  cupertinoBuilder: (context) => CupertinoAlertDialog(
-    key: cupertinoAlertDialogData?.widgetKey ?? key,
-    title: cupertinoAlertDialogData?.title ?? title,
-    content: cupertinoAlertDialogData?.content ?? content,
-    actions:
-        cupertinoAlertDialogData?.actions ?? actions ?? CupertinoAlertDialogData.kDefaultActions,
-    scrollController: cupertinoAlertDialogData?.scrollController,
-    actionScrollController: cupertinoAlertDialogData?.actionScrollController,
-    insetAnimationDuration:
-        cupertinoAlertDialogData?.insetAnimationDuration ??
-        CupertinoAlertDialogData.kDefaultInsetAnimationDuration,
-    insetAnimationCurve:
-        cupertinoAlertDialogData?.insetAnimationCurve ??
-        CupertinoAlertDialogData.kDefaultInsetAnimationCurve,
+  .iOS => _runCupertinoDialog<T>(
+    context: context,
+    cupertinoBuilder: (context) => CupertinoAlertDialog(
+      key: cupertinoAlertDialogData?.widgetKey ?? key,
+      title: cupertinoAlertDialogData?.title ?? title,
+      content: cupertinoAlertDialogData?.content ?? content,
+      actions:
+          cupertinoAlertDialogData?.actions ?? actions ?? CupertinoAlertDialogData.kDefaultActions,
+      scrollController: cupertinoAlertDialogData?.scrollController,
+      actionScrollController: cupertinoAlertDialogData?.actionScrollController,
+      insetAnimationDuration:
+          cupertinoAlertDialogData?.insetAnimationDuration ??
+          CupertinoAlertDialogData.kDefaultInsetAnimationDuration,
+      insetAnimationCurve:
+          cupertinoAlertDialogData?.insetAnimationCurve ??
+          CupertinoAlertDialogData.kDefaultInsetAnimationCurve,
+    ),
+    platformDialogData: platformDialogData,
+    cupertinoDialogData: cupertinoDialogData,
   ),
-  platformDialogData: platformDialogData,
-  materialDialogData: materialDialogData,
-  cupertinoDialogData: cupertinoDialogData,
-);
+  _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+};
 
 /// A platform-adaptive dialog action button that renders TextButton on Android
 /// and CupertinoDialogAction on iOS.

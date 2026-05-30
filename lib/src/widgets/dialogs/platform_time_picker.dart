@@ -2,10 +2,10 @@
 
 import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoColors, CupertinoDatePicker, showCupertinoModalPopup;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show TimeOfDay, showTimePicker;
 
-import '/src/extensions/context_extensions.dart';
 import '/src/extensions/time_of_day_extensions.dart';
 import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_date_picker_data.dart';
@@ -39,8 +39,8 @@ Future<TimeOfDay?> showPlatformTimePicker({
   TransitionBuilder? builder,
   MaterialTimePickerData? materialTimePickerData,
   CupertinoDatePickerData? cupertinoTimePickerData,
-}) => context.platformLazyValue(
-  material: () => showTimePicker(
+}) => switch (defaultTargetPlatform) {
+  .android => showTimePicker(
     context: context,
     initialTime: initialTime,
     anchorPoint: materialTimePickerData?.anchorPoint ?? anchorPoint,
@@ -67,62 +67,84 @@ Future<TimeOfDay?> showPlatformTimePicker({
     switchToTimerEntryModeIcon: materialTimePickerData?.switchToTimerEntryModeIcon,
     emptyInitialInput: materialTimePickerData?.emptyInitialInput ?? false,
   ),
-  cupertino: () async {
-    var selectedDateTime = initialTime.toDateTime();
-    final resolvedBuilder = cupertinoTimePickerData?.builder ?? builder;
+  .iOS => _showCupertinoTimePicker(
+    context: context,
+    initialTime: initialTime,
+    anchorPoint: anchorPoint,
+    barrierColor: barrierColor,
+    barrierDismissible: barrierDismissible,
+    routeSettings: routeSettings,
+    useRootNavigator: useRootNavigator,
+    builder: builder,
+    cupertinoTimePickerData: cupertinoTimePickerData,
+  ),
+  _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+};
 
-    final pickerWidget = CupertinoDatePicker(
-      initialDateTime: selectedDateTime,
-      selectableDayPredicate: cupertinoTimePickerData?.selectableDayPredicate,
-      mode: .time,
-      onDateTimeChanged: (dateTime) => selectedDateTime = dateTime,
-      backgroundColor: cupertinoTimePickerData?.backgroundColor,
-      changeReportingBehavior:
-          cupertinoTimePickerData?.changeReportingBehavior ??
-          ChangeReportingBehavior.onScrollUpdate,
-      dateOrder: cupertinoTimePickerData?.dateOrder,
-      itemExtent: cupertinoTimePickerData?.itemExtent ?? CupertinoDatePickerData.kDefaultItemExtent,
-      maximumYear: cupertinoTimePickerData?.maximumYear,
-      minimumYear:
-          cupertinoTimePickerData?.minimumYear ?? CupertinoDatePickerData.kDefaultMinimumYear,
-      minuteInterval:
-          cupertinoTimePickerData?.minuteInterval ?? CupertinoDatePickerData.kDefaultMinuteInterval,
-      selectionOverlayBuilder: cupertinoTimePickerData?.selectionOverlayBuilder,
-      showDayOfWeek:
-          cupertinoTimePickerData?.showDayOfWeek ?? CupertinoDatePickerData.kDefaultShowDayOfWeek,
-      showTimeSeparator:
-          cupertinoTimePickerData?.showTimeSeparator ??
-          CupertinoDatePickerData.kDefaultShowTimeSeparator,
-      use24hFormat:
-          cupertinoTimePickerData?.use24hFormat ?? CupertinoDatePickerData.kDefaultUse24hFormat,
-    );
+Future<TimeOfDay?> _showCupertinoTimePicker({
+  required BuildContext context,
+  required TimeOfDay initialTime,
+  required Offset? anchorPoint,
+  required Color? barrierColor,
+  required bool? barrierDismissible,
+  required RouteSettings? routeSettings,
+  required bool useRootNavigator,
+  required TransitionBuilder? builder,
+  required CupertinoDatePickerData? cupertinoTimePickerData,
+}) async {
+  var selectedDateTime = initialTime.toDateTime();
+  final resolvedBuilder = cupertinoTimePickerData?.builder ?? builder;
 
-    await showCupertinoModalPopup<void>(
-      context: context,
-      anchorPoint: cupertinoTimePickerData?.anchorPoint ?? anchorPoint,
-      barrierColor:
-          cupertinoTimePickerData?.barrierColor ??
-          barrierColor ??
-          CupertinoDatePickerData.kDefaultModalBarrierColor,
-      barrierDismissible:
-          cupertinoTimePickerData?.barrierDismissible ??
-          barrierDismissible ??
-          kCupertinoBarrierDismissible,
-      routeSettings: cupertinoTimePickerData?.routeSettings ?? routeSettings,
-      useRootNavigator: cupertinoTimePickerData?.useRootNavigator ?? useRootNavigator,
-      filter: cupertinoTimePickerData?.filter,
-      requestFocus: cupertinoTimePickerData?.requestFocus,
-      semanticsDismissible:
-          cupertinoTimePickerData?.semanticsDismissible ??
-          CupertinoDatePickerData.kDefaultSemanticsDismissible,
-      builder: (context) =>
-          resolvedBuilder?.call(context, pickerWidget) ??
-          _CupertinoPickerContainer(pickerWidget: pickerWidget),
-    );
+  final pickerWidget = CupertinoDatePicker(
+    initialDateTime: selectedDateTime,
+    selectableDayPredicate: cupertinoTimePickerData?.selectableDayPredicate,
+    mode: .time,
+    onDateTimeChanged: (dateTime) => selectedDateTime = dateTime,
+    backgroundColor: cupertinoTimePickerData?.backgroundColor,
+    changeReportingBehavior:
+        cupertinoTimePickerData?.changeReportingBehavior ?? ChangeReportingBehavior.onScrollUpdate,
+    dateOrder: cupertinoTimePickerData?.dateOrder,
+    itemExtent: cupertinoTimePickerData?.itemExtent ?? CupertinoDatePickerData.kDefaultItemExtent,
+    maximumYear: cupertinoTimePickerData?.maximumYear,
+    minimumYear:
+        cupertinoTimePickerData?.minimumYear ?? CupertinoDatePickerData.kDefaultMinimumYear,
+    minuteInterval:
+        cupertinoTimePickerData?.minuteInterval ?? CupertinoDatePickerData.kDefaultMinuteInterval,
+    selectionOverlayBuilder: cupertinoTimePickerData?.selectionOverlayBuilder,
+    showDayOfWeek:
+        cupertinoTimePickerData?.showDayOfWeek ?? CupertinoDatePickerData.kDefaultShowDayOfWeek,
+    showTimeSeparator:
+        cupertinoTimePickerData?.showTimeSeparator ??
+        CupertinoDatePickerData.kDefaultShowTimeSeparator,
+    use24hFormat:
+        cupertinoTimePickerData?.use24hFormat ?? CupertinoDatePickerData.kDefaultUse24hFormat,
+  );
 
-    return TimeOfDay.fromDateTime(selectedDateTime);
-  },
-);
+  await showCupertinoModalPopup<void>(
+    context: context,
+    anchorPoint: cupertinoTimePickerData?.anchorPoint ?? anchorPoint,
+    barrierColor:
+        cupertinoTimePickerData?.barrierColor ??
+        barrierColor ??
+        CupertinoDatePickerData.kDefaultModalBarrierColor,
+    barrierDismissible:
+        cupertinoTimePickerData?.barrierDismissible ??
+        barrierDismissible ??
+        kCupertinoBarrierDismissible,
+    routeSettings: cupertinoTimePickerData?.routeSettings ?? routeSettings,
+    useRootNavigator: cupertinoTimePickerData?.useRootNavigator ?? useRootNavigator,
+    filter: cupertinoTimePickerData?.filter,
+    requestFocus: cupertinoTimePickerData?.requestFocus,
+    semanticsDismissible:
+        cupertinoTimePickerData?.semanticsDismissible ??
+        CupertinoDatePickerData.kDefaultSemanticsDismissible,
+    builder: (context) =>
+        resolvedBuilder?.call(context, pickerWidget) ??
+        _CupertinoPickerContainer(pickerWidget: pickerWidget),
+  );
+
+  return TimeOfDay.fromDateTime(selectedDateTime);
+}
 
 class _CupertinoPickerContainer extends StatelessWidget {
   final CupertinoDatePicker pickerWidget;
