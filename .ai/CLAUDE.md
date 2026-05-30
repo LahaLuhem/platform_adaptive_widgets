@@ -119,13 +119,16 @@ explicitly says "cut a release"; see *Forbidden / confirm-first actions* below.
   through the tag-triggered workflow at `.github/workflows/publish.yml`; pushing a
   matching `X.Y.Z` git tag is the trigger and is itself a confirm-first action.
 - **Never** push a semver tag (`git push origin <tag>` or `git push --tags`) without
-  explicit instruction. The tag is what triggers `dart-lang/setup-dart`'s publish
-  workflow via OIDC — there is no manual confirmation step on the pub.dev side.
+  explicit instruction. The tag triggers `.github/workflows/publish.yml`, which
+  authenticates to pub.dev via OIDC (configured by `dart-lang/setup-dart`) — there is
+  no manual confirmation step on the pub.dev side.
 - **Never** edit `CHANGELOG.md` or the `version:` field in `pubspec.yaml` without an
-  explicit user instruction to cut a release. The three things (`CHANGELOG.md` entry,
-  `version:` bump, matching tag) must move together; touching one in isolation breaks
-  the lockstep. (A release pipeline is planned but not yet wired — see
-  [AGENTS.md#pr-conventions-planned-not-yet-wired](./AGENTS.md#pr-conventions-planned-not-yet-wired).)
+  explicit user instruction to cut a release. Routine CHANGELOG appends are handled
+  by the `changelog.yml` bot on PR merge — don't add entries by hand during normal
+  PR work. Release-time edits (`version:` bump + finalising `## [Unreleased]` +
+  tagging) move as one atomic unit; touching one in isolation breaks the lockstep.
+  The one-shot release script (auto-bump + auto-finalise + auto-tag) is still not
+  wired — see [AGENTS.md#pr-conventions](./AGENTS.md#pr-conventions).
 - **Never** edit `pubspec.lock` directly (root or `example/`). It's `flutter pub get`'s
   output.
 - **Never** delete files under `.fvm/`, `.dart_tool/`, or `pubspec.lock` without

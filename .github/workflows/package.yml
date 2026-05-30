@@ -1,0 +1,35 @@
+name: Package checks
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+
+concurrency:
+  # Pull-request runs cancel each other per PR; master-branch runs cancel only
+  # against later master commits. The `|| github.ref` fallback keeps the group
+  # well-formed on push events where `pull_request.number` is empty.
+  group: pkg-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: Flutter analyze
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-flutter
+      - run: flutter --no-version-check analyze lib
+
+  deps:
+    name: Dependency validator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-flutter
+      - run: dart pub global activate dependency_validator
+      - run: dart pub global run dependency_validator

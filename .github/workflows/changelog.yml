@@ -1,0 +1,107 @@
+name: Update changelog
+
+on:
+  pull_request_target:
+    types: [closed]
+    branches: [master]
+
+# Serialize so back-to-back merges don't race on the push to master.
+# cancel-in-progress is OFF — every merged PR must actually get its line.
+concurrency:
+  group: changelog-master
+  cancel-in-progress: false
+
+# pull_request_target runs in the base-repo context, so GITHUB_TOKEN write
+# scopes are honoured even when the PR comes from a fork. The workflow file
+# always loads from master (never from the PR), and we never check out PR code,
+# so the write token is not exposed to PR-controlled scripts.
+permissions:
+  contents: write
+
+jobs:
+  log:
+    name: Append cider entry
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve sem-* label → cider type
+        id: sem
+        env:
+          LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        run: |
+          sem=$(echo "$LABELS" | jq -r '.[] | select(startswith("sem-"))' | head -n1)
+          case "$sem" in
+            sem-skip)      echo 'type=skip'       >> "$GITHUB_OUTPUT" ;;
+            sem-add)       echo 'type=added'      >> "$GITHUB_OUTPUT" ;;
+            sem-change)    echo 'type=changed'    >> "$GITHUB_OUTPUT" ;;
+            sem-deprecate) echo 'type=deprecated' >> "$GITHUB_OUTPUT" ;;
+            sem-remove)    echo 'type=removed'    >> "$GITHUB_OUTPUT" ;;
+            sem-bugfix)    echo 'type=fixed'      >> "$GITHUB_OUTPUT" ;;
+            sem-security)  echo 'type=security'   >> "$GITHUB_OUTPUT" ;;
+            *)
+              if [ -z "$sem" ]; then
+                echo "::error::PR has no sem-* label. pr-conventions should have blocked this — investigate."
+              else
+                echo "::error::Unrecognized sem-* label: '$sem'."
+              fi
+              exit 1
+              ;;
+          esac
+
+      - name: Skip (sem-skip)
+        if: steps.sem.outputs.type == 'skip'
+        run: echo 'sem-skip applied — no changelog entry.'
+
+      # Mint a short-lived (~1 h) installation token for the GitHub App
+      # configured to bypass master's ruleset. We can't use the default
+      # GITHUB_TOKEN here because branch protection blocks
+      # `github-actions[bot]` direct pushes, and the bot identity is not
+      # surface-able in the ruleset's bypass list. The App is — via the
+      # ruleset's "Apps" bypass tab — and the install token authenticates
+      # as the App.
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        if: steps.sem.outputs.type != 'skip'
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v4
+        if: steps.sem.outputs.type != 'skip'
+        with:
+          ref: master
+          token: ${{ steps.app-token.outputs.token }}
+
+      # No project deps needed — cider is installed via `pub global activate`.
+      # Skip the setup-flutter composite (which runs `flutter pub get`) for the
+      # same reason repo.yml's format job does: ~10-30s faster per run.
+      - uses: dart-lang/setup-dart@v1
+        if: steps.sem.outputs.type != 'skip'
+        with:
+          sdk: stable
+
+      - name: Activate cider
+        if: steps.sem.outputs.type != 'skip'
+        run: dart pub global activate cider
+
+      - name: Append entry and push
+        if: steps.sem.outputs.type != 'skip'
+        env:
+          TYPE: ${{ steps.sem.outputs.type }}
+          TITLE: ${{ github.event.pull_request.title }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          # Look up the bot's GitHub user ID at runtime so the commit links
+          # to the App's avatar in GitHub's UI. The ID is stable across
+          # repos for the same App; resolving it here avoids hard-coding
+          # a value the maintainer would otherwise need to look up.
+          APP_USER_ID=$(curl -s "https://api.github.com/users/${APP_SLUG}%5Bbot%5D" | jq -r .id)
+          git config user.name  "${APP_SLUG}[bot]"
+          git config user.email "${APP_USER_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
+          dart pub global run cider log "$TYPE" "$TITLE"
+          git add CHANGELOG.md
+          # [skip ci] now matters: App-token pushes DO trigger workflows
+          # (unlike GITHUB_TOKEN pushes, which don't). The marker prevents
+          # this commit from re-triggering the package CI on master.
+          git commit -m 'Changelog updated [skip ci]'
+          git push origin HEAD:master

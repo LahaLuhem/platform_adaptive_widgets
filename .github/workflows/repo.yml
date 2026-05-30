@@ -1,0 +1,26 @@
+name: Repo-wide checks
+
+on:
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}-repo
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    name: Dart format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      # Format scans files in place; no pub-get needed. The setup-flutter composite
+      # is reserved for jobs that need resolved dependencies — skipping it here
+      # saves ~10-30s per run.
+      - run: dart format --output=none --set-exit-if-changed .

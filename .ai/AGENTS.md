@@ -28,14 +28,21 @@ README for the full widget catalogue; APPENDIX for design rationale.
   `PlatformWidgetBase.build` switch throws `UnsupportedError` for anything else.
 - **Published to pub.dev.** `.pubignore` controls what ships in the tarball. The
   `.github/workflows/publish.yml` workflow fires on a pushed semver tag
-  (`{{version}}`) and runs `dart-lang/setup-dart/.github/workflows/publish.yml@v1` via
-  OIDC — no manual `flutter pub publish` invocation.
+  (`{{version}}`) and publishes via OIDC (configured by `dart-lang/setup-dart`). The
+  job is inlined — not the reusable
+  `dart-lang/setup-dart/.github/workflows/publish.yml@v1` — so it can run
+  `flutter pub get --no-example`, which keeps `example/pubspec.lock` byte-identical
+  through the publish dry-run. No manual `flutter pub publish` invocation.
 - **`CHANGELOG.md`, the `version:` field in `pubspec.yaml`, and the release tag** are
-  the three things that must move in lockstep for a release. Today they are hand-edited
-  (no `cider`, no release script). Treat them as a single atomic unit: bump the
-  `version:`, append a `## X.Y.Z - YYYY-MM-DD` section to `CHANGELOG.md` with
-  `### Added / Changed / Fixed / Removed` subheads as appropriate, commit, then push a
-  matching tag. The publish workflow does the rest.
+  the three things that must move in lockstep for a release. CHANGELOG entries are
+  appended automatically by `.github/workflows/changelog.yml` on every merged PR
+  (driven by the PR's `sem-*` label and the `cider:` block in `pubspec.yaml`); no
+  manual append is needed during routine PR work. Cutting a release is still hand-
+  driven: run `cider bump <major|minor|patch>` to bump `version:`, `cider release` to
+  convert `## [Unreleased]` to `## [X.Y.Z] - YYYY-MM-DD` and append a diff-link
+  reference, commit the result, then push a matching `X.Y.Z` tag. The publish
+  workflow does the rest. No one-shot release script yet — the
+  bump/commit/tag/push sequence is manual.
 
 ## Repo layout
 ```
@@ -66,8 +73,10 @@ platform_adaptive_widgets/
 ├── pubspec.yaml                                Deps + platforms + topics
 ├── .pubignore                                  Files excluded from `flutter pub publish`
 ├── .fvmrc                                      FVM channel pin (`stable`)
-├── .github/workflows/publish.yml               Tag-triggered pub.dev publish
-├── CHANGELOG.md                                Hand-maintained release log
+├── .github/workflows/                          CI: pr-conventions, changelog, package,
+│                                                example, repo, publish (tag-triggered)
+├── CHANGELOG.md                                Release log (bot-appended on merge,
+│                                                hand-finalised at release)
 ├── README.md                                   pub.dev landing page (widget catalogue)
 ├── APPENDIX.md                                 Design rationale (anchor-keyed)
 ├── CODESTYLE.md                                Library-package code style
@@ -121,20 +130,20 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    every new `PlatformXxx` widget.** Do not override `build`; override `buildMaterial`
    and `buildCupertino`. The base hierarchy enforces the dispatch invariant — see
    [`APPENDIX.md#platform-widget-base-hierarchy`](../APPENDIX.md#platform-widget-base-hierarchy).
-8. **`CHANGELOG.md` and `version:` move together with the release tag.** This is *not*
-   yet automated (no `cider`, no release script). If you edit one without the other two
-   moving in the same commit, the publish workflow's tag push will mismatch the
-   in-tree state. Until the pipeline lands (planned — see below), the discipline is
-   manual; do not edit either file without an explicit user instruction to cut a
-   release. See [*Forbidden / confirm-first actions* in CLAUDE.md](./CLAUDE.md#forbidden-confirm-first-actions).
+8. **`CHANGELOG.md` and `version:` move together with the release tag.** Routine
+   CHANGELOG appends are bot-driven (`changelog.yml` + `cider`), but cutting a
+   release — bumping `version:`, finalising the `[Unreleased]` section, committing,
+   and pushing the matching `X.Y.Z` tag — is still hand-driven. If you edit
+   `version:` or finalise `## [Unreleased]` without the other two moving in the same
+   commit, the publish workflow's tag push will mismatch the in-tree state. Do not
+   edit either file without an explicit user instruction to cut a release; see
+   [*Forbidden / confirm-first actions* in CLAUDE.md](./CLAUDE.md#forbidden-confirm-first-actions).
 
-## PR conventions (planned, not yet wired)
-The reference package (`better_internet_connectivity_checker`) enforces branch-name,
-PR-label, and commit-subject rules through a `.github/workflows/pr-conventions.yml`
-workflow and an auto-CHANGELOG bot driven by `cider`. **None of that exists here yet.**
-The conventions below are the *target* — adopt them in PRs you open by hand so the
-pipeline can land without retroactively reworking history, but no CI currently fails a
-PR for breaking them.
+## PR conventions
+The `.github/workflows/pr-conventions.yml` workflow enforces branch-name, PR-label,
+and commit-subject rules on every PR. On merge, `.github/workflows/changelog.yml`
+auto-appends to `CHANGELOG.md` based on the PR's `sem-*` label (via `cider log`).
+**PRs that don't comply will be blocked by CI.** The conventions:
 
 - **Branch name** — `<type>/#<issue>-<slug>`, where `<type>` is one of
   `feature`, `bugfix`, `chore`, `refactor`, `hotfix`. Example: `chore/#12-tidy-readme`.
@@ -150,14 +159,14 @@ PR for breaking them.
   | `sem-security`  | `### Security`    | Security-relevant fix                          |
   | `sem-skip`      | (skip)            | Internal-only change (CI, docs, tests, …)      |
 
-  The PR title should read as a release-note bullet — once the bot lands, that title
-  becomes the CHANGELOG line.
+  The PR title becomes the CHANGELOG line verbatim — write it as a release-note
+  bullet.
 - **PR body must not be empty**, **no merge commits in the PR range** (rebase to
   integrate `master`), and **commit subjects ≤ 82 characters**.
 
-Until the workflow is wired, treat these as guidelines an attentive reviewer would
-enforce. New AI-agent contributors should still follow them so that turning on the
-pipeline later does not retroactively flag historical PRs.
+A one-shot release script (auto `version:` bump + CHANGELOG finalisation + tag push)
+is still not wired; bump locally with `cider bump <major|minor|patch>` and
+`cider release`, commit, then push the matching tag.
 
 ## Style
 Full guide: [`../CODESTYLE.md`](../CODESTYLE.md). The lint posture is deliberately strict
