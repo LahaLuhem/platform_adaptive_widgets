@@ -124,6 +124,23 @@ All platform widgets extend one of these base classes, which use compile-time `d
 
 ---
 
+## Compile-time platform pruning, verified
+
+Release builds of consumers ship **no Cupertino code on Android** and **no Material
+code on iOS** — `defaultTargetPlatform` is const-folded at AOT, so the unused
+platform's widget bodies become dead code and the Dart compiler tree-shakes them.
+Two CI checks defend that contract on every PR: a **static AST guard**
+([`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart))
+that fails if any helper re-introduces the closure-arg dispatch pattern that
+defeats pruning, and an **empirical size benchmark**
+([`tool/check_size_regression.dart`](./tool/check_size_regression.dart)) that
+builds an Android-only harness with `--analyze-size` and fails if Cupertino-pathed
+bytes exceed a calibrated budget. See
+[`APPENDIX.md#aot-pruning-rules`](./APPENDIX.md#aot-pruning-rules) for the mechanism
+and empirical numbers.
+
+---
+
 ## Contributing
 
 Issues and PRs welcome at
