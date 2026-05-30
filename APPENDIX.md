@@ -62,7 +62,7 @@ heading, keep the anchor stable or grep-and-update every caller.
   `PlatformWidgetBuilderBase` (adds a required `child`),
   `PlatformWidgetKeyedBuilderBase` (both). The base's `build` is `@nonVirtual` —
   subclasses override `buildMaterial(context)` and `buildCupertino(context)`.
-- **Why an abstract base?** The dispatch (`switch (targetPlatform) { .android => …,
+- **Why an abstract base?** The dispatch (`switch (defaultTargetPlatform) { .android => …,
   .iOS => …, _ => throw UnsupportedError(…) }`) is a load-bearing invariant — every
   platform-adaptive widget in the package must use exactly the same dispatch logic,
   or the package's promise ("write app code that doesn't branch on platform")
@@ -155,7 +155,7 @@ heading, keep the anchor stable or grep-and-update every caller.
 
 - **Chosen:** `pubspec.yaml`'s `platforms:` block declares only `android` and `ios`.
   The `PlatformWidgetBase.build` switch falls through to
-  `throw UnsupportedError('This platform is not supported: $targetPlatform')` for
+  `throw UnsupportedError('This platform is not supported: $defaultTargetPlatform')` for
   anything else.
 - **Why?** The package's value proposition is "Material on Android, Cupertino on iOS,
   zero app-code branching". Web / Linux / macOS / Windows do not have a single
@@ -178,26 +178,75 @@ heading, keep the anchor stable or grep-and-update every caller.
 
 ---
 
-<a id="target-platform-utility"></a>
-## `target_platform.dart` is a thin shim, not an abstraction
+<a id="aot-pruning-rules"></a>
+## AOT pruning: which patterns prune, which leak
 
-- **Chosen:** [`lib/src/utils/target_platform.dart`](./lib/src/utils/target_platform.dart)
-  re-exports / wraps Flutter's `defaultTargetPlatform`. It's the single import point
-  for "what platform are we on" inside `lib/src/`.
-- **Why a shim at all?** Centralising the import means:
-  1. Test seams: a future test harness can swap the underlying source without
-     touching every `*PlatformWidgetBase` subclass.
-  2. Search affordance: grep `target_platform.dart` to find every dispatch site at
-     once.
-  3. Forward-compat: if Flutter ever renames or relocates `defaultTargetPlatform`,
-     the fix lands in one file.
-- **Why not abstract it further (a `PlatformInfo` service, a `TargetPlatformProvider`
-  inherited widget)?** The dispatch needs to happen inside every widget's `build` —
-  putting it behind a context-lookup would force every widget to take a
-  `BuildContext` at construction (impossible for `const` constructors) or to do an
-  `InheritedWidget` lookup before the per-platform `buildXxx` call. The current
-  shim is the minimum indirection that keeps the dispatch synchronous and `const`-
-  compatible.
+The package's value proposition includes shipping a smaller Android binary by
+keeping Cupertino code out of Android builds (and vice-versa). Flutter's
+`defaultTargetPlatform` is annotated with `@pragma('vm:platform-const-if',
+!kDebugMode)`, which lets the AOT compiler const-fold `switch
+(defaultTargetPlatform) { … }` in release builds. Whether the unused branch's
+lexical references actually get pruned depends on **how** the dispatch is shaped:
+
+| Pattern | Prunes? | Why |
+|---|---|---|
+| Inline `switch (defaultTargetPlatform)` at the construction site | ✓ | The unused arm becomes dead code; its lexical refs are unreachable. |
+| `PlatformWidgetBase.build` virtual dispatch to `buildMaterial` / `buildCupertino` (small subclass count) | ✓ | Const-folded switch in the base's `build`; subclass methods are devirtualized when the compiler can prove monomorphic call sites. |
+| `PlatformWidgetBase.build` with many concrete subclasses in the binary | partial | Vtable entries for `buildCupertino` remain on each class; method bodies are usually pruned, but class names linger as strings (~30 bytes/class). Real code shrinks; symbol lists do not. |
+| Helper that takes both platform values/closures as args (`platformValue`, `platformLazyValue`, `context.platformLazyValue(material: …, cupertino: …)`) | ✗ | Both args are evaluated at the call site, *before* the helper's internal switch picks one. The unused arg's expression — including any closure construction with lexical refs — stays compiled. |
+| `cupertinoBuilder: (ctx) => CupertinoXxx(...)` passed as an argument | ✗ | Same as above — the closure literal is constructed at the call site regardless of whether the receiving function ever invokes it. |
+
+### Internal rules the package follows
+1. **All `showPlatformXxx` functions switch on `defaultTargetPlatform` *first*,
+   then construct only the matching-platform builder closure / call only the
+   matching-platform private helper.** See
+   [`platform_dialog.dart`](./lib/src/widgets/dialogs/platform_dialog.dart),
+   [`platform_alert_dialog.dart`](./lib/src/widgets/dialogs/platform_alert_dialog.dart),
+   [`platform_date_picker.dart`](./lib/src/widgets/dialogs/platform_date_picker.dart),
+   etc. — each ends with a top-level `switch (defaultTargetPlatform) { .android
+   => _runMaterialXxx(…), .iOS => _runCupertinoXxx(…), _ => throw … }`. The
+   per-platform helpers (`_runMaterialDialog`, `_showCupertinoDatePicker`, …)
+   are private top-level functions so the unused one becomes unreachable on the
+   other platform and is tree-shaken.
+2. **`PlatformXxx` widgets keep using `PlatformWidgetBase`'s virtual `buildMaterial`
+   / `buildCupertino` dispatch.** It prunes correctly for the per-class code
+   bodies; the residual symbol-table entries are negligible. The base class
+   remains the dispatch invariant — see
+   [`#platform-widget-base-hierarchy`](#platform-widget-base-hierarchy).
+3. **`*Data` classes' `static const` defaults referencing Cupertino types do
+   not leak code** — verified empirically; the AOT compiler treats them as
+   metadata and prunes when unreferenced.
+
+### Public helpers in [`context_extensions.dart`](./lib/src/extensions/context_extensions.dart)
+`platformValue`, `platformValueNullable`, `platformLazyValue`, `platformLazyNullable`
+are deliberately kept for ergonomic use, but their dartdoc warns about the
+size-cost. The package itself does not use the lazy variants internally; the
+eager `platformValue` is used only for cheap primitives like `IconData`. If you
+need the helpers internally for new code, ask whether an inline switch would do
+the same job — usually it does.
+
+### Why the `targetPlatform` shim was removed (v2.0.0 breaking change)
+The old `lib/src/utils/target_platform.dart` used to provide a `targetPlatform`
+re-export *plus* `isAndroid` / `isIOS` boolean getters. The original rationale
+for `targetPlatform` (test seams, search affordance, forward-compat) turned out
+not to be load-bearing in practice, and the indirection added one layer between
+callers and the platform-const-folding pragma. Empirical builds (2026-05-30)
+confirmed direct `defaultTargetPlatform` usage produced byte-identical Android
+`libapp.so` to the shim version, so the `targetPlatform` final was deleted and
+all internal dispatch sites switched to `defaultTargetPlatform` directly.
+
+The `isAndroid` and `isIOS` getters were preserved (moved to
+[`lib/src/utils/is_platform.dart`](./lib/src/utils/is_platform.dart) and
+rewritten to `defaultTargetPlatform == .android` / `.iOS` directly). Empirical
+verification confirmed `if (isAndroid) { … } else { … }` const-folds and prunes
+identically to an inline `switch (defaultTargetPlatform)` (byte-identical AOT
+output) — the trivial getter body inlines and propagates the pragma's
+const-ness.
+
+Callers who relied on the public `targetPlatform` symbol should import
+`defaultTargetPlatform` from `package:flutter/foundation.dart`. `isAndroid` /
+`isIOS` continue to be exported from
+`package:platform_adaptive_widgets/platform_adaptive_widgets.dart`.
 
 ---
 

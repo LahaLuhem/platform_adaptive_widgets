@@ -1,7 +1,6 @@
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoTheme;
+import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
-
-import '/src/extensions/context_extensions.dart';
 
 /// Provides access to platform-specific theme colors.
 final class PlatformTheme {
@@ -12,32 +11,37 @@ final class PlatformTheme {
   const PlatformTheme.of(this.context);
 
   /// The background color of the app bar.
-  Color get barBackgroundColor => context.platformLazyValue(
-    material: () => Theme.of(context).appBarTheme.backgroundColor ?? const Color(0x00000000),
-    cupertino: () => CupertinoTheme.of(context).barBackgroundColor,
-  );
+  Color get barBackgroundColor => switch (defaultTargetPlatform) {
+    .android => Theme.of(context).appBarTheme.backgroundColor ?? const Color(0x00000000),
+    .iOS => CupertinoTheme.of(context).barBackgroundColor,
+    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+  };
 
   /// The primary color of the theme.
-  Color get primaryColor => context.platformLazyValue(
-    material: () => Theme.of(context).primaryColor,
-    cupertino: () => CupertinoTheme.of(context).primaryColor,
-  );
+  Color get primaryColor => switch (defaultTargetPlatform) {
+    .android => Theme.of(context).primaryColor,
+    .iOS => CupertinoTheme.of(context).primaryColor,
+    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+  };
 
   /// A color that contrasts with the primary color.
-  Color get primaryContrastingColor => context.platformLazyValue(
-    material: () => Theme.of(context).colorScheme.onPrimary,
-    cupertino: () => CupertinoTheme.of(context).primaryContrastingColor,
-  );
+  Color get primaryContrastingColor => switch (defaultTargetPlatform) {
+    .android => Theme.of(context).colorScheme.onPrimary,
+    .iOS => CupertinoTheme.of(context).primaryContrastingColor,
+    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+  };
 
   /// The background color of the scaffold.
-  Color get scaffoldBackgroundColor => context.platformLazyValue(
-    material: () => Theme.of(context).scaffoldBackgroundColor,
-    cupertino: () => CupertinoTheme.of(context).scaffoldBackgroundColor,
-  );
+  Color get scaffoldBackgroundColor => switch (defaultTargetPlatform) {
+    .android => Theme.of(context).scaffoldBackgroundColor,
+    .iOS => CupertinoTheme.of(context).scaffoldBackgroundColor,
+    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+  };
 
   /// The color of the selection handles.
-  Color get selectionHandleColor => context.platformLazyValue(
-    material: () => Theme.of(context).colorScheme.onSurface,
-    cupertino: () => CupertinoTheme.of(context).selectionHandleColor,
-  );
+  Color get selectionHandleColor => switch (defaultTargetPlatform) {
+    .android => Theme.of(context).colorScheme.onSurface,
+    .iOS => CupertinoTheme.of(context).selectionHandleColor,
+    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+  };
 }

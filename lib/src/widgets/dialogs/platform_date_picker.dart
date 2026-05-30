@@ -2,10 +2,10 @@
 
 import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoColors, CupertinoDatePicker, showCupertinoModalPopup;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show showDatePicker;
 
-import '/src/extensions/context_extensions.dart';
 import '/src/extensions/date_time_extensions.dart';
 import '/src/models/date.dart';
 import '/src/models/dialogs/const_values.dart';
@@ -74,8 +74,8 @@ Future<Date?> showPlatformDatePicker({
   final firstDateTime = firstDate.toDateTime();
   final lastDateTime = lastDate.toDateTime();
 
-  return context.platformLazyValue(
-    material: () => showDatePicker(
+  return switch (defaultTargetPlatform) {
+    .android => showDatePicker(
       context: context,
       initialDate: initialDateTime,
       firstDate: firstDateTime,
@@ -116,66 +116,90 @@ Future<Date?> showPlatformDatePicker({
           materialDatePickerData?.calendarDelegate ??
           MaterialDatePickerData.kDefaultCalendarDelegate,
     ).then((dateTime) => dateTime?.toDate()),
-    cupertino: () async {
-      var selectedDateTime = initialDateTime ?? DateTime.now();
-      final resolvedBuilder = cupertinoDatePickerData?.builder ?? builder;
+    .iOS => _showCupertinoDatePicker(
+      context: context,
+      initialDateTime: initialDateTime,
+      firstDateTime: firstDateTime,
+      lastDateTime: lastDateTime,
+      anchorPoint: anchorPoint,
+      barrierColor: barrierColor,
+      barrierDismissible: barrierDismissible,
+      routeSettings: routeSettings,
+      useRootNavigator: useRootNavigator,
+      builder: builder,
+      cupertinoDatePickerData: cupertinoDatePickerData,
+    ),
+    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+  };
+}
 
-      final pickerWidget = CupertinoDatePicker(
-        initialDateTime: initialDateTime,
-        minimumDate: firstDateTime,
-        maximumDate: lastDateTime,
-        selectableDayPredicate: cupertinoDatePickerData?.selectableDayPredicate,
-        mode: .date,
-        onDateTimeChanged: (dateTime) => selectedDateTime = dateTime,
-        backgroundColor: cupertinoDatePickerData?.backgroundColor,
-        changeReportingBehavior:
-            cupertinoDatePickerData?.changeReportingBehavior ??
-            ChangeReportingBehavior.onScrollUpdate,
-        dateOrder: cupertinoDatePickerData?.dateOrder,
-        itemExtent:
-            cupertinoDatePickerData?.itemExtent ?? CupertinoDatePickerData.kDefaultItemExtent,
-        maximumYear: cupertinoDatePickerData?.maximumYear,
-        minimumYear:
-            cupertinoDatePickerData?.minimumYear ?? CupertinoDatePickerData.kDefaultMinimumYear,
-        minuteInterval:
-            cupertinoDatePickerData?.minuteInterval ??
-            CupertinoDatePickerData.kDefaultMinuteInterval,
-        selectionOverlayBuilder: cupertinoDatePickerData?.selectionOverlayBuilder,
-        showDayOfWeek:
-            cupertinoDatePickerData?.showDayOfWeek ?? CupertinoDatePickerData.kDefaultShowDayOfWeek,
-        showTimeSeparator:
-            cupertinoDatePickerData?.showTimeSeparator ??
-            CupertinoDatePickerData.kDefaultShowTimeSeparator,
-        use24hFormat:
-            cupertinoDatePickerData?.use24hFormat ?? CupertinoDatePickerData.kDefaultUse24hFormat,
-      );
+Future<Date?> _showCupertinoDatePicker({
+  required BuildContext context,
+  required DateTime? initialDateTime,
+  required DateTime firstDateTime,
+  required DateTime lastDateTime,
+  required Offset? anchorPoint,
+  required Color? barrierColor,
+  required bool? barrierDismissible,
+  required RouteSettings? routeSettings,
+  required bool useRootNavigator,
+  required TransitionBuilder? builder,
+  required CupertinoDatePickerData? cupertinoDatePickerData,
+}) async {
+  var selectedDateTime = initialDateTime ?? DateTime.now();
+  final resolvedBuilder = cupertinoDatePickerData?.builder ?? builder;
 
-      await showCupertinoModalPopup<void>(
-        context: context,
-        anchorPoint: cupertinoDatePickerData?.anchorPoint ?? anchorPoint,
-        barrierColor:
-            cupertinoDatePickerData?.barrierColor ??
-            barrierColor ??
-            CupertinoDatePickerData.kDefaultModalBarrierColor,
-        barrierDismissible:
-            cupertinoDatePickerData?.barrierDismissible ??
-            barrierDismissible ??
-            kCupertinoBarrierDismissible,
-        routeSettings: cupertinoDatePickerData?.routeSettings ?? routeSettings,
-        useRootNavigator: cupertinoDatePickerData?.useRootNavigator ?? useRootNavigator,
-        filter: cupertinoDatePickerData?.filter,
-        requestFocus: cupertinoDatePickerData?.requestFocus,
-        semanticsDismissible:
-            cupertinoDatePickerData?.semanticsDismissible ??
-            CupertinoDatePickerData.kDefaultSemanticsDismissible,
-        builder: (context) =>
-            resolvedBuilder?.call(context, pickerWidget) ??
-            _CupertinoPickerContainer(pickerWidget: pickerWidget),
-      );
-
-      return selectedDateTime.toDate();
-    },
+  final pickerWidget = CupertinoDatePicker(
+    initialDateTime: initialDateTime,
+    minimumDate: firstDateTime,
+    maximumDate: lastDateTime,
+    selectableDayPredicate: cupertinoDatePickerData?.selectableDayPredicate,
+    mode: .date,
+    onDateTimeChanged: (dateTime) => selectedDateTime = dateTime,
+    backgroundColor: cupertinoDatePickerData?.backgroundColor,
+    changeReportingBehavior:
+        cupertinoDatePickerData?.changeReportingBehavior ?? ChangeReportingBehavior.onScrollUpdate,
+    dateOrder: cupertinoDatePickerData?.dateOrder,
+    itemExtent: cupertinoDatePickerData?.itemExtent ?? CupertinoDatePickerData.kDefaultItemExtent,
+    maximumYear: cupertinoDatePickerData?.maximumYear,
+    minimumYear:
+        cupertinoDatePickerData?.minimumYear ?? CupertinoDatePickerData.kDefaultMinimumYear,
+    minuteInterval:
+        cupertinoDatePickerData?.minuteInterval ?? CupertinoDatePickerData.kDefaultMinuteInterval,
+    selectionOverlayBuilder: cupertinoDatePickerData?.selectionOverlayBuilder,
+    showDayOfWeek:
+        cupertinoDatePickerData?.showDayOfWeek ?? CupertinoDatePickerData.kDefaultShowDayOfWeek,
+    showTimeSeparator:
+        cupertinoDatePickerData?.showTimeSeparator ??
+        CupertinoDatePickerData.kDefaultShowTimeSeparator,
+    use24hFormat:
+        cupertinoDatePickerData?.use24hFormat ?? CupertinoDatePickerData.kDefaultUse24hFormat,
   );
+
+  await showCupertinoModalPopup<void>(
+    context: context,
+    anchorPoint: cupertinoDatePickerData?.anchorPoint ?? anchorPoint,
+    barrierColor:
+        cupertinoDatePickerData?.barrierColor ??
+        barrierColor ??
+        CupertinoDatePickerData.kDefaultModalBarrierColor,
+    barrierDismissible:
+        cupertinoDatePickerData?.barrierDismissible ??
+        barrierDismissible ??
+        kCupertinoBarrierDismissible,
+    routeSettings: cupertinoDatePickerData?.routeSettings ?? routeSettings,
+    useRootNavigator: cupertinoDatePickerData?.useRootNavigator ?? useRootNavigator,
+    filter: cupertinoDatePickerData?.filter,
+    requestFocus: cupertinoDatePickerData?.requestFocus,
+    semanticsDismissible:
+        cupertinoDatePickerData?.semanticsDismissible ??
+        CupertinoDatePickerData.kDefaultSemanticsDismissible,
+    builder: (context) =>
+        resolvedBuilder?.call(context, pickerWidget) ??
+        _CupertinoPickerContainer(pickerWidget: pickerWidget),
+  );
+
+  return selectedDateTime.toDate();
 }
 
 class _CupertinoPickerContainer extends StatelessWidget {

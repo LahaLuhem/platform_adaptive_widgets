@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoAlertDialog, CupertinoDialogAction, showCupertinoDialog;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart'
     show AlertDialog, ButtonTheme, Colors, Dialog, TextButton, showDialog;
 
-import '/src/extensions/context_extensions.dart';
 import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_alert_dialog_data.dart';
 import '/src/models/dialogs/platform_dialog_data.dart';
@@ -88,91 +88,102 @@ Future<T?> showPlatformDialog<T>({
     (builder == null) ^ (cupertinoBuilder == null),
     'Either provide a builder or a cupertinoBuilder.',
   );
-  final resolvedMaterialBuilder = materialBuilder ?? builder!;
-  final resolvedCupertinoBuilder = cupertinoBuilder ?? builder!;
 
-  return _showBasePlatformDialog<T>(
-    context: context,
-    materialBuilder: (context) =>
-        (materialDialogData?.fullscreenDialog ?? MaterialDialogData.kDefaultFullscreenDialog)
-        ? Dialog.fullscreen(
-            key: materialKey,
-            backgroundColor: materialBackgroundColor,
-            insetAnimationDuration: materialInsetAnimationDuration,
-            insetAnimationCurve: materialInsetAnimationCurve,
-            semanticsRole: materialSemanticsRole,
-            child: resolvedMaterialBuilder(context),
-          )
-        : Dialog(
-            key: materialKey,
-            backgroundColor: materialBackgroundColor,
-            insetAnimationDuration: materialInsetAnimationDuration,
-            insetAnimationCurve: materialInsetAnimationCurve,
-            semanticsRole: materialSemanticsRole,
-            alignment: materialAlignment,
-            shape: materialShape,
-            clipBehavior: materialClipBehavior,
-            constraints: materialConstraints,
-            elevation: materialElevation,
-            insetPadding: materialInsetPadding,
-            shadowColor: materialShadowColor,
-            surfaceTintColor: materialSurfaceTintColor,
-            child: resolvedMaterialBuilder(context),
-          ),
-    cupertinoBuilder: resolvedCupertinoBuilder,
-    platformDialogData: platformDialogData,
-    materialDialogData: materialDialogData,
-    cupertinoDialogData: cupertinoDialogData,
-  );
+  return switch (defaultTargetPlatform) {
+    .android => _runMaterialDialog<T>(
+      context: context,
+      materialBuilder: (context) =>
+          (materialDialogData?.fullscreenDialog ?? MaterialDialogData.kDefaultFullscreenDialog)
+          ? Dialog.fullscreen(
+              key: materialKey,
+              backgroundColor: materialBackgroundColor,
+              insetAnimationDuration: materialInsetAnimationDuration,
+              insetAnimationCurve: materialInsetAnimationCurve,
+              semanticsRole: materialSemanticsRole,
+              child: (materialBuilder ?? builder!)(context),
+            )
+          : Dialog(
+              key: materialKey,
+              backgroundColor: materialBackgroundColor,
+              insetAnimationDuration: materialInsetAnimationDuration,
+              insetAnimationCurve: materialInsetAnimationCurve,
+              semanticsRole: materialSemanticsRole,
+              alignment: materialAlignment,
+              shape: materialShape,
+              clipBehavior: materialClipBehavior,
+              constraints: materialConstraints,
+              elevation: materialElevation,
+              insetPadding: materialInsetPadding,
+              shadowColor: materialShadowColor,
+              surfaceTintColor: materialSurfaceTintColor,
+              child: (materialBuilder ?? builder!)(context),
+            ),
+      platformDialogData: platformDialogData,
+      materialDialogData: materialDialogData,
+    ),
+    .iOS => _runCupertinoDialog<T>(
+      context: context,
+      cupertinoBuilder: cupertinoBuilder ?? builder!,
+      platformDialogData: platformDialogData,
+      cupertinoDialogData: cupertinoDialogData,
+    ),
+    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+  };
 }
 
-Future<T?> _showBasePlatformDialog<T>({
+/// Material-only dispatch — extracted so the unused-platform branch is dead
+/// code under AOT compilation when `defaultTargetPlatform` const-folds.
+Future<T?> _runMaterialDialog<T>({
   required BuildContext context,
   required WidgetBuilder materialBuilder,
-  required WidgetBuilder cupertinoBuilder,
   PlatformDialogData? platformDialogData,
   MaterialDialogData? materialDialogData,
+}) => showDialog<T>(
+  context: context,
+  builder: materialBuilder,
+  anchorPoint: materialDialogData?.anchorPoint ?? platformDialogData?.anchorPoint,
+  barrierColor: materialDialogData?.barrierColor ?? platformDialogData?.barrierColor,
+  barrierDismissible:
+      materialDialogData?.barrierDismissible ??
+      platformDialogData?.barrierDismissible ??
+      kCupertinoBarrierDismissible,
+  barrierLabel: materialDialogData?.barrierLabel ?? platformDialogData?.barrierLabel,
+  routeSettings: materialDialogData?.routeSettings ?? platformDialogData?.routeSettings,
+  useRootNavigator:
+      materialDialogData?.useRootNavigator ??
+      platformDialogData?.useRootNavigator ??
+      kDefaultUseRootNavigator,
+  requestFocus: materialDialogData?.requestFocus ?? platformDialogData?.requestFocus,
+  animationStyle: materialDialogData?.animationStyle,
+  fullscreenDialog:
+      materialDialogData?.fullscreenDialog ?? MaterialDialogData.kDefaultFullscreenDialog,
+  traversalEdgeBehavior: materialDialogData?.traversalEdgeBehavior,
+  useSafeArea: materialDialogData?.useSafeArea ?? MaterialDialogData.kDefaultUseSafeArea,
+);
+
+/// Cupertino-only dispatch — extracted so the unused-platform branch is dead
+/// code under AOT compilation when `defaultTargetPlatform` const-folds.
+Future<T?> _runCupertinoDialog<T>({
+  required BuildContext context,
+  required WidgetBuilder cupertinoBuilder,
+  PlatformDialogData? platformDialogData,
   PlatformDialogData? cupertinoDialogData,
-}) => context.platformLazyValue(
-  material: () => showDialog<T>(
-    context: context,
-    builder: materialBuilder,
-    anchorPoint: materialDialogData?.anchorPoint ?? platformDialogData?.anchorPoint,
-    barrierColor: materialDialogData?.barrierColor ?? platformDialogData?.barrierColor,
-    barrierDismissible:
-        materialDialogData?.barrierDismissible ??
-        platformDialogData?.barrierDismissible ??
-        kCupertinoBarrierDismissible,
-    barrierLabel: materialDialogData?.barrierLabel ?? platformDialogData?.barrierLabel,
-    routeSettings: materialDialogData?.routeSettings ?? platformDialogData?.routeSettings,
-    useRootNavigator:
-        materialDialogData?.useRootNavigator ??
-        platformDialogData?.useRootNavigator ??
-        kDefaultUseRootNavigator,
-    requestFocus: materialDialogData?.requestFocus ?? platformDialogData?.requestFocus,
-    animationStyle: materialDialogData?.animationStyle,
-    fullscreenDialog:
-        materialDialogData?.fullscreenDialog ?? MaterialDialogData.kDefaultFullscreenDialog,
-    traversalEdgeBehavior: materialDialogData?.traversalEdgeBehavior,
-    useSafeArea: materialDialogData?.useSafeArea ?? MaterialDialogData.kDefaultUseSafeArea,
-  ),
-  cupertino: () => showCupertinoDialog<T>(
-    context: context,
-    builder: cupertinoBuilder,
-    anchorPoint: cupertinoDialogData?.anchorPoint ?? platformDialogData?.anchorPoint,
-    barrierColor: cupertinoDialogData?.barrierColor ?? platformDialogData?.barrierColor,
-    barrierDismissible:
-        cupertinoDialogData?.barrierDismissible ??
-        platformDialogData?.barrierDismissible ??
-        kCupertinoBarrierDismissible,
-    barrierLabel: cupertinoDialogData?.barrierLabel ?? platformDialogData?.barrierLabel,
-    routeSettings: cupertinoDialogData?.routeSettings ?? platformDialogData?.routeSettings,
-    useRootNavigator:
-        cupertinoDialogData?.useRootNavigator ??
-        platformDialogData?.useRootNavigator ??
-        kDefaultUseRootNavigator,
-    requestFocus: cupertinoDialogData?.requestFocus ?? platformDialogData?.requestFocus,
-  ),
+}) => showCupertinoDialog<T>(
+  context: context,
+  builder: cupertinoBuilder,
+  anchorPoint: cupertinoDialogData?.anchorPoint ?? platformDialogData?.anchorPoint,
+  barrierColor: cupertinoDialogData?.barrierColor ?? platformDialogData?.barrierColor,
+  barrierDismissible:
+      cupertinoDialogData?.barrierDismissible ??
+      platformDialogData?.barrierDismissible ??
+      kCupertinoBarrierDismissible,
+  barrierLabel: cupertinoDialogData?.barrierLabel ?? platformDialogData?.barrierLabel,
+  routeSettings: cupertinoDialogData?.routeSettings ?? platformDialogData?.routeSettings,
+  useRootNavigator:
+      cupertinoDialogData?.useRootNavigator ??
+      platformDialogData?.useRootNavigator ??
+      kDefaultUseRootNavigator,
+  requestFocus: cupertinoDialogData?.requestFocus ?? platformDialogData?.requestFocus,
 );
 
 const _kMaterialInsetAnimationDuration = Duration(milliseconds: 100);
