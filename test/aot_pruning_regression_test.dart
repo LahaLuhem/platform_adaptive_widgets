@@ -168,15 +168,8 @@ class _DispatchHelperVisitor extends RecursiveAstVisitor<void> {
   }
 
   bool _isFunctionTyped(FormalParameter param) {
-    final inner = param is DefaultFormalParameter ? param.parameter : param;
-    if (inner is FunctionTypedFormalParameter) return true;
-    final type = switch (inner) {
-      SimpleFormalParameter() => inner.type,
-      FieldFormalParameter() => inner.type,
-      SuperFormalParameter() => inner.type,
-      _ => null,
-    };
-    final src = type?.toSource() ?? '';
+    if (param.functionTypedSuffix != null) return true;
+    final src = param.type?.toSource() ?? '';
 
     return src.contains('Function') ||
         src.contains('Builder') ||

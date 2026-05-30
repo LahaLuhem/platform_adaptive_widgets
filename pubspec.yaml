@@ -42,8 +42,8 @@ dependencies:
 
 dev_dependencies:
   # AOT-pruning regression guard — see test/aot_pruning_regression_test.dart.
-  analyzer: ^8.4.0
-  test: ^1.26.0
+  analyzer: ^13.0.0
+  test: ^1.31.1
   # Analysis
   # dart_code_metrics:metrics check-unused-files lib --disable-sunset-warning
   # dependency_validator
