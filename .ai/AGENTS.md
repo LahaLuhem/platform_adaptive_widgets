@@ -37,12 +37,9 @@ README for the full widget catalogue; APPENDIX for design rationale.
   the three things that must move in lockstep for a release. CHANGELOG entries are
   appended automatically by `.github/workflows/changelog.yml` on every merged PR
   (driven by the PR's `sem-*` label and the `cider:` block in `pubspec.yaml`); no
-  manual append is needed during routine PR work. Cutting a release is still hand-
-  driven: run `cider bump <major|minor|patch>` to bump `version:`, `cider release` to
-  convert `## [Unreleased]` to `## [X.Y.Z] - YYYY-MM-DD` and append a diff-link
-  reference, commit the result, then push a matching `X.Y.Z` tag. The publish
-  workflow does the rest. No one-shot release script yet — the
-  bump/commit/tag/push sequence is manual.
+  manual append is needed during routine PR work. Cutting a release is one command:
+  `scripts/release.sh [patch|minor|major]` — full mechanics, preflight, and
+  pipeline-owned-files rules in [`scripts/README.md`](../scripts/README.md).
 
 ## Repo layout
 ```
@@ -183,9 +180,9 @@ auto-appends to `CHANGELOG.md` based on the PR's `sem-*` label (via `cider log`)
 - **PR body must not be empty**, **no merge commits in the PR range** (rebase to
   integrate `master`), and **commit subjects ≤ 82 characters**.
 
-A one-shot release script (auto `version:` bump + CHANGELOG finalisation + tag push)
-is still not wired; bump locally with `cider bump <major|minor|patch>` and
-`cider release`, commit, then push the matching tag.
+Cutting a release is one command: `scripts/release.sh [patch|minor|major]` — see
+[`scripts/README.md`](../scripts/README.md) for usage, preflight, flags, and the
+pipeline-owned-files contract.
 
 ## Style
 Full guide: [`../CODESTYLE.md`](../CODESTYLE.md). The lint posture is deliberately strict
