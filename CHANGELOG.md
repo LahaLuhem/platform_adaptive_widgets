@@ -1,4 +1,4 @@
-## [Unreleased]
+## [1.1.0] - 2026-05-31
 ### Changed
 - Use the new CupertinoMenuAnchor instead of (deprecated) PullDownButton
 - Migrate example android to AGP 9.0.0
@@ -90,4 +90,4 @@
 - Platform scrollbar
 - Platform text-field
 
-[Unreleased]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/1.0.5...HEAD
+[1.1.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/1.0.5...1.1.0
