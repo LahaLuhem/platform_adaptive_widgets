@@ -256,6 +256,7 @@ Each row maps a single package field to its native counterparts.
 | `PlatformListTile` | `color` | `ListTile.tileColor` (`Color?`) | `CupertinoListTile.backgroundColor` (`Color?`) | Same `Color?` nullability on both — differ only by parameter name. Package's `color` chosen for brevity. |
 | `PlatformListTile` | `padding` | `ListTile.contentPadding` (`EdgeInsetsGeometry?`) | `CupertinoListTile.padding` (`EdgeInsetsGeometry?`) | Same `EdgeInsetsGeometry?` nullability on both — differ only by parameter name. |
 | `PlatformRadio` | `fillColor` | `Radio.fillColor` (`WidgetStateProperty<Color?>?`) | `CupertinoRadio.fillColor` (`Color?`) | Package exposes the richer `WidgetStateProperty<Color?>?`. Material passes through; Cupertino branch resolves to a single `Color?` via `.resolve({.selected, if (!isEnabled) .disabled})` — radios primarily render the fill colour when selected; the build-time-known `isEnabled` flag drives the disabled-state branch. |
+| `PlatformExpansionTile` | `child` | `ExpansionTile.children` (`List<Widget>`, default `<Widget>[]`) | `CupertinoExpansionTile.child` (`Widget`, required non-null) | Package exposes a single `Widget child` (required non-null) since Cupertino requires it. Material branch wraps as `[child]`. Callers wanting multiple Material children wrap with `Column` at the call site. |
 
 ### When to add an entry
 

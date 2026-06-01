@@ -1,36 +1,44 @@
+// Per-platform records for PlatformExpansionTile (no shared private base — the
+// Material and Cupertino visual surfaces don't overlap; the shared functional fields
+// title / child / controller are flat on the widget).
 // ignore_for_file: prefer-match-file-name
+
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport '/src/widgets/interaction/platform_expansion_tile.dart';
+library;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show ExpansionTileTransitionMode;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show ListTileControlAffinity, VisualDensity;
 
-/// Common configuration for platform-adaptive expansion tiles.
-abstract final class _PlatformExpansionTileData {
-  /// A key to identify the widget.
-  final Key? widgetKey;
+/// Default value for [MaterialExpansionTileData.showTrailingIcon].
+const kDefaultExpansionTileShowTrailingIcon = false;
 
-  /// The primary content of the tile.
-  final Widget? title;
+/// Default value for [MaterialExpansionTileData.initiallyExpanded].
+const kDefaultExpansionTileInitiallyExpanded = false;
 
-  /// The widget to display when the tile is expanded.
-  final Widget? child;
+/// Default value for [MaterialExpansionTileData.maintainState].
+const kDefaultExpansionTileMaintainState = false;
 
-  /// A controller to manage the expansion state.
-  final ExpansibleController? controller;
+/// Default value for [MaterialExpansionTileData.enabled].
+const kDefaultExpansionTileEnabled = true;
 
-  /// Creates a [_PlatformExpansionTileData].
-  const _PlatformExpansionTileData({this.widgetKey, this.title, this.child, this.controller});
-}
+/// Default value for [MaterialExpansionTileData.internalAddSemanticForOnTap].
+const kDefaultExpansionTileInternalAddSemanticForOnTap = false;
 
-/// Material-specific configuration for a platform expansion tile.
+/// Default value for [CupertinoExpansionTileData.transitionMode].
+const kDefaultCupertinoExpansionTileTransitionMode = ExpansionTileTransitionMode.fade;
+
+/// Material-only configuration for [PlatformExpansionTile].
 ///
-/// Maps to properties of `ExpansionTile` on Android.
-final class MaterialExpansionTileData extends _PlatformExpansionTileData {
-  /// Callback when the expansion state changes.
+/// Pass this via `PlatformExpansionTile.materialExpansionTileData` when tuning Material
+/// rendering. The fields declared here have no Cupertino equivalent.
+final class MaterialExpansionTileData {
+  /// Callback fired when the expansion state changes. Functional, Material-only —
+  /// Cupertino's [CupertinoExpansionTile] surfaces no equivalent callback (use the
+  /// shared [ExpansibleController] for programmatic observation).
   final ValueChanged<bool>? onExpansionChanged;
-
-  /// Child widgets shown when expanded (mutually exclusive with [child]).
-  final List<Widget>? children;
 
   /// Leading widget before the title.
   final Widget? leading;
@@ -41,25 +49,30 @@ final class MaterialExpansionTileData extends _PlatformExpansionTileData {
   /// Trailing widget (typically an expand/collapse icon).
   final Widget? trailing;
 
-  /// Whether to show the trailing icon.
+  /// Whether to show the trailing icon. Defaults to
+  /// [kDefaultExpansionTileShowTrailingIcon].
   final bool showTrailingIcon;
 
-  /// Whether the tile starts in the expanded state.
+  /// Whether the tile starts in the expanded state. Defaults to
+  /// [kDefaultExpansionTileInitiallyExpanded].
   final bool initiallyExpanded;
 
-  /// Whether the children are kept in the widget tree when collapsed.
+  /// Whether the children are kept in the widget tree when collapsed. Defaults to
+  /// [kDefaultExpansionTileMaintainState].
   final bool maintainState;
 
   /// Padding around the tile header.
   final EdgeInsetsGeometry? tilePadding;
 
-  /// Cross-axis alignment of the expanded children.
-  final CrossAxisAlignment expandedCrossAxisAlignment;
+  /// Cross-axis alignment of the expanded child. Nullable — when `null`, Material
+  /// applies its theme-driven default.
+  final CrossAxisAlignment? expandedCrossAxisAlignment;
 
-  /// Alignment of the expanded children.
-  final Alignment expandedAlignment;
+  /// Alignment of the expanded child. Nullable — when `null`, Material applies its
+  /// theme-driven default.
+  final AlignmentGeometry? expandedAlignment;
 
-  /// Padding around the expanded children.
+  /// Padding around the expanded child.
   final EdgeInsetsGeometry? childrenPadding;
 
   /// Background color when expanded.
@@ -101,59 +114,37 @@ final class MaterialExpansionTileData extends _PlatformExpansionTileData {
   /// Minimum height of the tile.
   final double? minTileHeight;
 
-  /// Whether to enable feedback (e.g., haptic) on tap.
-  final bool enableFeedback;
+  /// Whether to enable haptic feedback on tap. Nullable — when `null`, Material applies
+  /// its own default (`true`).
+  final bool? enableFeedback;
 
-  /// Whether the tile is enabled.
+  /// Whether the tile is enabled. Functional, Material-only — Cupertino has no
+  /// equivalent disable affordance (wrap with [IgnorePointer] to disable a Cupertino
+  /// tile). Defaults to [kDefaultExpansionTileEnabled].
   final bool enabled;
 
   /// Animation style for the expansion transition.
   final AnimationStyle? expansionAnimationStyle;
 
-  /// Whether to add semantics for the on-tap action internally.
+  /// Whether to add semantics for the on-tap action internally. Defaults to
+  /// [kDefaultExpansionTileInternalAddSemanticForOnTap].
   final bool internalAddSemanticForOnTap;
 
-  /// Default value for [showTrailingIcon].
-  static const kDefaultShowTrailingIcon = false;
+  /// Controller for the tile's interaction states. Functional, Material-only.
+  final WidgetStatesController? statesController;
 
-  /// Default value for [initiallyExpanded].
-  static const kDefaultInitiallyExpanded = false;
-
-  /// Default value for [maintainState].
-  static const kDefaultMaintainState = false;
-
-  /// Default value for [expandedCrossAxisAlignment].
-  static const kDefaultExpandedCrossAxisAlignment = CrossAxisAlignment.center;
-
-  /// Default value for [expandedAlignment].
-  static const kDefaultExpandedAlignment = Alignment.centerLeft;
-
-  /// Default value for [enableFeedback].
-  static const kDefaultEnableFeedback = true;
-
-  /// Default value for [enabled].
-  static const kDefaultEnabled = true;
-
-  /// Default value for [internalAddSemanticForOnTap].
-  static const kDefaultInternalAddSemanticForOnTap = false;
-
-  /// Creates Material-specific expansion tile configuration.
+  /// Creates Material-only configuration for [PlatformExpansionTile].
   const MaterialExpansionTileData({
-    super.widgetKey,
-    super.title,
-    super.child,
-    super.controller,
     this.onExpansionChanged,
-    this.children,
     this.leading,
     this.subtitle,
     this.trailing,
-    this.showTrailingIcon = kDefaultShowTrailingIcon,
-    this.initiallyExpanded = kDefaultInitiallyExpanded,
-    this.maintainState = kDefaultMaintainState,
+    this.showTrailingIcon = kDefaultExpansionTileShowTrailingIcon,
+    this.initiallyExpanded = kDefaultExpansionTileInitiallyExpanded,
+    this.maintainState = kDefaultExpansionTileMaintainState,
     this.tilePadding,
-    this.expandedCrossAxisAlignment = kDefaultExpandedCrossAxisAlignment,
-    this.expandedAlignment = kDefaultExpandedAlignment,
+    this.expandedCrossAxisAlignment,
+    this.expandedAlignment,
     this.childrenPadding,
     this.backgroundColor,
     this.collapsedBackgroundColor,
@@ -168,29 +159,25 @@ final class MaterialExpansionTileData extends _PlatformExpansionTileData {
     this.splashColor,
     this.visualDensity,
     this.minTileHeight,
-    this.enableFeedback = kDefaultEnableFeedback,
-    this.enabled = kDefaultEnabled,
+    this.enableFeedback,
+    this.enabled = kDefaultExpansionTileEnabled,
     this.expansionAnimationStyle,
-    this.internalAddSemanticForOnTap = kDefaultInternalAddSemanticForOnTap,
+    this.internalAddSemanticForOnTap = kDefaultExpansionTileInternalAddSemanticForOnTap,
+    this.statesController,
   });
 }
 
-/// Cupertino-specific configuration for a platform expansion tile.
+/// Cupertino-only configuration for [PlatformExpansionTile].
 ///
-/// Maps to properties of the Cupertino expansion tile on iOS.
-final class CupertinoExpansionTileData extends _PlatformExpansionTileData {
-  /// The transition mode used when expanding or collapsing.
+/// Pass this via `PlatformExpansionTile.cupertinoExpansionTileData` when tuning
+/// Cupertino rendering. The field declared here has no Material equivalent.
+final class CupertinoExpansionTileData {
+  /// Transition mode used when expanding or collapsing. Defaults to
+  /// [kDefaultCupertinoExpansionTileTransitionMode].
   final ExpansionTileTransitionMode transitionMode;
 
-  /// Default value for [transitionMode].
-  static const kDefaultTransitionMode = ExpansionTileTransitionMode.fade;
-
-  /// Creates Cupertino-specific expansion tile configuration.
+  /// Creates Cupertino-only configuration for [PlatformExpansionTile].
   const CupertinoExpansionTileData({
-    super.widgetKey,
-    super.title,
-    super.child,
-    super.controller,
-    this.transitionMode = kDefaultTransitionMode,
+    this.transitionMode = kDefaultCupertinoExpansionTileTransitionMode,
   });
 }
