@@ -5,15 +5,13 @@ import 'package:material_ui/material_ui.dart' show Scrollbar;
 import '/src/models/interaction/platform_scrollbar_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive scrollbar that renders Material Scrollbar on Android
-/// and CupertinoScrollbar on iOS.
+/// A platform-adaptive scrollbar that renders Material [Scrollbar] on
+/// Android and [CupertinoScrollbar] on iOS.
 ///
-/// This widget automatically selects the appropriate scrollbar implementation based on the target platform:
-/// - On Android: renders Material Design Scrollbar
-/// - On iOS: renders CupertinoScrollbar
-///
-/// The scrollbar can be configured with platform-specific data through [materialScrollbarData]
-/// and [cupertinoScrollbarData], or with common properties.
+/// Wraps a [child] scroll view and attaches to its [ScrollController]. All
+/// functional inputs and shared visual defaults are flat parameters on the
+/// widget; per-platform tuning is opt-in via [materialScrollbarData] and
+/// [cupertinoScrollbarData]. See `APPENDIX.md#field-classification`.
 ///
 /// Example:
 /// ```dart
@@ -27,11 +25,20 @@ import '/src/models/platform_widget_base.dart';
 /// )
 /// ```
 class PlatformScrollbar extends PlatformWidgetKeyedBuilderBase {
-  /// The scroll controller to attach the scrollbar to.
+  /// Scroll controller the scrollbar listens to.
   final ScrollController? controller;
 
   /// Whether the scrollbar thumb should be visible.
+  ///
+  /// Behavioral toggle — when `true`, the thumb is always visible; when
+  /// `false` or `null`, the platform's default auto-hide behavior applies.
   final bool? thumbVisibility;
+
+  /// Predicate for determining which scroll notifications to respond to.
+  ///
+  /// When `null`, each underlying platform widget applies its own default
+  /// predicate.
+  final ScrollNotificationPredicate? notificationPredicate;
 
   /// The thickness of the scrollbar.
   final double? thickness;
@@ -39,67 +46,71 @@ class PlatformScrollbar extends PlatformWidgetKeyedBuilderBase {
   /// The radius of the scrollbar corners.
   final Radius? radius;
 
-  /// Predicate for determining which scroll notifications to respond to.
-  final ScrollNotificationPredicate? notificationPredicate;
-
   /// The orientation of the scrollbar.
   final ScrollbarOrientation? scrollbarOrientation;
 
-  /// Material-specific scrollbar data.
+  /// Material-only configuration. Optional.
+  ///
+  /// Fields set on this record override the widget's flat shared-visual
+  /// defaults on the Material branch; Material-only fields
+  /// (`trackVisibility`, `interactive`) are read only from here.
   final MaterialScrollbarData? materialScrollbarData;
 
-  /// Cupertino-specific scrollbar data.
+  /// Cupertino-only configuration. Optional.
+  ///
+  /// Fields set on this record override the widget's flat shared-visual
+  /// defaults on the Cupertino branch; Cupertino-only fields
+  /// (`thicknessWhileDragging`, `radiusWhileDragging`, `mainAxisMargin`)
+  /// are read only from here.
   final CupertinoScrollbarData? cupertinoScrollbarData;
 
   /// Creates a platform-adaptive scrollbar.
-  ///
-  /// The scrollbar will render as a Material Scrollbar on Android and a CupertinoScrollbar on iOS.
   const PlatformScrollbar({
     required super.child,
-    super.widgetKey,
     this.controller,
     this.thumbVisibility,
+    this.notificationPredicate,
     this.thickness,
     this.radius,
-    this.notificationPredicate,
     this.scrollbarOrientation,
     this.materialScrollbarData,
     this.cupertinoScrollbarData,
+    super.widgetKey,
     super.key,
   });
 
   @override
   Widget buildMaterial(BuildContext context) => Scrollbar(
     key: widgetKey,
-    controller: materialScrollbarData?.controller ?? controller,
-    thumbVisibility: materialScrollbarData?.thumbVisibility ?? thumbVisibility,
-    trackVisibility: materialScrollbarData?.trackVisibility,
+    controller: controller,
+    thumbVisibility: thumbVisibility,
+    notificationPredicate: notificationPredicate,
     thickness: materialScrollbarData?.thickness ?? thickness,
     radius: materialScrollbarData?.radius ?? radius,
-    notificationPredicate: materialScrollbarData?.notificationPredicate ?? notificationPredicate,
-    interactive: materialScrollbarData?.interactive,
     scrollbarOrientation: materialScrollbarData?.scrollbarOrientation ?? scrollbarOrientation,
+    trackVisibility: materialScrollbarData?.trackVisibility,
+    interactive: materialScrollbarData?.interactive,
     child: child,
   );
 
   @override
   Widget buildCupertino(BuildContext context) => CupertinoScrollbar(
     key: widgetKey,
-    controller: cupertinoScrollbarData?.controller ?? controller,
-    thumbVisibility: cupertinoScrollbarData?.thumbVisibility ?? thumbVisibility,
+    controller: controller,
+    thumbVisibility: thumbVisibility,
+    notificationPredicate: notificationPredicate,
     thickness:
         cupertinoScrollbarData?.thickness ?? thickness ?? CupertinoScrollbar.defaultThickness,
+    radius: cupertinoScrollbarData?.radius ?? radius ?? CupertinoScrollbar.defaultRadius,
+    scrollbarOrientation: cupertinoScrollbarData?.scrollbarOrientation ?? scrollbarOrientation,
     thicknessWhileDragging:
         cupertinoScrollbarData?.thicknessWhileDragging ??
         CupertinoScrollbar.defaultThicknessWhileDragging,
-    radius: cupertinoScrollbarData?.radius ?? radius ?? CupertinoScrollbar.defaultRadius,
     radiusWhileDragging:
         cupertinoScrollbarData?.radiusWhileDragging ??
         CupertinoScrollbar.defaultRadiusWhileDragging,
-    notificationPredicate: cupertinoScrollbarData?.notificationPredicate ?? notificationPredicate,
-    scrollbarOrientation: cupertinoScrollbarData?.scrollbarOrientation ?? scrollbarOrientation,
     mainAxisMargin:
-        cupertinoScrollbarData?.mainAxisMargin ?? CupertinoScrollbarData.kScrollbarMainAxisMargin,
+        cupertinoScrollbarData?.mainAxisMargin ?? kDefaultCupertinoScrollbarMainAxisMargin,
     child: child,
   );
 }
