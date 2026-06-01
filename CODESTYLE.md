@@ -23,6 +23,7 @@ heading text, so renames don't break callers.
     * [Field classification: functional vs visual](#field-classification-functional-vs-visual)
 - [Idioms](#idioms)
     * [Static dot shorthands (Dart 3.10+)](#static-dot-shorthands-dart-310)
+    * [Drop redundant `<Type>` on collection literals](#drop-redundant-collection-literal-type-args)
     * [Collection-for / collection-if over `Iterable.map(…).toList()`](#collection-for-collection-if-over-iterablemaptolist)
     * [`dart:async` `wait` extensions over static `Future.wait(...)`](#dartasync-wait-extensions-over-static-futurewait)
     * [`List.unmodifiable(…)` over `UnmodifiableListView(…)`](#listunmodifiable-over-unmodifiablelistview)
@@ -132,8 +133,13 @@ style.
 ## Formatting
 
 - **Wrap text-file content at 100 columns.** `formatter.page_width: 100` in
-  `analysis_options.yaml` is authoritative for Dart; Markdown should follow the same
-  cap manually.
+  `analysis_options.yaml` is authoritative for Dart code; Markdown and **dartdoc
+  comments** should follow the same cap manually. `dart format` does *not* reflow
+  doc-comment prose — so a `///`-block hand-wrapped at 70 / 80 columns is invisible
+  to the formatter and stays narrow forever unless someone refactors it. Default to
+  ~95 columns of content (the leading `/// ` counts toward the 100-col limit) so a
+  single trailing word doesn't push the line over. Reflow opportunistically when
+  touching a doc block; don't churn unrelated files just to widen them.
 - **Blank lines separate logical chunks within a method.** Group guard checks, setup,
   the main action, and finalisation with one blank line between groups. Lets readers
   scan past chunks they don't need without re-parsing them line-by-line.
@@ -334,6 +340,21 @@ the leading type name in *all* of these positions, not just the obvious enum cas
 - Cupertino / Material variant enums on this package's own data records:
   `materialButtonVariant: .text`, `cupertinoButtonVariant: .tinted`,
   `cupertinoButtonData: CupertinoButtonData(padding: .zero)`.
+- **Constructor field defaults** — when the field's declared type pins the context,
+  the default literal drops its prefix:
+  ```dart
+  final Axis direction;
+  final DragStartBehavior dragStartBehavior;
+  const Foo({
+    this.direction = .horizontal,            // not Axis.horizontal
+    this.dragStartBehavior = .start,         // not DragStartBehavior.start
+  });
+  ```
+  Top-level / `static const` initializations are the exception — without an explicit
+  type annotation on the LHS, Dart infers the constant's type from the RHS, so the
+  prefix has to stay (`const kDefaultDirection = Axis.horizontal;` cannot become
+  `= .horizontal` without also writing `const Axis kDefaultDirection`, which adds
+  more noise than it removes).
 
 Skip when it hurts readability — `.new(…)` for unnamed constructors typically does;
 cases where the surrounding context type isn't obvious without re-reading.
@@ -341,6 +362,36 @@ cases where the surrounding context type isn't obvious without re-reading.
 After dropping a fully-qualified prefix, the type name often disappears from the file
 entirely — remove it from any `show` clauses too. Re-running analyze surfaces
 `unused_shown_name` warnings for orphaned ones.
+
+<a id="drop-redundant-collection-literal-type-args"></a>
+### Drop redundant `<Type>` on collection literals
+
+When the surrounding context already pins the element / key / value type of a list,
+set, or map literal — most often a parameter slot or assignment target — the
+explicit `<Type>` prefix is dead weight:
+
+```dart
+// Prefer:
+set.resolve({WidgetState.selected, if (!isEnabled) WidgetState.disabled})
+
+// Over:
+set.resolve(<WidgetState>{WidgetState.selected, if (!isEnabled) WidgetState.disabled})
+```
+
+The parameter slot here is `Set<WidgetState>`, so Dart infers the literal's
+element type. The explicit prefix duplicates information the call site already has.
+Combines well with [Static dot shorthands](#static-dot-shorthands-dart-310) — once
+the literal's element type is inferred, the elements themselves often dot-shorthand:
+`{.selected, if (!isEnabled) .disabled}`.
+
+Keep `<Type>` when inference would otherwise fall back to `dynamic`:
+
+- **Empty literals without a slot.** `final xs = <Foo>[];` — the local has no
+  context, so `[]` infers `List<dynamic>`. The annotation is doing real work.
+- **Top-level / `static const` initialisers without a type annotation on the LHS.**
+  `const kDefault = <Never>{};` typed as `Set<Never>` (covariantly assignable to
+  any `Set<T>`) needs the explicit `<Never>` — `const kDefault = {}` infers
+  `Map<dynamic, dynamic>` and breaks.
 
 <a id="collection-for-collection-if-over-iterablemaptolist"></a>
 ### Collection-for / collection-if over `Iterable.map(…).toList()`

@@ -127,7 +127,7 @@ class PlatformSwitch extends PlatformWidgetKeyedBase {
     required this.value,
     required this.onChanged,
     this.isEnabled = true,
-    this.dragStartBehavior = DragStartBehavior.start,
+    this.dragStartBehavior = .start,
     this.focusNode,
     this.onFocusChange,
     this.autofocus = false,
