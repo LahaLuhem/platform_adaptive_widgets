@@ -44,6 +44,36 @@ heading text, so renames don't break callers.
   the body).
 - **Nullability is explicit.** Use `T?` everywhere a value can be missing.
   `cast_nullable_to_non_nullable` is on — `as T` on a `T?` will fail lint.
+- **Constrain generic type parameters to `<T extends Object>` by default.** Unbounded
+  `<T>` lets `null` and `dynamic` satisfy `T` — the same failure modes the explicit-
+  nullability rule and the [`dynamic`-escape-hatch ban](./.ai/AGENTS.md#hard-rules)
+  guard against elsewhere. Bind to `Object` so the type system enforces "some real
+  value, not null"; if a particular call site needs `null`, the call site spells it as
+  `T?` and the binding stays put.
+
+  Exception: when `T` flows directly into an external library API that itself uses
+  unbounded `<T>` *and* relies on `null` as a sentinel `T` value — e.g. a dialog
+  helper that pops with `context.pop()` (a `T = void` / null result for "dismissed
+  without a value"). In those cases, leave `<T>` raw so callers can instantiate it
+  with `void` / a nullable type. Don't reach for the exception speculatively — bind
+  by default, loosen only when a real call site demands it.
+
+  ```dart
+  // Prefer:
+  class PlatformRadio<T extends Object> extends PlatformWidgetKeyedBase { … }
+  class PlatformSegmentButton<T extends Object> extends PlatformWidgetKeyedBase { … }
+
+  // Over:
+  class PlatformRadio<T> extends PlatformWidgetKeyedBase { … }
+
+  // Exception (dialog result type may be null / void):
+  Future<T?> showPlatformDialog<T>(…) { … }
+  ```
+
+  Bounded `T` is a subtype of unbounded `T` in parameter positions, so wrapping
+  Flutter's raw-`<T>` widgets (e.g. `Radio<T>`, `RadioGroup<T>`) with a
+  `<T extends Object>`-bound package widget is type-safe — the bound narrows the
+  accepted set; the upstream's looser slot still accepts the narrower value.
 - **No Java ceremony.** No getter-only abstract base classes, no `AbstractFooFactory`,
   no interface-per-class. Use mixins / sealed classes / records / extension types where
   they add clarity, not weight. The `PlatformWidgetBase` hierarchy is the legitimate
@@ -295,35 +325,34 @@ already infers:
 
 ```dart
 // Prefer:
-PlatformRadioGroup<AxisDirection>(
-  platformRadioGroupData: PlatformRadioGroupData(
-    groupValues: AxisDirection.values,
-    groupBuilder: (directionsAndButtons) => Row(
-      spacing: 16,
-      children: [
-        for (final directionAndButton in directionsAndButtons)
-          Row(
-            mainAxisSize: .min,
-            children: [
-              directionAndButton.button,
-              Text(directionAndButton.value.name),
-            ],
-          ),
-      ],
-    ),
-    onChanged: viewModel.onDirectionalityChanged,
+RadioGroup<AxisDirection>(
+  groupValue: directionality,
+  onChanged: viewModel.onDirectionalityChanged,
+  child: Row(
+    spacing: 16,
+    children: [
+      for (final dir in AxisDirection.values)
+        Row(
+          mainAxisSize: .min,
+          children: [
+            PlatformRadio(value: dir),
+            Text(dir.name),
+          ],
+        ),
+    ],
   ),
 )
 
 // Over:
-PlatformRadioGroup<AxisDirection>(
-  …
-  groupBuilder: (directionsAndButtons) => Row(
+RadioGroup<AxisDirection>(
+  groupValue: directionality,
+  onChanged: viewModel.onDirectionalityChanged,
+  child: Row(
     spacing: 16,
-    children: directionsAndButtons
-        .map((db) => Row(
+    children: AxisDirection.values
+        .map((dir) => Row(
               mainAxisSize: MainAxisSize.min,
-              children: [db.button, Text(db.value.name)],
+              children: [PlatformRadio(value: dir), Text(dir.name)],
             ))
         .toList(),
   ),
