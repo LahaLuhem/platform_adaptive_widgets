@@ -155,11 +155,9 @@ class HomeView extends StatelessWidget {
                     ValueListenableBuilder(
                       valueListenable: viewModel.checkboxValueListenable,
                       builder: (_, checkboxValue, _) => PlatformCheckbox(
-                        platformCheckboxData: PlatformCheckboxData(
-                          value: checkboxValue,
-                          tristate: true,
-                          onChanged: viewModel.onCheckboxChanged,
-                        ),
+                        value: checkboxValue,
+                        tristate: true,
+                        onChanged: viewModel.onCheckboxChanged,
                       ),
                     ),
                     PlatformExpansionTile(
