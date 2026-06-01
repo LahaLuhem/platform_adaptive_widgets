@@ -157,6 +157,33 @@ style.
   pattern here — Flutter packages get a thicker per-category const file. Before
   introducing a new magic number or default, check the existing `const_values.dart`
   files in the same category first.
+- **Inline single-use defaults; don't promote to a named `kDefault…` constant.** A
+  `kDefaultXxx` declaration earns its name when the value is read from **more than
+  one place** — typically a data class's field default *and* a widget's
+  `build*`-method substitution
+  (`materialFooData?.bar ?? kDefaultFooBar`). When the value appears only as one
+  constructor's parameter default — no second reader, no cross-file substitution —
+  leave it as a literal at the constructor and skip the constant. Two reasons:
+  1. **API pollution.** Top-level `kDefaultXxx` constants (and public
+     `static const` defaults on data classes) appear in auto-complete and in
+     the rendered dartdoc. Each one a downstream user has to skim past.
+  2. **No drift risk.** Constants exist partly to keep two readers from
+     diverging on the same value. With only one reader, there's nothing to
+     diverge from.
+
+  Counts as a real second use:
+  - A `build*` branch substituting the constant when a per-platform record's
+    field is `null` (the literal would otherwise appear in both the data class
+    default and the build branch).
+  - Multiple constructors / call sites in different files reading the same
+    upstream-Flutter sentinel — e.g.
+    [`kDefaultUseRootNavigator`](./lib/src/models/dialogs/const_values.dart)
+    feeding every `show*` helper.
+
+  Does **not** count:
+  - A dartdoc reference (`Defaults to [kDefaultXxx]`) — that's documentation of
+    the value, not a second reader. Once inlined, the dartdoc just spells out
+    the literal: `Defaults to \`false\``.
 
 ---
 

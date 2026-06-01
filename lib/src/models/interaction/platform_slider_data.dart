@@ -11,12 +11,6 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart'
     show SemanticFormatterCallback, ShowValueIndicator, SliderInteraction;
 
-/// Default value for the slider's minimum.
-const kDefaultSliderMin = 0.0;
-
-/// Default value for the slider's maximum.
-const kDefaultSliderMax = 1.0;
-
 /// Default value for [MaterialSliderData.autofocus].
 const kDefaultSliderAutofocus = false;
 
