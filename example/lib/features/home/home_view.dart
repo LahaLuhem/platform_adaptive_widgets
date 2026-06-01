@@ -230,12 +230,8 @@ class HomeView extends StatelessWidget {
                     ),
                     ValueListenableBuilder(
                       valueListenable: viewModel.sliderValueListenable,
-                      builder: (_, sliderValue, _) => PlatformSlider(
-                        platformSliderData: PlatformSliderData(
-                          value: sliderValue,
-                          onChanged: viewModel.onSliderChanged,
-                        ),
-                      ),
+                      builder: (_, sliderValue, _) =>
+                          PlatformSlider(value: sliderValue, onChanged: viewModel.onSliderChanged),
                     ),
                     ValueListenableBuilder(
                       valueListenable: viewModel.isSwitchEnabledListenable,

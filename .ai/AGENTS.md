@@ -107,8 +107,8 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    widget-by-widget as part of the v2 restructure. See
    [`APPENDIX.md#field-classification`](../APPENDIX.md#field-classification)
    for the full rule and
-   [`APPENDIX.md#cross-platform-name-mappings`](../APPENDIX.md#cross-platform-name-mappings)
-   for shared-visual fields whose native names diverge.
+   [`APPENDIX.md#cross-platform-field-mappings`](../APPENDIX.md#cross-platform-field-mappings)
+   for shared-visual fields whose native names or types diverge.
 
 ## Hard rules
 1. **The public API lives only in `lib/platform_adaptive_widgets.dart`.** That file
