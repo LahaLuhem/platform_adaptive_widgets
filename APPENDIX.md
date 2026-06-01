@@ -255,6 +255,7 @@ Each row maps a single package field to its native counterparts.
 | `PlatformListTile` | `leadingWidth` | `ListTile.minLeadingWidth` (`double?`) | `CupertinoListTile.leadingSize` (`double`, non-null, default `28.0` for base / `30.0` for notched) | Package exposes `double?`. Material passes through; Cupertino branch substitutes `kDefaultCupertinoListTileLeadingSize` for the base variant or `kDefaultCupertinoNotchedListTileLeadingSize` for the notched variant when null. |
 | `PlatformListTile` | `color` | `ListTile.tileColor` (`Color?`) | `CupertinoListTile.backgroundColor` (`Color?`) | Same `Color?` nullability on both — differ only by parameter name. Package's `color` chosen for brevity. |
 | `PlatformListTile` | `padding` | `ListTile.contentPadding` (`EdgeInsetsGeometry?`) | `CupertinoListTile.padding` (`EdgeInsetsGeometry?`) | Same `EdgeInsetsGeometry?` nullability on both — differ only by parameter name. |
+| `PlatformRadio` | `fillColor` | `Radio.fillColor` (`WidgetStateProperty<Color?>?`) | `CupertinoRadio.fillColor` (`Color?`) | Package exposes the richer `WidgetStateProperty<Color?>?`. Material passes through; Cupertino branch resolves to a single `Color?` via `.resolve({.selected, if (!isEnabled) .disabled})` — radios primarily render the fill colour when selected; the build-time-known `isEnabled` flag drives the disabled-state branch. |
 
 ### When to add an entry
 

@@ -170,28 +170,24 @@ class HomeView extends StatelessWidget {
                     ),
                     ValueListenableBuilder(
                       valueListenable: viewModel.directionalityListenable,
-                      builder: (context, directionality, _) => PlatformRadioGroup<AxisDirection>(
-                        materialRadioData: const MaterialRadioData(visualDensity: .compact),
-                        platformRadioGroupData: PlatformRadioGroupData(
-                          groupValue: directionality,
-                          groupValues: AxisDirection.values,
-                          groupBuilder: (directionsAndButtons) => Row(
-                            spacing: 16,
-                            mainAxisAlignment: .center,
-                            children: [
-                              for (final directionAndButton in directionsAndButtons)
-                                Row(
-                                  mainAxisSize: .min,
-                                  children: [
-                                    directionAndButton.button,
-                                    Text(directionAndButton.value.name),
-                                  ],
+                      builder: (context, directionality, _) =>
+                          PlatformRadioGroupBuilder<AxisDirection>(
+                            values: AxisDirection.values,
+                            groupValue: directionality,
+                            onChanged: viewModel.onDirectionalityChanged,
+                            itemBuilder: (_, dir) => Row(
+                              mainAxisSize: .min,
+                              children: [
+                                PlatformRadio(
+                                  value: dir,
+                                  materialRadioData: const MaterialRadioData(
+                                    visualDensity: .compact,
+                                  ),
                                 ),
-                            ],
+                                Text(dir.name),
+                              ],
+                            ),
                           ),
-                          onChanged: viewModel.onDirectionalityChanged,
-                        ),
-                      ),
                     ),
                     PlatformSearchBar(
                       platformSearchBarData: PlatformSearchBarData(
