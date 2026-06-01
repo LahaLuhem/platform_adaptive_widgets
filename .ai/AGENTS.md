@@ -94,11 +94,21 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
 2. Overrides `buildMaterial(context)` and `buildCupertino(context)`. The abstract base's
    `build` is `@nonVirtual` — it switches on `defaultTargetPlatform` and delegates. Don't
    override `build` directly.
-3. Accepts three (sometimes two) data classes in its constructor:
-   `PlatformXxxData` for params that apply to both platforms, `MaterialXxxData` for
-   Material-only tuning, `CupertinoXxxData` for Cupertino-only tuning. See
-   [`APPENDIX.md#data-classes-per-widget-pattern`](../APPENDIX.md#data-classes-per-widget-pattern)
-   for why the three are split this way.
+3. Constructor shape — every field falls into one of three buckets:
+   - **Functional + shared visual**: flat `const` params on the widget itself
+     (callbacks, value, controllers, state-gating, plus visual fields that
+     exist on both platforms with possible per-platform override).
+   - **Material-only visual**: pass via `materialXxxData: MaterialXxxData(…)`.
+   - **Cupertino-only visual**: pass via `cupertinoXxxData: CupertinoXxxData(…)`.
+
+   Per-platform records carry **only** visual fields — never callbacks,
+   controllers, value, or state-gating. The legacy v1.x shape (public
+   `PlatformXxxData` taking functional fields) is being migrated out
+   widget-by-widget as part of the v2 restructure. See
+   [`APPENDIX.md#field-classification`](../APPENDIX.md#field-classification)
+   for the full rule and
+   [`APPENDIX.md#cross-platform-name-mappings`](../APPENDIX.md#cross-platform-name-mappings)
+   for shared-visual fields whose native names diverge.
 
 ## Hard rules
 1. **The public API lives only in `lib/platform_adaptive_widgets.dart`.** That file

@@ -21,11 +21,13 @@ triggers an automated publish).
 
 ## Technical choices — always ask first
 - **Do not silently pick between reasonable alternatives.** Whenever a task admits more
-  than one defensible approach (which Cupertino primitive to wrap, whether to add a new
-  field to `MaterialXxxData` vs `PlatformXxxData`, whether a symbol belongs in the
-  public re-exports or stays under `lib/src/`, function-vs-class API shape, whether to
-  add a dependency, etc.), **stop and ask**. Recommendations in the question are
-  expected — list the options with trade-offs, say which you'd pick and why, then wait.
+  than one defensible approach (which Cupertino primitive to wrap, whether a new field
+  is functional / shared-visual / platform-only per
+  [`APPENDIX.md#field-classification`](../APPENDIX.md#field-classification), whether a
+  symbol belongs in the public re-exports or stays under `lib/src/`, function-vs-class
+  API shape, whether to add a dependency, etc.), **stop and ask**. Recommendations in
+  the question are expected — list the options with trade-offs, say which you'd pick
+  and why, then wait.
 - **"Small" choices count.** The bar isn't "is this architecturally significant" — it's
   "could a reasonable maintainer disagree with my pick". If yes, ask.
 - **Mark your recommendation with `★`.** When presenting options, prefix your preferred

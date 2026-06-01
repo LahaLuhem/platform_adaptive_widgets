@@ -20,7 +20,7 @@ heading text, so renames don't break callers.
 - [Class structure](#class-structure)
 - [Platform-adaptive widget patterns](#platform-adaptive-widget-patterns)
     * [Subclass `PlatformWidgetBase`, override the two builders](#subclass-platformwidgetbase-override-the-two-builders)
-    * [`PlatformXxxData` / `MaterialXxxData` / `CupertinoXxxData` split](#platformxxxdata-materialxxxdata-cupertinoxxxdata-split)
+    * [Field classification: functional vs visual](#field-classification-functional-vs-visual)
 - [Idioms](#idioms)
     * [Static dot shorthands (Dart 3.10+)](#static-dot-shorthands-dart-310)
     * [Collection-for / collection-if over `Iterable.map(…).toList()`](#collection-for-collection-if-over-iterablemaptolist)
@@ -227,31 +227,30 @@ class PlatformSwitch extends StatelessWidget {
 }
 ```
 
-<a id="paw-data-class-split"></a>
-### `PlatformXxxData` / `MaterialXxxData` / `CupertinoXxxData` split
+<a id="paw-field-classification"></a>
+### Field classification: functional vs visual
 
-Most widgets accept up to three data records. The split is by *audience*, not by
-priority:
+Every widget parameter falls into one of three buckets:
 
-- **`PlatformXxxData`** — required (or strongly recommended); carries fields that
-  apply to *both* platforms. `value` on a switch, `onChanged`, `controller`, `child`
-  in a builder widget. App code that doesn't care about per-platform tuning only
-  passes this.
-- **`MaterialXxxData?`** — optional; carries fields that *only* exist on the Material
-  side (visual density on `Radio`, `decoration` on a text field). Pass it when you
-  want to tune Material rendering without dropping to a raw Material widget.
-- **`CupertinoXxxData?`** — symmetric optional for the Cupertino side.
+- **Functional** (identity, control, callbacks, state-gating, input data,
+  behavioral tuning) — declared as **flat `const` params on the widget itself**.
+  Single source of truth; no per-platform override possible.
+- **Visual, shared across platforms** — declared **both** as a flat widget
+  param (the default) **and** on a private `_PlatformXxxData` abstract base
+  inherited by `MaterialXxxData` and `CupertinoXxxData`. The per-platform
+  record's value overrides the widget default on its branch.
+- **Visual, platform-only** — declared on `MaterialXxxData` or
+  `CupertinoXxxData`, whichever platform exposes the concept.
 
-When a parameter is defined identically on both platforms, it goes on
-`PlatformXxxData` (DRY beats parallel-symmetry). When the *concept* is the same but
-the *type* or *semantic* differs (e.g. `Color` on Material vs. `CupertinoDynamicColor`
-on Cupertino), it goes on the platform-specific record. Don't invent a unifying
-abstraction unless the concept truly is the same on both sides — see
-[`APPENDIX.md#data-classes-per-widget-pattern`](./APPENDIX.md#data-classes-per-widget-pattern).
+Field-ordering inside the `_PlatformXxxData` base and the per-platform records:
+keep the same field order across the trio for the shared-visual fields, so
+readers diffing the three see only real differences. Platform-only visual
+fields come after the inherited block.
 
-Field-ordering inside each `*Data` class: keep the same field order across the
-`Platform` / `Material` / `Cupertino` trio for the fields they share, so readers
-diffing the three see only real differences.
+For the full rule (which fields land where, carve-outs, name-mapping
+discipline), see
+[`APPENDIX.md#field-classification`](./APPENDIX.md#field-classification) and
+[`APPENDIX.md#cross-platform-name-mappings`](./APPENDIX.md#cross-platform-name-mappings).
 
 ---
 
