@@ -89,38 +89,173 @@ heading, keep the anchor stable or grep-and-update every caller.
 
 ---
 
-<a id="data-classes-per-widget-pattern"></a>
-## Three-way `*Data` class split: `Platform` / `Material` / `Cupertino`
+<a id="field-classification"></a>
+## Field classification: functional vs visual
 
-- **Chosen:** most widgets accept up to three configuration records:
-  `PlatformXxxData` for cross-platform parameters (the things app code always cares
-  about), and the optional `MaterialXxxData` / `CupertinoXxxData` for per-platform
-  tuning that callers opt into.
-- **Why three records, not one merged record with per-platform optional fields?**
-  - The merged shape would put `materialColor` and `cupertinoActiveColor` on the same
-    type. Most callers want neither — they're tuning one platform or the other, never
-    both at once. The merged record is mostly null at every call site.
-  - The three-record split makes the *audience* of each field explicit at the type
-    level: `PlatformSwitchData.value` is required, `MaterialSwitchData.thumbColor` is
-    "I'm tuning Material only". A reader of a `PlatformSwitch(…)` call site knows
-    immediately what stripe of customisation each argument applies to.
-- **Why three records, not direct passthrough to `Switch` / `CupertinoSwitch`?**
-  - Direct passthrough leaks the underlying widget's signature into the public API —
-    every upstream signature change ripples into a breaking change here.
-  - Direct passthrough also can't express the cross-platform fields (`value`,
-    `onChanged`) once. With the three-record split, `PlatformSwitchData.value` is
-    written once and read on both branches.
-- **Rule of thumb for new fields:** if the concept is defined identically on both
-  platforms, the field belongs on `PlatformXxxData`. If the concept exists on one
-  side and the other side has nothing equivalent (or has it under a different name /
-  type), the field belongs on the per-platform record. **Don't invent a unifying
-  abstraction** for fields that are only superficially similar — the record split is
-  there precisely so we don't have to.
-- **Cross-platform tuning that needs a unified concept** (e.g. button variants —
-  Material has `text`/`elevated`/`outlined`/`filled`, Cupertino has plain / filled /
-  tinted) is the legitimate exception: the package exposes its own enums
-  (`MaterialButtonVariant`, `CupertinoButtonVariant`) on each per-platform record, so
-  callers pick a variant per platform without re-importing the underlying frameworks.
+Every parameter on a `PlatformXxx` widget (or `showPlatformXxx` helper) falls into
+exactly one of three buckets. The bucket determines where the field lives and
+whether per-platform override is possible.
+
+### Buckets
+
+- **Functional** — identity, control, callbacks, state-gating, input data,
+  behavioral tuning. Things that should never differ by platform — the
+  library's value proposition is "same behavior, different look".
+  - Identity / control: `widgetKey`, `key`, `focusNode`, `controller`,
+    `undoController`, `scrollController`, `restorationId`, `groupId`.
+  - Callbacks: `onPressed`, `onChanged`, `onTap`, `onFocusChange`,
+    `onSubmitted`, `onEditingComplete`, `onLongPress`.
+  - State-gating: `isEnabled`, `enabled`, `readOnly`, `autofocus`.
+  - Input data: `value`, `child`, `placeholder`, `text`.
+  - Behavioral tuning: `autocorrect`, `enableSuggestions`, `dragStartBehavior`,
+    `maxLines`, `maxLength`, `keyboardType`, `textInputAction`,
+    `textCapitalization`.
+- **Visual, shared across platforms** — visual concept that exists on both
+  platforms' underlying widgets (possibly under different parameter names — see
+  [`#cross-platform-name-mappings`](#cross-platform-name-mappings)). E.g.
+  `activeThumbColor`, `activeTrackColor`, `padding`, `cursorColor`. Per-platform
+  override is possible — callers may want different shades on iOS vs Android.
+- **Visual, platform-only** — visual concept exists on one platform's
+  underlying widget with no equivalent on the other. E.g. Material's
+  `ButtonStyle`, `MaterialTapTargetSize`, `splashRadius`; Cupertino's
+  `applyTheme`, `onLabelColor`, `crossAxisAlignment`, `CupertinoButtonSize`.
+
+### Where each bucket lives
+
+| Bucket                | Lives on                                                                                                                                | Override possible?                                 |
+|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------|
+| Functional            | `PlatformXxx` widget — flat `const` constructor param                                                                                   | No — single source of truth                        |
+| Visual, shared        | `PlatformXxx` widget (flat default) **and** private `_PlatformXxxData` abstract base inherited by `MaterialXxxData` / `CupertinoXxxData` | Yes — per-platform record overrides widget default |
+| Visual, platform-only | `MaterialXxxData` or `CupertinoXxxData` (whichever platform exposes the concept)                                                        | N/A — only one place to set it                     |
+
+Build-method resolution:
+
+- **Functional**: `this.field` directly.
+- **Shared visual**: `materialXxxData?.field ?? this.field` on Material branch;
+  `cupertinoXxxData?.field ?? this.field` on Cupertino branch.
+- **Platform-only visual**: read only on its own branch.
+
+### Why this shape
+
+- **Functional flat on the widget.** Callers write `PlatformSwitch(value: …,
+  onChanged: …)` — reads like a normal Flutter widget. There is no public
+  `PlatformXxxData` class to construct at call sites; the type system forbids
+  passing actions through per-platform records.
+- **Shared visual flat + overridable.** Default reads ergonomically
+  (`activeThumbColor: Colors.green` once), and callers wanting different shades
+  per platform reach for `materialXxxData` / `cupertinoXxxData`.
+- **Private `_PlatformXxxData` base, not public.** Exists only so per-platform
+  records inherit shared-visual fields via `super.x` forwarding —
+  compile-time-checked, no codegen needed for that edge. Never exported from
+  [`lib/platform_adaptive_widgets.dart`](./lib/platform_adaptive_widgets.dart);
+  callers never see it.
+
+### Rule of thumb for new fields
+
+1. Could this field's value reasonably differ by platform on the same caller's
+   app screen? If **no** → functional. If **yes** → visual.
+2. If visual: does the same concept exist on the other platform's underlying
+   widget (possibly under a different parameter name)? If **yes** → shared
+   visual, lives on `_PlatformXxxData` base + widget flat. If **no** →
+   platform-only visual, lives on the relevant per-platform record only.
+3. **Don't invent a unifying abstraction** for fields that are only
+   superficially similar. If `MaterialFoo.color` paints fill and
+   `CupertinoFoo.tint` paints border, they're two platform-only visuals — not
+   a shared visual.
+
+<a id="callback-nullability"></a>
+### Callback nullability
+
+For function-typed fields (callbacks, listeners), the functional-bucket rule
+forks based on whether the callback is essential to the widget:
+
+- **Essential callbacks** — the widget is meaningless without them
+  (`PlatformSwitch.onChanged`, `PlatformButton.onPressed`). Declared as
+  `required ValueChanged<T>` / `required VoidCallback` — non-null. The caller
+  must provide one.
+- **Optional observation callbacks** — the widget works without them; the
+  caller opts in to be notified (`onFocusChange`, `onHover`, image error
+  listeners). Declared as `ValueChanged<T>?` / `VoidCallback?` — nullable, no
+  `required`.
+
+**Never** use callback nullability to encode "disabled" state. `isEnabled: bool`
+is the only disabling mechanism — the underlying platform widget receives a
+`null` callback when `isEnabled: false`, but the package's public API keeps the
+two concerns separate.
+
+This is a deliberate deviation from Flutter's `Widget.onChanged: null = disabled`
+convention. The trade-off — more explicit at call sites, no nullability dance,
+no ambiguity between "no callback registered" and "widget disabled" — is worth
+the divergence for a package whose value proposition is explicit, behavior-stable
+adaptation.
+
+When a widget is fundamentally interactive but a caller wants a display-only
+variant, the right answer is to use a different widget (e.g. `Text` instead of
+`PlatformButton` with a no-op callback), not to make the callback nullable.
+
+### Carve-outs
+
+- **Callbacks tightly coupled to a single visual field** (e.g.
+  `onActiveThumbImageError` for `activeThumbImage`) follow that visual field's
+  bucket — not the general "callbacks are functional" rule. They're a parameter
+  of the visual field, not an independent action.
+- **Variant enums** (`MaterialButtonVariant`, `CupertinoButtonVariant`) live as
+  flat fields on the widget. Each variant exists only on its own platform but
+  the package exposes both at the widget level so callers pick per-platform
+  without re-importing the underlying frameworks. Treated as functional for
+  layout purposes (single source of truth on the widget).
+- **`showPlatformXxx` helpers** apply the same rule: functional params flat on
+  the function signature; visual via per-platform records.
+
+### What this rules out
+
+- A public `PlatformXxxData` class — the shared-visual base is private.
+- Action / callback fields on `MaterialXxxData` or `CupertinoXxxData`. If you
+  reach for one, the field is functional and belongs flat on the widget.
+- Direct passthrough to `Switch` / `CupertinoSwitch` constructor signatures.
+  The widget still owns its public API; per-platform records do not leak the
+  underlying widget's full surface.
+
+---
+
+<a id="cross-platform-name-mappings"></a>
+## Cross-platform name mappings
+
+Shared-visual fields where the package's unified field name differs from one or
+both platforms' underlying widget parameter names. Each row maps a single
+package field to its native counterparts.
+
+| Widget | Package field | Material maps to | Cupertino maps to | Notes |
+|--------|---------------|------------------|-------------------|-------|
+| `PlatformSwitch` | `activeThumbColor` | `Switch.activeThumbColor` | `CupertinoSwitch.thumbColor` | Cupertino's `thumbColor` represents the active-state thumb color (no inactive equivalent on Cupertino's single-thumb design). The package's `active` prefix disambiguates. |
+| `PlatformSwitch` | `mouseCursor` | `Switch.mouseCursor` (`MouseCursor?`) | `CupertinoSwitch.mouseCursor` (`WidgetStateProperty<MouseCursor>?`) | Package unifies as `WidgetStateProperty<MouseCursor>?`. Material branch resolves to a single `MouseCursor` via `.resolve({.selected, .hovered, .focused, .disabled})` at build time. |
+
+### When to add an entry
+
+During a widget's review phase, every shared-visual field where the underlying
+parameter name diverges from the package's chosen unified name gets a row here.
+**Same fact, three places to repeat it**: this table, the dartdoc on the
+widget's flat field, and the dartdoc on `_PlatformXxxData`'s field. All three
+say "maps to `UnderlyingWidget.nativeParam` on iOS / Android".
+
+### Choosing the unified name
+
+When the two underlying parameters have different names:
+
+- Prefer the less ambiguous name — `activeThumbColor` beats `thumbColor`
+  because the latter silently raises "active or inactive?".
+- Don't invent a third name unless both native names are bad. Pick one, document
+  the mapping for the other side.
+- If the two native names are the same word with the same meaning (e.g.
+  `activeTrackColor` on both sides), no mapping is needed and no row goes here.
+
+### Why centralise
+
+Per-field dartdoc handles the dev writing one `PlatformSwitch(activeThumbColor: …)`
+call. The table is for the **maintainer** — when a Flutter SDK update renames a
+parameter, this is the canonical list of fields whose mapping could silently
+break. Without it, a renamed underlying parameter slips through as a runtime
+mismatch.
 
 ---
 

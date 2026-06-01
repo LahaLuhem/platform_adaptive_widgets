@@ -242,10 +242,8 @@ class HomeView extends StatelessWidget {
                     ValueListenableBuilder(
                       valueListenable: viewModel.isSwitchEnabledListenable,
                       builder: (_, isSwitchEnabled, _) => PlatformSwitch(
-                        platformSwitchData: PlatformSwitchData(
-                          value: isSwitchEnabled,
-                          onChanged: viewModel.onSwitchChanged,
-                        ),
+                        value: isSwitchEnabled,
+                        onChanged: viewModel.onSwitchChanged,
                       ),
                     ),
                     PlatformTextField(

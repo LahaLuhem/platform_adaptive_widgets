@@ -1,28 +1,36 @@
+// Multiple data classes in one file; private base + per-platform records.
+// ignore_for_file: prefer-match-file-name
+
 /// @docImport 'package:flutter/cupertino.dart';
 /// @docImport 'package:flutter/material.dart';
+/// @docImport '/src/widgets/interaction/platform_switch.dart';
 library;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show MaterialTapTargetSize;
 
-/// Platform-shared configuration for a switch widget.
+/// Default value for [PlatformSwitch.dragStartBehavior].
+const kDefaultSwitchDragStartBehavior = DragStartBehavior.start;
+
+/// Default value for [PlatformSwitch.autofocus].
+const kDefaultSwitchAutofocus = false;
+
+/// Internal abstract base holding shared-visual fields for [PlatformSwitch].
 ///
-/// Contains common properties used by both [Switch] and [CupertinoSwitch].
-final class PlatformSwitchData {
-  /// Key applied to the underlying platform widget.
-  final Key? widgetKey;
-
-  /// Whether the switch is enabled.
-  final bool isEnabled;
-
-  /// Current value of the switch.
-  final bool? value;
-
-  /// Callback when the switch value changes.
-  final ValueChanged<bool>? onChanged;
-
+/// Inherited by [MaterialSwitchData] and [CupertinoSwitchData] so each
+/// per-platform record carries the shared-visual surface via `super.x`
+/// constructor forwarding. Library-private — never exported from the
+/// package; callers never reference this type directly.
+///
+/// See `APPENDIX.md#field-classification` for the rule placing
+/// shared-visual fields on a private base.
+abstract class _PlatformSwitchData {
   /// Color of the thumb when the switch is active.
+  ///
+  /// Maps to [CupertinoSwitch.thumbColor] on iOS (Cupertino's `thumbColor`
+  /// represents the active-state thumb color). See
+  /// `APPENDIX.md#cross-platform-field-mappings`.
   final Color? activeThumbColor;
 
   /// Color of the track when the switch is active.
@@ -41,12 +49,20 @@ final class PlatformSwitchData {
   final ImageProvider? activeThumbImage;
 
   /// Error listener for the active thumb image.
+  ///
+  /// Tightly coupled to [activeThumbImage]; classified as shared visual
+  /// rather than functional per the carve-out in
+  /// `APPENDIX.md#field-classification`.
   final ImageErrorListener? onActiveThumbImageError;
 
   /// Image displayed on the thumb when the switch is inactive.
   final ImageProvider? inactiveThumbImage;
 
   /// Error listener for the inactive thumb image.
+  ///
+  /// Tightly coupled to [inactiveThumbImage]; classified as shared visual
+  /// rather than functional per the carve-out in
+  /// `APPENDIX.md#field-classification`.
   final ImageErrorListener? onInactiveThumbImageError;
 
   /// Track outline color as a [WidgetStateProperty].
@@ -58,34 +74,16 @@ final class PlatformSwitchData {
   /// Thumb icon as a [WidgetStateProperty].
   final WidgetStateProperty<Icon?>? thumbIcon;
 
-  /// Drag start behavior for the switch.
-  final DragStartBehavior dragStartBehavior;
-
   /// Mouse cursor as a [WidgetStateProperty].
+  ///
+  /// On Android the value is resolved to a single [MouseCursor] via
+  /// `.resolve({.selected, .hovered, .focused, .disabled})` before being
+  /// passed to [Switch.mouseCursor]. On iOS the value is forwarded to
+  /// [CupertinoSwitch.mouseCursor] as-is. See
+  /// `APPENDIX.md#cross-platform-field-mappings`.
   final WidgetStateProperty<MouseCursor>? mouseCursor;
 
-  /// Focus node for the switch.
-  final FocusNode? focusNode;
-
-  /// Callback when the focus state changes.
-  final ValueChanged<bool>? onFocusChange;
-
-  /// Whether the switch should autofocus.
-  final bool autofocus;
-
-  /// Default value for [dragStartBehavior].
-  static const kDefaultDragStartBehavior = DragStartBehavior.start;
-
-  /// Default value for [autofocus].
-  static const kDefaultAutofocus = false;
-
-  /// [isEnabled] is a convenience property for setting [onChanged] == null automatically.
-  /// [activeThumbColor] is used for `thumbColor` property of [CupertinoSwitch].
-  /// [mouseCursor] is not proxied through a [WidgetStateProperty] for [Switch]. It is defined by matching the same template/behaviour.
-  const PlatformSwitchData({
-    this.value,
-    this.onChanged,
-    this.isEnabled = true,
+  const _PlatformSwitchData({
     this.activeThumbColor,
     this.activeTrackColor,
     this.inactiveThumbColor,
@@ -98,20 +96,20 @@ final class PlatformSwitchData {
     this.trackOutlineColor,
     this.trackOutlineWidth,
     this.thumbIcon,
-    this.dragStartBehavior = kDefaultDragStartBehavior,
     this.mouseCursor,
-    this.focusNode,
-    this.onFocusChange,
-    this.autofocus = kDefaultAutofocus,
-    this.widgetKey,
   });
 }
 
-/// Material-specific configuration for a switch widget.
+/// Material-only visual overrides for [PlatformSwitch].
 ///
-/// Extends [PlatformSwitchData] with Material-only properties.
-final class MaterialSwitchData extends PlatformSwitchData {
-  /// Thumb color as a [WidgetStateProperty].
+/// Pass this via `PlatformSwitch.materialSwitchData` when tuning Material
+/// rendering. Inherited shared-visual fields override the widget's flat
+/// defaults on the Material branch; the fields declared here have no
+/// Cupertino equivalent.
+final class MaterialSwitchData extends _PlatformSwitchData {
+  /// Thumb color as a [WidgetStateProperty]. Distinct from the inherited
+  /// `activeThumbColor` — this is the full state-property surface that
+  /// Material exposes for the thumb across every widget state.
   final WidgetStateProperty<Color?>? thumbColor;
 
   /// Track color as a [WidgetStateProperty].
@@ -129,16 +127,11 @@ final class MaterialSwitchData extends PlatformSwitchData {
   /// Splash radius of the switch.
   final double? splashRadius;
 
-  /// Padding around the switch.
+  /// Padding around the switch. No Cupertino equivalent.
   final EdgeInsetsGeometry? padding;
 
-  /// [isEnabled] is a convenience property for setting [onChanged] == null automatically.
-  /// [mouseCursor] is not proxied through a [WidgetStateProperty] for [Switch]. It is defined by matching the same template/behaviour.
+  /// Creates Material-only visual overrides for [PlatformSwitch].
   const MaterialSwitchData({
-    super.value,
-    super.onChanged,
-    super.widgetKey,
-    super.isEnabled,
     super.activeThumbColor,
     super.activeTrackColor,
     super.inactiveThumbColor,
@@ -151,11 +144,7 @@ final class MaterialSwitchData extends PlatformSwitchData {
     super.trackOutlineColor,
     super.trackOutlineWidth,
     super.thumbIcon,
-    super.dragStartBehavior,
     super.mouseCursor,
-    super.focusNode,
-    super.onFocusChange,
-    super.autofocus,
     this.thumbColor,
     this.trackColor,
     this.overlayColor,
@@ -166,10 +155,13 @@ final class MaterialSwitchData extends PlatformSwitchData {
   });
 }
 
-/// Cupertino-specific configuration for a switch widget.
+/// Cupertino-only visual overrides for [PlatformSwitch].
 ///
-/// Extends [PlatformSwitchData] with Cupertino-only properties.
-final class CupertinoSwitchData extends PlatformSwitchData {
+/// Pass this via `PlatformSwitch.cupertinoSwitchData` when tuning Cupertino
+/// rendering. Inherited shared-visual fields override the widget's flat
+/// defaults on the Cupertino branch; the fields declared here have no
+/// Material equivalent.
+final class CupertinoSwitchData extends _PlatformSwitchData {
   /// Whether to apply the Cupertino theme to the switch.
   final bool? applyTheme;
 
@@ -179,13 +171,8 @@ final class CupertinoSwitchData extends PlatformSwitchData {
   /// Color of the "off" label.
   final Color? offLabelColor;
 
-  /// [isEnabled] is a convenience property for setting [onChanged] == null automatically.
-  /// [activeThumbColor] is synonymous with `thumbColor` property of [CupertinoSwitch].
+  /// Creates Cupertino-only visual overrides for [PlatformSwitch].
   const CupertinoSwitchData({
-    super.value,
-    super.onChanged,
-    super.widgetKey,
-    super.isEnabled,
     super.activeThumbColor,
     super.activeTrackColor,
     super.inactiveThumbColor,
@@ -198,11 +185,7 @@ final class CupertinoSwitchData extends PlatformSwitchData {
     super.trackOutlineColor,
     super.trackOutlineWidth,
     super.thumbIcon,
-    super.dragStartBehavior,
     super.mouseCursor,
-    super.focusNode,
-    super.onFocusChange,
-    super.autofocus,
     this.applyTheme,
     this.onLabelColor,
     this.offLabelColor,
