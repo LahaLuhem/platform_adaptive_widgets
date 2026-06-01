@@ -111,8 +111,9 @@ whether per-platform override is possible.
     `maxLines`, `maxLength`, `keyboardType`, `textInputAction`,
     `textCapitalization`.
 - **Visual, shared across platforms** — visual concept that exists on both
-  platforms' underlying widgets (possibly under different parameter names — see
-  [`#cross-platform-name-mappings`](#cross-platform-name-mappings)). E.g.
+  platforms' underlying widgets (possibly under different parameter names or
+  types — see
+  [`#cross-platform-field-mappings`](#cross-platform-field-mappings)). E.g.
   `activeThumbColor`, `activeTrackColor`, `padding`, `cursorColor`. Per-platform
   override is possible — callers may want different shades on iOS vs Android.
 - **Platform-only** — concept (visual or functional) exists on one
@@ -161,8 +162,8 @@ Build-method resolution:
 ### Rule of thumb for new fields
 
 1. Does the concept exist on both platforms' underlying widgets (possibly
-   under different parameter names — see
-   [`#cross-platform-name-mappings`](#cross-platform-name-mappings))?
+   under different parameter names or types — see
+   [`#cross-platform-field-mappings`](#cross-platform-field-mappings))?
    - **No** → platform-only, lives on `MaterialXxxData` or
      `CupertinoXxxData` (whichever platform exposes the concept). Visual or
      functional doesn't matter — there's no cross-platform sync to enforce.
@@ -236,36 +237,49 @@ variant, the right answer is to use a different widget (e.g. `Text` instead of
 
 ---
 
-<a id="cross-platform-name-mappings"></a>
-## Cross-platform name mappings
+<a id="cross-platform-field-mappings"></a>
+## Cross-platform field mappings
 
-Shared-visual fields where the package's unified field name differs from one or
-both platforms' underlying widget parameter names. Each row maps a single
-package field to its native counterparts.
+Shared-visual fields where the package's unified surface diverges from the
+underlying widget parameter on one or both platforms — either by **name**
+(e.g. `activeThumbColor` ↔ `thumbColor`) or by **type / nullability** (e.g.
+the package's `Color?` passed to a `Color` non-null Cupertino parameter).
+Each row maps a single package field to its native counterparts.
 
 | Widget | Package field | Material maps to | Cupertino maps to | Notes |
 |--------|---------------|------------------|-------------------|-------|
 | `PlatformSwitch` | `activeThumbColor` | `Switch.activeThumbColor` | `CupertinoSwitch.thumbColor` | Cupertino's `thumbColor` represents the active-state thumb color (no inactive equivalent on Cupertino's single-thumb design). The package's `active` prefix disambiguates. |
 | `PlatformSwitch` | `mouseCursor` | `Switch.mouseCursor` (`MouseCursor?`) | `CupertinoSwitch.mouseCursor` (`WidgetStateProperty<MouseCursor>?`) | Package unifies as `WidgetStateProperty<MouseCursor>?`. Material branch resolves to a single `MouseCursor` via `.resolve({.selected, .hovered, .focused, .disabled})` at build time. |
+| `PlatformSlider` | `thumbColor` | `Slider.thumbColor` (`Color?`) | `CupertinoSlider.thumbColor` (`Color`, non-null, default `CupertinoColors.white`) | Package exposes `Color?`. Material branch passes through (theme fallback intact when null); Cupertino branch falls back to `kDefaultCupertinoSliderThumbColor = CupertinoColors.white` when null. |
 
 ### When to add an entry
 
 During a widget's review phase, every shared-visual field where the underlying
-parameter name diverges from the package's chosen unified name gets a row here.
-**Same fact, three places to repeat it**: this table, the dartdoc on the
-widget's flat field, and the dartdoc on `_PlatformXxxData`'s field. All three
-say "maps to `UnderlyingWidget.nativeParam` on iOS / Android".
+parameter diverges from the package's chosen unified surface — either by name
+or by type / nullability — gets a row here. **Same fact, three places to
+repeat it**: this table, the dartdoc on the widget's flat field, and the
+dartdoc on `_PlatformXxxData`'s field. All three say "maps to
+`UnderlyingWidget.nativeParam` on iOS / Android", and where the type
+diverges, name the conversion the build method performs.
 
-### Choosing the unified name
+### Choosing the unified surface
 
-When the two underlying parameters have different names:
+When the two underlying parameters diverge:
 
-- Prefer the less ambiguous name — `activeThumbColor` beats `thumbColor`
-  because the latter silently raises "active or inactive?".
-- Don't invent a third name unless both native names are bad. Pick one, document
-  the mapping for the other side.
-- If the two native names are the same word with the same meaning (e.g.
-  `activeTrackColor` on both sides), no mapping is needed and no row goes here.
+- **Names differ.** Prefer the less ambiguous name — `activeThumbColor` beats
+  `thumbColor` because the latter silently raises "active or inactive?".
+- **Names match, types / nullability differ.** Prefer the looser type so
+  neither platform's full surface is lost: Material `Color?` + Cupertino
+  `Color` → package exposes `Color?` and the Cupertino branch supplies a
+  default when null; Material `MouseCursor?` + Cupertino
+  `WidgetStateProperty<MouseCursor>?` → package exposes the richer
+  `WidgetStateProperty<MouseCursor>?` and the Material branch resolves at
+  build time.
+- Don't invent a third name unless both native names are bad. Pick one,
+  document the mapping for the other side.
+- If the two native parameters agree on both name and type (e.g.
+  `activeTrackColor: Color?` on both sides), no mapping is needed and no row
+  goes here.
 
 ### Why centralise
 

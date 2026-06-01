@@ -247,10 +247,10 @@ keep the same field order across the trio for the shared-visual fields, so
 readers diffing the three see only real differences. Platform-only visual
 fields come after the inherited block.
 
-For the full rule (which fields land where, carve-outs, name-mapping
+For the full rule (which fields land where, carve-outs, field-mapping
 discipline), see
 [`APPENDIX.md#field-classification`](./APPENDIX.md#field-classification) and
-[`APPENDIX.md#cross-platform-name-mappings`](./APPENDIX.md#cross-platform-name-mappings).
+[`APPENDIX.md#cross-platform-field-mappings`](./APPENDIX.md#cross-platform-field-mappings).
 
 ---
 
