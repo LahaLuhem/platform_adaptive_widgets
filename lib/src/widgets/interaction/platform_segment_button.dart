@@ -5,54 +5,83 @@ import 'package:material_ui/material_ui.dart' show ButtonSegment, SegmentedButto
 import '/src/models/interaction/platform_segment_button_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive segmented button that renders Material SegmentedButton on Android
-/// and CupertinoSlidingSegmentedControl on iOS.
+/// A platform-adaptive segmented button that renders Material
+/// [SegmentedButton] on Android and [CupertinoSlidingSegmentedControl] on
+/// iOS.
 ///
-/// This widget automatically selects the appropriate segmented button implementation based on the target platform:
-/// - On Android: renders Material Design SegmentedButton
-/// - On iOS: renders CupertinoSlidingSegmentedControl
+/// All functional inputs (choices, selection, callback) live as flat
+/// constructor parameters. Per-platform visual + behavioural tuning is
+/// opt-in via [materialSegmentButtonData] and [cupertinoSegmentButtonData].
+/// See `APPENDIX.md#field-classification`.
 ///
-/// The segmented button can be configured with platform-specific data through [materialSegmentButtonData]
-/// and [cupertinoSegmentButtonData], or with common properties.
+/// Single-selection only — the Cupertino variant has no multi-select
+/// mode, and the package's [onSelectionChanged] signature
+/// (`ValueChanged<T?>`) mirrors that constraint on Material too (Material's
+/// underlying [SegmentedButton.onSelectionChanged] receives a `Set<T>`,
+/// from which the package forwards the first element).
 ///
-/// Note: On Android, only supports single selection due to use in CupertinoSlidingSegmentedControl.
+/// No `isEnabled` flag — neither [SegmentedButton] nor
+/// [CupertinoSlidingSegmentedControl] ships a built-in disabled state. To
+/// disable interaction, wrap with [IgnorePointer] (or [Opacity] for a
+/// faded-out look).
 ///
 /// Example:
 /// ```dart
 /// PlatformSegmentButton<String>(
-///   choices: ['Day', 'Week', 'Month'],
+///   choices: const ['Day', 'Week', 'Month'],
+///   segmentBuilder: (choice) => Text(choice),
 ///   selectedChoice: _selectedView,
 ///   onSelectionChanged: (choice) => setState(() => _selectedView = choice),
-///   segmentBuilder: (choice) => Text(choice),
 /// )
 /// ```
 class PlatformSegmentButton<T extends Object> extends PlatformWidgetKeyedBase {
-  /// The list of choices to display as segments.
-  final Iterable<T>? choices;
+  /// Values to render as segments. One [segmentBuilder] call per choice, in
+  /// iteration order. Must contain at least two entries (Cupertino asserts
+  /// this at construction).
+  final Iterable<T> choices;
 
-  /// Builder function for creating the widget representation of each segment.
-  final Widget Function(T choice)? segmentBuilder;
+  /// Builds the widget for one segment — typically a [Text] or [Icon].
+  final Widget Function(T choice) segmentBuilder;
 
-  /// Callback when the selected segment changes.
-  final ValueChanged<T?>? onSelectionChanged;
+  /// Currently-selected choice. `null` means no selection.
+  ///
+  /// On Material, an empty selection requires
+  /// [MaterialSegmentButtonData.emptySelectionAllowed] to be `true` —
+  /// otherwise [SegmentedButton] asserts at runtime.
+  final T? selectedChoice;
 
-  /// Material-specific segmented button data.
-  final MaterialSegmentButtonData<T>? materialSegmentButtonData;
+  /// Callback fired when the user taps a segment.
+  ///
+  /// Required and non-null per the callback-nullability rule
+  /// (`APPENDIX.md#callback-nullability`) — [CupertinoSlidingSegmentedControl]
+  /// requires its `onValueChanged` to be non-null at construction.
+  ///
+  /// The callback may receive `null` if a Material momentary-style tap
+  /// clears the selection (only possible when
+  /// [MaterialSegmentButtonData.emptySelectionAllowed] is `true`).
+  final ValueChanged<T?> onSelectionChanged;
 
-  /// Cupertino-specific segmented button data.
+  /// Material-only visual + functional overrides. Optional.
+  ///
+  /// Fields set on this record drive the Material branch only;
+  /// Material-only fields (`style`, `selectedIcon`, `expandedInsets`,
+  /// `emptySelectionAllowed`, `showSelectedIcon`, `direction`) are read
+  /// only from here.
+  final MaterialSegmentButtonData? materialSegmentButtonData;
+
+  /// Cupertino-only visual + functional overrides. Optional.
+  ///
+  /// Fields set on this record drive the Cupertino branch only;
+  /// Cupertino-only fields (`disabledChildren`, `thumbColor`, `padding`,
+  /// `backgroundColor`, `proportionalWidth`, `isMomentary`) are read only
+  /// from here.
   final CupertinoSegmentButtonData<T>? cupertinoSegmentButtonData;
 
-  /// The currently selected choice.
-  final T? _selectedChoice;
-
   /// Creates a platform-adaptive segmented button.
-  ///
-  /// The segmented button will render as a Material SegmentedButton on Android and a CupertinoSlidingSegmentedControl on iOS.
-  /// Android: Only supports single selection due to use in CupertinoSlidingSegmentedControl.
   const PlatformSegmentButton({
     required this.choices,
     required this.segmentBuilder,
-    required this._selectedChoice,
+    required this.selectedChoice,
     required this.onSelectionChanged,
     this.materialSegmentButtonData,
     this.cupertinoSegmentButtonData,
@@ -61,65 +90,42 @@ class PlatformSegmentButton<T extends Object> extends PlatformWidgetKeyedBase {
   });
 
   @override
-  Widget buildMaterial(BuildContext context) {
-    final resolvedOnSelectionChanged =
-        materialSegmentButtonData?.onSelectionChanged ?? onSelectionChanged;
-    final resolvedSegmentBuilder = materialSegmentButtonData?.segmentBuilder ?? segmentBuilder;
-
-    //TODO(lahaluhem): Add options for ButtonSegment.
-    return SegmentedButton<T>(
-      key: materialSegmentButtonData?.widgetKey ?? widgetKey,
-      emptySelectionAllowed:
-          materialSegmentButtonData?.emptySelectionAllowed ??
-          MaterialSegmentButtonData.kDefaultEmptySelectionAllowed,
-      expandedInsets: materialSegmentButtonData?.expandedInsets,
-      style: materialSegmentButtonData?.style,
-      showSelectedIcon:
-          materialSegmentButtonData?.showSelectedIcon ??
-          MaterialSegmentButtonData.kDefaultShowSelectedIcon,
-      selectedIcon: materialSegmentButtonData?.selectedIcon,
-      direction:
-          materialSegmentButtonData?.direction ?? MaterialSegmentButtonData.kDefaultDirection,
-      selected: (materialSegmentButtonData?.selectedChoice ?? _selectedChoice) != null
-          ? {?materialSegmentButtonData?.selectedChoice, ?_selectedChoice}
-          : const {},
-      onSelectionChanged: (selectedValues) =>
-          resolvedOnSelectionChanged?.call(selectedValues.firstOrNull),
-      segments: [
-        for (final choice in materialSegmentButtonData?.choices ?? choices!)
-          ButtonSegment(value: choice, label: resolvedSegmentBuilder?.call(choice)),
-      ],
-    );
-  }
+  Widget buildMaterial(BuildContext context) => SegmentedButton<T>(
+    key: widgetKey,
+    segments: [
+      for (final choice in choices) ButtonSegment(value: choice, label: segmentBuilder(choice)),
+    ],
+    selected: {?selectedChoice},
+    onSelectionChanged: (set) => onSelectionChanged(set.firstOrNull),
+    emptySelectionAllowed:
+        materialSegmentButtonData?.emptySelectionAllowed ??
+        kDefaultSegmentButtonEmptySelectionAllowed,
+    expandedInsets: materialSegmentButtonData?.expandedInsets,
+    style: materialSegmentButtonData?.style,
+    showSelectedIcon:
+        materialSegmentButtonData?.showSelectedIcon ?? kDefaultSegmentButtonShowSelectedIcon,
+    selectedIcon: materialSegmentButtonData?.selectedIcon,
+    direction: materialSegmentButtonData?.direction ?? kDefaultSegmentButtonDirection,
+  );
 
   @override
-  Widget buildCupertino(BuildContext context) {
-    final resolvedOnSelectionChanged =
-        cupertinoSegmentButtonData?.onSelectionChanged ?? onSelectionChanged;
-    final resolvedSegmentBuilder = cupertinoSegmentButtonData?.segmentBuilder ?? segmentBuilder;
-
-    return CupertinoSlidingSegmentedControl<T>(
-      key: cupertinoSegmentButtonData?.widgetKey ?? widgetKey,
-      onValueChanged: resolvedOnSelectionChanged!,
-      disabledChildren:
-          cupertinoSegmentButtonData?.disabledChildren ??
-          CupertinoSegmentButtonData.kDefaultDisabledChildren,
-      groupValue: _selectedChoice,
-      thumbColor:
-          cupertinoSegmentButtonData?.thumbColor ?? CupertinoSegmentButtonData.kDefaultThumbColor,
-      padding: cupertinoSegmentButtonData?.padding ?? CupertinoSegmentButtonData.kDefaultPadding,
-      backgroundColor:
-          cupertinoSegmentButtonData?.backgroundColor ??
-          CupertinoSegmentButtonData.kDefaultBackgroundColor,
-      proportionalWidth:
-          cupertinoSegmentButtonData?.proportionalWidth ??
-          CupertinoSegmentButtonData.kDefaultProportionalWidth,
-      isMomentary:
-          cupertinoSegmentButtonData?.isMomentary ?? CupertinoSegmentButtonData.kDefaultIsMomentary,
-      children: {
-        for (final choice in cupertinoSegmentButtonData?.choices ?? choices!)
-          choice: resolvedSegmentBuilder!.call(choice),
-      },
-    );
-  }
+  Widget buildCupertino(BuildContext context) => CupertinoSlidingSegmentedControl<T>(
+    key: widgetKey,
+    children: {for (final choice in choices) choice: segmentBuilder(choice)},
+    groupValue: selectedChoice,
+    onValueChanged: onSelectionChanged,
+    disabledChildren:
+        cupertinoSegmentButtonData?.disabledChildren ??
+        kDefaultCupertinoSegmentButtonDisabledChildren,
+    thumbColor: cupertinoSegmentButtonData?.thumbColor ?? kDefaultCupertinoSegmentButtonThumbColor,
+    padding: cupertinoSegmentButtonData?.padding ?? kDefaultCupertinoSegmentButtonPadding,
+    backgroundColor:
+        cupertinoSegmentButtonData?.backgroundColor ??
+        kDefaultCupertinoSegmentButtonBackgroundColor,
+    proportionalWidth:
+        cupertinoSegmentButtonData?.proportionalWidth ??
+        kDefaultCupertinoSegmentButtonProportionalWidth,
+    isMomentary:
+        cupertinoSegmentButtonData?.isMomentary ?? kDefaultCupertinoSegmentButtonIsMomentary,
+  );
 }
