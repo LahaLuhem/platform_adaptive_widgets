@@ -105,7 +105,7 @@ class PlatformCheckbox extends PlatformWidgetKeyedBase {
     this.tristate = false,
     this.isEnabled = true,
     this.focusNode,
-    this.autofocus = kDefaultCheckboxAutofocus,
+    this.autofocus = false,
     this.semanticLabel,
     this.mouseCursor,
     this.activeColor,

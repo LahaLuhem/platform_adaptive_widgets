@@ -9,9 +9,6 @@ library;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show MaterialTapTargetSize, VisualDensity;
 
-/// Default value for [PlatformCheckbox.autofocus].
-const kDefaultCheckboxAutofocus = false;
-
 /// Default value for [MaterialCheckboxData.isError].
 const kDefaultCheckboxIsError = false;
 

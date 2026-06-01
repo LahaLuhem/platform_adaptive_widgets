@@ -8,21 +8,6 @@ import 'package:material_ui/material_ui.dart' show Radio;
 import '/src/models/interaction/platform_radio_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// Default value for [PlatformRadio.toggleable].
-const kDefaultRadioToggleable = false;
-
-/// Default value for [PlatformRadio.autofocus].
-const kDefaultRadioAutofocus = false;
-
-/// Default value for [PlatformRadioGroupBuilder.direction].
-const kDefaultRadioGroupDirection = Axis.horizontal;
-
-/// Default value for [PlatformRadioGroupBuilder.spacing].
-const kDefaultRadioGroupSpacing = 16.0;
-
-/// Default value for [PlatformRadioGroupBuilder.runSpacing].
-const kDefaultRadioGroupRunSpacing = 8.0;
-
 /// A platform-adaptive radio button that renders Material [Radio] on
 /// Android and [CupertinoRadio] on iOS.
 ///
@@ -62,7 +47,7 @@ class PlatformRadio<T extends Object> extends PlatformWidgetKeyedBase {
   final T value;
 
   /// Whether tapping a selected radio deselects it (returning `null` to the
-  /// ancestor's `onChanged`). Defaults to [kDefaultRadioToggleable].
+  /// ancestor's `onChanged`). Defaults to `false`.
   final bool toggleable;
 
   /// Whether this radio is enabled and responds to taps.
@@ -78,8 +63,7 @@ class PlatformRadio<T extends Object> extends PlatformWidgetKeyedBase {
   /// Optional focus node for the radio. Same on both platforms.
   final FocusNode? focusNode;
 
-  /// Whether the radio should autofocus when mounted. Defaults to
-  /// [kDefaultRadioAutofocus].
+  /// Whether the radio should autofocus when mounted. Defaults to `false`.
   final bool autofocus;
 
   /// Colour applied when the radio is selected.
@@ -123,10 +107,10 @@ class PlatformRadio<T extends Object> extends PlatformWidgetKeyedBase {
   /// Creates a platform-adaptive radio button.
   const PlatformRadio({
     required this.value,
-    this.toggleable = kDefaultRadioToggleable,
+    this.toggleable = false,
     this.isEnabled = true,
     this.focusNode,
-    this.autofocus = kDefaultRadioAutofocus,
+    this.autofocus = false,
     this.activeColor,
     this.focusColor,
     this.mouseCursor,
@@ -237,16 +221,15 @@ class PlatformRadioGroupBuilder<T extends Object> extends StatelessWidget {
   final Widget Function(BuildContext context, T value) itemBuilder;
 
   /// Primary axis along which the items lay out. Defaults to
-  /// [kDefaultRadioGroupDirection]. Forwarded to [Wrap.direction].
+  /// [Axis.horizontal]. Forwarded to [Wrap.direction].
   final Axis direction;
 
-  /// Spacing between items along [direction]. Defaults to
-  /// [kDefaultRadioGroupSpacing]. Forwarded to [Wrap.spacing].
+  /// Spacing between items along [direction]. Defaults to `16.0`. Forwarded
+  /// to [Wrap.spacing].
   final double spacing;
 
   /// Spacing between runs (rows when [direction] is horizontal, columns
-  /// when vertical). Defaults to [kDefaultRadioGroupRunSpacing]. Forwarded
-  /// to [Wrap.runSpacing].
+  /// when vertical). Defaults to `8.0`. Forwarded to [Wrap.runSpacing].
   final double runSpacing;
 
   /// Creates a [PlatformRadio]-aware group + layout convenience widget.
@@ -255,9 +238,9 @@ class PlatformRadioGroupBuilder<T extends Object> extends StatelessWidget {
     required this.groupValue,
     required this.onChanged,
     required this.itemBuilder,
-    this.direction = kDefaultRadioGroupDirection,
-    this.spacing = kDefaultRadioGroupSpacing,
-    this.runSpacing = kDefaultRadioGroupRunSpacing,
+    this.direction = .horizontal,
+    this.spacing = 16,
+    this.runSpacing = 8,
     super.key,
   });
 

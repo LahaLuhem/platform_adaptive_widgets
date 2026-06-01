@@ -53,10 +53,10 @@ class PlatformSlider extends PlatformWidgetKeyedBase {
   /// `APPENDIX.md#callback-nullability`.
   final ValueChanged<double>? onChangeEnd;
 
-  /// Minimum value of the slider. Defaults to [kDefaultSliderMin].
+  /// Minimum value of the slider. Defaults to `0.0`.
   final double min;
 
-  /// Maximum value of the slider. Defaults to [kDefaultSliderMax].
+  /// Maximum value of the slider. Defaults to `1.0`.
   final double max;
 
   /// Number of discrete divisions on the slider.
@@ -101,8 +101,8 @@ class PlatformSlider extends PlatformWidgetKeyedBase {
     this.isEnabled = true,
     this.onChangeStart,
     this.onChangeEnd,
-    this.min = kDefaultSliderMin,
-    this.max = kDefaultSliderMax,
+    this.min = 0.0,
+    this.max = 1.0,
     this.divisions,
     this.activeColor,
     this.thumbColor,

@@ -6,15 +6,8 @@
 /// @docImport '/src/widgets/interaction/platform_switch.dart';
 library;
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show MaterialTapTargetSize;
-
-/// Default value for [PlatformSwitch.dragStartBehavior].
-const kDefaultSwitchDragStartBehavior = DragStartBehavior.start;
-
-/// Default value for [PlatformSwitch.autofocus].
-const kDefaultSwitchAutofocus = false;
 
 /// Internal abstract base holding shared-visual fields for [PlatformSwitch].
 ///
