@@ -115,10 +115,18 @@ whether per-platform override is possible.
   [`#cross-platform-name-mappings`](#cross-platform-name-mappings)). E.g.
   `activeThumbColor`, `activeTrackColor`, `padding`, `cursorColor`. Per-platform
   override is possible — callers may want different shades on iOS vs Android.
-- **Visual, platform-only** — visual concept exists on one platform's
-  underlying widget with no equivalent on the other. E.g. Material's
-  `ButtonStyle`, `MaterialTapTargetSize`, `splashRadius`; Cupertino's
-  `applyTheme`, `onLabelColor`, `crossAxisAlignment`, `CupertinoButtonSize`.
+- **Platform-only** — concept (visual or functional) exists on one
+  platform's underlying widget with no equivalent on the other. Visual
+  examples: Material's `ButtonStyle`, `MaterialTapTargetSize`,
+  `splashRadius`; Cupertino's `applyTheme`, `onLabelColor`,
+  `crossAxisAlignment`, `CupertinoButtonSize`. Functional examples:
+  `MaterialProgressIndicatorData.value` (Material has progress; Cupertino's
+  activity indicator is always indeterminate);
+  `CupertinoProgressIndicatorData.animating` (toggle for Cupertino's
+  spinner, no Material equivalent). When a concept has no equivalent on the
+  other platform, there's nothing to keep in sync — it belongs on the
+  per-platform record regardless of whether it would otherwise be visual
+  or functional.
 
 ### Where each bucket lives
 
@@ -126,7 +134,7 @@ whether per-platform override is possible.
 |-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------|
 | Functional            | `PlatformXxx` widget — flat `const` constructor param                                                                                   | No — single source of truth                        |
 | Visual, shared        | `PlatformXxx` widget (flat default) **and** private `_PlatformXxxData` abstract base inherited by `MaterialXxxData` / `CupertinoXxxData` | Yes — per-platform record overrides widget default |
-| Visual, platform-only | `MaterialXxxData` or `CupertinoXxxData` (whichever platform exposes the concept)                                                        | N/A — only one place to set it                     |
+| Platform-only         | `MaterialXxxData` or `CupertinoXxxData` (whichever platform exposes the concept)                                                        | N/A — only one place to set it                     |
 
 Build-method resolution:
 
@@ -152,16 +160,22 @@ Build-method resolution:
 
 ### Rule of thumb for new fields
 
-1. Could this field's value reasonably differ by platform on the same caller's
-   app screen? If **no** → functional. If **yes** → visual.
-2. If visual: does the same concept exist on the other platform's underlying
-   widget (possibly under a different parameter name)? If **yes** → shared
-   visual, lives on `_PlatformXxxData` base + widget flat. If **no** →
-   platform-only visual, lives on the relevant per-platform record only.
+1. Does the concept exist on both platforms' underlying widgets (possibly
+   under different parameter names — see
+   [`#cross-platform-name-mappings`](#cross-platform-name-mappings))?
+   - **No** → platform-only, lives on `MaterialXxxData` or
+     `CupertinoXxxData` (whichever platform exposes the concept). Visual or
+     functional doesn't matter — there's no cross-platform sync to enforce.
+     Skip to #3.
+   - **Yes** → continue to #2.
+2. Could this field's value reasonably differ by platform on the same
+   caller's app screen?
+   - **No** → functional, flat `const` param on the widget.
+   - **Yes** → shared visual, on `_PlatformXxxData` base + flat widget param.
 3. **Don't invent a unifying abstraction** for fields that are only
    superficially similar. If `MaterialFoo.color` paints fill and
-   `CupertinoFoo.tint` paints border, they're two platform-only visuals — not
-   a shared visual.
+   `CupertinoFoo.tint` paints border, they're two platform-only fields —
+   not a shared visual.
 
 <a id="callback-nullability"></a>
 ### Callback nullability
@@ -210,8 +224,12 @@ variant, the right answer is to use a different widget (e.g. `Text` instead of
 ### What this rules out
 
 - A public `PlatformXxxData` class — the shared-visual base is private.
-- Action / callback fields on `MaterialXxxData` or `CupertinoXxxData`. If you
-  reach for one, the field is functional and belongs flat on the widget.
+- **Cross-platform** functional fields (callbacks, controllers, value,
+  state-gating that exist on both platforms) on `MaterialXxxData` or
+  `CupertinoXxxData`. If the concept exists on both, it must be flat on the
+  widget — never in a per-platform record. (Platform-only functional fields
+  — e.g. `MaterialProgressIndicatorData.value` — are the exception: they
+  have no other home since the concept doesn't exist on the other side.)
 - Direct passthrough to `Switch` / `CupertinoSwitch` constructor signatures.
   The widget still owns its public API; per-platform records do not leak the
   underlying widget's full surface.
