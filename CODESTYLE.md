@@ -542,6 +542,30 @@ and the project is expected to be runnable through DCM checks):
   appears more than once — the `final class _SectionHeader extends StatelessWidget`
   pattern in [`example/lib/features/home/home_view.dart`](./example/lib/features/home/home_view.dart)
   is the model.
+- **`prefer-correct-edge-insets-constructor`** — always pick the simplest valid
+  `EdgeInsets[Directional]` constructor. The rule collapses redundant forms:
+  - `EdgeInsets.fromLTRB(a, b, a, b)` / `EdgeInsetsDirectional.fromSTEB(a, b, a, b)`
+    (start == end **and** top == bottom) → `EdgeInsets.symmetric(horizontal: a, vertical: b)`
+    — directional flipping is a no-op when start == end, so the non-directional
+    `EdgeInsets.symmetric` is the canonical form.
+  - `EdgeInsetsDirectional.fromSTEB(a, b, 0, c)` or `fromSTEB(0, b, c, d)` (any side
+    is zero) → `EdgeInsetsDirectional.only(...)` listing only the non-zero sides.
+  - `EdgeInsets.symmetric(horizontal: 0, vertical: v)` → `EdgeInsets.only(top: v, bottom: v)`.
+  - `EdgeInsets.all(0)` → `EdgeInsets.zero`.
+  - All four sides equal → `EdgeInsets.all(v)`.
+
+  Applies even when mirroring an upstream Flutter constant verbatim — Flutter's source
+  uses `.fromSTEB` defensively, but the simplified form is functionally identical and
+  the rule fires regardless. If the upstream form is preserved for traceability
+  (e.g. a `kDefault…` constant intentionally matched to Flutter's source), record the
+  upstream form in the constant's dartdoc alongside the simplified value:
+
+  ```dart
+  /// Matches upstream `CupertinoSearchTextField.padding`
+  /// (`EdgeInsetsDirectional.fromSTEB(5.5, 8, 5.5, 8)` — simplified here since
+  /// start == end makes the directional form redundant).
+  const kDefaultCupertinoSearchBarPadding = EdgeInsets.symmetric(horizontal: 5.5, vertical: 8);
+  ```
 
 ---
 

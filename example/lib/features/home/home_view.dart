@@ -190,14 +190,11 @@ class HomeView extends StatelessWidget {
                           ),
                     ),
                     PlatformSearchBar(
-                      platformSearchBarData: PlatformSearchBarData(
-                        hintText: 'Search',
-                        controller: viewModel.searchController,
-                        onSubmitted: viewModel.onSearchChanged,
-                      ),
-                      materialSearchBarData: const MaterialSearchBarData(
-                        leading: Icon(Icons.search),
-                      ),
+                      hintText: 'Search',
+                      controller: viewModel.searchController,
+                      onChanged: viewModel.onSearchChanged,
+                      onSubmitted: viewModel.onSearchChanged,
+                      leading: const Icon(Icons.search),
                     ),
                     SizedBox(
                       height: 120,
