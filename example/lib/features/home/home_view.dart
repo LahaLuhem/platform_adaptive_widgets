@@ -1,6 +1,5 @@
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
-import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart' show FloatingActionButton, Icons, InputDecoration;
+import 'package:flutter/material.dart';
 import 'package:persistent_header_adaptive/persistent_header_adaptive.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:platform_icons/platform_icons.dart';
@@ -234,15 +233,11 @@ class HomeView extends StatelessWidget {
                       ),
                     ),
                     PlatformTextField(
-                      platformTextFieldData: PlatformTextFieldData(
-                        controller: viewModel.textFieldController,
-                        onSubmitted: viewModel.onTextSubmitted,
-                      ),
+                      controller: viewModel.textFieldController,
+                      onSubmitted: viewModel.onTextSubmitted,
+                      hintText: 'Text field hint',
                       materialTextFieldData: const MaterialTextFieldData(
-                        decoration: InputDecoration(labelText: 'Text field hint'),
-                      ),
-                      cupertinoTextFieldData: const CupertinoTextFieldData(
-                        placeholder: 'Text field hint',
+                        decoration: InputDecoration(labelText: 'Android labelText'),
                       ),
                     ),
                   ],

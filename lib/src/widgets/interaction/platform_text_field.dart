@@ -1,380 +1,536 @@
+import 'dart:ui' show BoxHeightStyle, BoxWidthStyle;
+
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoTextField;
-import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart' show TextField;
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '/src/models/interaction/platform_text_field_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive text field that renders Material TextField on Android
-/// and CupertinoTextField on iOS.
+/// A platform-adaptive text field that renders Material [TextField] on Android
+/// and [CupertinoTextField] on iOS.
 ///
-/// This widget automatically selects the appropriate text field implementation based on the target platform:
-/// - On Android: renders Material Design TextField
-/// - On iOS: renders CupertinoTextField
+/// All shared functional inputs (controller, focus, keyboard, text-behavior,
+/// cursor, scrolling, autofill, IME, selection, context menu, …) live as flat
+/// constructor parameters. The three most-common content slots — [hintText],
+/// [prefix], and [suffix] — are also flat on the widget, since forcing every
+/// caller through a per-platform data record for these is exactly the kind of
+/// boilerplate this package exists to remove.
 ///
-/// The text field can be configured with platform-specific data through [materialTextFieldData]
-/// and [cupertinoTextFieldData], or with common properties through [platformTextFieldData].
+/// **Slot mapping.**
+/// - [hintText] → Material `decoration.hintText` + Cupertino `placeholder`.
+/// - [prefix]   → Material `decoration.prefixIcon` + Cupertino `prefix`
+///   (always visible by default; matches Cupertino's `prefixMode = always`).
+/// - [suffix]   → Material `decoration.suffixIcon` + Cupertino `suffix`
+///   (always visible by default).
+///
+/// **Override precedence.** If you also pass [MaterialTextFieldData.decoration]
+/// with `hintText` / `prefixIcon` / `suffixIcon` set, those win for the
+/// Material branch. If you pass [CupertinoTextFieldData.placeholder] /
+/// `prefix` / `suffix`, those win for the Cupertino branch. The flat
+/// widget-level values are the cross-platform default; data-class values are
+/// per-platform overrides. See `APPENDIX.md#cross-platform-field-mappings`.
+///
+/// Per-platform tuning beyond the common slots is opt-in via
+/// [materialTextFieldData] and [cupertinoTextFieldData]. See
+/// `APPENDIX.md#field-classification` for the classification rule.
 ///
 /// Example:
 /// ```dart
 /// PlatformTextField(
-///   platformTextFieldData: PlatformTextFieldData(
-///     controller: _textController,
-///     placeholder: 'Enter your name',
-///   ),
+///   controller: _controller,
+///   hintText: 'Search',
+///   prefix: const Icon(Icons.search),
+///   onSubmitted: _runSearch,
 /// )
 /// ```
-class PlatformTextField extends PlatformWidgetBase {
-  /// Common text field data that applies to both platforms.
-  ///
-  /// These properties will be used unless overridden by platform-specific data.
-  final PlatformTextFieldData? platformTextFieldData;
+class PlatformTextField extends PlatformWidgetKeyedBase {
+  // ---- Common content slots (flat shared) ----------------------------------
 
-  /// Platform-specific data for Material Design text fields.
+  /// Placeholder / hint text shown when the field is empty. Maps to
+  /// Material `decoration.hintText` and Cupertino `placeholder`. Overridden
+  /// per-platform when [MaterialTextFieldData.decoration]'s `hintText` or
+  /// [CupertinoTextFieldData.placeholder] are set.
+  final String? hintText;
+
+  /// Widget rendered before the text input (typically an icon). Maps to
+  /// Material `decoration.prefixIcon` and Cupertino `prefix`. Overridden
+  /// per-platform when [MaterialTextFieldData.decoration]'s `prefixIcon` or
+  /// [CupertinoTextFieldData.prefix] are set.
+  final Widget? prefix;
+
+  /// Widget rendered after the text input (typically an icon). Maps to
+  /// Material `decoration.suffixIcon` and Cupertino `suffix`. Overridden
+  /// per-platform when [MaterialTextFieldData.decoration]'s `suffixIcon` or
+  /// [CupertinoTextFieldData.suffix] are set.
+  final Widget? suffix;
+
+  // ---- Controllers / focus / state -----------------------------------------
+
+  /// Group ID for undo-history grouping with other editors.
+  final Object groupId;
+
+  /// Text-editing controller.
+  final TextEditingController? controller;
+
+  /// Focus node.
+  final FocusNode? focusNode;
+
+  /// Undo-history controller.
+  final UndoHistoryController? undoController;
+
+  /// Whether the field is enabled and responds to input. Defaults to `true`.
+  /// Maps to Material `enabled: bool?` and Cupertino `enabled: bool` directly
+  /// — see `APPENDIX.md#cross-platform-field-mappings`.
+  final bool isEnabled;
+
+  /// Whether the field is read-only.
+  final bool readOnly;
+
+  /// Whether the field should autofocus on mount. Defaults to `false`.
+  final bool autofocus;
+
+  // ---- Keyboard / IME -------------------------------------------------------
+
+  /// Keyboard type.
+  final TextInputType? keyboardType;
+
+  /// Action button on the keyboard's bottom-right.
+  final TextInputAction? textInputAction;
+
+  /// Capitalisation behaviour applied as the user types.
+  final TextCapitalization textCapitalization;
+
+  /// Smart-dashes input feature.
+  final SmartDashesType? smartDashesType;
+
+  /// Smart-quotes input feature.
+  final SmartQuotesType? smartQuotesType;
+
+  /// Whether to enable input suggestions.
+  final bool enableSuggestions;
+
+  /// Whether to enable autocorrect. Defaults to `true` (matches Cupertino's
+  /// upstream default; Material treats `true` and `null` identically).
+  final bool autocorrect;
+
+  /// Whether to enable IME personalised learning.
+  final bool enableIMEPersonalizedLearning;
+
+  /// Whether stylus handwriting is enabled.
+  final bool stylusHandwritingEnabled;
+
+  /// Keyboard appearance (light or dark).
+  final Brightness? keyboardAppearance;
+
+  // ---- Text rendering -------------------------------------------------------
+
+  /// Text style for the input text.
+  final TextStyle? style;
+
+  /// Strut style for the input text.
+  final StrutStyle? strutStyle;
+
+  /// Text alignment within the field.
+  final TextAlign textAlign;
+
+  /// Vertical text alignment within the field.
+  final TextAlignVertical? textAlignVertical;
+
+  /// Text direction.
+  final TextDirection? textDirection;
+
+  /// Character used to obscure text (e.g. for passwords).
+  final String obscuringCharacter;
+
+  /// Whether to obscure the text.
+  final bool obscureText;
+
+  /// Maximum number of lines.
+  final int? maxLines;
+
+  /// Minimum number of lines.
+  final int? minLines;
+
+  /// Whether the field expands to fill its parent.
+  final bool expands;
+
+  /// Maximum character length.
+  final int? maxLength;
+
+  /// How [maxLength] is enforced.
+  final MaxLengthEnforcement? maxLengthEnforcement;
+
+  /// Input formatters applied to the text.
+  final List<TextInputFormatter>? inputFormatters;
+
+  // ---- Cursor ---------------------------------------------------------------
+
+  /// Whether to show the cursor. When `null`, derived from focus state.
+  final bool? showCursor;
+
+  /// Width of the cursor.
+  final double cursorWidth;
+
+  /// Height of the cursor. When `null`, derived from text metrics.
+  final double? cursorHeight;
+
+  /// Radius of the cursor.
+  final Radius? cursorRadius;
+
+  /// Whether the cursor opacity animates.
+  final bool cursorOpacityAnimates;
+
+  /// Colour of the cursor.
+  final Color? cursorColor;
+
+  // ---- Selection ------------------------------------------------------------
+
+  /// Selection-region height style.
+  final BoxHeightStyle? selectionHeightStyle;
+
+  /// Selection-region width style.
+  final BoxWidthStyle? selectionWidthStyle;
+
+  /// Whether interactive selection is enabled.
+  final bool? enableInteractiveSelection;
+
+  /// Whether to select all text on focus.
+  final bool? selectAllOnFocus;
+
+  /// Custom text-selection controls.
+  final TextSelectionControls? selectionControls;
+
+  // ---- Callbacks ------------------------------------------------------------
+
+  /// Callback fired when the text changes. Optional — text fields are
+  /// frequently controller-driven (read `controller.text` on submit), so
+  /// nullable per Flutter's own [TextField.onChanged] shape.
+  final ValueChanged<String>? onChanged;
+
+  /// Callback fired when editing is complete (e.g. on submit).
+  final VoidCallback? onEditingComplete;
+
+  /// Callback fired when the text is submitted.
+  final ValueChanged<String>? onSubmitted;
+
+  /// Callback fired when the field is tapped.
+  final GestureTapCallback? onTap;
+
+  /// Callback fired when tapping outside the field.
+  final TapRegionCallback? onTapOutside;
+
+  /// Callback fired on tap-up outside the field.
   ///
-  /// If provided, these properties will override the common properties when
-  /// rendering on Android. See [MaterialTextFieldData] for available options.
+  /// **Cupertino-bug workaround.** Upstream Cupertino's `onTapUpOutside`
+  /// callback is typed as if it received a [PointerDownEvent] (the package
+  /// expects [PointerUpEvent] per [TapRegionUpCallback]). The build site
+  /// synthesises a [PointerUpEvent] from the Cupertino-provided
+  /// [PointerDownEvent] so callers can write a single
+  /// [TapRegionUpCallback] that works on both platforms.
+  final TapRegionUpCallback? onTapUpOutside;
+
+  // ---- Scrolling / layout ---------------------------------------------------
+
+  /// Scroll controller for the field's internal scroll view.
+  final ScrollController? scrollController;
+
+  /// Scroll physics for the field's internal scroll view.
+  final ScrollPhysics? scrollPhysics;
+
+  /// Scroll padding applied while bringing the cursor into view.
+  final EdgeInsets scrollPadding;
+
+  /// Drag-start behaviour for text-selection gestures.
+  final DragStartBehavior dragStartBehavior;
+
+  /// Clip behaviour applied to the field's render box.
+  final Clip clipBehavior;
+
+  // ---- Autofill / context ---------------------------------------------------
+
+  /// Autofill hints for the OS-level autofill service.
+  final Iterable<String>? autofillHints;
+
+  /// Configuration for content insertion (paste, drag-drop).
+  final ContentInsertionConfiguration? contentInsertionConfiguration;
+
+  /// Restoration ID for state restoration.
+  final String? restorationId;
+
+  /// Custom context-menu builder.
+  final EditableTextContextMenuBuilder? contextMenuBuilder;
+
+  /// Spell-check configuration.
+  final SpellCheckConfiguration? spellCheckConfiguration;
+
+  /// Magnifier configuration.
+  final TextMagnifierConfiguration? magnifierConfiguration;
+
+  // ---- Per-platform records -------------------------------------------------
+
+  /// Material-only visual + functional overrides. Optional.
+  ///
+  /// Fields set on this record drive the Material branch only. Setting
+  /// `decoration.hintText` / `decoration.prefixIcon` / `decoration.suffixIcon`
+  /// here overrides the corresponding widget-level flat slots ([hintText], [prefix], [suffix]) on Material.
   final MaterialTextFieldData? materialTextFieldData;
 
-  /// Platform-specific data for Cupertino text fields.
+  /// Cupertino-only visual + functional overrides. Optional.
   ///
-  /// If provided, these properties will override the common properties when
-  /// rendering on iOS. See [CupertinoTextFieldData] for available options.
+  /// Fields set on this record drive the Cupertino branch only. Setting
+  /// [CupertinoTextFieldData.placeholder] / `prefix` / `suffix` here
+  /// overrides the corresponding widget-level flat slots ([hintText], [prefix], [suffix]) on Cupertino.
   final CupertinoTextFieldData? cupertinoTextFieldData;
 
   /// Creates a platform-adaptive text field.
-  ///
-  /// The text field will render as a Material TextField on Android and a CupertinoTextField on iOS.
-  /// Use [platformTextFieldData] for common properties, or override with platform-specific data.
   const PlatformTextField({
-    this.platformTextFieldData,
+    this.hintText,
+    this.prefix,
+    this.suffix,
+    this.groupId = EditableText,
+    this.controller,
+    this.focusNode,
+    this.undoController,
+    this.isEnabled = true,
+    this.readOnly = false,
+    this.autofocus = false,
+    this.keyboardType,
+    this.textInputAction,
+    this.textCapitalization = .none,
+    this.smartDashesType,
+    this.smartQuotesType,
+    this.enableSuggestions = true,
+    this.autocorrect = true,
+    this.enableIMEPersonalizedLearning = true,
+    this.stylusHandwritingEnabled = true,
+    this.keyboardAppearance,
+    this.style,
+    this.strutStyle,
+    this.textAlign = .start,
+    this.textAlignVertical,
+    this.textDirection,
+    this.obscuringCharacter = '•',
+    this.obscureText = false,
+    this.maxLines = 1,
+    this.minLines,
+    this.expands = false,
+    this.maxLength,
+    this.maxLengthEnforcement = MaxLengthEnforcement.enforced,
+    this.inputFormatters,
+    this.showCursor,
+    this.cursorWidth = 2.0,
+    this.cursorHeight,
+    this.cursorRadius = const Radius.circular(2),
+    this.cursorOpacityAnimates = true,
+    this.cursorColor,
+    this.selectionHeightStyle,
+    this.selectionWidthStyle,
+    this.enableInteractiveSelection = true,
+    this.selectAllOnFocus,
+    this.selectionControls,
+    this.onChanged,
+    this.onEditingComplete,
+    this.onSubmitted,
+    this.onTap,
+    this.onTapOutside,
+    this.onTapUpOutside,
+    this.scrollController,
+    this.scrollPhysics,
+    this.scrollPadding = const EdgeInsets.all(20),
+    this.dragStartBehavior = .start,
+    this.clipBehavior = .hardEdge,
+    this.autofillHints,
+    this.contentInsertionConfiguration,
+    this.restorationId,
+    this.contextMenuBuilder,
+    this.spellCheckConfiguration,
+    this.magnifierConfiguration,
     this.materialTextFieldData,
     this.cupertinoTextFieldData,
+    super.widgetKey,
     super.key,
   });
 
   @override
-  Widget buildMaterial(BuildContext context) => TextField(
-    key: materialTextFieldData?.widgetKey ?? platformTextFieldData?.widgetKey,
-    groupId:
-        platformTextFieldData?.groupId ??
-        materialTextFieldData?.groupId ??
-        PlatformTextFieldData.kDefaultGroupId,
-    controller: materialTextFieldData?.controller ?? platformTextFieldData?.controller,
-    focusNode: materialTextFieldData?.focusNode ?? platformTextFieldData?.focusNode,
-    undoController: materialTextFieldData?.undoController ?? platformTextFieldData?.undoController,
-    keyboardType: materialTextFieldData?.keyboardType ?? platformTextFieldData?.keyboardType,
-    textInputAction:
-        materialTextFieldData?.textInputAction ?? platformTextFieldData?.textInputAction,
-    textCapitalization:
-        materialTextFieldData?.textCapitalization ??
-        platformTextFieldData?.textCapitalization ??
-        PlatformTextFieldData.kDefaultTextCapitalization,
-    style: materialTextFieldData?.style ?? platformTextFieldData?.style,
-    strutStyle: materialTextFieldData?.strutStyle ?? platformTextFieldData?.strutStyle,
-    textAlign:
-        materialTextFieldData?.textAlign ??
-        platformTextFieldData?.textAlign ??
-        PlatformTextFieldData.kDefaultTextAlign,
-    textAlignVertical:
-        materialTextFieldData?.textAlignVertical ?? platformTextFieldData?.textAlignVertical,
-    textDirection: materialTextFieldData?.textDirection ?? platformTextFieldData?.textDirection,
-    readOnly:
-        materialTextFieldData?.readOnly ??
-        platformTextFieldData?.readOnly ??
-        PlatformTextFieldData.kDefaultReadOnly,
-    showCursor: materialTextFieldData?.showCursor ?? platformTextFieldData?.showCursor,
-    autofocus:
-        materialTextFieldData?.autofocus ??
-        platformTextFieldData?.autofocus ??
-        PlatformTextFieldData.kDefaultAutofocus,
-    obscuringCharacter:
-        materialTextFieldData?.obscuringCharacter ??
-        platformTextFieldData?.obscuringCharacter ??
-        PlatformTextFieldData.kDefaultObscuringCharacter,
-    obscureText:
-        materialTextFieldData?.obscureText ??
-        platformTextFieldData?.obscureText ??
-        PlatformTextFieldData.kDefaultObscureText,
-    autocorrect: materialTextFieldData?.autocorrect ?? platformTextFieldData?.autocorrect,
-    smartDashesType:
-        materialTextFieldData?.smartDashesType ?? platformTextFieldData?.smartDashesType,
-    smartQuotesType:
-        materialTextFieldData?.smartQuotesType ?? platformTextFieldData?.smartQuotesType,
-    enableSuggestions:
-        materialTextFieldData?.enableSuggestions ??
-        platformTextFieldData?.enableSuggestions ??
-        PlatformTextFieldData.kDefaultEnableSuggestions,
-    maxLines:
-        materialTextFieldData?.maxLines ??
-        platformTextFieldData?.maxLines ??
-        PlatformTextFieldData.kDefaultMaxLines,
-    minLines: materialTextFieldData?.minLines ?? platformTextFieldData?.minLines,
-    expands:
-        materialTextFieldData?.expands ??
-        platformTextFieldData?.expands ??
-        PlatformTextFieldData.kDefaultExpands,
-    maxLength: materialTextFieldData?.maxLength ?? platformTextFieldData?.maxLength,
-    maxLengthEnforcement:
-        materialTextFieldData?.maxLengthEnforcement ?? platformTextFieldData?.maxLengthEnforcement,
-    onChanged: materialTextFieldData?.onChanged ?? platformTextFieldData?.onChanged,
-    onEditingComplete:
-        materialTextFieldData?.onEditingComplete ?? platformTextFieldData?.onEditingComplete,
-    onSubmitted: materialTextFieldData?.onSubmitted ?? platformTextFieldData?.onSubmitted,
-    inputFormatters:
-        materialTextFieldData?.inputFormatters ?? platformTextFieldData?.inputFormatters,
-    enabled: materialTextFieldData?.enabled ?? platformTextFieldData?.enabled,
-    cursorWidth:
-        materialTextFieldData?.cursorWidth ??
-        platformTextFieldData?.cursorWidth ??
-        PlatformTextFieldData.kDefaultCursorWidth,
-    cursorHeight: materialTextFieldData?.cursorHeight ?? platformTextFieldData?.cursorHeight,
-    cursorRadius:
-        materialTextFieldData?.cursorRadius ??
-        platformTextFieldData?.cursorRadius ??
-        PlatformTextFieldData.kDefaultCursorRadius,
-    cursorOpacityAnimates:
-        materialTextFieldData?.cursorOpacityAnimates ??
-        platformTextFieldData?.cursorOpacityAnimates ??
-        PlatformTextFieldData.kDefaultCursorOpacityAnimates,
-    cursorColor: materialTextFieldData?.cursorColor ?? platformTextFieldData?.cursorColor,
-    selectionHeightStyle:
-        materialTextFieldData?.selectionHeightStyle ?? platformTextFieldData?.selectionHeightStyle,
-    selectionWidthStyle:
-        materialTextFieldData?.selectionWidthStyle ?? platformTextFieldData?.selectionWidthStyle,
-    keyboardAppearance:
-        materialTextFieldData?.keyboardAppearance ?? platformTextFieldData?.keyboardAppearance,
-    scrollPadding:
-        materialTextFieldData?.scrollPadding ??
-        platformTextFieldData?.scrollPadding ??
-        PlatformTextFieldData.kDefaultScrollPadding,
-    dragStartBehavior:
-        materialTextFieldData?.dragStartBehavior ??
-        platformTextFieldData?.dragStartBehavior ??
-        PlatformTextFieldData.kDefaultDragStartBehavior,
-    enableInteractiveSelection:
-        materialTextFieldData?.enableInteractiveSelection ??
-        platformTextFieldData?.enableInteractiveSelection ??
-        PlatformTextFieldData.kDefaultEnableInteractiveSelection,
-    selectAllOnFocus:
-        materialTextFieldData?.selectAllOnFocus ??
-        platformTextFieldData?.selectAllOnFocus ??
-        PlatformTextFieldData.kDefaultSelectAllOnFocus,
-    selectionControls:
-        materialTextFieldData?.selectionControls ?? platformTextFieldData?.selectionControls,
-    onTap: materialTextFieldData?.onTap ?? platformTextFieldData?.onTap,
-    onTapOutside: materialTextFieldData?.onTapOutside ?? platformTextFieldData?.onTapOutside,
-    onTapUpOutside: materialTextFieldData?.onTapUpOutside ?? platformTextFieldData?.onTapUpOutside,
-    scrollController:
-        materialTextFieldData?.scrollController ?? platformTextFieldData?.scrollController,
-    scrollPhysics: materialTextFieldData?.scrollPhysics ?? platformTextFieldData?.scrollPhysics,
-    autofillHints: materialTextFieldData?.autofillHints ?? platformTextFieldData?.autofillHints,
-    contentInsertionConfiguration:
-        materialTextFieldData?.contentInsertionConfiguration ??
-        platformTextFieldData?.contentInsertionConfiguration,
-    clipBehavior:
-        materialTextFieldData?.clipBehavior ??
-        platformTextFieldData?.clipBehavior ??
-        PlatformTextFieldData.kDefaultClipBehavior,
-    restorationId: materialTextFieldData?.restorationId ?? platformTextFieldData?.restorationId,
-    stylusHandwritingEnabled:
-        materialTextFieldData?.stylusHandwritingEnabled ??
-        platformTextFieldData?.stylusHandwritingEnabled ??
-        PlatformTextFieldData.kDefaultStylusHandwritingEnabled,
-    enableIMEPersonalizedLearning:
-        materialTextFieldData?.enableIMEPersonalizedLearning ??
-        platformTextFieldData?.enableIMEPersonalizedLearning ??
-        PlatformTextFieldData.kDefaultEnableIMEPersonalizedLearning,
-    contextMenuBuilder:
-        materialTextFieldData?.contextMenuBuilder ?? platformTextFieldData?.contextMenuBuilder,
-    spellCheckConfiguration:
-        materialTextFieldData?.spellCheckConfiguration ??
-        platformTextFieldData?.spellCheckConfiguration,
-    magnifierConfiguration:
-        materialTextFieldData?.magnifierConfiguration ??
-        platformTextFieldData?.magnifierConfiguration,
-    buildCounter: materialTextFieldData?.buildCounter,
-    canRequestFocus:
-        materialTextFieldData?.canRequestFocus ?? MaterialTextFieldData.kDefaultCanRequestFocus,
-    cursorErrorColor: materialTextFieldData?.cursorErrorColor,
-    decoration: materialTextFieldData?.decoration ?? MaterialTextFieldData.kDefaultDecoration,
-    hintLocales: materialTextFieldData?.hintLocales,
-    ignorePointers: materialTextFieldData?.ignorePointers,
-    mouseCursor: materialTextFieldData?.mouseCursor,
-    onAppPrivateCommand: materialTextFieldData?.onAppPrivateCommand,
-    onTapAlwaysCalled:
-        materialTextFieldData?.onTapAlwaysCalled ?? MaterialTextFieldData.kDefaultOnTapAlwaysCalled,
-    statesController: materialTextFieldData?.statesController,
-  );
+  Widget buildMaterial(BuildContext context) {
+    // Merge widget-level flat slots into the Material decoration. Data-class values win
+    // when explicitly set; flat widget values fill the gaps.
+    final baseDecoration = materialTextFieldData?.decoration ?? kDefaultMaterialTextFieldDecoration;
+    final mergedDecoration = baseDecoration.copyWith(
+      hintText: baseDecoration.hintText ?? hintText,
+      prefixIcon: baseDecoration.prefixIcon ?? prefix,
+      suffixIcon: baseDecoration.suffixIcon ?? suffix,
+    );
 
-  @override
-  Widget buildCupertino(BuildContext context) {
-    final resolvedOnTapUpOutside =
-        cupertinoTextFieldData?.onTapUpOutside ?? platformTextFieldData?.onTapUpOutside;
-
-    return CupertinoTextField(
-      key: cupertinoTextFieldData?.widgetKey ?? platformTextFieldData?.widgetKey,
-      groupId:
-          platformTextFieldData?.groupId ??
-          cupertinoTextFieldData?.groupId ??
-          PlatformTextFieldData.kDefaultGroupId,
-      controller: cupertinoTextFieldData?.controller ?? platformTextFieldData?.controller,
-      focusNode: cupertinoTextFieldData?.focusNode ?? platformTextFieldData?.focusNode,
-      undoController:
-          cupertinoTextFieldData?.undoController ?? platformTextFieldData?.undoController,
-      keyboardType: cupertinoTextFieldData?.keyboardType ?? platformTextFieldData?.keyboardType,
-      textInputAction:
-          cupertinoTextFieldData?.textInputAction ?? platformTextFieldData?.textInputAction,
-      textCapitalization:
-          cupertinoTextFieldData?.textCapitalization ??
-          platformTextFieldData?.textCapitalization ??
-          PlatformTextFieldData.kDefaultTextCapitalization,
-      style: cupertinoTextFieldData?.style ?? platformTextFieldData?.style,
-      strutStyle: cupertinoTextFieldData?.strutStyle ?? platformTextFieldData?.strutStyle,
-      textAlign:
-          cupertinoTextFieldData?.textAlign ??
-          platformTextFieldData?.textAlign ??
-          PlatformTextFieldData.kDefaultTextAlign,
-      textAlignVertical:
-          cupertinoTextFieldData?.textAlignVertical ?? platformTextFieldData?.textAlignVertical,
-      textDirection: cupertinoTextFieldData?.textDirection ?? platformTextFieldData?.textDirection,
-      readOnly:
-          cupertinoTextFieldData?.readOnly ??
-          platformTextFieldData?.readOnly ??
-          PlatformTextFieldData.kDefaultReadOnly,
-      showCursor: cupertinoTextFieldData?.showCursor ?? platformTextFieldData?.showCursor,
-      autofocus:
-          cupertinoTextFieldData?.autofocus ??
-          platformTextFieldData?.autofocus ??
-          PlatformTextFieldData.kDefaultAutofocus,
-      obscuringCharacter:
-          cupertinoTextFieldData?.obscuringCharacter ??
-          platformTextFieldData?.obscuringCharacter ??
-          PlatformTextFieldData.kDefaultObscuringCharacter,
-      obscureText:
-          cupertinoTextFieldData?.obscureText ??
-          platformTextFieldData?.obscureText ??
-          PlatformTextFieldData.kDefaultObscureText,
-      autocorrect: cupertinoTextFieldData?.autocorrect ?? platformTextFieldData?.autocorrect,
-      smartDashesType:
-          cupertinoTextFieldData?.smartDashesType ?? platformTextFieldData?.smartDashesType,
-      smartQuotesType:
-          cupertinoTextFieldData?.smartQuotesType ?? platformTextFieldData?.smartQuotesType,
-      enableSuggestions:
-          cupertinoTextFieldData?.enableSuggestions ??
-          platformTextFieldData?.enableSuggestions ??
-          PlatformTextFieldData.kDefaultEnableSuggestions,
-      maxLines: cupertinoTextFieldData?.maxLines ?? platformTextFieldData?.maxLines,
-      minLines: cupertinoTextFieldData?.minLines ?? platformTextFieldData?.minLines,
-      expands:
-          cupertinoTextFieldData?.expands ??
-          platformTextFieldData?.expands ??
-          PlatformTextFieldData.kDefaultExpands,
-      maxLength: cupertinoTextFieldData?.maxLength ?? platformTextFieldData?.maxLength,
-      maxLengthEnforcement:
-          cupertinoTextFieldData?.maxLengthEnforcement ??
-          platformTextFieldData?.maxLengthEnforcement,
-      onChanged: cupertinoTextFieldData?.onChanged ?? platformTextFieldData?.onChanged,
-      onEditingComplete:
-          cupertinoTextFieldData?.onEditingComplete ?? platformTextFieldData?.onEditingComplete,
-      onSubmitted: cupertinoTextFieldData?.onSubmitted ?? platformTextFieldData?.onSubmitted,
-      inputFormatters:
-          cupertinoTextFieldData?.inputFormatters ?? platformTextFieldData?.inputFormatters,
-      enabled:
-          cupertinoTextFieldData?.enabled ??
-          platformTextFieldData?.enabled ??
-          CupertinoTextFieldData.kDefaultEnabled,
-      cursorWidth:
-          cupertinoTextFieldData?.cursorWidth ??
-          platformTextFieldData?.cursorWidth ??
-          PlatformTextFieldData.kDefaultCursorWidth,
-      cursorHeight: cupertinoTextFieldData?.cursorHeight ?? platformTextFieldData?.cursorHeight,
-      cursorRadius:
-          cupertinoTextFieldData?.cursorRadius ??
-          platformTextFieldData?.cursorRadius ??
-          PlatformTextFieldData.kDefaultCursorRadius,
-      cursorOpacityAnimates:
-          cupertinoTextFieldData?.cursorOpacityAnimates ??
-          platformTextFieldData?.cursorOpacityAnimates ??
-          PlatformTextFieldData.kDefaultCursorOpacityAnimates,
-      cursorColor: cupertinoTextFieldData?.cursorColor ?? platformTextFieldData?.cursorColor,
-      selectionHeightStyle:
-          cupertinoTextFieldData?.selectionHeightStyle ??
-          platformTextFieldData?.selectionHeightStyle,
-      selectionWidthStyle:
-          cupertinoTextFieldData?.selectionWidthStyle ?? platformTextFieldData?.selectionWidthStyle,
-      keyboardAppearance:
-          cupertinoTextFieldData?.keyboardAppearance ?? platformTextFieldData?.keyboardAppearance,
-      scrollPadding:
-          cupertinoTextFieldData?.scrollPadding ??
-          platformTextFieldData?.scrollPadding ??
-          PlatformTextFieldData.kDefaultScrollPadding,
-      dragStartBehavior:
-          cupertinoTextFieldData?.dragStartBehavior ??
-          platformTextFieldData?.dragStartBehavior ??
-          PlatformTextFieldData.kDefaultDragStartBehavior,
-      enableInteractiveSelection:
-          cupertinoTextFieldData?.enableInteractiveSelection ??
-          platformTextFieldData?.enableInteractiveSelection ??
-          PlatformTextFieldData.kDefaultEnableInteractiveSelection,
-      selectAllOnFocus:
-          cupertinoTextFieldData?.selectAllOnFocus ??
-          platformTextFieldData?.selectAllOnFocus ??
-          PlatformTextFieldData.kDefaultSelectAllOnFocus,
-      selectionControls:
-          cupertinoTextFieldData?.selectionControls ?? platformTextFieldData?.selectionControls,
-      onTap: cupertinoTextFieldData?.onTap ?? platformTextFieldData?.onTap,
-      onTapOutside: cupertinoTextFieldData?.onTapOutside ?? platformTextFieldData?.onTapOutside,
-      onTapUpOutside: resolvedOnTapUpOutside == null
-          ? null
-          : (event) => resolvedOnTapUpOutside(event.toPointerUpEvent()),
-      scrollController:
-          cupertinoTextFieldData?.scrollController ?? platformTextFieldData?.scrollController,
-      scrollPhysics: cupertinoTextFieldData?.scrollPhysics ?? platformTextFieldData?.scrollPhysics,
-      autofillHints: cupertinoTextFieldData?.autofillHints ?? platformTextFieldData?.autofillHints,
-      contentInsertionConfiguration:
-          cupertinoTextFieldData?.contentInsertionConfiguration ??
-          platformTextFieldData?.contentInsertionConfiguration,
-      clipBehavior:
-          cupertinoTextFieldData?.clipBehavior ??
-          platformTextFieldData?.clipBehavior ??
-          PlatformTextFieldData.kDefaultClipBehavior,
-      restorationId: cupertinoTextFieldData?.restorationId ?? platformTextFieldData?.restorationId,
-      stylusHandwritingEnabled:
-          cupertinoTextFieldData?.stylusHandwritingEnabled ??
-          platformTextFieldData?.stylusHandwritingEnabled ??
-          PlatformTextFieldData.kDefaultStylusHandwritingEnabled,
-      enableIMEPersonalizedLearning:
-          cupertinoTextFieldData?.enableIMEPersonalizedLearning ??
-          platformTextFieldData?.enableIMEPersonalizedLearning ??
-          PlatformTextFieldData.kDefaultEnableIMEPersonalizedLearning,
-      contextMenuBuilder:
-          cupertinoTextFieldData?.contextMenuBuilder ?? platformTextFieldData?.contextMenuBuilder,
-      spellCheckConfiguration:
-          cupertinoTextFieldData?.spellCheckConfiguration ??
-          platformTextFieldData?.spellCheckConfiguration,
-      magnifierConfiguration:
-          cupertinoTextFieldData?.magnifierConfiguration ??
-          platformTextFieldData?.magnifierConfiguration,
-      decoration: cupertinoTextFieldData?.decoration,
-      clearButtonMode:
-          cupertinoTextFieldData?.clearButtonMode ?? CupertinoTextFieldData.kDefaultClearButtonMode,
-      clearButtonSemanticLabel: cupertinoTextFieldData?.clearButtonSemanticLabel,
-      crossAxisAlignment:
-          cupertinoTextFieldData?.crossAxisAlignment ??
-          CupertinoTextFieldData.kDefaultCrossAxisAlignment,
-      padding: cupertinoTextFieldData?.padding ?? CupertinoTextFieldData.kDefaultPadding,
-      placeholder: cupertinoTextFieldData?.placeholder,
-      placeholderStyle: cupertinoTextFieldData?.placeholderStyle,
-      prefix: cupertinoTextFieldData?.prefix,
-      prefixMode: cupertinoTextFieldData?.prefixMode ?? CupertinoTextFieldData.kDefaultPrefixMode,
-      suffix: cupertinoTextFieldData?.suffix,
-      suffixMode: cupertinoTextFieldData?.suffixMode ?? CupertinoTextFieldData.kDefaultSuffixMode,
+    return TextField(
+      key: widgetKey,
+      groupId: groupId,
+      controller: controller,
+      focusNode: focusNode,
+      undoController: undoController,
+      keyboardType: keyboardType,
+      textInputAction: textInputAction,
+      textCapitalization: textCapitalization,
+      style: style,
+      strutStyle: strutStyle,
+      textAlign: textAlign,
+      textAlignVertical: textAlignVertical,
+      textDirection: textDirection,
+      readOnly: readOnly,
+      showCursor: showCursor,
+      autofocus: autofocus,
+      obscuringCharacter: obscuringCharacter,
+      obscureText: obscureText,
+      autocorrect: autocorrect,
+      smartDashesType: smartDashesType,
+      smartQuotesType: smartQuotesType,
+      enableSuggestions: enableSuggestions,
+      maxLines: maxLines,
+      minLines: minLines,
+      expands: expands,
+      maxLength: maxLength,
+      maxLengthEnforcement: maxLengthEnforcement,
+      onChanged: onChanged,
+      onEditingComplete: onEditingComplete,
+      onSubmitted: onSubmitted,
+      inputFormatters: inputFormatters,
+      enabled: isEnabled,
+      cursorWidth: cursorWidth,
+      cursorHeight: cursorHeight,
+      cursorRadius: cursorRadius,
+      cursorOpacityAnimates: cursorOpacityAnimates,
+      cursorColor: cursorColor,
+      selectionHeightStyle: selectionHeightStyle,
+      selectionWidthStyle: selectionWidthStyle,
+      keyboardAppearance: keyboardAppearance,
+      scrollPadding: scrollPadding,
+      dragStartBehavior: dragStartBehavior,
+      enableInteractiveSelection: enableInteractiveSelection,
+      selectAllOnFocus: selectAllOnFocus,
+      selectionControls: selectionControls,
+      onTap: onTap,
+      onTapOutside: onTapOutside,
+      onTapUpOutside: onTapUpOutside,
+      scrollController: scrollController,
+      scrollPhysics: scrollPhysics,
+      autofillHints: autofillHints,
+      contentInsertionConfiguration: contentInsertionConfiguration,
+      clipBehavior: clipBehavior,
+      restorationId: restorationId,
+      stylusHandwritingEnabled: stylusHandwritingEnabled,
+      enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
+      contextMenuBuilder: contextMenuBuilder,
+      spellCheckConfiguration: spellCheckConfiguration,
+      magnifierConfiguration: magnifierConfiguration,
+      buildCounter: materialTextFieldData?.buildCounter,
+      canRequestFocus:
+          materialTextFieldData?.canRequestFocus ?? kDefaultMaterialTextFieldCanRequestFocus,
+      cursorErrorColor: materialTextFieldData?.cursorErrorColor,
+      decoration: mergedDecoration,
+      hintLocales: materialTextFieldData?.hintLocales,
+      ignorePointers: materialTextFieldData?.ignorePointers,
+      mouseCursor: materialTextFieldData?.mouseCursor,
+      onAppPrivateCommand: materialTextFieldData?.onAppPrivateCommand,
+      onTapAlwaysCalled:
+          materialTextFieldData?.onTapAlwaysCalled ?? kDefaultMaterialTextFieldOnTapAlwaysCalled,
+      statesController: materialTextFieldData?.statesController,
     );
   }
+
+  @override
+  Widget buildCupertino(BuildContext context) => CupertinoTextField(
+    key: widgetKey,
+    groupId: groupId,
+    controller: controller,
+    focusNode: focusNode,
+    undoController: undoController,
+    keyboardType: keyboardType,
+    textInputAction: textInputAction,
+    textCapitalization: textCapitalization,
+    style: style,
+    strutStyle: strutStyle,
+    textAlign: textAlign,
+    textAlignVertical: textAlignVertical,
+    textDirection: textDirection,
+    readOnly: readOnly,
+    showCursor: showCursor,
+    autofocus: autofocus,
+    obscuringCharacter: obscuringCharacter,
+    obscureText: obscureText,
+    autocorrect: autocorrect,
+    smartDashesType: smartDashesType,
+    smartQuotesType: smartQuotesType,
+    enableSuggestions: enableSuggestions,
+    maxLines: maxLines,
+    minLines: minLines,
+    expands: expands,
+    maxLength: maxLength,
+    maxLengthEnforcement: maxLengthEnforcement,
+    onChanged: onChanged,
+    onEditingComplete: onEditingComplete,
+    onSubmitted: onSubmitted,
+    inputFormatters: inputFormatters,
+    enabled: isEnabled,
+    cursorWidth: cursorWidth,
+    cursorHeight: cursorHeight,
+    // Cupertino's cursorRadius is non-null with an inline default; substitute
+    // when the package's nullable flat field is null. Material's stays nullable.
+    cursorRadius: cursorRadius ?? const Radius.circular(2),
+    cursorOpacityAnimates: cursorOpacityAnimates,
+    cursorColor: cursorColor,
+    selectionHeightStyle: selectionHeightStyle,
+    selectionWidthStyle: selectionWidthStyle,
+    keyboardAppearance: keyboardAppearance,
+    scrollPadding: scrollPadding,
+    dragStartBehavior: dragStartBehavior,
+    enableInteractiveSelection: enableInteractiveSelection,
+    selectAllOnFocus: selectAllOnFocus,
+    selectionControls: selectionControls,
+    onTap: onTap,
+    onTapOutside: onTapOutside,
+    // Pattern match binds the non-null callback in the match arm — that
+    // local IS promoted across the closure boundary (an instance field would not be).
+    // See [onTapUpOutside] dartdoc for the upstream Cupertino-typing bug this conversion compensates for.
+    onTapUpOutside: switch (onTapUpOutside) {
+      null => null,
+      final onTapUpOutsideCallback => (event) => onTapUpOutsideCallback(event.toPointerUpEvent()),
+    },
+    scrollController: scrollController,
+    scrollPhysics: scrollPhysics,
+    autofillHints: autofillHints,
+    contentInsertionConfiguration: contentInsertionConfiguration,
+    clipBehavior: clipBehavior,
+    restorationId: restorationId,
+    stylusHandwritingEnabled: stylusHandwritingEnabled,
+    enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
+    contextMenuBuilder: contextMenuBuilder,
+    spellCheckConfiguration: spellCheckConfiguration,
+    magnifierConfiguration: magnifierConfiguration,
+    decoration: cupertinoTextFieldData?.decoration,
+    clearButtonMode:
+        cupertinoTextFieldData?.clearButtonMode ?? kDefaultCupertinoTextFieldClearButtonMode,
+    clearButtonSemanticLabel: cupertinoTextFieldData?.clearButtonSemanticLabel,
+    crossAxisAlignment:
+        cupertinoTextFieldData?.crossAxisAlignment ?? kDefaultCupertinoTextFieldCrossAxisAlignment,
+    padding: cupertinoTextFieldData?.padding ?? kDefaultCupertinoTextFieldPadding,
+    placeholder: cupertinoTextFieldData?.placeholder ?? hintText,
+    placeholderStyle: cupertinoTextFieldData?.placeholderStyle,
+    prefix: cupertinoTextFieldData?.prefix ?? prefix,
+    prefixMode: cupertinoTextFieldData?.prefixMode ?? kDefaultCupertinoTextFieldPrefixMode,
+    suffix: cupertinoTextFieldData?.suffix ?? suffix,
+    suffixMode: cupertinoTextFieldData?.suffixMode ?? kDefaultCupertinoTextFieldSuffixMode,
+  );
 }
 
-/// This exists solely as a fix for Cupertino's mismatched signature for `onTapOutside`.
+/// Bridges Cupertino's [PointerDownEvent]-typed `onTapUpOutside` callback to
+/// the package's exposed [TapRegionUpCallback] (which takes [PointerUpEvent]).
+/// Upstream Flutter bug — Cupertino names the param `onTapUpOutside` but types
+/// it as if it received a tap-down event. [PlatformTextField.buildCupertino]
+/// uses this extension to fabricate a [PointerUpEvent] with the same pointer
+/// metadata so the caller's single [TapRegionUpCallback] works on both
+/// platforms.
 extension _PointerEventConversionExtension on PointerDownEvent {
   PointerUpEvent toPointerUpEvent() => PointerUpEvent(
     pointer: pointer,
