@@ -17,11 +17,9 @@ class _MyAppGoRouter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => PlatformApp.router(
-    appRouterData: PlatformAppRouterData(
-      title: 'Platform Adaptive Widgets GoRouter Example',
-      debugShowCheckedModeBanner: false,
-      routerConfig: AppRouter.router,
-    ),
+    title: 'Platform Adaptive Widgets GoRouter Example',
+    debugShowCheckedModeBanner: false,
+    routerConfig: AppRouter.router,
   );
 }
 
