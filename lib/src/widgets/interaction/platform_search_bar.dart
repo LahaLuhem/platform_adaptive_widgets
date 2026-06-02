@@ -5,57 +5,143 @@ import 'package:material_ui/material_ui.dart' show SearchBar;
 import '/src/models/interaction/platform_search_bar_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive search bar that renders Material SearchBar on Android
-/// and CupertinoSearchTextField on iOS.
+/// A platform-adaptive search bar that renders Material [SearchBar] on
+/// Android and [CupertinoSearchTextField] on iOS.
 ///
-/// This widget automatically selects the appropriate search bar implementation based on the target platform:
-/// - On Android: renders Material Design SearchBar
-/// - On iOS: renders CupertinoSearchTextField
-///
-/// The search bar can be configured with platform-specific data through [materialSearchBarData]
-/// and [cupertinoSearchBarData], or with common properties.
+/// All functional inputs (controller, callbacks, hint, leading slot,
+/// keyboard / focus / enabled state) live as flat constructor parameters.
+/// Per-platform visual + behavioural tuning is opt-in via
+/// [materialSearchBarData] and [cupertinoSearchBarData]. See
+/// `APPENDIX.md#field-classification` for the classification rule and
+/// `APPENDIX.md#cross-platform-field-mappings` for the type-divergent
+/// shared visuals that consequently live per-platform rather than as a
+/// shared private base (notably `backgroundColor`, `padding`, `textStyle`,
+/// `hintStyle` — Material exposes them as [WidgetStateProperty] while
+/// Cupertino exposes them as direct values).
 ///
 /// Example:
 /// ```dart
 /// PlatformSearchBar(
-///   platformSearchBarData: PlatformSearchBarData(
-///     hintText: 'Search...',
-///     onChanged: (value) => print('Searching: $value'),
-///   ),
+///   hintText: 'Search',
+///   controller: _controller,
+///   onChanged: (q) => _runSearch(q),
 /// )
 /// ```
-class PlatformSearchBar extends PlatformWidgetBase {
-  /// Platform-shared search bar configuration.
-  final PlatformSearchBarData? platformSearchBarData;
+class PlatformSearchBar extends PlatformWidgetKeyedBase {
+  /// Text-editing controller for the search input.
+  final TextEditingController? controller;
 
-  /// Material-specific search bar data.
+  /// Hint / placeholder text displayed when the search bar is empty. Maps to
+  /// [SearchBar.hintText] on Android and [CupertinoSearchTextField.placeholder]
+  /// on iOS — see `APPENDIX.md#cross-platform-field-mappings`.
+  final String? hintText;
+
+  /// Leading widget — typically a search-glyph icon.
+  ///
+  /// Maps to [SearchBar.leading] on Android (typed `Widget?`, no default) and
+  /// [CupertinoSearchTextField.prefixIcon] on iOS (typed non-null `Widget`,
+  /// defaulting to `Icon(CupertinoIcons.search)`). The Cupertino branch
+  /// substitutes [kDefaultCupertinoSearchBarLeading] when `null`. See
+  /// `APPENDIX.md#cross-platform-field-mappings`.
+  final Widget? leading;
+
+  /// Callback fired when the search text changes.
+  ///
+  /// Required and non-null per the callback-nullability rule
+  /// (`APPENDIX.md#callback-nullability`) — a search bar without change
+  /// observation is just a text field with a glyph. To disable the search
+  /// bar, set [isEnabled] to `false`.
+  final ValueChanged<String> onChanged;
+
+  /// Callback fired when the user submits (presses the keyboard's action
+  /// key). Optional — most controllers consume [onChanged] live and treat
+  /// submit as a no-op.
+  final ValueChanged<String>? onSubmitted;
+
+  /// Callback fired when the search bar itself is tapped (distinct from the
+  /// editing callbacks). Optional.
+  final VoidCallback? onTap;
+
+  /// Keyboard type for the search input. When `null`, each platform applies
+  /// its own default (Cupertino defaults to [TextInputType.text]; Material
+  /// hands `null` straight through to its inner [EditableText]).
+  final TextInputType? keyboardType;
+
+  /// Whether the search bar should autofocus on mount. Defaults to `false`.
+  /// Maps to [SearchBar.autoFocus] on Android and
+  /// [CupertinoSearchTextField.autofocus] (lower-`f`) on iOS — see
+  /// `APPENDIX.md#cross-platform-field-mappings`.
+  final bool autoFocus;
+
+  /// Focus node for the search bar.
+  final FocusNode? focusNode;
+
+  /// Whether the search bar is enabled and responds to input. Defaults to
+  /// `true`. Passed straight to each platform's `enabled` (Material defaults
+  /// to `true`; Cupertino's `enabled` is nullable and `null`-means-enabled —
+  /// the package collapses both to the same boolean).
+  final bool isEnabled;
+
+  /// Smart-dashes input feature. When `null`, each platform applies its own
+  /// default.
+  final SmartDashesType? smartDashesType;
+
+  /// Smart-quotes input feature. When `null`, each platform applies its own
+  /// default.
+  final SmartQuotesType? smartQuotesType;
+
+  /// Material-only visual + functional overrides. Optional.
+  ///
+  /// Fields set on this record drive the Material branch only; Material-only
+  /// fields (`trailing`, `onTapOutside`, `constraints`, `elevation`,
+  /// `backgroundColor`/`padding`/`textStyle`/`hintStyle` as state-properties,
+  /// `shadowColor`, `surfaceTintColor`, `overlayColor`, `side`, `shape`,
+  /// `textCapitalization`, `textInputAction`, `scrollPadding`,
+  /// `contextMenuBuilder`, `readOnly`) are read only from here.
   final MaterialSearchBarData? materialSearchBarData;
 
-  /// Cupertino-specific search bar data.
+  /// Cupertino-only visual + functional overrides. Optional.
+  ///
+  /// Fields set on this record drive the Cupertino branch only; Cupertino-only
+  /// fields (`style`, `placeholderStyle`, `decoration`, plain-typed
+  /// `backgroundColor` / `padding`, `borderRadius`, `itemColor`, `itemSize`,
+  /// `prefixInsets`, `suffixInsets`, `suffixIcon`, `suffixMode`, `onSuffixTap`,
+  /// `restorationId`, `enableIMEPersonalizedLearning`, `autocorrect`, cursor
+  /// metrics) are read only from here.
   final CupertinoSearchBarData? cupertinoSearchBarData;
 
   /// Creates a platform-adaptive search bar.
-  ///
-  /// The search bar will render as a Material SearchBar on Android and a CupertinoSearchTextField on iOS.
   const PlatformSearchBar({
-    this.platformSearchBarData,
+    required this.onChanged,
+    this.controller,
+    this.hintText,
+    this.leading,
+    this.onSubmitted,
+    this.onTap,
+    this.keyboardType,
+    this.autoFocus = false,
+    this.focusNode,
+    this.isEnabled = true,
+    this.smartDashesType,
+    this.smartQuotesType,
     this.materialSearchBarData,
     this.cupertinoSearchBarData,
+    super.widgetKey,
     super.key,
   });
 
   @override
   Widget buildMaterial(BuildContext context) => SearchBar(
-    key: materialSearchBarData?.widgetKey ?? platformSearchBarData?.widgetKey,
-    controller: materialSearchBarData?.controller ?? platformSearchBarData?.controller,
-    focusNode: materialSearchBarData?.focusNode ?? platformSearchBarData?.focusNode,
-    hintText: materialSearchBarData?.hintText ?? platformSearchBarData?.hintText,
-    leading: materialSearchBarData?.leading ?? platformSearchBarData?.leading,
+    key: widgetKey,
+    controller: controller,
+    focusNode: focusNode,
+    hintText: hintText,
+    leading: leading,
     trailing: materialSearchBarData?.trailing,
-    onTap: materialSearchBarData?.onTap ?? platformSearchBarData?.onTap,
+    onTap: onTap,
     onTapOutside: materialSearchBarData?.onTapOutside,
-    onChanged: materialSearchBarData?.onChanged ?? platformSearchBarData?.onChanged,
-    onSubmitted: materialSearchBarData?.onSubmitted ?? platformSearchBarData?.onSubmitted,
+    onChanged: onChanged,
+    onSubmitted: onSubmitted,
     constraints: materialSearchBarData?.constraints,
     elevation: materialSearchBarData?.elevation,
     backgroundColor: materialSearchBarData?.backgroundColor,
@@ -68,73 +154,56 @@ class PlatformSearchBar extends PlatformWidgetBase {
     textStyle: materialSearchBarData?.textStyle,
     hintStyle: materialSearchBarData?.hintStyle,
     textCapitalization: materialSearchBarData?.textCapitalization,
-    enabled:
-        materialSearchBarData?.enabled ??
-        platformSearchBarData?.enabled ??
-        PlatformSearchBarData.kDefaultEnabled,
-    autoFocus:
-        materialSearchBarData?.autoFocus ??
-        platformSearchBarData?.autoFocus ??
-        PlatformSearchBarData.kDefaultAutoFocus,
+    enabled: isEnabled,
+    autoFocus: autoFocus,
     textInputAction: materialSearchBarData?.textInputAction,
-    keyboardType: materialSearchBarData?.keyboardType ?? platformSearchBarData?.keyboardType,
-    scrollPadding:
-        materialSearchBarData?.scrollPadding ?? MaterialSearchBarData.kDefaultScrollPadding,
+    keyboardType: keyboardType,
+    scrollPadding: materialSearchBarData?.scrollPadding ?? kDefaultSearchBarScrollPadding,
     contextMenuBuilder: materialSearchBarData?.contextMenuBuilder,
-    readOnly: materialSearchBarData?.readOnly ?? MaterialSearchBarData.kDefaultReadOnly,
+    readOnly: materialSearchBarData?.readOnly ?? kDefaultSearchBarReadOnly,
+    smartDashesType: smartDashesType,
+    smartQuotesType: smartQuotesType,
   );
 
   @override
   Widget buildCupertino(BuildContext context) => CupertinoSearchTextField(
-    key: cupertinoSearchBarData?.widgetKey ?? platformSearchBarData?.widgetKey,
-    controller: cupertinoSearchBarData?.controller ?? platformSearchBarData?.controller,
-    onChanged: cupertinoSearchBarData?.onChanged ?? platformSearchBarData?.onChanged,
-    onSubmitted: cupertinoSearchBarData?.onSubmitted ?? platformSearchBarData?.onSubmitted,
+    key: widgetKey,
+    controller: controller,
+    onChanged: onChanged,
+    onSubmitted: onSubmitted,
     style: cupertinoSearchBarData?.style,
-    placeholder: cupertinoSearchBarData?.hintText ?? platformSearchBarData?.hintText,
+    placeholder: hintText,
     placeholderStyle: cupertinoSearchBarData?.placeholderStyle,
     decoration: cupertinoSearchBarData?.decoration,
     backgroundColor: cupertinoSearchBarData?.backgroundColor,
     borderRadius: cupertinoSearchBarData?.borderRadius,
-    keyboardType: cupertinoSearchBarData?.keyboardType ?? platformSearchBarData?.keyboardType,
-    padding: cupertinoSearchBarData?.padding ?? CupertinoSearchBarData.kDefaultPadding,
-    itemColor: cupertinoSearchBarData?.itemColor ?? CupertinoSearchBarData.kDefaultItemColor,
-    itemSize: cupertinoSearchBarData?.itemSize ?? CupertinoSearchBarData.kDefaultItemSize,
-    prefixInsets:
-        cupertinoSearchBarData?.prefixInsets ?? CupertinoSearchBarData.kDefaultPrefixInsets,
-    prefixIcon:
-        cupertinoSearchBarData?.leading ??
-        platformSearchBarData?.leading ??
-        CupertinoSearchBarData.kDefaultLeading,
-    suffixInsets:
-        cupertinoSearchBarData?.suffixInsets ?? CupertinoSearchBarData.kDefaultSuffixInsets,
-    suffixIcon: cupertinoSearchBarData?.suffixIcon ?? CupertinoSearchBarData.kDefaultSuffixIcon,
-    suffixMode: cupertinoSearchBarData?.suffixMode ?? CupertinoSearchBarData.kDefaultSuffixMode,
+    keyboardType: keyboardType,
+    padding: cupertinoSearchBarData?.padding ?? kDefaultCupertinoSearchBarPadding,
+    itemColor: cupertinoSearchBarData?.itemColor ?? kDefaultCupertinoSearchBarItemColor,
+    itemSize: cupertinoSearchBarData?.itemSize ?? kDefaultCupertinoSearchBarItemSize,
+    prefixInsets: cupertinoSearchBarData?.prefixInsets ?? kDefaultCupertinoSearchBarPrefixInsets,
+    prefixIcon: leading ?? kDefaultCupertinoSearchBarLeading,
+    suffixInsets: cupertinoSearchBarData?.suffixInsets ?? kDefaultCupertinoSearchBarSuffixInsets,
+    suffixIcon: cupertinoSearchBarData?.suffixIcon ?? kDefaultCupertinoSearchBarSuffixIcon,
+    suffixMode: cupertinoSearchBarData?.suffixMode ?? kDefaultCupertinoSearchBarSuffixMode,
     onSuffixTap: cupertinoSearchBarData?.onSuffixTap,
     restorationId: cupertinoSearchBarData?.restorationId,
-    focusNode: cupertinoSearchBarData?.focusNode ?? platformSearchBarData?.focusNode,
-    smartQuotesType: cupertinoSearchBarData?.smartQuotesType,
-    smartDashesType: cupertinoSearchBarData?.smartDashesType,
+    focusNode: focusNode,
+    smartQuotesType: smartQuotesType,
+    smartDashesType: smartDashesType,
     enableIMEPersonalizedLearning:
         cupertinoSearchBarData?.enableIMEPersonalizedLearning ??
-        CupertinoSearchBarData.kDefaultEnableIMEPersonalizedLearning,
-    autofocus:
-        cupertinoSearchBarData?.autoFocus ??
-        platformSearchBarData?.autoFocus ??
-        PlatformSearchBarData.kDefaultAutoFocus,
-    onTap: cupertinoSearchBarData?.onTap ?? platformSearchBarData?.onTap,
-    autocorrect: cupertinoSearchBarData?.autocorrect ?? CupertinoSearchBarData.kDefaultAutocorrect,
-    enabled:
-        cupertinoSearchBarData?.enabled ??
-        platformSearchBarData?.enabled ??
-        PlatformSearchBarData.kDefaultEnabled,
-    cursorWidth: cupertinoSearchBarData?.cursorWidth ?? CupertinoSearchBarData.kDefaultCursorWidth,
+        kDefaultCupertinoSearchBarEnableIMEPersonalizedLearning,
+    autofocus: autoFocus,
+    onTap: onTap,
+    autocorrect: cupertinoSearchBarData?.autocorrect ?? kDefaultCupertinoSearchBarAutocorrect,
+    enabled: isEnabled,
+    cursorWidth: cupertinoSearchBarData?.cursorWidth ?? kDefaultCupertinoSearchBarCursorWidth,
     cursorHeight: cupertinoSearchBarData?.cursorHeight,
-    cursorRadius:
-        cupertinoSearchBarData?.cursorRadius ?? CupertinoSearchBarData.kDefaultCursorRadius,
+    cursorRadius: cupertinoSearchBarData?.cursorRadius ?? kDefaultCupertinoSearchBarCursorRadius,
     cursorOpacityAnimates:
         cupertinoSearchBarData?.cursorOpacityAnimates ??
-        CupertinoSearchBarData.kDefaultCursorOpacityAnimates,
+        kDefaultCupertinoSearchBarCursorOpacityAnimates,
     cursorColor: cupertinoSearchBarData?.cursorColor,
   );
 }
