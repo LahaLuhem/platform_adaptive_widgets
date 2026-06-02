@@ -1,206 +1,196 @@
+// Per-platform records for PlatformButton (no shared private base — Material
+// concentrates its visual surface in a single `ButtonStyle` blob while
+// Cupertino exposes individual color/border/padding/etc. fields, so nothing
+// overlaps in type).
 // ignore_for_file: prefer-match-file-name
 
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoButtonSize;
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport '/src/widgets/interaction/platform_button.dart';
+library;
+
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoButtonSize, CupertinoColors;
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart' show ButtonStyle, IconAlignment;
+import 'package:material_ui/material_ui.dart'
+    show ButtonStyle, ElevatedButton, FilledButton, OutlinedButton, TextButton;
 
-/// Default value for whether a widget should autofocus.
-const kDefaultAutofocus = false;
+/// Default value for [CupertinoButtonData.sizeStyle]. Matches upstream
+/// `CupertinoButton.sizeStyle`.
+const kDefaultCupertinoButtonSizeStyle = CupertinoButtonSize.large;
 
-/// Abstract base class for platform button data.
+/// Default value for [CupertinoButtonData.pressedOpacity]. Matches upstream.
+const kDefaultCupertinoButtonPressedOpacity = 0.4;
+
+/// Default value for [CupertinoButtonData.alignment]. Matches upstream.
+const kDefaultCupertinoButtonAlignment = Alignment.center;
+
+/// Default gap between the icon and the label rendered by
+/// [PlatformButton.icon]. On the Material branch this spacing is implicit in
+/// the underlying `.icon` factory's layout; on the Cupertino branch the
+/// package wraps the icon and label in a [Row] with `spacing` set to this
+/// constant (Cupertino has no native icon-button factory).
+const kDefaultButtonIconLabelGap = 8.0;
+
+/// Material button variants for [PlatformButton.materialButtonVariant].
 ///
-/// Contains common properties that apply to both Material and Cupertino buttons.
-/// This class is used as a base for platform-specific button data classes.
-abstract final class _PlatformButtonData {
-  /// Optional key for the button widget.
-  final Key? widgetKey;
+/// Each variant pairs with a different Material button class, and (when
+/// [PlatformButton.icon] is used) with that class's `.icon` factory.
+enum MaterialButtonVariant {
+  /// Renders as [TextButton] (or [TextButton.icon] via [PlatformButton.icon]).
+  text,
 
-  /// Whether the button is enabled and can be pressed.
-  ///
-  /// When false, the button will be disabled and [onPressed] will be ignored.
-  final bool isEnabled;
+  /// Renders as [ElevatedButton] (or [ElevatedButton.icon] via
+  /// [PlatformButton.icon]).
+  elevated,
 
-  /// Callback that is called when the button is pressed.
-  ///
-  /// If null, the button will be disabled.
-  final VoidCallback? onPressed;
+  /// Renders as [OutlinedButton] (or [OutlinedButton.icon] via
+  /// [PlatformButton.icon]).
+  outlined,
 
-  /// Callback that is called when the button is long-pressed.
-  ///
-  /// If null, the button will not respond to long presses.
-  final VoidCallback? onLongPress;
+  /// Renders as [FilledButton] (or [FilledButton.icon] via [PlatformButton.icon]).
+  filled,
 
-  /// The cursor to display when the mouse hovers over the button.
-  final MouseCursor? mouseCursor;
-
-  /// The focus node for the button.
-  final FocusNode? focusNode;
-
-  /// Whether the button should automatically focus when it's first displayed.
-  final bool autofocus;
-
-  /// The widget to display as the button's label.
-  final Widget? child;
-
-  /// Creates platform button data with common properties.
-  const _PlatformButtonData({
-    this.isEnabled = true,
-    this.onPressed,
-    this.widgetKey,
-    this.onLongPress,
-    this.mouseCursor,
-    this.focusNode,
-    this.autofocus = kDefaultAutofocus,
-    this.child,
-  });
+  /// Renders as [FilledButton.tonal] (or [FilledButton.tonalIcon] via
+  /// [PlatformButton.icon]). The tonal variant is a middle ground between
+  /// [filled] and [outlined] — useful for secondary actions that need more
+  /// emphasis than an outline but less than a fill.
+  tonal,
 }
 
-/// Material-specific configuration for a platform button.
+/// Material-only configuration for [PlatformButton].
 ///
-/// Maps to properties of Material button widgets (e.g., `ElevatedButton`,
-/// `TextButton`, `OutlinedButton`) on Android. Use this class to configure
-/// platform-specific styling and behavior for Material buttons.
+/// Pass this via `PlatformButton.materialButtonData` when tuning Material
+/// rendering. The fields declared here have no Cupertino equivalent — Material
+/// concentrates its visual surface in [ButtonStyle], while Cupertino exposes
+/// individual colour / border / padding fields on [CupertinoButtonData].
 ///
-/// Example:
-/// ```dart
-/// MaterialButtonData(
-///   style: ElevatedButton.styleFrom(
-///     backgroundColor: Colors.blue,
-///     foregroundColor: Colors.white,
-///   ),
-///   onHover: (isHovered) => print('Hovered: $isHovered'),
-/// )
-/// ```
-final class MaterialButtonData extends _PlatformButtonData {
-  /// Callback when the hover state changes.
-  ///
-  /// Called when the mouse enters or leaves the button area.
+/// **Mouse cursor.** Material's button classes don't expose a top-level
+/// `mouseCursor` parameter — set it via `style.mouseCursor`
+/// ([ButtonStyle.mouseCursor]). Cupertino's equivalent lives on
+/// [CupertinoButtonData.mouseCursor].
+final class MaterialButtonData {
+  /// Callback when the hover state changes (mouse enter / leave the button
+  /// area).
   final ValueChanged<bool>? onHover;
 
-  /// Callback when the focus state changes.
-  final ValueChanged<bool>? onFocusChange;
-
-  /// The button style to apply.
+  /// Button style. Houses Material's full visual surface (background colour,
+  /// foreground colour, text style, padding, mouse cursor, etc.) keyed by
+  /// [WidgetState]. When `null`, the underlying Material variant applies its
+  /// theme-driven defaults.
   final ButtonStyle? style;
 
-  /// Clip behavior for the button.
+  /// Clip behaviour. When `null`, each underlying Material button applies its
+  /// own ctor-level default (typically `Clip.none`).
   final Clip? clipBehavior;
 
-  /// Controller for the widget states.
+  /// Controller for the widget's interaction states.
   final WidgetStatesController? statesController;
 
-  /// Whether the button is a semantic button for accessibility.
+  /// Whether the button is announced as a semantic button. Honoured only when
+  /// [PlatformButton.materialButtonVariant] is `.text` and the button is
+  /// constructed via [PlatformButton.new] (not [PlatformButton.icon]) —
+  /// upstream's other variants and all `.icon` factories don't surface the
+  /// parameter, and the package silently drops it for those combinations.
   final bool? isSemanticButton;
 
-  /// Icon widget for the `.icon` constructor variant.
-  final Widget? icon;
-
-  /// Label widget for the `.icon` constructor variant.
-  final Widget? label;
-
-  /// Alignment of the icon relative to the label.
-  final IconAlignment? iconAlignment;
-
-  /// [child] and ([icon], [label]) are mutually exclusive. They are used to indicate the calling for the different variant of the button.
-  /// [child] is used for the normal button-constructors ([useNormalConstructor]).
-  /// ([icon], [label]) are used for the `.icon`-constructors ([useNormalConstructor]).
-  /// <br>
-  /// When [useNormalConstructor] is `true`, [iconAlignment] will be ignored.
-  /// When [useIconConstructor] is `true`, [mouseCursor] will be ignored.
-  /// [isSemanticButton] seems to be only available for `TextButton`.
+  /// Creates Material-only configuration for [PlatformButton].
   const MaterialButtonData({
-    super.isEnabled,
-    super.onPressed,
-    super.onLongPress,
-    super.mouseCursor,
-    super.focusNode,
-    super.autofocus,
-    super.child,
-    super.widgetKey,
     this.onHover,
-    this.onFocusChange,
     this.style,
     this.clipBehavior,
     this.statesController,
     this.isSemanticButton,
-    this.icon,
-    this.label,
-    this.iconAlignment,
   });
-
-  /// Whether the normal (child-based) constructor should be used.
-  bool get useNormalConstructor => child != null;
-
-  /// Whether the icon constructor should be used.
-  bool get useIconConstructor => !useNormalConstructor;
 }
 
-/// Cupertino-specific configuration for a platform button.
+/// Cupertino-only configuration for [PlatformButton].
 ///
-/// Maps to properties of `CupertinoButton` on iOS.
-final class CupertinoButtonData extends _PlatformButtonData {
-  /// The size style of the Cupertino button.
+/// Pass this via `PlatformButton.cupertinoButtonData` when tuning Cupertino
+/// rendering. The fields declared here have no Material equivalent — Material
+/// concentrates its visual surface in [ButtonStyle] on [MaterialButtonData].
+final class CupertinoButtonData {
+  /// Size style. Defaults to [kDefaultCupertinoButtonSizeStyle].
   final CupertinoButtonSize sizeStyle;
 
-  /// Padding around the button content.
+  /// Padding around the button content. When `null`, Cupertino applies its
+  /// size-style-driven default.
   final EdgeInsetsGeometry? padding;
 
-  /// Background color of the button.
+  /// Background colour. When `null`, Cupertino applies its variant-driven
+  /// default (e.g. the theme's `primaryColor` for `.filled`).
   final Color? color;
 
-  /// Foreground (text/icon) color of the button.
+  /// Foreground (text / icon) colour. When `null`, Cupertino derives it from
+  /// the background.
   final Color? foregroundColor;
 
-  /// Color of the button when disabled.
+  /// Colour used when the button is disabled. When `null`, the build site
+  /// substitutes [CupertinoButtonVariant.defaultDisabledColor] for the
+  /// rendered variant — mirrors upstream's per-ctor inline default.
   final Color? disabledColor;
 
-  /// Minimum size of the button.
+  /// Minimum size of the button. When `null`, Cupertino applies its
+  /// size-style-driven default.
   final Size? minimumSize;
 
-  /// Opacity applied when the button is pressed.
-  final double? pressedOpacity;
+  /// Opacity applied while the button is being pressed. Defaults to
+  /// [kDefaultCupertinoButtonPressedOpacity].
+  final double pressedOpacity;
 
-  /// Border radius of the button.
+  /// Border radius. When `null`, Cupertino applies its size-style-driven
+  /// default.
   final BorderRadius? borderRadius;
 
-  /// Alignment of the button content.
-  final AlignmentGeometry? alignment;
+  /// Alignment of the button content. Defaults to
+  /// [kDefaultCupertinoButtonAlignment].
+  final AlignmentGeometry alignment;
 
-  /// Callback when the focus state changes.
-  final ValueChanged<bool>? onFocusChange;
-
-  /// Color of the button when focused.
+  /// Colour shown while the button is focused. When `null`, Cupertino applies
+  /// the theme's focus colour.
   final Color? focusColor;
 
-  /// Default value for [sizeStyle].
-  static const kDefaultSizeStyle = CupertinoButtonSize.large;
+  /// Mouse cursor while hovering. Cupertino-only — Material's equivalent
+  /// lives at `style.mouseCursor` on [MaterialButtonData] (Material's button
+  /// classes don't expose a top-level `mouseCursor` parameter).
+  final MouseCursor? mouseCursor;
 
-  /// Default value for [pressedOpacity].
-  static const kDefaultPressedOpacity = 0.4;
-
-  /// Default value for [alignment].
-  static const kDefaultAlignment = Alignment.center;
-
-  /// Creates Cupertino-specific button configuration.
+  /// Creates Cupertino-only configuration for [PlatformButton].
   const CupertinoButtonData({
-    super.isEnabled,
-    super.onPressed,
-    super.onLongPress,
-    super.mouseCursor,
-    super.focusNode,
-    super.autofocus,
-    super.child,
-    super.widgetKey,
-    this.sizeStyle = kDefaultSizeStyle,
+    this.sizeStyle = kDefaultCupertinoButtonSizeStyle,
     this.padding,
     this.color,
     this.foregroundColor,
     this.disabledColor,
     this.minimumSize,
-    this.pressedOpacity = kDefaultPressedOpacity,
+    this.pressedOpacity = kDefaultCupertinoButtonPressedOpacity,
     this.borderRadius,
-    this.alignment = kDefaultAlignment,
-    this.onFocusChange,
+    this.alignment = kDefaultCupertinoButtonAlignment,
     this.focusColor,
+    this.mouseCursor,
   });
+}
+
+/// Cupertino button variants for [PlatformButton.cupertinoButtonVariant].
+///
+/// Each variant carries the [defaultDisabledColor] applied by the build site
+/// when [CupertinoButtonData.disabledColor] is `null` — mirrors upstream's
+/// per-ctor inline default (`quaternarySystemFill` for the unfilled
+/// [CupertinoButton], `tertiarySystemFill` for `.filled` and `.tinted`).
+enum CupertinoButtonVariant {
+  /// Renders as [CupertinoButton] (no background fill).
+  normal(defaultDisabledColor: CupertinoColors.quaternarySystemFill),
+
+  /// Renders as [CupertinoButton.filled] (solid background fill).
+  filled(defaultDisabledColor: CupertinoColors.tertiarySystemFill),
+
+  /// Renders as [CupertinoButton.tinted] (subtle background tint).
+  tinted(defaultDisabledColor: CupertinoColors.tertiarySystemFill);
+
+  /// Colour applied by [PlatformButton]'s build site when
+  /// [CupertinoButtonData.disabledColor] is `null`. Mirrors the matching
+  /// upstream constructor's inline default — keeps the package's "no override"
+  /// path bit-identical to instantiating Cupertino's button directly.
+  final Color defaultDisabledColor;
+
+  const CupertinoButtonVariant({required this.defaultDisabledColor});
 }

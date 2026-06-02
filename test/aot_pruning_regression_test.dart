@@ -96,6 +96,7 @@ void main() {
 
 bool _isHelperHome(File f) {
   final segments = f.uri.pathSegments;
+
   return segments.isNotEmpty && segments.last == _helperHomeBasename;
 }
 

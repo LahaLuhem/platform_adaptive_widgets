@@ -24,6 +24,8 @@ heading text, so renames don't break callers.
 - [Idioms](#idioms)
     * [Static dot shorthands (Dart 3.10+)](#static-dot-shorthands-dart-310)
     * [Drop redundant `<Type>` on collection literals](#drop-redundant-collection-literal-type-args)
+    * [`Row.spacing` / `Column.spacing` / `Wrap.spacing` over interleaved `SizedBox` gaps](#flex-spacing-over-sizedbox-gaps)
+    * [Enhanced enums for per-variant config](#enhanced-enums-for-per-variant-config)
     * [Collection-for / collection-if over `Iterable.map(…).toList()`](#collection-for-collection-if-over-iterablemaptolist)
     * [`dart:async` `wait` extensions over static `Future.wait(...)`](#dartasync-wait-extensions-over-static-futurewait)
     * [`List.unmodifiable(…)` over `UnmodifiableListView(…)`](#listunmodifiable-over-unmodifiablelistview)
@@ -213,6 +215,35 @@ style.
   `PlatformWidgetBase.build`-throws-`UnsupportedError` pattern is the legitimate
   example: at compile time we can't know what platform the user runs on, so the
   unsupported-platform case is a runtime condition.
+- **Enforce constructor invariants with `assert(condition, message)` in the
+  initializer list, not by silently accepting params and ignoring them downstream.**
+  When two parameters are mutually exclusive (only one of `child` / `icon`+`label`
+  should be set), or one parameter is only meaningful when another flag is set
+  (`emptySelectionAllowed: true` requires the `selected` set type to accept empty
+  state, etc.), say so loudly at construction time:
+
+  ```dart
+  const PlatformFoo({
+    this.child,
+    this.icon,
+    this.label,
+  }) : assert(
+         (child != null) ^ (icon != null && label != null),
+         'Provide either child OR (icon, label) — not both, not neither.',
+       );
+  ```
+
+  **Why.** A param that gets silently dropped is a footgun: the user sets it,
+  reads the dartdoc once to confirm it's wired, and never realises the value
+  isn't reaching the underlying widget. An `assert` fires the first time the
+  invalid combination runs in debug mode, with a message pointing at the fix.
+
+  **Prefer compile-time exclusivity when feasible.** If the invariant can be
+  encoded by splitting into two constructors (`PlatformButton(...)` vs
+  `PlatformButton.icon(...)`), do that — the type system enforces it without any
+  runtime check at all. Reach for `assert` when the invariant can't be expressed
+  in the constructor signature (cross-parameter conditions, value-range checks,
+  Iterable-length constraints, etc.).
 - **Value types override `toString`.** Immutable data classes (`Date`,
   `TabDestination`, the various `*Data` value records, `HomeViewArgs`) implement
   `toString()` returning `'ClassName(field1: value1, field2: value2)'`. The default
@@ -392,6 +423,100 @@ Keep `<Type>` when inference would otherwise fall back to `dynamic`:
   `const kDefault = <Never>{};` typed as `Set<Never>` (covariantly assignable to
   any `Set<T>`) needs the explicit `<Never>` — `const kDefault = {}` infers
   `Map<dynamic, dynamic>` and breaks.
+
+<a id="flex-spacing-over-sizedbox-gaps"></a>
+### `Row.spacing` / `Column.spacing` / `Wrap.spacing` over interleaved `SizedBox` gaps
+
+Flutter's flex widgets ([`Row`], [`Column`], [`Wrap`], [`Flex`]) take a `spacing`
+parameter (and `runSpacing` on `Wrap`) that inserts a uniform gap between adjacent
+children. Use it instead of interleaving `SizedBox(width: …)` / `SizedBox(height: …)`
+between every pair.
+
+```dart
+// Prefer:
+Row(
+  mainAxisSize: .min,
+  spacing: 8,
+  children: [icon, label],
+)
+
+// Over:
+Row(
+  mainAxisSize: .min,
+  children: [icon, SizedBox(width: 8), label],
+)
+```
+
+**Why.** The `spacing` form keeps `children` purely about content — the layout
+metadata (gap size) lives on the parent where it belongs. The `SizedBox`-interleaved
+form bloats the children list, ties the gap to a fixed position in the list (re-ordering
+children means re-positioning the spacers), and reads as "data + filler" instead of
+"data with spacing". `spacing` is also the only correct shape when the gap is *uniform
+across all adjacencies* — the interleaved form misleads about whether per-position
+overrides exist.
+
+**Doesn't apply.** When gaps differ between adjacent pairs, fall back to explicit
+`SizedBox` for the non-uniform gaps (or wrap groups with their own uniform-spacing
+`Row` / `Column`). When the gap depends on a sibling's resolved size (rare),
+`spacing` can't help.
+
+<a id="enhanced-enums-for-per-variant-config"></a>
+### Enhanced enums for per-variant config
+
+When a variant enum's values each carry a piece of configuration that diverges
+*per value* — a default colour, a size, a layout-direction flag — attach the
+data to the enum via Dart 3's enhanced-enum syntax. Don't define parallel
+top-level `kDefault<Variant>Xxx` constants that the build site has to branch on.
+
+```dart
+// Prefer:
+enum CupertinoButtonVariant {
+  normal(defaultDisabledColor: CupertinoColors.quaternarySystemFill),
+  filled(defaultDisabledColor: CupertinoColors.tertiarySystemFill),
+  tinted(defaultDisabledColor: CupertinoColors.tertiarySystemFill);
+
+  final Color defaultDisabledColor;
+  const CupertinoButtonVariant({required this.defaultDisabledColor});
+}
+
+// Build site:
+disabledColor: disabledColor ?? cupertinoButtonVariant.defaultDisabledColor,
+
+// Over:
+const kDefaultCupertinoButtonDisabledColor = CupertinoColors.quaternarySystemFill;
+const kDefaultCupertinoFilledTintedButtonDisabledColor = CupertinoColors.tertiarySystemFill;
+
+enum CupertinoButtonVariant { normal, filled, tinted }
+
+// Build site:
+.normal => CupertinoButton(disabledColor: disabledColor ?? kDefaultCupertinoButtonDisabledColor, ...)
+.filled => CupertinoButton.filled(disabledColor: disabledColor ?? kDefaultCupertinoFilledTintedButtonDisabledColor, ...)
+.tinted => CupertinoButton.tinted(disabledColor: disabledColor ?? kDefaultCupertinoFilledTintedButtonDisabledColor, ...)
+```
+
+**Why.** Three real wins:
+- **Locality.** The default lives on the variant it describes. Adding a new
+  variant requires picking a default — the const constructor parameter forces
+  the choice at compile time. Top-level constants are easy to add then forget
+  to plumb through.
+- **Discoverability.** A user hovering `CupertinoButtonVariant.filled` in the
+  IDE sees `defaultDisabledColor` in the same hovercard. Separate `kDefault…`
+  constants are reachable only by name.
+- **Build-site uniformity.** Every switch arm references the same expression
+  (`variant.defaultDisabledColor`). No per-arm constant lookup, no chance of
+  pasting the wrong constant into a new arm.
+
+**When to reach for it.** The config is genuinely per-value *and* needed by
+the package's own code (build site, default-substitution, etc.). If the
+"default" is the same across every value, a single top-level constant
+suffices. If the config is purely external to the package (callers reach
+for it but the package never reads it), a constants module is fine.
+
+**Don't force it.** A discriminator-only variant enum
+(`MaterialButtonVariant`, where the package doesn't intercept any per-variant
+defaults — each underlying Material button has its own upstream defaults we
+pass straight through) stays plain. Adding empty enum fields for symmetry is
+ceremony.
 
 <a id="collection-for-collection-if-over-iterablemaptolist"></a>
 ### Collection-for / collection-if over `Iterable.map(…).toList()`
