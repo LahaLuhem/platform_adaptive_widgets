@@ -1,11 +1,18 @@
+/// @docImport '/src/widgets/layout/platform_app_bar.dart';
+/// @docImport '/src/widgets/layout/platform_scaffold.dart';
+library;
+
 import 'package:cupertino_ui/cupertino_ui.dart' show ObstructingPreferredSizeWidget;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-/// Interface for platform app bar data that provides builders for both platforms.
+/// Interface for platform app bar data that provides builders for both
+/// platforms.
 ///
 /// Implementations must provide a [materialBuilder] for Android and a
-/// [cupertinoBuilder] for iOS.
+/// [cupertinoBuilder] for iOS. [PlatformAppBar] is the concrete implementation;
+/// [PlatformScaffold] accepts any `PlatformAppBarData` via its `appBarData`
+/// slot and calls the matching builder at build time.
 abstract class PlatformAppBarData {
   /// Builds a Material [PreferredSizeWidget] for Android.
   PreferredSizeWidget materialBuilder(BuildContext context);
@@ -14,46 +21,40 @@ abstract class PlatformAppBarData {
   ObstructingPreferredSizeWidget cupertinoBuilder(BuildContext context);
 }
 
-/// Default value for `automaticallyImplyLeading` in app bar data classes.
-const kAutoImplyLeading = true;
-
-/// Common configuration for platform-adaptive app bars.
+/// Shared-visual base for the per-platform app-bar records.
+///
+/// Holds only [backgroundColor] — the one app-bar property that exists on both
+/// platforms and that a caller may reasonably want to differ per platform (iOS
+/// nav bars are often translucent, Android app bars opaque). Everything
+/// functional (title, leading, bottom, `automaticallyImplyLeading`, widgetKey)
+/// is flat on `PlatformAppBar`, the single source of truth.
+///
+/// Private — [MaterialAppBarData] and [CupertinoNavigationBarData] inherit
+/// [backgroundColor] via `super`-forwarding; never constructed or exported
+/// directly.
 abstract final class _PlatformAppBarData {
-  /// A key to identify the app bar widget.
-  final Key? widgetKey;
-
-  /// A widget to display at the start of the app bar.
-  final Widget? leading;
-
-  /// The primary widget displayed in the app bar.
-  final Widget? title;
-
-  /// A widget to display at the bottom of the app bar.
-  final PreferredSizeWidget? bottom;
-
   /// The background color of the app bar.
   final Color? backgroundColor;
 
-  /// Whether to automatically imply a leading widget.
-  final bool automaticallyImplyLeading;
-
   /// Creates a [_PlatformAppBarData].
-  const _PlatformAppBarData({
-    this.widgetKey,
-    this.title,
-    this.backgroundColor,
-    this.leading,
-    this.automaticallyImplyLeading = kAutoImplyLeading,
-    this.bottom,
-  });
+  const _PlatformAppBarData({this.backgroundColor});
 }
 
 /// Material-specific configuration for a platform app bar.
 ///
-/// Maps to properties of `AppBar` on Android.
+/// Maps to properties of `AppBar` on Android. Shared content (title, leading,
+/// bottom, `automaticallyImplyLeading`, widgetKey) is flat on `PlatformAppBar`.
 final class MaterialAppBarData extends _PlatformAppBarData {
   /// Action widgets displayed in the app bar.
   final List<Widget>? actions;
+
+  /// Whether to imply the actions widget when [actions] is null or empty.
+  ///
+  /// When true (the default), the framework tries to deduce the actions; when
+  /// false, the actions list is kept empty. No effect when [actions] is set.
+  /// Material-only — Cupertino's navigation bar has no actions list. Defaults
+  /// to [kAutomaticallyImplyActions].
+  final bool automaticallyImplyActions;
 
   /// Widget displayed behind the toolbar and tab bar.
   final Widget? flexibleSpace;
@@ -136,11 +137,11 @@ final class MaterialAppBarData extends _PlatformAppBarData {
   /// Default value for [notificationPredicate].
   static const kDefaultScrollNotificationPredicate = defaultScrollNotificationPredicate;
 
+  /// Default value for [automaticallyImplyActions].
+  static const kAutomaticallyImplyActions = true;
+
   /// Default value for [primary].
   static const kDefaultPrimary = true;
-
-  /// Default value for [centerTitle].
-  static const kCenterTitle = false;
 
   /// Default value for [excludeHeaderSemantics].
   static const kExcludeHeaderSemantics = false;
@@ -162,13 +163,9 @@ final class MaterialAppBarData extends _PlatformAppBarData {
 
   /// Creates Material-specific app bar configuration.
   const MaterialAppBarData({
-    super.title,
     super.backgroundColor,
-    super.leading,
-    super.widgetKey,
-    super.automaticallyImplyLeading,
-    super.bottom,
     this.actions,
+    this.automaticallyImplyActions = kAutomaticallyImplyActions,
     this.flexibleSpace,
     this.elevation,
     this.scrolledUnderElevation,
@@ -180,7 +177,7 @@ final class MaterialAppBarData extends _PlatformAppBarData {
     this.iconTheme,
     this.actionsIconTheme,
     this.primary = kDefaultPrimary,
-    this.centerTitle = kCenterTitle,
+    this.centerTitle = false,
     this.excludeHeaderSemantics = kExcludeHeaderSemantics,
     this.titleSpacing,
     this.toolbarOpacity = kToolbarOpacity,
@@ -200,8 +197,19 @@ final class MaterialAppBarData extends _PlatformAppBarData {
 
 /// Cupertino-specific configuration for a platform navigation bar.
 ///
-/// Maps to properties of `CupertinoNavigationBar` on iOS.
+/// Maps to properties of `CupertinoNavigationBar` on iOS. Shared content
+/// (title, leading, bottom, `automaticallyImplyLeading`, widgetKey) is flat on
+/// `PlatformAppBar`.
 final class CupertinoNavigationBarData extends _PlatformAppBarData {
+  /// Whether to render the expanded, left-aligned large-title navigation bar
+  /// (`CupertinoNavigationBar.large`) instead of the standard centered one.
+  ///
+  /// iOS-only — Material has no static large-title app bar, so this has no
+  /// effect on Android. When true, `PlatformAppBar.title` becomes the
+  /// `largeTitle` and [automaticallyImplyMiddle] drives the `.large` ctor's
+  /// `automaticallyImplyTitle`. Defaults to [kLarge].
+  final bool large;
+
   /// Whether to automatically imply the middle widget.
   final bool automaticallyImplyMiddle;
 
@@ -230,7 +238,14 @@ final class CupertinoNavigationBarData extends _PlatformAppBarData {
   final bool transitionBetweenRoutes;
 
   /// Hero tag for the navigation bar transition.
+  ///
+  /// Defaults to `null`, which lets `CupertinoNavigationBar` use its built-in
+  /// default tag. Only set this when a single route hosts more than one
+  /// navigation bar — each needs a distinct tag to animate correctly.
   final Object? heroTag;
+
+  /// Default value for [large].
+  static const kLarge = false;
 
   /// Default value for [automaticallyImplyMiddle].
   static const kAutomaticallyImplyMiddle = true;
@@ -246,31 +261,8 @@ final class CupertinoNavigationBarData extends _PlatformAppBarData {
 
   /// Creates Cupertino-specific navigation bar configuration.
   const CupertinoNavigationBarData({
-    super.title,
     super.backgroundColor,
-    super.leading,
-    super.widgetKey,
-    super.automaticallyImplyLeading,
-    super.bottom,
-    this.automaticallyImplyMiddle = kAutomaticallyImplyMiddle,
-    this.previousPageTitle,
-    this.trailing,
-    this.border,
-    this.automaticBackgroundVisibility = kAutomaticBackgroundVisibility,
-    this.enableBackgroundFilterBlur = kEnableBackgroundFilterBlur,
-    this.brightness,
-    this.padding,
-    this.transitionBetweenRoutes = kTransitionBetweenRoutes,
-  }) : heroTag = null;
-
-  /// To override the default hero tag, use [heroTag]. Should only be overridden if there are multiple navigation bars per route.
-  const CupertinoNavigationBarData.heroTagOverride({
-    super.title,
-    super.backgroundColor,
-    super.leading,
-    super.widgetKey,
-    super.automaticallyImplyLeading,
-    super.bottom,
+    this.large = kLarge,
     this.automaticallyImplyMiddle = kAutomaticallyImplyMiddle,
     this.previousPageTitle,
     this.trailing,
