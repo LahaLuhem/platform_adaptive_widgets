@@ -1,3 +1,7 @@
+/// @docImport 'package:cupertino_ui/cupertino_ui.dart';
+/// @docImport 'package:material_ui/material_ui.dart';
+library;
+
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoApp;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show MaterialApp;
@@ -5,215 +9,305 @@ import 'package:material_ui/material_ui.dart' show MaterialApp;
 import '/src/models/layout/platform_app_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive app widget that renders MaterialApp on Android
-/// and CupertinoApp on iOS.
+/// A platform-adaptive app — [MaterialApp] on Android, [CupertinoApp] on iOS.
 ///
-/// This widget automatically selects the appropriate app implementation based on the target platform:
-/// - On Android: renders MaterialApp
-/// - On iOS: renders CupertinoApp
+/// The two underlying apps share ~26 functional properties (`title`, `home`,
+/// `routes`, `locale`, `builder`, navigator config, …). Per the package's
+/// field-classification rule those are functional — they live flat on this
+/// widget as the single source of truth, never duplicated into a per-platform
+/// record. The only per-platform surface is the theme, since Material's
+/// [ThemeData] and Cupertino's [CupertinoThemeData] are disjoint types: pass
+/// [materialAppData] / [cupertinoAppData] for those.
 ///
-/// The app can be configured with platform-specific data through [materialAppData]
-/// and [cupertinoAppData], or with common properties through [appData].
-///
-/// Use the named constructor `PlatformApp.router` for apps using Flutter's router API.
+/// Use the default constructor for navigator-based routing (`home`, `routes`,
+/// `onGenerateRoute`, …). Use [PlatformApp.router] for Flutter's declarative
+/// router API (`routerConfig`, `routerDelegate`, …) — the two constructors
+/// expose disjoint routing surfaces, so the type system keeps you from mixing
+/// navigator and router config.
 ///
 /// Example:
 /// ```dart
 /// PlatformApp(
-///   appData: AppData(
-///     title: 'My App',
-///     home: MyHomePage(),
-///   ),
+///   title: 'My App',
+///   home: const MyHomePage(),
+///   materialAppData: MaterialAppData(theme: myLightTheme, darkTheme: myDarkTheme),
+///   cupertinoAppData: const CupertinoAppData(theme: myCupertinoTheme),
 /// )
 /// ```
-class PlatformApp extends PlatformWidgetBase {
-  /// Common app data that applies to both platforms.
-  ///
-  /// These properties will be used unless overridden by platform-specific data.
-  final AppData? appData;
+class PlatformApp extends PlatformWidgetKeyedBase {
+  /// A one-line description of the app for the OS.
+  final String? title;
 
-  /// Common router app data that applies to both platforms.
-  ///
-  /// These properties will be used unless overridden by platform-specific router data.
-  final PlatformAppRouterData? appRouterData;
+  /// A callback to generate the app's title.
+  final GenerateAppTitle? onGenerateTitle;
 
-  /// Platform-specific data for MaterialApp.
-  ///
-  /// If provided, these properties will override the common properties when
-  /// rendering on Android. See [MaterialAppData] for available options.
+  /// The primary color to use for the application in the OS interface.
+  final Color? color;
+
+  /// The initial locale for the app.
+  final Locale? locale;
+
+  /// The delegates for this app's `Localizations` widget.
+  // Signature matching
+  // ignore: avoid-dynamic
+  final Iterable<LocalizationsDelegate<dynamic>>? localizationsDelegates;
+
+  /// A callback used to resolve the locale when the device's locale changes.
+  final LocaleListResolutionCallback? localeListResolutionCallback;
+
+  /// A callback used to resolve the locale when the app is starting.
+  final LocaleResolutionCallback? localeResolutionCallback;
+
+  /// The list of locales this app has been localized for. Defaults to
+  /// [kDefaultSupportedLocales].
+  final Iterable<Locale> supportedLocales;
+
+  /// Whether to show the performance overlay. Defaults to
+  /// [kDefaultShowPerformanceOverlay].
+  final bool showPerformanceOverlay;
+
+  /// Whether to checkerboard raster cache images. Defaults to
+  /// [kDefaultCheckerboardRasterCacheImages].
+  final bool checkerboardRasterCacheImages;
+
+  /// Whether to checkerboard layers rendered to offscreen bitmaps. Defaults to
+  /// [kDefaultCheckerboardOffscreenLayers].
+  final bool checkerboardOffscreenLayers;
+
+  /// Whether to show the semantics debugger. Defaults to
+  /// [kDefaultShowSemanticsDebugger].
+  final bool showSemanticsDebugger;
+
+  /// Whether to show the "DEBUG" banner. Defaults to
+  /// [kDefaultDebugShowCheckedModeBanner].
+  final bool debugShowCheckedModeBanner;
+
+  /// The default map of keyboard shortcuts.
+  final Map<LogicalKeySet, Intent>? shortcuts;
+
+  /// The default map of intent actions.
+  final Map<Type, Action<Intent>>? actions;
+
+  /// The restoration scope ID for the app.
+  final String? restorationScopeId;
+
+  /// The default scroll behavior for the app.
+  final ScrollBehavior? scrollBehavior;
+
+  /// A builder inserted above the app's content (e.g. for shared chrome).
+  final TransitionBuilder? builder;
+
+  /// A callback to listen for `NavigationNotification`s bubbling up.
+  final bool Function(NavigationNotification)? onNavigationNotification;
+
+  /// Global key for the navigator state. Navigator-routing only — `null` on
+  /// [PlatformApp.router].
+  final GlobalKey<NavigatorState>? navigatorKey;
+
+  /// The home widget of the app. Navigator-routing only.
+  final Widget? home;
+
+  /// Named routes for the app. Navigator-routing only; defaults to `{}`.
+  final Map<String, WidgetBuilder> routes;
+
+  /// The initial route name. Navigator-routing only.
+  final String? initialRoute;
+
+  /// Route factory for generating routes. Navigator-routing only.
+  final RouteFactory? onGenerateRoute;
+
+  /// Factory for generating the initial route stack. Navigator-routing only.
+  // Signature matching
+  // ignore: avoid-dynamic
+  final List<Route<dynamic>> Function(String)? onGenerateInitialRoutes;
+
+  /// Route factory for unknown routes. Navigator-routing only.
+  final RouteFactory? onUnknownRoute;
+
+  /// Navigator observers. Navigator-routing only; defaults to `[]`.
+  final List<NavigatorObserver> navigatorObservers;
+
+  /// Provider for route information from the platform. Router-routing only —
+  /// `null` on the default constructor.
+  final RouteInformationProvider? routeInformationProvider;
+
+  /// Parser converting route information to a route configuration.
+  /// Router-routing only.
+  final RouteInformationParser<Object>? routeInformationParser;
+
+  /// Delegate building the navigation stack. Router-routing only.
+  final RouterDelegate<Object>? routerDelegate;
+
+  /// Configuration object bundling the router pieces. Router-routing only.
+  final RouterConfig<Object>? routerConfig;
+
+  /// Dispatcher for back-button presses. Router-routing only.
+  final BackButtonDispatcher? backButtonDispatcher;
+
+  /// Material-specific configuration (themes, `scaffoldMessengerKey`).
   final MaterialAppData? materialAppData;
 
-  /// Platform-specific data for MaterialApp.router.
-  ///
-  /// If provided, these properties will override the common properties when
-  /// rendering on Android with router. See [MaterialAppRouterData] for available options.
-  final MaterialAppRouterData? materialAppRouterData;
-
-  /// Platform-specific data for CupertinoApp.
-  ///
-  /// If provided, these properties will override the common properties when
-  /// rendering on iOS. See [CupertinoAppData] for available options.
+  /// Cupertino-specific configuration (theme).
   final CupertinoAppData? cupertinoAppData;
 
-  /// Platform-specific data for CupertinoApp.router.
-  ///
-  /// If provided, these properties will override the common properties when
-  /// rendering on iOS with router. See [CupertinoAppRouterData] for available options.
-  final CupertinoAppRouterData? cupertinoAppRouterData;
+  /// Discriminates [PlatformApp.router] from the default constructor — selects
+  /// `MaterialApp.router` / `CupertinoApp.router` over their navigator forms.
+  final bool _useRouter;
 
-  /// Creates a platform-adaptive app.
+  /// Creates a platform-adaptive app using navigator-based routing.
   ///
-  /// The app will render as a MaterialApp on Android and a CupertinoApp on iOS.
-  /// Use [appData] for common properties, or override with platform-specific data.
-  const PlatformApp({this.appData, this.materialAppData, this.cupertinoAppData, super.key})
-    : appRouterData = null,
-      materialAppRouterData = null,
-      cupertinoAppRouterData = null;
-
-  /// Creates a platform-adaptive app using Flutter's router API.
-  ///
-  /// The app will render as a MaterialApp.router on Android and a CupertinoApp.router on iOS.
-  /// Use [appRouterData] for common properties, or override with platform-specific router data.
-  const PlatformApp.router({
-    this.appRouterData,
-    this.materialAppRouterData = const MaterialAppRouterData(),
-    this.cupertinoAppRouterData = const CupertinoAppRouterData(),
+  /// Renders [MaterialApp] on Android and [CupertinoApp] on iOS.
+  const PlatformApp({
+    this.title,
+    this.onGenerateTitle,
+    this.color,
+    this.locale,
+    this.localizationsDelegates,
+    this.localeListResolutionCallback,
+    this.localeResolutionCallback,
+    this.supportedLocales = kDefaultSupportedLocales,
+    this.showPerformanceOverlay = kDefaultShowPerformanceOverlay,
+    this.checkerboardRasterCacheImages = kDefaultCheckerboardRasterCacheImages,
+    this.checkerboardOffscreenLayers = kDefaultCheckerboardOffscreenLayers,
+    this.showSemanticsDebugger = kDefaultShowSemanticsDebugger,
+    this.debugShowCheckedModeBanner = kDefaultDebugShowCheckedModeBanner,
+    this.shortcuts,
+    this.actions,
+    this.restorationScopeId,
+    this.scrollBehavior,
+    this.builder,
+    this.onNavigationNotification,
+    this.navigatorKey,
+    this.home,
+    this.routes = const {},
+    this.initialRoute,
+    this.onGenerateRoute,
+    this.onGenerateInitialRoutes,
+    this.onUnknownRoute,
+    this.navigatorObservers = const [],
+    this.materialAppData,
+    this.cupertinoAppData,
+    super.widgetKey,
     super.key,
-  }) : appData = null,
-       materialAppData = null,
-       cupertinoAppData = null;
+  }) : _useRouter = false,
+       routeInformationProvider = null,
+       routeInformationParser = null,
+       routerDelegate = null,
+       routerConfig = null,
+       backButtonDispatcher = null;
+
+  /// Creates a platform-adaptive app using Flutter's declarative router API.
+  ///
+  /// Renders `MaterialApp.router` on Android and `CupertinoApp.router` on iOS.
+  const PlatformApp.router({
+    this.title,
+    this.onGenerateTitle,
+    this.color,
+    this.locale,
+    this.localizationsDelegates,
+    this.localeListResolutionCallback,
+    this.localeResolutionCallback,
+    this.supportedLocales = kDefaultSupportedLocales,
+    this.showPerformanceOverlay = kDefaultShowPerformanceOverlay,
+    this.checkerboardRasterCacheImages = kDefaultCheckerboardRasterCacheImages,
+    this.checkerboardOffscreenLayers = kDefaultCheckerboardOffscreenLayers,
+    this.showSemanticsDebugger = kDefaultShowSemanticsDebugger,
+    this.debugShowCheckedModeBanner = kDefaultDebugShowCheckedModeBanner,
+    this.shortcuts,
+    this.actions,
+    this.restorationScopeId,
+    this.scrollBehavior,
+    this.builder,
+    this.onNavigationNotification,
+    this.routeInformationProvider,
+    this.routeInformationParser,
+    this.routerDelegate,
+    this.routerConfig,
+    this.backButtonDispatcher,
+    this.materialAppData,
+    this.cupertinoAppData,
+    super.widgetKey,
+    super.key,
+  }) : _useRouter = true,
+       navigatorKey = null,
+       home = null,
+       routes = const {},
+       initialRoute = null,
+       onGenerateRoute = null,
+       onGenerateInitialRoutes = null,
+       onUnknownRoute = null,
+       navigatorObservers = const [];
 
   @override
-  MaterialApp buildMaterial(BuildContext context) => materialAppRouterData != null
+  MaterialApp buildMaterial(BuildContext context) => _useRouter
       ? .router(
-          key: materialAppRouterData?.widgetKey ?? appRouterData?.widgetKey,
-          routeInformationProvider:
-              materialAppRouterData?.routeInformationProvider ??
-              appRouterData?.routeInformationProvider,
-          routeInformationParser:
-              materialAppRouterData?.routeInformationParser ??
-              appRouterData?.routeInformationParser,
-          routerDelegate: materialAppRouterData?.routerDelegate ?? appRouterData?.routerDelegate,
-          routerConfig: materialAppRouterData?.routerConfig ?? appRouterData?.routerConfig,
-          backButtonDispatcher:
-              materialAppRouterData?.backButtonDispatcher ?? appRouterData?.backButtonDispatcher,
-          onNavigationNotification:
-              materialAppRouterData?.onNavigationNotification ??
-              appRouterData?.onNavigationNotification,
-          builder: materialAppRouterData?.builder ?? appRouterData?.builder,
-          title: materialAppRouterData?.title ?? appRouterData?.title,
-          onGenerateTitle: materialAppRouterData?.onGenerateTitle ?? appRouterData?.onGenerateTitle,
-          color: materialAppRouterData?.color ?? appRouterData?.color,
-          locale: materialAppRouterData?.locale ?? appRouterData?.locale,
-          localizationsDelegates:
-              materialAppRouterData?.localizationsDelegates ??
-              appRouterData?.localizationsDelegates,
-          localeListResolutionCallback:
-              materialAppRouterData?.localeListResolutionCallback ??
-              appRouterData?.localeListResolutionCallback,
-          localeResolutionCallback:
-              materialAppRouterData?.localeResolutionCallback ??
-              appRouterData?.localeResolutionCallback,
-          supportedLocales:
-              materialAppRouterData?.supportedLocales ??
-              appRouterData?.supportedLocales ??
-              kDefaultSupportedLocales,
-          showPerformanceOverlay:
-              materialAppRouterData?.showPerformanceOverlay ??
-              appRouterData?.showPerformanceOverlay ??
-              kDefaultShowPerformanceOverlay,
-          checkerboardRasterCacheImages:
-              materialAppRouterData?.checkerboardRasterCacheImages ??
-              appRouterData?.checkerboardRasterCacheImages ??
-              kDefaultCheckerboardRasterCacheImages,
-          checkerboardOffscreenLayers:
-              materialAppRouterData?.checkerboardOffscreenLayers ??
-              appRouterData?.checkerboardOffscreenLayers ??
-              kDefaultCheckerboardOffscreenLayers,
-          showSemanticsDebugger:
-              materialAppRouterData?.showSemanticsDebugger ??
-              appRouterData?.showSemanticsDebugger ??
-              kDefaultShowSemanticsDebugger,
-          debugShowCheckedModeBanner:
-              materialAppRouterData?.debugShowCheckedModeBanner ??
-              appRouterData?.debugShowCheckedModeBanner ??
-              kDefaultDebugShowCheckedModeBanner,
-          shortcuts: materialAppRouterData?.shortcuts ?? appRouterData?.shortcuts,
-          actions: materialAppRouterData?.actions ?? appRouterData?.actions,
-          restorationScopeId:
-              materialAppRouterData?.restorationScopeId ?? appRouterData?.restorationScopeId,
-          scrollBehavior: materialAppRouterData?.scrollBehavior ?? appRouterData?.scrollBehavior,
-          scaffoldMessengerKey: materialAppRouterData?.scaffoldMessengerKey,
-          theme: materialAppRouterData?.theme,
-          darkTheme: materialAppRouterData?.darkTheme,
-          highContrastTheme: materialAppRouterData?.highContrastTheme,
-          highContrastDarkTheme: materialAppRouterData?.highContrastDarkTheme,
-          themeMode: materialAppRouterData?.themeMode,
+          key: widgetKey,
+          routeInformationProvider: routeInformationProvider,
+          routeInformationParser: routeInformationParser,
+          routerDelegate: routerDelegate,
+          routerConfig: routerConfig,
+          backButtonDispatcher: backButtonDispatcher,
+          onNavigationNotification: onNavigationNotification,
+          builder: builder,
+          title: title,
+          onGenerateTitle: onGenerateTitle,
+          color: color,
+          locale: locale,
+          localizationsDelegates: localizationsDelegates,
+          localeListResolutionCallback: localeListResolutionCallback,
+          localeResolutionCallback: localeResolutionCallback,
+          supportedLocales: supportedLocales,
+          showPerformanceOverlay: showPerformanceOverlay,
+          checkerboardRasterCacheImages: checkerboardRasterCacheImages,
+          checkerboardOffscreenLayers: checkerboardOffscreenLayers,
+          showSemanticsDebugger: showSemanticsDebugger,
+          debugShowCheckedModeBanner: debugShowCheckedModeBanner,
+          shortcuts: shortcuts,
+          actions: actions,
+          restorationScopeId: restorationScopeId,
+          scrollBehavior: scrollBehavior,
+          scaffoldMessengerKey: materialAppData?.scaffoldMessengerKey,
+          theme: materialAppData?.theme,
+          darkTheme: materialAppData?.darkTheme,
+          highContrastTheme: materialAppData?.highContrastTheme,
+          highContrastDarkTheme: materialAppData?.highContrastDarkTheme,
+          themeMode: materialAppData?.themeMode,
           themeAnimationDuration:
-              materialAppRouterData?.themeAnimationDuration ??
-              kMaterialDefaultThemeAnimationDuration,
+              materialAppData?.themeAnimationDuration ?? kMaterialDefaultThemeAnimationDuration,
           themeAnimationCurve:
-              materialAppRouterData?.themeAnimationCurve ?? kMaterialDefaultThemeAnimationCurve,
-          debugShowMaterialGrid:
-              materialAppRouterData?.debugShowMaterialGrid ?? kDebugShowMaterialGrid,
-          themeAnimationStyle: materialAppRouterData?.themeAnimationStyle,
+              materialAppData?.themeAnimationCurve ?? kMaterialDefaultThemeAnimationCurve,
+          debugShowMaterialGrid: materialAppData?.debugShowMaterialGrid ?? kDebugShowMaterialGrid,
+          themeAnimationStyle: materialAppData?.themeAnimationStyle,
         )
       : MaterialApp(
-          key: materialAppData?.widgetKey ?? appData?.widgetKey,
-          navigatorKey: materialAppData?.navigatorKey ?? appData?.navigatorKey,
-          home: materialAppData?.home ?? appData?.home,
-          routes: materialAppData?.routes ?? appData?.routes ?? AppData.kDefaultAppRoutes,
-          initialRoute: materialAppData?.initialRoute ?? appData?.initialRoute,
-          onGenerateRoute: materialAppData?.onGenerateRoute ?? appData?.onGenerateRoute,
-          onGenerateInitialRoutes:
-              materialAppData?.onGenerateInitialRoutes ?? appData?.onGenerateInitialRoutes,
-          onUnknownRoute: materialAppData?.onUnknownRoute ?? appData?.onUnknownRoute,
-          navigatorObservers:
-              materialAppData?.navigatorObservers ??
-              appData?.navigatorObservers ??
-              AppData.kDefaultNavigationObservers,
-          onNavigationNotification:
-              materialAppData?.onNavigationNotification ?? appData?.onNavigationNotification,
-          builder: materialAppData?.builder ?? appData?.builder,
-          title: materialAppData?.title ?? appData?.title,
-          onGenerateTitle: materialAppData?.onGenerateTitle ?? appData?.onGenerateTitle,
-          color: materialAppData?.color ?? appData?.color,
-          locale: materialAppData?.locale ?? appData?.locale,
-          localizationsDelegates:
-              materialAppData?.localizationsDelegates ?? appData?.localizationsDelegates,
-          localeListResolutionCallback:
-              materialAppData?.localeListResolutionCallback ??
-              appData?.localeListResolutionCallback,
-          localeResolutionCallback:
-              materialAppData?.localeResolutionCallback ?? appData?.localeResolutionCallback,
-          supportedLocales:
-              materialAppData?.supportedLocales ??
-              appData?.supportedLocales ??
-              kDefaultSupportedLocales,
-          showPerformanceOverlay:
-              materialAppData?.showPerformanceOverlay ??
-              appData?.showPerformanceOverlay ??
-              kDefaultShowPerformanceOverlay,
-          checkerboardRasterCacheImages:
-              materialAppData?.checkerboardRasterCacheImages ??
-              appData?.checkerboardRasterCacheImages ??
-              kDefaultCheckerboardRasterCacheImages,
-          checkerboardOffscreenLayers:
-              materialAppData?.checkerboardOffscreenLayers ??
-              appData?.checkerboardOffscreenLayers ??
-              kDefaultCheckerboardOffscreenLayers,
-          showSemanticsDebugger:
-              materialAppData?.showSemanticsDebugger ??
-              appData?.showSemanticsDebugger ??
-              kDefaultShowSemanticsDebugger,
-          debugShowCheckedModeBanner:
-              materialAppData?.debugShowCheckedModeBanner ??
-              appData?.debugShowCheckedModeBanner ??
-              kDefaultDebugShowCheckedModeBanner,
-          shortcuts: materialAppData?.shortcuts ?? appData?.shortcuts,
-          actions: materialAppData?.actions ?? appData?.actions,
-          restorationScopeId: materialAppData?.restorationScopeId ?? appData?.restorationScopeId,
-          scrollBehavior: materialAppData?.scrollBehavior ?? appData?.scrollBehavior,
+          key: widgetKey,
+          navigatorKey: navigatorKey,
+          home: home,
+          routes: routes,
+          initialRoute: initialRoute,
+          onGenerateRoute: onGenerateRoute,
+          onGenerateInitialRoutes: onGenerateInitialRoutes,
+          onUnknownRoute: onUnknownRoute,
+          navigatorObservers: navigatorObservers,
+          onNavigationNotification: onNavigationNotification,
+          builder: builder,
+          title: title,
+          onGenerateTitle: onGenerateTitle,
+          color: color,
+          locale: locale,
+          localizationsDelegates: localizationsDelegates,
+          localeListResolutionCallback: localeListResolutionCallback,
+          localeResolutionCallback: localeResolutionCallback,
+          supportedLocales: supportedLocales,
+          showPerformanceOverlay: showPerformanceOverlay,
+          checkerboardRasterCacheImages: checkerboardRasterCacheImages,
+          checkerboardOffscreenLayers: checkerboardOffscreenLayers,
+          showSemanticsDebugger: showSemanticsDebugger,
+          debugShowCheckedModeBanner: debugShowCheckedModeBanner,
+          shortcuts: shortcuts,
+          actions: actions,
+          restorationScopeId: restorationScopeId,
+          scrollBehavior: scrollBehavior,
           scaffoldMessengerKey: materialAppData?.scaffoldMessengerKey,
           theme: materialAppData?.theme,
           darkTheme: materialAppData?.darkTheme,
@@ -229,124 +323,64 @@ class PlatformApp extends PlatformWidgetBase {
         );
 
   @override
-  CupertinoApp buildCupertino(BuildContext context) => cupertinoAppRouterData != null
+  CupertinoApp buildCupertino(BuildContext context) => _useRouter
       ? .router(
-          key: cupertinoAppRouterData?.widgetKey ?? appRouterData?.widgetKey,
-          routeInformationProvider:
-              cupertinoAppRouterData?.routeInformationProvider ??
-              appRouterData?.routeInformationProvider,
-          routeInformationParser:
-              cupertinoAppRouterData?.routeInformationParser ??
-              appRouterData?.routeInformationParser,
-          routerDelegate: cupertinoAppRouterData?.routerDelegate ?? appRouterData?.routerDelegate,
-          routerConfig: cupertinoAppRouterData?.routerConfig ?? appRouterData?.routerConfig,
-          backButtonDispatcher:
-              cupertinoAppRouterData?.backButtonDispatcher ?? appRouterData?.backButtonDispatcher,
-          onNavigationNotification:
-              cupertinoAppRouterData?.onNavigationNotification ??
-              appRouterData?.onNavigationNotification,
-          builder: cupertinoAppRouterData?.builder ?? appRouterData?.builder,
-          title: cupertinoAppRouterData?.title ?? appRouterData?.title,
-          onGenerateTitle:
-              cupertinoAppRouterData?.onGenerateTitle ?? appRouterData?.onGenerateTitle,
-          color: cupertinoAppRouterData?.color ?? appRouterData?.color,
-          locale: cupertinoAppRouterData?.locale ?? appRouterData?.locale,
-          localizationsDelegates:
-              cupertinoAppRouterData?.localizationsDelegates ??
-              appRouterData?.localizationsDelegates,
-          localeListResolutionCallback:
-              cupertinoAppRouterData?.localeListResolutionCallback ??
-              appRouterData?.localeListResolutionCallback,
-          localeResolutionCallback:
-              cupertinoAppRouterData?.localeResolutionCallback ??
-              appRouterData?.localeResolutionCallback,
-          supportedLocales:
-              cupertinoAppRouterData?.supportedLocales ??
-              appRouterData?.supportedLocales ??
-              kDefaultSupportedLocales,
-          showPerformanceOverlay:
-              cupertinoAppRouterData?.showPerformanceOverlay ??
-              appRouterData?.showPerformanceOverlay ??
-              kDefaultShowPerformanceOverlay,
-          checkerboardRasterCacheImages:
-              cupertinoAppRouterData?.checkerboardRasterCacheImages ??
-              appRouterData?.checkerboardRasterCacheImages ??
-              kDefaultCheckerboardRasterCacheImages,
-          checkerboardOffscreenLayers:
-              cupertinoAppRouterData?.checkerboardOffscreenLayers ??
-              appRouterData?.checkerboardOffscreenLayers ??
-              kDefaultCheckerboardOffscreenLayers,
-          showSemanticsDebugger:
-              cupertinoAppRouterData?.showSemanticsDebugger ??
-              appRouterData?.showSemanticsDebugger ??
-              kDefaultShowSemanticsDebugger,
-          debugShowCheckedModeBanner:
-              cupertinoAppRouterData?.debugShowCheckedModeBanner ??
-              appRouterData?.debugShowCheckedModeBanner ??
-              kDefaultDebugShowCheckedModeBanner,
-          shortcuts: cupertinoAppRouterData?.shortcuts ?? appRouterData?.shortcuts,
-          actions: cupertinoAppRouterData?.actions ?? appRouterData?.actions,
-          restorationScopeId:
-              cupertinoAppRouterData?.restorationScopeId ?? appRouterData?.restorationScopeId,
-          scrollBehavior: cupertinoAppRouterData?.scrollBehavior ?? appRouterData?.scrollBehavior,
-          theme: cupertinoAppRouterData?.theme ?? cupertinoAppData?.theme,
+          key: widgetKey,
+          routeInformationProvider: routeInformationProvider,
+          routeInformationParser: routeInformationParser,
+          routerDelegate: routerDelegate,
+          routerConfig: routerConfig,
+          backButtonDispatcher: backButtonDispatcher,
+          onNavigationNotification: onNavigationNotification,
+          builder: builder,
+          title: title,
+          onGenerateTitle: onGenerateTitle,
+          color: color,
+          locale: locale,
+          localizationsDelegates: localizationsDelegates,
+          localeListResolutionCallback: localeListResolutionCallback,
+          localeResolutionCallback: localeResolutionCallback,
+          supportedLocales: supportedLocales,
+          showPerformanceOverlay: showPerformanceOverlay,
+          checkerboardRasterCacheImages: checkerboardRasterCacheImages,
+          checkerboardOffscreenLayers: checkerboardOffscreenLayers,
+          showSemanticsDebugger: showSemanticsDebugger,
+          debugShowCheckedModeBanner: debugShowCheckedModeBanner,
+          shortcuts: shortcuts,
+          actions: actions,
+          restorationScopeId: restorationScopeId,
+          scrollBehavior: scrollBehavior,
+          theme: cupertinoAppData?.theme,
         )
       : CupertinoApp(
-          key: cupertinoAppData?.widgetKey ?? appData?.widgetKey,
-          navigatorKey: cupertinoAppData?.navigatorKey ?? appData?.navigatorKey,
-          home: cupertinoAppData?.home ?? appData?.home,
-          routes: cupertinoAppData?.routes ?? appData?.routes ?? AppData.kDefaultAppRoutes,
-          initialRoute: cupertinoAppData?.initialRoute ?? appData?.initialRoute,
-          onGenerateRoute: cupertinoAppData?.onGenerateRoute ?? appData?.onGenerateRoute,
-          onGenerateInitialRoutes:
-              cupertinoAppData?.onGenerateInitialRoutes ?? appData?.onGenerateInitialRoutes,
-          onUnknownRoute: cupertinoAppData?.onUnknownRoute ?? appData?.onUnknownRoute,
-          navigatorObservers:
-              cupertinoAppData?.navigatorObservers ??
-              appData?.navigatorObservers ??
-              AppData.kDefaultNavigationObservers,
-          onNavigationNotification:
-              cupertinoAppData?.onNavigationNotification ?? appData?.onNavigationNotification,
-          builder: cupertinoAppData?.builder ?? appData?.builder,
-          title: cupertinoAppData?.title ?? appData?.title,
-          onGenerateTitle: cupertinoAppData?.onGenerateTitle ?? appData?.onGenerateTitle,
-          color: cupertinoAppData?.color ?? appData?.color,
-          locale: cupertinoAppData?.locale ?? appData?.locale,
-          localizationsDelegates:
-              cupertinoAppData?.localizationsDelegates ?? appData?.localizationsDelegates,
-          localeListResolutionCallback:
-              cupertinoAppData?.localeListResolutionCallback ??
-              appData?.localeListResolutionCallback,
-          localeResolutionCallback:
-              cupertinoAppData?.localeResolutionCallback ?? appData?.localeResolutionCallback,
-          supportedLocales:
-              cupertinoAppData?.supportedLocales ??
-              appData?.supportedLocales ??
-              kDefaultSupportedLocales,
-          showPerformanceOverlay:
-              cupertinoAppData?.showPerformanceOverlay ??
-              appData?.showPerformanceOverlay ??
-              kDefaultShowPerformanceOverlay,
-          checkerboardRasterCacheImages:
-              cupertinoAppData?.checkerboardRasterCacheImages ??
-              appData?.checkerboardRasterCacheImages ??
-              kDefaultCheckerboardRasterCacheImages,
-          checkerboardOffscreenLayers:
-              cupertinoAppData?.checkerboardOffscreenLayers ??
-              appData?.checkerboardOffscreenLayers ??
-              kDefaultCheckerboardOffscreenLayers,
-          showSemanticsDebugger:
-              cupertinoAppData?.showSemanticsDebugger ??
-              appData?.showSemanticsDebugger ??
-              kDefaultShowSemanticsDebugger,
-          debugShowCheckedModeBanner:
-              cupertinoAppData?.debugShowCheckedModeBanner ??
-              appData?.debugShowCheckedModeBanner ??
-              kDefaultDebugShowCheckedModeBanner,
-          shortcuts: cupertinoAppData?.shortcuts ?? appData?.shortcuts,
-          actions: cupertinoAppData?.actions ?? appData?.actions,
-          restorationScopeId: cupertinoAppData?.restorationScopeId ?? appData?.restorationScopeId,
-          scrollBehavior: cupertinoAppData?.scrollBehavior ?? appData?.scrollBehavior,
+          key: widgetKey,
+          navigatorKey: navigatorKey,
+          home: home,
+          routes: routes,
+          initialRoute: initialRoute,
+          onGenerateRoute: onGenerateRoute,
+          onGenerateInitialRoutes: onGenerateInitialRoutes,
+          onUnknownRoute: onUnknownRoute,
+          navigatorObservers: navigatorObservers,
+          onNavigationNotification: onNavigationNotification,
+          builder: builder,
+          title: title,
+          onGenerateTitle: onGenerateTitle,
+          color: color,
+          locale: locale,
+          localizationsDelegates: localizationsDelegates,
+          localeListResolutionCallback: localeListResolutionCallback,
+          localeResolutionCallback: localeResolutionCallback,
+          supportedLocales: supportedLocales,
+          showPerformanceOverlay: showPerformanceOverlay,
+          checkerboardRasterCacheImages: checkerboardRasterCacheImages,
+          checkerboardOffscreenLayers: checkerboardOffscreenLayers,
+          showSemanticsDebugger: showSemanticsDebugger,
+          debugShowCheckedModeBanner: debugShowCheckedModeBanner,
+          shortcuts: shortcuts,
+          actions: actions,
+          restorationScopeId: restorationScopeId,
+          scrollBehavior: scrollBehavior,
           theme: cupertinoAppData?.theme,
         );
 }

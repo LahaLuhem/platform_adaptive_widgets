@@ -16,7 +16,8 @@ class _MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => PlatformApp(
-    appData: const AppData(title: 'Flutter Demo', home: _MyRootPage()),
+    title: 'Flutter Demo',
+    home: const _MyRootPage(),
     materialAppData: MaterialAppData(
       theme: ConstTheme.materialLightThemeData,
       darkTheme: ConstTheme.materialDarkThemeData,
