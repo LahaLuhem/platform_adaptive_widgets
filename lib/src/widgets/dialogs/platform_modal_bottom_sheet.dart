@@ -3,30 +3,111 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show showModalBottomSheet;
 
-/// Shows a platform-adaptive modal bottom sheet that renders Material showModalBottomSheet on Android
-/// and showCupertinoModalPopup on iOS.
+import '/src/models/dialogs/const_values.dart';
+import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
+
+/// Shows a platform-adaptive modal popup that slides up from the bottom of
+/// the screen. Material [showModalBottomSheet] on Android,
+/// [showCupertinoModalPopup] on iOS.
 ///
-/// This function automatically selects the appropriate modal bottom sheet implementation based on the target platform:
-/// - On Android: shows a Material Design modal bottom sheet
-/// - On iOS: shows a Cupertino modal popup
+/// These two upstream APIs are conceptually similar (a modal that takes over
+/// the bottom portion of the screen) but expose largely disjoint param sets —
+/// Material has a rich set of sheet-shape / drag / safe-area knobs, Cupertino
+/// has fewer (filter, barrier, semantics). Common show-function args are flat
+/// on this function; everything else lives per-platform on
+/// [materialModalBottomSheetData] / [cupertinoModalPopupData].
 ///
-/// The modal bottom sheet can be configured with platform-specific data through [builder].
+/// Content selection follows the same rules as `showPlatformDialog`:
+/// - Pass [builder] for shared content on both platforms.
+/// - Or pass both [materialBuilder] and [cupertinoBuilder] for per-platform
+///   content.
+/// - Combining `builder` with a platform-specific builder fires an assert.
 ///
 /// Example:
 /// ```dart
-/// showPlatformModalBottomSheet(
+/// await showPlatformModalBottomSheet(
 ///   context: context,
-///   builder: (context) => Container(
-///     padding: EdgeInsets.all(16),
-///     child: Text('Bottom Sheet Content'),
+///   builder: (_) => Padding(
+///     padding: const EdgeInsets.all(16),
+///     child: ListView(children: [...]),
 ///   ),
-/// )
+/// );
 /// ```
 Future<T?> showPlatformModalBottomSheet<T>({
   required BuildContext context,
-  required WidgetBuilder builder,
-}) => switch (defaultTargetPlatform) {
-  .android => showModalBottomSheet<T>(context: context, builder: builder),
-  .iOS => showCupertinoModalPopup<T>(context: context, builder: builder),
-  _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
-};
+  WidgetBuilder? builder,
+  WidgetBuilder? materialBuilder,
+  WidgetBuilder? cupertinoBuilder,
+  RouteSettings? routeSettings,
+  bool useRootNavigator = kDefaultUseRootNavigator,
+  Offset? anchorPoint,
+  bool? requestFocus,
+  MaterialModalBottomSheetData? materialModalBottomSheetData,
+  CupertinoModalPopupData? cupertinoModalPopupData,
+}) {
+  assert(
+    builder != null || (materialBuilder != null && cupertinoBuilder != null),
+    'Provide either `builder` (for both platforms) or both `materialBuilder` '
+    'and `cupertinoBuilder`.',
+  );
+  assert(
+    builder == null || (materialBuilder == null && cupertinoBuilder == null),
+    'If `builder` is provided, do not also provide `materialBuilder` or '
+    '`cupertinoBuilder`.',
+  );
+
+  return switch (defaultTargetPlatform) {
+    .android => showModalBottomSheet(
+      context: context,
+      builder: materialBuilder ?? builder!,
+      backgroundColor: materialModalBottomSheetData?.backgroundColor,
+      barrierLabel: materialModalBottomSheetData?.barrierLabel,
+      elevation: materialModalBottomSheetData?.elevation,
+      shape: materialModalBottomSheetData?.shape,
+      clipBehavior: materialModalBottomSheetData?.clipBehavior,
+      constraints: materialModalBottomSheetData?.constraints,
+      // Material's barrierColor not surfaced — sheet-level barrier tinting is
+      // rare and the upstream default (null → theme-derived) is right almost
+      // always. Add a flat shared `barrierColor` here if a real use case
+      // appears.
+      isScrollControlled:
+          materialModalBottomSheetData?.isScrollControlled ??
+          kDefaultMaterialModalBottomSheetIsScrollControlled,
+      scrollControlDisabledMaxHeightRatio:
+          materialModalBottomSheetData?.scrollControlDisabledMaxHeightRatio ??
+          kDefaultMaterialModalBottomSheetScrollControlDisabledMaxHeightRatio,
+      useRootNavigator: useRootNavigator,
+      isDismissible:
+          materialModalBottomSheetData?.isDismissible ??
+          kDefaultMaterialModalBottomSheetIsDismissible,
+      enableDrag:
+          materialModalBottomSheetData?.enableDrag ?? kDefaultMaterialModalBottomSheetEnableDrag,
+      showDragHandle: materialModalBottomSheetData?.showDragHandle,
+      useSafeArea:
+          materialModalBottomSheetData?.useSafeArea ?? kDefaultMaterialModalBottomSheetUseSafeArea,
+      routeSettings: routeSettings,
+      transitionAnimationController: materialModalBottomSheetData?.transitionAnimationController,
+      anchorPoint: anchorPoint,
+      sheetAnimationStyle: materialModalBottomSheetData?.sheetAnimationStyle,
+      requestFocus: requestFocus,
+    ),
+    .iOS => showCupertinoModalPopup(
+      context: context,
+      builder: cupertinoBuilder ?? builder!,
+      filter: cupertinoModalPopupData?.filter,
+      barrierColor:
+          cupertinoModalPopupData?.barrierColor ?? kDefaultCupertinoModalPopupBarrierColor,
+      barrierDismissible:
+          cupertinoModalPopupData?.barrierDismissible ??
+          kDefaultCupertinoModalPopupBarrierDismissible,
+      useRootNavigator: useRootNavigator,
+      semanticsDismissible:
+          cupertinoModalPopupData?.semanticsDismissible ??
+          kDefaultCupertinoModalPopupSemanticsDismissible,
+      routeSettings: routeSettings,
+      anchorPoint: anchorPoint,
+      requestFocus: requestFocus,
+    ),
+    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+  };
+}

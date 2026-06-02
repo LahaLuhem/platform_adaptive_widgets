@@ -49,37 +49,41 @@ final class HomeViewModel extends ViewModel {
       title: const Text('Example alert dialog'),
       content: const Text('Change the number of actions to see how the layout changes'),
       actions: [
-        PlatformAlertDialogActionButton(
+        PlatformDialogAction(
           child: const Text('Normal'),
-          onPressed: (context) => Navigator.of(context).pop(),
+          onPressed: (context) => Navigator.maybeOf(context)?.pop(),
         ),
-        PlatformAlertDialogActionButton(
+        PlatformDialogAction(
           isDefaultAction: true,
-          onPressed: (context) => Navigator.of(context).pop(),
+          onPressed: (context) => Navigator.maybeOf(context)?.pop(),
           child: const Text('Default'),
         ),
-        PlatformAlertDialogActionButton(
+        PlatformDialogAction(
           isDestructiveAction: true,
-          onPressed: (context) => Navigator.of(context).pop(),
+          onPressed: (context) => Navigator.maybeOf(context)?.pop(),
           child: const Text('Destructive'),
         ),
-        PlatformAlertDialogActionButton(
+        PlatformDialogAction(
           isDefaultAction: true,
           isDestructiveAction: true,
-          onPressed: (context) => Navigator.of(context).pop(),
+          onPressed: (context) => Navigator.maybeOf(context)?.pop(),
           child: const Text('Default & Destructive'),
         ),
       ],
     );
   }
 
-  Future<void> onShowSimpleAlertPressed() {
-    debugPrint('Simple alert pressed');
+  Future<void> onShowSimpleAlertPressed() async {
+    debugPrint('Toast + acknowledge demo pressed');
 
-    return showPlatformSimpleAlert(
+    // Demonstrates both new primitives back-to-back: a transient toast that
+    // fades on its own, then a must-acknowledge alert that waits for OK.
+    await showPlatformToast(context: context, message: 'Transient toast — auto-dismisses');
+    if (!context.mounted) return;
+    await showPlatformAcknowledge(
       context: context,
-      message: 'Simple alert message',
-      cupertinoOkLabel: 'Ok',
+      title: 'Acknowledgement required',
+      message: 'This alert blocks until you tap OK.',
     );
   }
 

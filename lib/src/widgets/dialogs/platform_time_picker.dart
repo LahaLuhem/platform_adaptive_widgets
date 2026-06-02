@@ -1,29 +1,20 @@
 // ignore_for_file: prefer-match-file-name
 
-import 'package:cupertino_ui/cupertino_ui.dart'
-    show CupertinoColors, CupertinoDatePicker, showCupertinoModalPopup;
-import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart' show TimeOfDay, showTimePicker;
+part of 'platform_date_picker.dart';
 
-import '/src/extensions/time_of_day_extensions.dart';
-import '/src/models/dialogs/const_values.dart';
-import '/src/models/dialogs/platform_date_picker_data.dart';
-import '/src/models/dialogs/platform_time_picker_data.dart';
-
-/// Shows a platform-adaptive time picker that renders Material showTimePicker on Android
-/// and CupertinoDatePicker (in time mode) on iOS.
+/// Shows a platform-adaptive time picker — Material [showTimePicker] on
+/// Android, [CupertinoDatePicker] in time mode wrapped in
+/// [showCupertinoModalPopup] on iOS.
 ///
-/// This function automatically selects the appropriate time picker implementation based on the target platform:
-/// - On Android: shows a Material Design time picker
-/// - On iOS: shows a Cupertino date picker configured for time selection
-///
-/// The time picker can be configured with platform-specific data through [materialTimePickerData]
-/// and [cupertinoTimePickerData], or with common properties.
+/// The Cupertino side reuses the same widget + modal-popup scaffolding as
+/// [showPlatformDatePicker] (only the `mode` differs) — so [cupertinoTimePickerData]
+/// is the same [CupertinoDatePickerData] type as the date picker uses.
+/// Mode-irrelevant fields ([CupertinoDatePickerData.showDayOfWeek] in time
+/// mode, etc.) are silently ignored.
 ///
 /// Example:
 /// ```dart
-/// final selectedTime = await showPlatformTimePicker(
+/// final picked = await showPlatformTimePicker(
 ///   context: context,
 ///   initialTime: TimeOfDay.now(),
 /// );
@@ -36,6 +27,7 @@ Future<TimeOfDay?> showPlatformTimePicker({
   bool? barrierDismissible,
   RouteSettings? routeSettings,
   bool useRootNavigator = kDefaultUseRootNavigator,
+  bool? requestFocus,
   TransitionBuilder? builder,
   MaterialTimePickerData? materialTimePickerData,
   CupertinoDatePickerData? cupertinoTimePickerData,
@@ -43,19 +35,16 @@ Future<TimeOfDay?> showPlatformTimePicker({
   .android => showTimePicker(
     context: context,
     initialTime: initialTime,
-    anchorPoint: materialTimePickerData?.anchorPoint ?? anchorPoint,
+    anchorPoint: anchorPoint,
     orientation: materialTimePickerData?.orientation,
-    barrierColor: materialTimePickerData?.barrierColor ?? barrierColor,
-    barrierDismissible:
-        materialTimePickerData?.barrierDismissible ??
-        barrierDismissible ??
-        kMaterialBarrierDismissible,
-    routeSettings: materialTimePickerData?.routeSettings ?? routeSettings,
+    barrierColor: barrierColor,
+    barrierDismissible: barrierDismissible ?? kMaterialBarrierDismissible,
+    routeSettings: routeSettings,
     onEntryModeChanged: materialTimePickerData?.onEntryModeChanged,
-    useRootNavigator: materialTimePickerData?.useRootNavigator ?? useRootNavigator,
-    builder: materialTimePickerData?.builder ?? builder,
+    useRootNavigator: useRootNavigator,
+    builder: builder,
     initialEntryMode:
-        materialTimePickerData?.initialEntryMode ?? MaterialTimePickerData.kDefaultInitialEntryMode,
+        materialTimePickerData?.initialEntryMode ?? kDefaultMaterialTimePickerInitialEntryMode,
     helpText: materialTimePickerData?.helpText,
     cancelText: materialTimePickerData?.cancelText,
     confirmText: materialTimePickerData?.confirmText,
@@ -65,102 +54,21 @@ Future<TimeOfDay?> showPlatformTimePicker({
     errorInvalidText: materialTimePickerData?.errorInvalidText,
     switchToInputEntryModeIcon: materialTimePickerData?.switchToInputEntryModeIcon,
     switchToTimerEntryModeIcon: materialTimePickerData?.switchToTimerEntryModeIcon,
-    emptyInitialInput: materialTimePickerData?.emptyInitialInput ?? false,
+    emptyInitialInput:
+        materialTimePickerData?.emptyInitialInput ?? kDefaultMaterialTimePickerEmptyInitialInput,
   ),
-  .iOS => _showCupertinoTimePicker(
+  .iOS => _showCupertinoModePickerPopup(
     context: context,
-    initialTime: initialTime,
+    mode: CupertinoDatePickerMode.time,
+    initialDateTime: initialTime.toDateTime(),
     anchorPoint: anchorPoint,
     barrierColor: barrierColor,
     barrierDismissible: barrierDismissible,
     routeSettings: routeSettings,
     useRootNavigator: useRootNavigator,
+    requestFocus: requestFocus,
     builder: builder,
-    cupertinoTimePickerData: cupertinoTimePickerData,
-  ),
+    cupertinoDatePickerData: cupertinoTimePickerData,
+  ).then((dateTime) => dateTime == null ? null : TimeOfDay.fromDateTime(dateTime)),
   _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
 };
-
-Future<TimeOfDay?> _showCupertinoTimePicker({
-  required BuildContext context,
-  required TimeOfDay initialTime,
-  required Offset? anchorPoint,
-  required Color? barrierColor,
-  required bool? barrierDismissible,
-  required RouteSettings? routeSettings,
-  required bool useRootNavigator,
-  required TransitionBuilder? builder,
-  required CupertinoDatePickerData? cupertinoTimePickerData,
-}) async {
-  var selectedDateTime = initialTime.toDateTime();
-  final resolvedBuilder = cupertinoTimePickerData?.builder ?? builder;
-
-  final pickerWidget = CupertinoDatePicker(
-    initialDateTime: selectedDateTime,
-    selectableDayPredicate: cupertinoTimePickerData?.selectableDayPredicate,
-    mode: .time,
-    onDateTimeChanged: (dateTime) => selectedDateTime = dateTime,
-    backgroundColor: cupertinoTimePickerData?.backgroundColor,
-    changeReportingBehavior:
-        cupertinoTimePickerData?.changeReportingBehavior ?? ChangeReportingBehavior.onScrollUpdate,
-    dateOrder: cupertinoTimePickerData?.dateOrder,
-    itemExtent: cupertinoTimePickerData?.itemExtent ?? CupertinoDatePickerData.kDefaultItemExtent,
-    maximumYear: cupertinoTimePickerData?.maximumYear,
-    minimumYear:
-        cupertinoTimePickerData?.minimumYear ?? CupertinoDatePickerData.kDefaultMinimumYear,
-    minuteInterval:
-        cupertinoTimePickerData?.minuteInterval ?? CupertinoDatePickerData.kDefaultMinuteInterval,
-    selectionOverlayBuilder: cupertinoTimePickerData?.selectionOverlayBuilder,
-    showDayOfWeek:
-        cupertinoTimePickerData?.showDayOfWeek ?? CupertinoDatePickerData.kDefaultShowDayOfWeek,
-    showTimeSeparator:
-        cupertinoTimePickerData?.showTimeSeparator ??
-        CupertinoDatePickerData.kDefaultShowTimeSeparator,
-    use24hFormat:
-        cupertinoTimePickerData?.use24hFormat ?? CupertinoDatePickerData.kDefaultUse24hFormat,
-  );
-
-  await showCupertinoModalPopup<void>(
-    context: context,
-    anchorPoint: cupertinoTimePickerData?.anchorPoint ?? anchorPoint,
-    barrierColor:
-        cupertinoTimePickerData?.barrierColor ??
-        barrierColor ??
-        CupertinoDatePickerData.kDefaultModalBarrierColor,
-    barrierDismissible:
-        cupertinoTimePickerData?.barrierDismissible ??
-        barrierDismissible ??
-        kCupertinoBarrierDismissible,
-    routeSettings: cupertinoTimePickerData?.routeSettings ?? routeSettings,
-    useRootNavigator: cupertinoTimePickerData?.useRootNavigator ?? useRootNavigator,
-    filter: cupertinoTimePickerData?.filter,
-    requestFocus: cupertinoTimePickerData?.requestFocus,
-    semanticsDismissible:
-        cupertinoTimePickerData?.semanticsDismissible ??
-        CupertinoDatePickerData.kDefaultSemanticsDismissible,
-    builder: (context) =>
-        resolvedBuilder?.call(context, pickerWidget) ??
-        _CupertinoPickerContainer(pickerWidget: pickerWidget),
-  );
-
-  return TimeOfDay.fromDateTime(selectedDateTime);
-}
-
-class _CupertinoPickerContainer extends StatelessWidget {
-  final CupertinoDatePicker pickerWidget;
-
-  const _CupertinoPickerContainer({required this.pickerWidget});
-
-  @override
-  Widget build(BuildContext context) => Container(
-    height: 216,
-    padding: const EdgeInsets.only(top: 6),
-    // The Bottom margin is provided to align the popup above the system
-    // navigation bar.
-    margin: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
-    // Provide a background color for the popup.
-    color: CupertinoColors.systemBackground.resolveFrom(context),
-    // Use a SafeArea widget to avoid system overlaps.
-    child: SafeArea(top: false, child: pickerWidget),
-  );
-}

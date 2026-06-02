@@ -38,7 +38,7 @@ import '/src/models/platform_widget_base.dart';
 /// Example:
 /// ```dart
 /// PlatformButton(
-///   onPressed: () => Navigator.of(context).pop(),
+///   onPressed: () => Navigator.maybeOf(context)?.pop(),
 ///   child: const Text('Dismiss'),
 /// )
 ///

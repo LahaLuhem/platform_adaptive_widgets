@@ -1,6 +1,14 @@
+// Per-platform records for showPlatformDatePicker (no shared private base —
+// shared show-function args are flat on the function signatures, and the
+// Material / Cupertino visual surfaces don't overlap).
 // ignore_for_file: prefer-match-file-name
 
-import 'dart:ui';
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport '/src/widgets/dialogs/platform_date_picker.dart';
+library;
+
+import 'dart:ui' show ImageFilter;
 
 import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoDynamicColor, DatePickerDateOrder, SelectionOverlayBuilder;
@@ -8,40 +16,75 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart'
     show CalendarDelegate, DatePickerEntryMode, DatePickerMode, GregorianCalendarDelegate;
 
-import 'const_values.dart';
+/// Default value for [MaterialDatePickerData.initialEntryMode]. Matches
+/// upstream `showDatePicker`'s default.
+const kDefaultMaterialDatePickerInitialEntryMode = DatePickerEntryMode.calendar;
 
-final class _PlatformDatePickerData {
-  final Offset? anchorPoint;
-  final Color? barrierColor;
-  final bool? barrierDismissible;
-  final RouteSettings? routeSettings;
-  final bool? useRootNavigator;
+/// Default value for [MaterialDatePickerData.initialDatePickerMode]. Matches
+/// upstream `showDatePicker`'s default.
+const kDefaultMaterialDatePickerInitialDatePickerMode = DatePickerMode.day;
 
-  final SelectableDayPredicate? selectableDayPredicate;
-  final TransitionBuilder? builder;
+/// Default value for [MaterialDatePickerData.calendarDelegate]. Matches
+/// upstream's Gregorian calendar default.
+const kDefaultMaterialDatePickerCalendarDelegate = GregorianCalendarDelegate();
 
-  const _PlatformDatePickerData({
-    this.anchorPoint,
-    this.barrierColor,
-    this.barrierDismissible,
-    this.routeSettings,
-    this.useRootNavigator,
-    this.selectableDayPredicate,
-    this.builder,
-  });
-}
+/// Default barrier colour for the iOS modal popup wrapping
+/// [CupertinoDatePicker] in both `showPlatformDatePicker` and
+/// `showPlatformTimePicker`. Matches the iOS-standard translucent black. The
+/// build site substitutes this when the function-level `barrierColor` arg is
+/// `null`.
+const kDefaultCupertinoDatePickerBarrierColor = CupertinoDynamicColor.withBrightness(
+  color: Color(0x33000000),
+  darkColor: Color(0x7A000000),
+);
 
-/// Material-specific configuration for the platform date picker.
+/// Default value for [CupertinoDatePickerData.semanticsDismissible].
+const kDefaultCupertinoDatePickerSemanticsDismissible = false;
+
+/// Default value for [CupertinoDatePickerData.changeReportingBehavior]. Matches
+/// upstream `CupertinoDatePicker`'s default.
+const kDefaultCupertinoDatePickerChangeReportingBehavior = ChangeReportingBehavior.onScrollUpdate;
+
+/// Default value for [CupertinoDatePickerData.itemExtent]. Matches upstream
+/// `CupertinoDatePicker`'s default.
+const kDefaultCupertinoDatePickerItemExtent = 32.0;
+
+/// Default value for [CupertinoDatePickerData.minimumYear]. Matches upstream
+/// `CupertinoDatePicker`'s default.
+const kDefaultCupertinoDatePickerMinimumYear = 1;
+
+/// Default value for [CupertinoDatePickerData.minuteInterval]. Matches
+/// upstream `CupertinoDatePicker`'s default.
+const kDefaultCupertinoDatePickerMinuteInterval = 1;
+
+/// Default value for [CupertinoDatePickerData.showDayOfWeek]. Matches upstream
+/// `CupertinoDatePicker`'s default.
+const kDefaultCupertinoDatePickerShowDayOfWeek = false;
+
+/// Default value for [CupertinoDatePickerData.showTimeSeparator]. Matches
+/// upstream `CupertinoDatePicker`'s default.
+const kDefaultCupertinoDatePickerShowTimeSeparator = false;
+
+/// Default value for [CupertinoDatePickerData.use24hFormat]. Matches upstream
+/// `CupertinoDatePicker`'s default.
+const kDefaultCupertinoDatePickerUse24hFormat = false;
+
+/// Material-only configuration for `showPlatformDatePicker`.
 ///
-/// Maps to parameters of `showDatePicker` on Android.
-final class MaterialDatePickerData extends _PlatformDatePickerData {
-  /// The date to highlight as the current date.
+/// Pass this via `showPlatformDatePicker`'s `materialDatePickerData` parameter.
+/// The fields declared here have no Cupertino equivalent — Material's
+/// `showDatePicker` exposes a richer set of entry-mode / locale / error-text /
+/// keyboard knobs that don't map to Cupertino's spinning-wheel picker.
+final class MaterialDatePickerData {
+  /// Date highlighted as "today" in the calendar (independent of the selected
+  /// date).
   final DateTime? currentDate;
 
-  /// The initial entry mode of the date picker (calendar or input).
+  /// Initial entry mode (calendar grid vs typed input). Defaults to
+  /// [kDefaultMaterialDatePickerInitialEntryMode].
   final DatePickerEntryMode initialEntryMode;
 
-  /// Help text displayed at the top of the picker.
+  /// Help text shown at the top of the picker.
   final String? helpText;
 
   /// Text for the cancel button.
@@ -50,72 +93,58 @@ final class MaterialDatePickerData extends _PlatformDatePickerData {
   /// Text for the confirm button.
   final String? confirmText;
 
-  /// Locale used for formatting dates.
+  /// Locale used for date formatting.
   final Locale? locale;
 
-  /// Semantic label for the barrier.
+  /// Semantic label for the modal barrier.
   final String? barrierLabel;
 
   /// Text direction for the picker.
   final TextDirection? textDirection;
 
-  /// The initial display mode of the calendar (day or year).
+  /// Initial calendar mode (day grid vs year selector). Defaults to
+  /// [kDefaultMaterialDatePickerInitialDatePickerMode].
   final DatePickerMode initialDatePickerMode;
 
-  /// Error text shown when the date format is invalid.
+  /// Error text shown when the typed date can't be parsed.
   final String? errorFormatText;
 
-  /// Error text shown when the date is not selectable.
+  /// Error text shown when the date is outside the selectable range.
   final String? errorInvalidText;
 
-  /// Hint text for the date input field.
+  /// Hint text for the typed-input field.
   final String? fieldHintText;
 
-  /// Label text for the date input field.
+  /// Label text for the typed-input field.
   final String? fieldLabelText;
 
-  /// Keyboard type for the date input field.
+  /// Keyboard type for the typed-input field.
   final TextInputType? keyboardType;
 
-  /// Callback when the date picker entry mode changes.
+  /// Callback fired when the user toggles between calendar and input modes.
   final ValueChanged<DatePickerEntryMode>? onDatePickerModeChange;
 
-  /// Icon for switching to input entry mode.
+  /// Icon used on the "switch to input mode" button.
   final Icon? switchToInputEntryModeIcon;
 
-  /// Icon for switching to calendar entry mode.
+  /// Icon used on the "switch to calendar mode" button.
   final Icon? switchToCalendarEntryModeIcon;
 
-  /// The calendar delegate used for date calculations.
+  /// Calendar delegate (Gregorian, Buddhist, etc.). Defaults to
+  /// [kDefaultMaterialDatePickerCalendarDelegate].
   final CalendarDelegate<DateTime> calendarDelegate;
 
-  /// Default value for [initialEntryMode].
-  static const kDefaultInitialEntryMode = DatePickerEntryMode.calendar;
-
-  /// Default value for [initialDatePickerMode].
-  static const kDefaultInitialDatePickerMode = DatePickerMode.day;
-
-  /// Default value for [calendarDelegate].
-  static const kDefaultCalendarDelegate = GregorianCalendarDelegate();
-
-  /// Creates Material-specific date picker configuration.
+  /// Creates Material-only configuration for `showPlatformDatePicker`.
   const MaterialDatePickerData({
-    super.anchorPoint,
-    super.barrierColor,
-    super.barrierDismissible = kMaterialBarrierDismissible,
-    super.routeSettings,
-    super.useRootNavigator,
-    super.selectableDayPredicate,
-    super.builder,
     this.currentDate,
-    this.initialEntryMode = kDefaultInitialEntryMode,
+    this.initialEntryMode = kDefaultMaterialDatePickerInitialEntryMode,
     this.helpText,
     this.cancelText,
     this.confirmText,
     this.locale,
     this.barrierLabel,
     this.textDirection,
-    this.initialDatePickerMode = kDefaultInitialDatePickerMode,
+    this.initialDatePickerMode = kDefaultMaterialDatePickerInitialDatePickerMode,
     this.errorFormatText,
     this.errorInvalidText,
     this.fieldHintText,
@@ -124,108 +153,94 @@ final class MaterialDatePickerData extends _PlatformDatePickerData {
     this.onDatePickerModeChange,
     this.switchToInputEntryModeIcon,
     this.switchToCalendarEntryModeIcon,
-    this.calendarDelegate = kDefaultCalendarDelegate,
+    this.calendarDelegate = kDefaultMaterialDatePickerCalendarDelegate,
   });
 }
 
-/// Cupertino-specific configuration for the platform date picker.
+/// Cupertino-only configuration for the [CupertinoDatePicker]-backed branch
+/// of both `showPlatformDatePicker` and `showPlatformTimePicker`.
 ///
-/// Maps to properties of `CupertinoDatePicker` shown in a modal popup on iOS.
-final class CupertinoDatePickerData extends _PlatformDatePickerData {
-  /// Image filter applied to the background behind the modal.
+/// Reused across both pickers because iOS uses the *same widget*
+/// ([CupertinoDatePicker]) for date and time selection — only the `mode`
+/// passed to the picker differs (date vs time). Pass this via
+/// `cupertinoDatePickerData` on either show function.
+///
+/// Fields that are mode-irrelevant (e.g. [showDayOfWeek] on the time picker)
+/// are still accepted but have no visible effect for that mode — Cupertino's
+/// picker silently ignores them.
+final class CupertinoDatePickerData {
+  /// Image filter applied to the modal background (typically a Gaussian blur
+  /// for iOS's frosted-glass effect).
   final ImageFilter? filter;
 
   /// Whether the modal should request focus when shown.
   final bool? requestFocus;
 
-  /// Whether the modal can be dismissed via semantics.
+  /// Whether the modal is dismissible via accessibility tooling.
+  /// Defaults to [kDefaultCupertinoDatePickerSemanticsDismissible].
   final bool semanticsDismissible;
 
-  /// Background color of the date picker.
+  /// Predicate for restricting which days are selectable. Date-mode only;
+  /// time-mode picker ignores.
+  final SelectableDayPredicate? selectableDayPredicate;
+
+  /// Background colour of the picker.
   final Color? backgroundColor;
 
-  /// When changes are reported to the callback.
+  /// When `onDateTimeChanged` fires (on scroll start, on scroll end, etc.).
+  /// Defaults to [kDefaultCupertinoDatePickerChangeReportingBehavior].
   final ChangeReportingBehavior changeReportingBehavior;
 
-  /// Order of the date columns (e.g., day-month-year).
+  /// Order of the date columns (e.g. day-month-year). When `null`, derived
+  /// from the locale.
   final DatePickerDateOrder? dateOrder;
 
-  /// Height of each item in the picker wheel.
+  /// Height of each item in the picker wheel. Defaults to
+  /// [kDefaultCupertinoDatePickerItemExtent].
   final double itemExtent;
 
-  /// Maximum selectable year.
+  /// Maximum selectable year. When `null`, no upper bound.
   final int? maximumYear;
 
-  /// Minimum selectable year.
+  /// Minimum selectable year. Defaults to
+  /// [kDefaultCupertinoDatePickerMinimumYear].
   final int minimumYear;
 
-  /// Interval between selectable minutes.
+  /// Interval between selectable minutes. Defaults to
+  /// [kDefaultCupertinoDatePickerMinuteInterval].
   final int minuteInterval;
 
-  /// Builder for the selection overlay on the picker wheel.
+  /// Builder for the selection-overlay decoration on the picker wheel.
   final SelectionOverlayBuilder? selectionOverlayBuilder;
 
-  /// Whether to show the day of the week.
+  /// Whether to show the day-of-week column. Date-mode only. Defaults to
+  /// [kDefaultCupertinoDatePickerShowDayOfWeek].
   final bool showDayOfWeek;
 
-  /// Whether to show the time separator.
+  /// Whether to show the time-separator glyph. Time-mode only. Defaults to
+  /// [kDefaultCupertinoDatePickerShowTimeSeparator].
   final bool showTimeSeparator;
 
-  /// Whether to use 24-hour format.
+  /// Whether to use 24-hour time format. Time-mode only. Defaults to
+  /// [kDefaultCupertinoDatePickerUse24hFormat].
   final bool use24hFormat;
 
-  /// Default modal barrier color.
-  static const kDefaultModalBarrierColor = CupertinoDynamicColor.withBrightness(
-    color: Color(0x33000000),
-    darkColor: Color(0x7A000000),
-  );
-
-  /// Default value for [semanticsDismissible].
-  static const kDefaultSemanticsDismissible = false;
-
-  /// Default value for [changeReportingBehavior].
-  static const kDefaultChangeReportingBehavior = ChangeReportingBehavior.onScrollUpdate;
-
-  /// Default value for [itemExtent].
-  static const kDefaultItemExtent = 32.0;
-
-  /// Default value for [minimumYear].
-  static const kDefaultMinimumYear = 1;
-
-  /// Default value for [minuteInterval].
-  static const kDefaultMinuteInterval = 1;
-
-  /// Default value for [showDayOfWeek].
-  static const kDefaultShowDayOfWeek = false;
-
-  /// Default value for [showTimeSeparator].
-  static const kDefaultShowTimeSeparator = false;
-
-  /// Default value for [use24hFormat].
-  static const kDefaultUse24hFormat = false;
-
-  /// Creates Cupertino-specific date picker configuration.
+  /// Creates Cupertino-only configuration for the iOS date/time picker.
   const CupertinoDatePickerData({
-    super.anchorPoint,
-    super.barrierColor = kDefaultModalBarrierColor,
-    super.barrierDismissible,
-    super.routeSettings,
-    super.useRootNavigator,
-    super.selectableDayPredicate,
-    super.builder,
     this.filter,
     this.requestFocus,
-    this.semanticsDismissible = kDefaultSemanticsDismissible,
+    this.semanticsDismissible = kDefaultCupertinoDatePickerSemanticsDismissible,
+    this.selectableDayPredicate,
     this.backgroundColor,
-    this.changeReportingBehavior = kDefaultChangeReportingBehavior,
+    this.changeReportingBehavior = kDefaultCupertinoDatePickerChangeReportingBehavior,
     this.dateOrder,
-    this.itemExtent = kDefaultItemExtent,
+    this.itemExtent = kDefaultCupertinoDatePickerItemExtent,
     this.maximumYear,
-    this.minimumYear = kDefaultMinimumYear,
-    this.minuteInterval = kDefaultMinuteInterval,
+    this.minimumYear = kDefaultCupertinoDatePickerMinimumYear,
+    this.minuteInterval = kDefaultCupertinoDatePickerMinuteInterval,
     this.selectionOverlayBuilder,
-    this.showDayOfWeek = kDefaultShowDayOfWeek,
-    this.showTimeSeparator = kDefaultShowTimeSeparator,
-    this.use24hFormat = kDefaultUse24hFormat,
+    this.showDayOfWeek = kDefaultCupertinoDatePickerShowDayOfWeek,
+    this.showTimeSeparator = kDefaultCupertinoDatePickerShowTimeSeparator,
+    this.use24hFormat = kDefaultCupertinoDatePickerUse24hFormat,
   });
 }

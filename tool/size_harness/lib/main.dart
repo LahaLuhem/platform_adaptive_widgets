@@ -46,11 +46,10 @@ class _Surfaces extends StatelessWidget {
         child: const Text('alert'),
       ),
 
-      // showPlatformSimpleAlert — single inline switch.
+      // showPlatformToast — single inline switch.
       TextButton(
-        onPressed: () =>
-            showPlatformSimpleAlert(context: context, message: 'hi', cupertinoOkLabel: 'ok'),
-        child: const Text('simple'),
+        onPressed: () => showPlatformToast(context: context, message: 'hi'),
+        child: const Text('toast'),
       ),
 
       // showPlatformDatePicker — top-level switch dispatch.

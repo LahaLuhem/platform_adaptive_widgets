@@ -26,6 +26,7 @@ heading text, so renames don't break callers.
     * [Drop redundant `<Type>` on collection literals](#drop-redundant-collection-literal-type-args)
     * [`Row.spacing` / `Column.spacing` / `Wrap.spacing` over interleaved `SizedBox` gaps](#flex-spacing-over-sizedbox-gaps)
     * [Enhanced enums for per-variant config](#enhanced-enums-for-per-variant-config)
+    * [`Navigator.maybeOf` over `Navigator.of` for fire-and-forget pops](#navigator-maybeof-over-of)
     * [Collection-for / collection-if over `Iterable.map(…).toList()`](#collection-for-collection-if-over-iterablemaptolist)
     * [`dart:async` `wait` extensions over static `Future.wait(...)`](#dartasync-wait-extensions-over-static-futurewait)
     * [`List.unmodifiable(…)` over `UnmodifiableListView(…)`](#listunmodifiable-over-unmodifiablelistview)
@@ -122,6 +123,66 @@ style.
   `cupertinoButtonData` (not `cupertinoData`), `platformAdaptiveIcons` (not `icons`),
   `tabDestinations` (not `destinations`). Generic suffixes (`Data`, `Info`, `Result`)
   lose the disambiguation the rule is meant to provide.
+- **Unused closure parameters take the discard `_`, not a real name.** Don't declare
+  an identifier you don't reference — `_` makes the unused-ness immediate and removes
+  a name the reader otherwise has to mentally scan the body for.
+
+  ```dart
+  // Prefer:
+  builder: (_) => AlertDialog(...)
+  onPressed: (_) => doSomething()
+  builder: (_, value, _) => Text('$value')              // ValueListenableBuilder, two of three unused
+
+  // Over:
+  builder: (ctx) => AlertDialog(...)                    // ctx never referenced
+  builder: (context, value, child) => Text('$value')    // context + child never referenced
+  ```
+
+  Applies in dartdoc examples too — `(_)` is the idiomatic Dart form and users
+  copy-pasting will inherit it. If a reader needs the context they can rename `_` at
+  the call site. Multiple discards in one signature are written as `_` each (Dart
+  permits the repetition for positional discards in records and patterns; same in
+  parameter lists).
+
+  **Doesn't apply** to genre-conventional single-letter names that are intentionally
+  short (`i`/`j` in counters, `e` in `catch (e)`) — those stay as their letter even
+  when unused locally. The rule targets *unused multi-letter declarations*.
+
+- **Don't rename callback params to disambiguate from a same-named outer-scope
+  variable.** Dart's lexical scoping always picks the innermost binding — there's no
+  ambiguity for the *compiler*, and a reader who knows the scoping rule sees the
+  intent immediately. Renaming (`(dialogContext) => …`, `(innerContext) => …`,
+  `(buildContext) => …`) signals to the next reader that the new name carries a
+  distinction worth tracking — when in fact it carries none.
+
+  ```dart
+  // Prefer:
+  Widget build(BuildContext context) {
+    return PlatformDialogAction(
+      onPressed: (context) => Navigator.maybeOf(context)?.pop(),   // inner shadows outer; fine
+      child: const Text('OK'),
+    );
+  }
+
+  // Over:
+  Widget build(BuildContext context) {
+    return PlatformDialogAction(
+      onPressed: (dialogContext) => Navigator.maybeOf(dialogContext)?.pop(),
+      child: const Text('OK'),
+    );
+  }
+  ```
+
+  **The legitimate exception** is when the closure body needs to reference *both* the
+  inner and outer same-named variable — e.g. the closure receives the dialog's
+  context but also needs the surrounding screen's context for a `ScaffoldMessenger`
+  call. Then renaming the inner (`(dialogContext) { … context …; … dialogContext …;
+  }`) is the only way to keep both reachable. If you only ever reference the
+  closure's value, keep the canonical name.
+
+  Document the semantic distinction (which-context-is-which) in the **dartdoc on the
+  callback**, not in the parameter name — that's where future readers go looking
+  for the answer anyway.
 
   ```dart
   // Prefer:
@@ -532,6 +593,55 @@ for it but the package never reads it), a constants module is fine.
 defaults — each underlying Material button has its own upstream defaults we
 pass straight through) stays plain. Adding empty enum fields for symmetry is
 ceremony.
+
+<a id="navigator-maybeof-over-of"></a>
+### `Navigator.maybeOf` over `Navigator.of` for fire-and-forget pops
+
+When dismissing a route (`pop`) from inside a callback whose only job is the
+pop — dialog action buttons, snackbar action callbacks, modal close handlers,
+etc. — reach for `Navigator.maybeOf(ctx)?.pop(value)`, not
+`Navigator.of(ctx).pop(value)` or the static `Navigator.pop(ctx, value)`.
+
+```dart
+// Prefer:
+PlatformDialogAction(
+  onPressed: (ctx) => Navigator.maybeOf(ctx)?.pop(true),
+  child: const Text('OK'),
+)
+
+// Over:
+PlatformDialogAction(
+  onPressed: (ctx) => Navigator.of(ctx).pop(true),       // throws if no Navigator
+  child: const Text('OK'),
+)
+PlatformDialogAction(
+  onPressed: (ctx) => Navigator.pop(ctx, true),          // same — wraps `.of`
+  child: const Text('OK'),
+)
+```
+
+**Why.** `Navigator.of(ctx)` asserts in debug and throws in release if no
+`Navigator` exists in the context's ancestry. For fire-and-forget pops there's
+no value in the loud failure — if the route is already gone (because something
+else popped it first, the widget was disposed mid-tap, a hot-reload reshuffled
+the tree, or the action is being exercised in a unit test that pumps the
+button in isolation), the right behaviour is to *silently no-op*. That's
+exactly what `Navigator.maybeOf(ctx)?.pop(value)` gives — `maybeOf` returns
+`null` instead of throwing, and `?.pop(...)` short-circuits.
+
+The cost of the defensive `?` is zero — Dart's null-aware chaining compiles
+to a null check, no allocations.
+
+**When `Navigator.of` is still right.** When you need the return value of
+`push` / `pushNamed` / etc. and the absence of a Navigator is a programmer
+error you want to surface loudly (e.g. inside a screen's mainline navigation
+flow, where missing-Navigator means a setup bug). The rule targets *dismissal*
+callbacks specifically — the asymmetric cases where the caller doesn't care
+about the result.
+
+**Doesn't apply.** `Navigator.maybePop(ctx)` — different concept (checks
+whether the current route *can* pop, used to handle back-press intercepts).
+Keep using `maybePop` where you need that semantic.
 
 <a id="collection-for-collection-if-over-iterablemaptolist"></a>
 ### Collection-for / collection-if over `Iterable.map(…).toList()`

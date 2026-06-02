@@ -1,49 +1,39 @@
+// Only `MaterialTimePickerData` lives here — the Cupertino time picker reuses
+// the same `CupertinoDatePicker` widget as the date picker (only the `mode`
+// differs), so the Cupertino-side data class lives next door in
+// `platform_date_picker_data.dart` and is shared.
 // ignore_for_file: prefer-match-file-name
+
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport '/src/widgets/dialogs/platform_time_picker.dart';
+library;
 
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show TimePickerEntryMode;
 
-import 'const_values.dart';
+/// Default value for [MaterialTimePickerData.initialEntryMode]. Matches
+/// upstream `showTimePicker`'s default.
+const kDefaultMaterialTimePickerInitialEntryMode = TimePickerEntryMode.dial;
 
-/// Common configuration for platform-adaptive time pickers.
-final class _PlatformTimePickerData {
-  /// The anchor point for the dialog positioning.
-  final Offset? anchorPoint;
+/// Default value for [MaterialTimePickerData.emptyInitialInput]. Matches
+/// upstream `showTimePicker`'s default.
+const kDefaultMaterialTimePickerEmptyInitialInput = false;
 
-  /// Color of the modal barrier behind the dialog.
-  final Color? barrierColor;
-
-  /// Whether tapping the barrier dismisses the dialog.
-  final bool? barrierDismissible;
-
-  /// Route settings for the dialog route.
-  final RouteSettings? routeSettings;
-
-  /// Whether to use the root navigator for the dialog route.
-  final bool? useRootNavigator;
-
-  /// A builder for the dialog's content.
-  final TransitionBuilder? builder;
-
-  /// Creates a [_PlatformTimePickerData].
-  const _PlatformTimePickerData({
-    this.anchorPoint,
-    this.barrierColor,
-    this.barrierDismissible,
-    this.routeSettings,
-    this.useRootNavigator,
-    this.builder,
-  });
-}
-
-/// Material-specific configuration for the platform time picker.
+/// Material-only configuration for `showPlatformTimePicker`.
 ///
-/// Maps to parameters of `showTimePicker` on Android.
-final class MaterialTimePickerData extends _PlatformTimePickerData {
-  /// Semantic label for the barrier.
+/// Pass this via `showPlatformTimePicker`'s `materialTimePickerData` parameter.
+/// The fields declared here have no Cupertino equivalent — Material's
+/// `showTimePicker` has a richer dial-or-input UX while iOS uses a spinning
+/// wheel. The Cupertino side reuses `CupertinoDatePickerData` (next door in
+/// `platform_date_picker_data.dart`) — the same picker widget renders both
+/// date and time on iOS, distinguished only by `mode`.
+final class MaterialTimePickerData {
+  /// Semantic label for the modal barrier.
   final String? barrierLabel;
 
-  /// The initial entry mode of the time picker (dial or input).
+  /// Initial entry mode (dial vs typed input). Defaults to
+  /// [kDefaultMaterialTimePickerInitialEntryMode].
   final TimePickerEntryMode initialEntryMode;
 
   /// Text for the cancel button.
@@ -52,10 +42,10 @@ final class MaterialTimePickerData extends _PlatformTimePickerData {
   /// Text for the confirm button.
   final String? confirmText;
 
-  /// Help text displayed at the top of the picker.
+  /// Help text shown at the top of the picker.
   final String? helpText;
 
-  /// Error text shown when the time is invalid.
+  /// Error text shown when the typed time can't be parsed.
   final String? errorInvalidText;
 
   /// Label text for the hour input field.
@@ -64,37 +54,26 @@ final class MaterialTimePickerData extends _PlatformTimePickerData {
   /// Label text for the minute input field.
   final String? minuteLabelText;
 
-  /// Callback when the entry mode changes.
+  /// Callback fired when the user toggles between dial and input modes.
   final ValueChanged<TimePickerEntryMode>? onEntryModeChanged;
 
-  /// Preferred orientation of the time picker dialog.
+  /// Preferred orientation of the picker dialog.
   final Orientation? orientation;
 
-  /// Icon for switching to input entry mode.
+  /// Icon used on the "switch to input mode" button.
   final Icon? switchToInputEntryModeIcon;
 
-  /// Icon for switching to timer (dial) entry mode.
+  /// Icon used on the "switch to timer (dial) mode" button.
   final Icon? switchToTimerEntryModeIcon;
 
-  /// Whether the input fields should start empty.
+  /// Whether the input fields should start empty (vs. pre-filled with the
+  /// initial time). Defaults to [kDefaultMaterialTimePickerEmptyInitialInput].
   final bool emptyInitialInput;
 
-  /// Default value for [initialEntryMode].
-  static const kDefaultInitialEntryMode = TimePickerEntryMode.dial;
-
-  /// Default value for [emptyInitialInput].
-  static const kDefaultEmptyInitialInput = false;
-
-  /// Creates Material-specific time picker configuration.
+  /// Creates Material-only configuration for `showPlatformTimePicker`.
   const MaterialTimePickerData({
-    super.anchorPoint,
-    super.barrierColor,
-    super.barrierDismissible = kMaterialBarrierDismissible,
-    super.routeSettings,
-    super.useRootNavigator,
-    super.builder,
     this.barrierLabel,
-    this.initialEntryMode = kDefaultInitialEntryMode,
+    this.initialEntryMode = kDefaultMaterialTimePickerInitialEntryMode,
     this.cancelText,
     this.confirmText,
     this.helpText,
@@ -105,6 +84,6 @@ final class MaterialTimePickerData extends _PlatformTimePickerData {
     this.orientation,
     this.switchToInputEntryModeIcon,
     this.switchToTimerEntryModeIcon,
-    this.emptyInitialInput = kDefaultEmptyInitialInput,
+    this.emptyInitialInput = kDefaultMaterialTimePickerEmptyInitialInput,
   });
 }

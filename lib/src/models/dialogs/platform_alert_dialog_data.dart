@@ -1,87 +1,97 @@
+// Per-platform records for showPlatformAlertDialog (no shared private base —
+// the title/content/actions content slots are flat on the show function; the
+// Material and Cupertino visual surfaces don't overlap in type).
 // ignore_for_file: prefer-match-file-name
+
+/// @docImport 'package:flutter/cupertino.dart';
+/// @docImport 'package:flutter/material.dart';
+/// @docImport '/src/widgets/dialogs/platform_dialog.dart';
+library;
 
 import 'package:flutter/widgets.dart';
 
-/// Common configuration for platform-adaptive alert dialogs.
-abstract final class _PlatformAlertDialogData {
-  /// A title to display at the top of the dialog.
-  final Widget? title;
+/// Default value for [MaterialAlertDialogData.scrollable]. Matches upstream
+/// `AlertDialog.scrollable`'s default.
+const kDefaultMaterialAlertDialogScrollable = false;
 
-  /// The main content of the dialog.
-  final Widget? content;
+/// Default value for [CupertinoAlertDialogData.insetAnimationDuration].
+/// Matches upstream `CupertinoAlertDialog`'s default.
+const kDefaultCupertinoAlertDialogInsetAnimationDuration = Duration(milliseconds: 100);
 
-  /// A list of widgets to display as actions at the bottom of the dialog.
-  final List<Widget>? actions;
+/// Default value for [CupertinoAlertDialogData.insetAnimationCurve]. Matches
+/// upstream `CupertinoAlertDialog`'s default.
+const kDefaultCupertinoAlertDialogInsetAnimationCurve = Curves.decelerate;
 
-  /// A key to identify the widget.
-  final Key? widgetKey;
-
-  /// Creates a [_PlatformAlertDialogData].
-  const _PlatformAlertDialogData({this.title, this.content, this.actions, this.widgetKey});
-}
-
-/// Material-specific configuration for a platform alert dialog.
+/// Material-only configuration for `showPlatformAlertDialog`.
 ///
-/// Maps to properties of `AlertDialog` on Android.
-final class MaterialAlertDialogData extends _PlatformAlertDialogData {
-  /// An optional icon displayed at the top of the dialog.
+/// Pass this via `showPlatformAlertDialog`'s `materialAlertDialogData`
+/// parameter when tuning the Material [AlertDialog] specifically. Common
+/// content (title, content, actions, widgetKey) lives flat on the show
+/// function — set those for the cross-platform case.
+///
+/// Distinct from `MaterialDialogData` (used by `showPlatformDialog` to style
+/// the wrapping [Dialog] widget). [AlertDialog] is its own Dialog under the
+/// hood, so the package never wraps it — alert-dialog calls bypass the
+/// `MaterialDialogData` surface entirely.
+final class MaterialAlertDialogData {
+  /// Optional icon displayed above the title.
   final Widget? icon;
 
   /// Padding around the [icon].
   final EdgeInsetsGeometry? iconPadding;
 
-  /// Color of the [icon].
+  /// Colour of the [icon].
   final Color? iconColor;
 
-  /// Padding around the [title].
+  /// Padding around the dialog's title.
   final EdgeInsetsGeometry? titlePadding;
 
-  /// Text style for the [title].
+  /// Text style for the dialog's title.
   final TextStyle? titleTextStyle;
 
-  /// Padding around the [content].
+  /// Padding around the dialog's content.
   final EdgeInsetsGeometry? contentPadding;
 
-  /// Text style for the [content].
+  /// Text style for the dialog's content.
   final TextStyle? contentTextStyle;
 
-  /// Padding around the [actions].
+  /// Padding around the action-button row.
   final EdgeInsetsGeometry? actionsPadding;
 
-  /// Alignment of the [actions] along the main axis.
+  /// Alignment of action buttons along the main axis.
   final MainAxisAlignment? actionsAlignment;
 
-  /// Alignment of overflowing [actions].
+  /// Alignment of overflowing action buttons.
   final OverflowBarAlignment? actionsOverflowAlignment;
 
-  /// Direction for overflowing [actions].
+  /// Direction for overflowing action buttons.
   final VerticalDirection? actionsOverflowDirection;
 
   /// Spacing between overflowing action buttons.
   final double? actionsOverflowButtonSpacing;
 
-  /// Padding around each action button.
+  /// Padding around each individual action button.
   final EdgeInsetsGeometry? buttonPadding;
 
-  /// Background color of the dialog.
+  /// Background colour of the dialog surface.
   final Color? backgroundColor;
 
   /// Elevation of the dialog surface.
   final double? elevation;
 
-  /// Shadow color of the dialog.
+  /// Shadow colour of the dialog.
   final Color? shadowColor;
 
-  /// Surface tint color of the dialog.
+  /// Surface-tint colour of the dialog.
   final Color? surfaceTintColor;
 
-  /// Semantic label for accessibility.
+  /// Semantic label for accessibility tooling.
   final String? semanticLabel;
 
-  /// Inset padding for the dialog from screen edges.
+  /// Inset padding (distance from screen edges).
   final EdgeInsets? insetPadding;
 
-  /// Clip behavior for the dialog content.
+  /// Clip behaviour applied to the dialog's content.
   final Clip? clipBehavior;
 
   /// Shape of the dialog border.
@@ -90,23 +100,15 @@ final class MaterialAlertDialogData extends _PlatformAlertDialogData {
   /// Alignment of the dialog within the screen.
   final AlignmentGeometry? alignment;
 
-  /// Optional size constraints for the dialog.
+  /// Size constraints on the dialog.
   final BoxConstraints? constraints;
 
-  /// Whether the dialog's [content] is scrollable.
-  ///
-  /// Defaults to [kDefaultScrollable].
+  /// Whether the dialog's content is scrollable. Defaults to
+  /// [kDefaultMaterialAlertDialogScrollable].
   final bool scrollable;
 
-  /// Default value for [scrollable].
-  static const kDefaultScrollable = false;
-
-  /// Creates Material-specific alert dialog configuration.
+  /// Creates Material-only configuration for `showPlatformAlertDialog`.
   const MaterialAlertDialogData({
-    super.title,
-    super.content,
-    super.actions,
-    super.widgetKey,
     this.icon,
     this.iconPadding,
     this.iconColor,
@@ -130,54 +132,37 @@ final class MaterialAlertDialogData extends _PlatformAlertDialogData {
     this.shape,
     this.alignment,
     this.constraints,
-    this.scrollable = kDefaultScrollable,
+    this.scrollable = kDefaultMaterialAlertDialogScrollable,
   });
 }
 
-/// Cupertino-specific configuration for a platform alert dialog.
+/// Cupertino-only configuration for `showPlatformAlertDialog`.
 ///
-/// Maps to properties of `CupertinoAlertDialog` on iOS.
-final class CupertinoAlertDialogData extends _PlatformAlertDialogData {
-  /// A scroll controller that can be used to control the scrolling of the
-  /// [content] in the dialog.
-  ///
-  /// Defaults to null, and is typically not needed, since most alert messages
-  /// are short.
-  ///
-  /// If the [content] is larger than the dialog, it will automatically be
-  /// wrapped in a scrollable widget.
+/// Pass this via `showPlatformAlertDialog`'s `cupertinoAlertDialogData`
+/// parameter when tuning the Cupertino [CupertinoAlertDialog] specifically.
+/// Common content (title, content, actions, widgetKey) lives flat on the
+/// show function.
+final class CupertinoAlertDialogData {
+  /// Scroll controller for the content. Typically unnecessary — Cupertino
+  /// auto-wraps oversized content in a scroll view.
   final ScrollController? scrollController;
 
-  /// A scroll controller that can be used to control the scrolling of the
-  /// [actions] in the dialog.
-  ///
-  /// Defaults to null, and is typically not needed.
+  /// Scroll controller for the actions row. Typically unnecessary.
   final ScrollController? actionScrollController;
 
-  /// The duration of the animation to slide up the dialog.
+  /// Duration of the inset-slide animation when the keyboard appears.
+  /// Defaults to [kDefaultCupertinoAlertDialogInsetAnimationDuration].
   final Duration insetAnimationDuration;
 
-  /// The curve to use for the animation shown when the dialog slides up.
+  /// Curve of the inset-slide animation. Defaults to
+  /// [kDefaultCupertinoAlertDialogInsetAnimationCurve].
   final Curve insetAnimationCurve;
 
-  /// Default value for [insetAnimationDuration].
-  static const kDefaultInsetAnimationDuration = Duration(milliseconds: 100);
-
-  /// Default value for [insetAnimationCurve].
-  static const kDefaultInsetAnimationCurve = Curves.decelerate;
-
-  /// Default value for [actions].
-  static const kDefaultActions = <Widget>[];
-
-  /// Creates Cupertino-specific alert dialog configuration.
+  /// Creates Cupertino-only configuration for `showPlatformAlertDialog`.
   const CupertinoAlertDialogData({
-    super.title,
-    super.content,
-    super.actions = kDefaultActions,
-    super.widgetKey,
     this.scrollController,
     this.actionScrollController,
-    this.insetAnimationDuration = kDefaultInsetAnimationDuration,
-    this.insetAnimationCurve = kDefaultInsetAnimationCurve,
+    this.insetAnimationDuration = kDefaultCupertinoAlertDialogInsetAnimationDuration,
+    this.insetAnimationCurve = kDefaultCupertinoAlertDialogInsetAnimationCurve,
   });
 }
