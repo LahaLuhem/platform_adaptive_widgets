@@ -2,53 +2,66 @@
 
 part of 'platform_dialog.dart';
 
-/// Shows a platform-adaptive alert dialog that renders Material AlertDialog on Android
-/// and CupertinoAlertDialog on iOS.
+/// Shows a centered alert dialog — Material [AlertDialog] on Android,
+/// [CupertinoAlertDialog] on iOS. The standard structure: optional [title]
+/// over optional [content], with a row of [actions] underneath (typically
+/// [PlatformDialogAction] instances).
 ///
-/// This function automatically selects the appropriate alert dialog implementation based on the target platform:
-/// - On Android: shows a Material Design AlertDialog
-/// - On iOS: shows a CupertinoAlertDialog
+/// Content slots ([title], [content], [actions], [widgetKey]) are flat on the
+/// show function — set them once and they're used on both platforms. Material-
+/// or Cupertino-specific styling lives on [materialAlertDialogData] /
+/// [cupertinoAlertDialogData].
 ///
-/// The alert dialog can be configured with platform-specific data through [materialAlertDialogData]
-/// and [cupertinoAlertDialogData], or with common properties.
+/// Uses the same shared show-function flat args as [showPlatformDialog]
+/// (`anchorPoint`, `barrierColor`, `barrierDismissible`, `barrierLabel`,
+/// `routeSettings`, `useRootNavigator`, `requestFocus`). The Material-side
+/// `Dialog`-wrapping params (alignment / shape / clipBehavior / etc.) don't
+/// apply — [AlertDialog] is its own [Dialog] under the hood, so no
+/// [MaterialDialogData] knob is needed.
 ///
 /// Example:
 /// ```dart
-/// showPlatformAlertDialog(
+/// final confirmed = await showPlatformAlertDialog<bool>(
 ///   context: context,
-///   title: Text('Confirm'),
-///   content: Text('Are you sure you want to continue?'),
+///   title: const Text('Delete?'),
+///   content: const Text('This cannot be undone.'),
 ///   actions: [
 ///     PlatformDialogAction(
-///       child: Text('Cancel'),
-///       onPressed: () => Navigator.pop(context),
+///       onPressed: (context) => Navigator.maybeOf(context)?.pop(false),
+///       child: const Text('Cancel'),
 ///     ),
 ///     PlatformDialogAction(
-///       child: Text('OK'),
-///       onPressed: () => Navigator.pop(context),
+///       isDestructiveAction: true,
+///       onPressed: (context) => Navigator.maybeOf(context)?.pop(true),
+///       child: const Text('Delete'),
 ///     ),
 ///   ],
-/// )
+/// );
 /// ```
 Future<T?> showPlatformAlertDialog<T>({
   required BuildContext context,
-  PlatformDialogData? platformDialogData,
-  MaterialDialogData? materialDialogData,
-  PlatformDialogData? cupertinoDialogData,
-  MaterialAlertDialogData? materialAlertDialogData,
-  CupertinoAlertDialogData? cupertinoAlertDialogData,
   Widget? title,
   Widget? content,
-  List<Widget>? actions,
-  Key? key,
+  List<Widget> actions = const <Widget>[],
+  Key? widgetKey,
+  Offset? anchorPoint,
+  Color? barrierColor,
+  bool? barrierDismissible,
+  String? barrierLabel,
+  RouteSettings? routeSettings,
+  bool useRootNavigator = kDefaultUseRootNavigator,
+  bool? requestFocus,
+  MaterialAlertDialogData? materialAlertDialogData,
+  CupertinoAlertDialogData? cupertinoAlertDialogData,
 }) => switch (defaultTargetPlatform) {
-  .android => _runMaterialDialog<T>(
+  .android => _showMaterialDialog(
     context: context,
-    materialBuilder: (context) => AlertDialog(
-      key: materialAlertDialogData?.widgetKey ?? key,
-      title: materialAlertDialogData?.title ?? title,
-      content: materialAlertDialogData?.content ?? content,
-      actions: materialAlertDialogData?.actions ?? actions,
+    // AlertDialog is itself a Dialog under the hood — no wrapping needed.
+    builder: (_) => AlertDialog(
+      key: widgetKey,
+      title: title,
+      content: content,
+      actions: actions,
       icon: materialAlertDialogData?.icon,
       iconPadding: materialAlertDialogData?.iconPadding,
       iconColor: materialAlertDialogData?.iconColor,
@@ -72,79 +85,88 @@ Future<T?> showPlatformAlertDialog<T>({
       shape: materialAlertDialogData?.shape,
       alignment: materialAlertDialogData?.alignment,
       constraints: materialAlertDialogData?.constraints,
-      scrollable: materialAlertDialogData?.scrollable ?? MaterialAlertDialogData.kDefaultScrollable,
+      scrollable: materialAlertDialogData?.scrollable ?? kDefaultMaterialAlertDialogScrollable,
     ),
-    platformDialogData: platformDialogData,
-    materialDialogData: materialDialogData,
+    isFullscreenRoute: false,
+    anchorPoint: anchorPoint,
+    barrierColor: barrierColor,
+    barrierDismissible: barrierDismissible,
+    barrierLabel: barrierLabel,
+    routeSettings: routeSettings,
+    useRootNavigator: useRootNavigator,
+    requestFocus: requestFocus,
+    animationStyle: null,
+    traversalEdgeBehavior: null,
+    useSafeArea: kDefaultMaterialDialogUseSafeArea,
   ),
-  .iOS => _runCupertinoDialog<T>(
+  .iOS => _showCupertinoDialog(
     context: context,
-    cupertinoBuilder: (context) => CupertinoAlertDialog(
-      key: cupertinoAlertDialogData?.widgetKey ?? key,
-      title: cupertinoAlertDialogData?.title ?? title,
-      content: cupertinoAlertDialogData?.content ?? content,
-      actions:
-          cupertinoAlertDialogData?.actions ?? actions ?? CupertinoAlertDialogData.kDefaultActions,
+    builder: (_) => CupertinoAlertDialog(
+      key: widgetKey,
+      title: title,
+      content: content,
+      actions: actions,
       scrollController: cupertinoAlertDialogData?.scrollController,
       actionScrollController: cupertinoAlertDialogData?.actionScrollController,
       insetAnimationDuration:
           cupertinoAlertDialogData?.insetAnimationDuration ??
-          CupertinoAlertDialogData.kDefaultInsetAnimationDuration,
+          kDefaultCupertinoAlertDialogInsetAnimationDuration,
       insetAnimationCurve:
           cupertinoAlertDialogData?.insetAnimationCurve ??
-          CupertinoAlertDialogData.kDefaultInsetAnimationCurve,
+          kDefaultCupertinoAlertDialogInsetAnimationCurve,
     ),
-    platformDialogData: platformDialogData,
-    cupertinoDialogData: cupertinoDialogData,
+    anchorPoint: anchorPoint,
+    barrierColor: barrierColor,
+    barrierDismissible: barrierDismissible,
+    barrierLabel: barrierLabel,
+    routeSettings: routeSettings,
+    useRootNavigator: useRootNavigator,
+    requestFocus: requestFocus,
   ),
   _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
 };
 
-/// A platform-adaptive dialog action button that renders TextButton on Android
-/// and CupertinoDialogAction on iOS.
+/// A platform-adaptive action button for use inside [showPlatformAlertDialog]'s
+/// `actions` list. Renders [TextButton] on Android, [CupertinoDialogAction] on
+/// iOS.
 ///
-/// This widget automatically selects the appropriate button implementation based on the target platform:
-/// - On Android: renders a Material Design TextButton
-/// - On iOS: renders a CupertinoDialogAction
+/// **Styling.** [isDestructiveAction] renders the button in red text on
+/// Cupertino and with red foreground on Material (overrides via
+/// [ButtonTheme]'s `colorScheme.error`). [isDefaultAction] renders bold text
+/// on Cupertino; Material doesn't have a "default action" concept upstream,
+/// so the flag is Cupertino-only at render time.
 ///
-/// Default actions will have bold text but only on cupertino.
-/// Destructive actions will be rendered in red text on cupertino and with a red filled background on material.
-/// Using the `context` of [onPressed] allows to have a reference to the dialog context.
-/// Customize the [ButtonTheme].colorScheme.error to change the color of destructive actions.
-class PlatformAlertDialogActionButton extends PlatformWidgetKeyedBuilderBase {
-  /// Callback when the action button is pressed.
+/// **Callback signature.** [onPressed] receives the *dialog's* [BuildContext]
+/// (not the surrounding screen's) — call `Navigator.maybeOf(context)?.pop(value)`
+/// from inside the callback to dismiss the dialog with a return value.
+///
+/// Renamed from `PlatformAlertDialogActionButton` in v2 — shorter, mirrors
+/// iOS's `CupertinoDialogAction` naming.
+class PlatformDialogAction extends PlatformWidgetKeyedBuilderBase {
+  /// Callback fired when the action is pressed. Receives the dialog's context.
   final ValueChanged<BuildContext>? onPressed;
 
-  /// Whether this action represents a destructive action.
-  ///
-  /// Destructive actions are styled differently (typically red) to indicate they
-  /// may cause data loss or other negative consequences.
+  /// Whether this action represents a destructive operation (delete, etc.).
+  /// Renders in red text on Cupertino, red foreground on Material.
   final bool isDestructiveAction;
 
-  /// Whether this is the default action.
-  ///
-  /// Default actions may receive special styling or behavior.
+  /// Whether this is the dialog's default action. Renders bold on Cupertino;
+  /// Material doesn't surface a "default action" concept upstream.
   final bool isDefaultAction;
 
-  /// Creates a new platform aware dialog action.
-  ///
-  /// Translates to a `TextButton` on material and a `CupertinoDialogAction` on cupertino.
-  /// Default actions will have bold text but only on cupertino.
-  /// Destructive actions will be rendered in red text on cupertino and with a red filled background on material.<br>
-  /// Using the `context` of [onPressed] allows to have a reference to the dialog context.
-  /// Customize the [ButtonTheme].colorScheme.error to change the color of destructive actions.
-  const PlatformAlertDialogActionButton({
+  /// Creates a platform-adaptive dialog action.
+  const PlatformDialogAction({
     required super.child,
-    super.widgetKey,
-    super.key,
     this.onPressed,
     this.isDestructiveAction = false,
     this.isDefaultAction = false,
+    super.widgetKey,
+    super.key,
   });
 
   @override
   Widget buildMaterial(BuildContext context) => TextButton(
-    onPressed: () => onPressed?.call(context),
+    onPressed: onPressed == null ? null : () => onPressed!(context),
     style: !isDestructiveAction
         ? null
         : TextButton.styleFrom(
@@ -155,7 +177,7 @@ class PlatformAlertDialogActionButton extends PlatformWidgetKeyedBuilderBase {
 
   @override
   Widget buildCupertino(BuildContext context) => CupertinoDialogAction(
-    onPressed: () => onPressed?.call(context),
+    onPressed: onPressed == null ? null : () => onPressed!(context),
     isDestructiveAction: isDestructiveAction,
     isDefaultAction: isDefaultAction,
     child: child,

@@ -14,11 +14,11 @@ import '/src/models/platform_widget_base.dart';
 /// Example:
 /// ```dart
 /// PlatformWidget(
-///   materialBuilder: (context) => ElevatedButton(
+///   materialBuilder: (_) => ElevatedButton(
 ///     onPressed: () {},
 ///     child: Text('Android Button'),
 ///   ),
-///   cupertinoBuilder: (context) => CupertinoButton(
+///   cupertinoBuilder: (_) => CupertinoButton(
 ///     onPressed: () {},
 ///     child: Text('iOS Button'),
 ///   ),

@@ -6,7 +6,9 @@ export 'src/models/dialogs/platform_alert_dialog_data.dart';
 export 'src/models/dialogs/platform_date_picker_data.dart';
 export 'src/models/dialogs/platform_dialog_data.dart';
 export 'src/models/dialogs/platform_menu_picker_data.dart';
+export 'src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 export 'src/models/dialogs/platform_time_picker_data.dart';
+export 'src/models/dialogs/platform_toast_data.dart';
 export 'src/models/interaction/platform_button_data.dart';
 export 'src/models/interaction/platform_checkbox_data.dart';
 export 'src/models/interaction/platform_expansion_tile_data.dart';
@@ -26,12 +28,14 @@ export 'src/models/painting/platform_progress_indicator_data.dart';
 export 'src/models/painting/platform_theme.dart';
 export 'src/models/platform_adaptive_icons.dart';
 export 'src/utils/is_platform.dart';
+export 'src/widgets/dialogs/platform_acknowledge.dart';
 export 'src/widgets/dialogs/platform_date_picker.dart';
 export 'src/widgets/dialogs/platform_dialog.dart';
 export 'src/widgets/dialogs/platform_menu_picker.dart';
 export 'src/widgets/dialogs/platform_modal_bottom_sheet.dart';
-export 'src/widgets/dialogs/platform_simple_alert.dart';
-export 'src/widgets/dialogs/platform_time_picker.dart';
+export 'src/widgets/dialogs/platform_toast.dart';
+// platform_time_picker.dart is a `part of 'platform_date_picker.dart'` —
+// exported transitively via the date_picker export above.
 export 'src/widgets/interaction/platform_button.dart';
 export 'src/widgets/interaction/platform_checkbox.dart';
 export 'src/widgets/interaction/platform_expansion_tile.dart';

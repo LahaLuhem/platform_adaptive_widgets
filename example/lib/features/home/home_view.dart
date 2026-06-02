@@ -55,7 +55,7 @@ class HomeView extends StatelessWidget {
                         PlatformButton(
                           onPressed: viewModel.onShowSimpleAlertPressed,
                           cupertinoButtonData: _shrunkCupertinoButtonData,
-                          child: const Text('show simple alert', maxLines: 2),
+                          child: const Text('show toast → acknowledge', maxLines: 2),
                         ),
                         PlatformButton(
                           isEnabled: false,
