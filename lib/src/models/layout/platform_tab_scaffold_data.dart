@@ -54,10 +54,7 @@ final class MaterialTabScaffoldData extends MaterialScaffoldData {
   //TODO(lahaluhem): `bottomSheetScrimBuilder` is missing
   /// Creates a [MaterialTabScaffoldData].
   const MaterialTabScaffoldData({
-    super.widgetKey,
     super.backgroundColor,
-    super.resizeToAvoidBottomInset,
-    super.body,
     super.floatingActionButton,
     super.floatingActionButtonLocation,
     super.floatingActionButtonAnimator,
@@ -106,13 +103,11 @@ final class CupertinoTabScaffoldData extends CupertinoScaffoldData {
 
   /// Creates a [CupertinoTabScaffoldData].
   const CupertinoTabScaffoldData({
-    super.widgetKey,
     super.backgroundColor,
-    super.resizeToAvoidBottomInset,
     this.selectedIndex,
     this.tabDestinations,
     this.tabBodyBuilder,
     this.onTabDestinationTap,
     this.restorationId,
-  }) : super(body: null, navigationBar: null);
+  }) : super(navigationBar: null);
 }

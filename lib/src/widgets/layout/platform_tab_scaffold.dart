@@ -79,11 +79,10 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
     );
 
     return _MaterialTabScaffold(
-      resolvedWidgetKey: materialTabScaffoldData?.widgetKey ?? widgetKey,
+      resolvedWidgetKey: widgetKey,
       resolvedSelectedIndex:
           materialTabScaffoldData?.selectedIndex ?? selectedIndex ?? _kDefaultSelectedIndex,
-      resizeToAvoidBottomInset:
-          materialTabScaffoldData?.resizeToAvoidBottomInset ?? resizeToAvoidBottomInset,
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       backgroundColor: materialTabScaffoldData?.backgroundColor ?? backgroundColor,
       restorationId: materialTabScaffoldData?.restorationId ?? restorationId,
       resolvedTabDestinations: resolvedTabDestinations,
@@ -107,10 +106,9 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
     );
 
     return CupertinoTabScaffold(
-      key: cupertinoTabScaffoldData?.widgetKey ?? widgetKey,
+      key: widgetKey,
       backgroundColor: cupertinoTabScaffoldData?.backgroundColor ?? backgroundColor,
-      resizeToAvoidBottomInset:
-          cupertinoTabScaffoldData?.resizeToAvoidBottomInset ?? resizeToAvoidBottomInset,
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       restorationId: cupertinoTabScaffoldData?.restorationId ?? restorationId,
       controller: CupertinoTabController(initialIndex: resolvedSelectedIndex),
       tabBar: CupertinoTabBar(
@@ -192,8 +190,7 @@ class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> {
   Widget build(BuildContext context) => Scaffold(
     key: widget.resolvedWidgetKey,
     backgroundColor: widget.materialTabScaffoldData?.backgroundColor ?? widget.backgroundColor,
-    resizeToAvoidBottomInset:
-        widget.materialTabScaffoldData?.resizeToAvoidBottomInset ?? widget.resizeToAvoidBottomInset,
+    resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
     floatingActionButton: widget.materialTabScaffoldData?.floatingActionButton,
     floatingActionButtonLocation: widget.materialTabScaffoldData?.floatingActionButtonLocation,
     floatingActionButtonAnimator: widget.materialTabScaffoldData?.floatingActionButtonAnimator,

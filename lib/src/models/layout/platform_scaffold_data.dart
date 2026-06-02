@@ -11,37 +11,32 @@ import 'package:material_ui/material_ui.dart'
     show Colors, FloatingActionButtonAnimator, FloatingActionButtonLocation;
 
 /// Default value for whether scaffold should resize to avoid bottom inset.
+/// Read by both `PlatformScaffold` and `PlatformTabScaffold`.
 const kDefaultResizeToAvoidBottomInset = true;
 
-/// Base class for platform scaffold data.
+/// Shared-visual base for the per-platform scaffold records.
 ///
-/// Contains common properties that apply to both Material and Cupertino scaffolds.
+/// Holds only [backgroundColor] — the one scaffold property that exists on
+/// both platforms and that a caller may reasonably want to differ per platform.
+/// Everything functional (`body`, `resizeToAvoidBottomInset`, `widgetKey`) is
+/// flat on `PlatformScaffold`, the single source of truth.
+///
+/// Private — [MaterialScaffoldData] and [CupertinoScaffoldData] inherit
+/// [backgroundColor] via `super`-forwarding; never constructed or exported
+/// directly.
 base class _PlatformScaffoldData {
-  /// Optional key for the scaffold widget.
-  final Key? widgetKey;
-
   /// Background color of the scaffold.
   final Color? backgroundColor;
 
-  /// Whether the scaffold should resize to avoid the bottom inset.
-  final bool resizeToAvoidBottomInset;
-
-  /// The main content of the scaffold.
-  final Widget? body;
-
-  /// Creates platform scaffold data with common properties.
-  const _PlatformScaffoldData({
-    this.widgetKey,
-    this.backgroundColor,
-    this.resizeToAvoidBottomInset = kDefaultResizeToAvoidBottomInset,
-    this.body,
-  });
+  /// Creates platform scaffold data with the shared-visual properties.
+  const _PlatformScaffoldData({this.backgroundColor});
 }
 
 /// Material-specific scaffold data.
 ///
-/// Contains properties specific to Material Design Scaffold widgets.
-@protected
+/// Contains properties specific to Material Design `Scaffold` widgets. Shared
+/// content (`body`, `resizeToAvoidBottomInset`, `widgetKey`) is flat on
+/// `PlatformScaffold`.
 base class MaterialScaffoldData extends _PlatformScaffoldData {
   /// The app bar to display at the top of the scaffold.
   final PreferredSizeWidget? appBar;
@@ -78,6 +73,13 @@ base class MaterialScaffoldData extends _PlatformScaffoldData {
 
   /// The bottom sheet to display.
   final Widget? bottomSheet;
+
+  /// The bottom navigation bar (or bottom app bar) to display.
+  ///
+  /// Material-only — `CupertinoPageScaffold` has no equivalent slot. For an
+  /// iOS tab bar, use `PlatformTabScaffold`; this slot is for a plain
+  /// `Scaffold`'s bottom bar (e.g. a `BottomAppBar` with a FAB notch).
+  final Widget? bottomNavigationBar;
 
   /// Whether this scaffold is the primary scaffold.
   final bool primary;
@@ -161,10 +163,7 @@ base class MaterialScaffoldData extends _PlatformScaffoldData {
 
   /// Creates Material-specific scaffold data.
   const MaterialScaffoldData({
-    super.widgetKey,
     super.backgroundColor,
-    super.resizeToAvoidBottomInset,
-    super.body,
     this.appBar,
     this.floatingActionButton,
     this.floatingActionButtonLocation,
@@ -177,6 +176,7 @@ base class MaterialScaffoldData extends _PlatformScaffoldData {
     this.endDrawer,
     this.onEndDrawerChanged,
     this.bottomSheet,
+    this.bottomNavigationBar,
     this.primary = kPrimary,
     this.drawerDragStartBehavior = kDrawerDragStartBehavior,
     this.extendBody = kExtendBody,
@@ -192,17 +192,13 @@ base class MaterialScaffoldData extends _PlatformScaffoldData {
 }
 
 /// Cupertino-specific scaffold data.
-@protected
+///
+/// Shared content (`body`, `resizeToAvoidBottomInset`, `widgetKey`) is flat on
+/// `PlatformScaffold`.
 base class CupertinoScaffoldData extends _PlatformScaffoldData {
   /// The navigation bar to display at the top of the scaffold.
   final ObstructingPreferredSizeWidget? navigationBar;
 
   /// Creates Cupertino-specific scaffold data.
-  const CupertinoScaffoldData({
-    super.widgetKey,
-    super.backgroundColor,
-    super.resizeToAvoidBottomInset,
-    super.body,
-    this.navigationBar,
-  });
+  const CupertinoScaffoldData({super.backgroundColor, this.navigationBar});
 }

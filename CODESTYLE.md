@@ -363,12 +363,17 @@ lives, and overriding it forks the invariant per widget. See
 ```dart
 // Prefer:
 final class PlatformSwitch extends PlatformWidgetBase {
-  final PlatformSwitchData platformSwitchData;
+  // Functional fields (value, callbacks, …) are flat — there is no public
+  // `PlatformSwitchData`. Shared-visual defaults are flat too; per-platform
+  // visual tuning is opt-in via the two records.
+  final bool value;
+  final ValueChanged<bool> onChanged;
   final MaterialSwitchData? materialSwitchData;
   final CupertinoSwitchData? cupertinoSwitchData;
 
   const PlatformSwitch({
-    required this.platformSwitchData,
+    required this.value,
+    required this.onChanged,
     this.materialSwitchData,
     this.cupertinoSwitchData,
     super.key,
@@ -376,15 +381,15 @@ final class PlatformSwitch extends PlatformWidgetBase {
 
   @override
   Widget buildMaterial(BuildContext context) => Switch(
-    value: platformSwitchData.value,
-    onChanged: platformSwitchData.onChanged,
+    value: value,
+    onChanged: onChanged,
     // …Material-only fields from materialSwitchData
   );
 
   @override
   Widget buildCupertino(BuildContext context) => CupertinoSwitch(
-    value: platformSwitchData.value,
-    onChanged: platformSwitchData.onChanged,
+    value: value,
+    onChanged: onChanged,
     // …Cupertino-only fields from cupertinoSwitchData
   );
 }
