@@ -94,7 +94,22 @@ style.
 - **Prefer abbreviations over initialisms for domain terms.** In code, comments,
   dartdocs, and log messages alike, expand. Widely-known protocol initialisms (HTTP,
   DNS, TCP, TLS, …) and platform-name initialisms (iOS, OS) stay as-is; novel project
-  terms get spelt out.
+  terms get spelt out. The general-programming initialisms below also expand —
+  shorthand that's "obvious" to the author is opaque to the next reader and indistinguishable
+  from a typo:
+
+  | Don't write | Write instead             |
+  |-------------|---------------------------|
+  | `cb`        | `callback` (with the type-suffix rule below: `<context>Callback` if shared scope makes bare `callback` ambiguous) |
+  | `fn`        | `function` / `handler` / spell out the semantic role |
+  | `cfg`       | `config` |
+  | `idx`       | `index` (loop counters keep `i` / `j` per genre convention — see local-variable rule) |
+  | `tmp`       | `temporary` / a name describing what it actually holds |
+  | `req` / `res` / `resp` | `request` / `response` |
+  | `ctx`       | `context` (Flutter's `BuildContext` arg stays `context` by convention) |
+  | `evt`       | `event` |
+
+  This rule binds *every* identifier — fields, locals, parameters, pattern bindings (`switch (x) { final cb => … }` is **out**; spell it). The only carve-outs are the genre conventions: single-letter loop counters (`i`, `j`), `e` in `catch (e)`, `(a, b)` in symmetric comparator pairs, `x`/`y` for coordinates.
 - **Local-variable names carry a concise type-suffix.** Dart is strongly typed, but a
   reader without IDE inlay-hints can't see the inferred type — the *name* has to do
   that work. Suffix a local with what it *is* so the next reader doesn't have to scroll

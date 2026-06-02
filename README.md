@@ -62,7 +62,7 @@ Platform-adaptive widgets that automatically render **Material** widgets on Andr
 | `PlatformSegmentButton<T>` | `SegmentedButton` + `ButtonSegment`                                                            | `CupertinoSlidingSegmentedControl`                                                                   | `MaterialSegmentButtonData`, `CupertinoSegmentButtonData<T>`                                        |
 | `PlatformSlider`           | `Slider`                                                                                       | `CupertinoSlider`                                                                                    | `MaterialSliderData`, `CupertinoSliderData`                                                          |
 | `PlatformSwitch`           | `Switch`                                                                                       | `CupertinoSwitch`                                                                                    | `MaterialSwitchData`, `CupertinoSwitchData`                                                          |
-| `PlatformTextField`        | `TextField`                                                                                    | `CupertinoTextField`                                                                                 | `PlatformTextFieldData`, `MaterialTextFieldData`, `CupertinoTextFieldData`                           |
+| `PlatformTextField`        | `TextField`                                                                                    | `CupertinoTextField`                                                                                 | `MaterialTextFieldData`, `CupertinoTextFieldData`                                                    |
 
 ---
 
