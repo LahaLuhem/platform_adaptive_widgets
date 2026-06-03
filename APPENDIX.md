@@ -221,6 +221,16 @@ variant, the right answer is to use a different widget (e.g. `Text` instead of
   layout purposes (single source of truth on the widget).
 - **`showPlatformXxx` helpers** apply the same rule: functional params flat on
   the function signature; visual via per-platform records.
+- **Platform-only *capabilities*, not just fields.** A whole feature can exist
+  on one platform and be disallowed on the other — then it's a platform-only
+  field with no shared/common form. `MaterialTabScaffoldData.appBar` is the
+  worked example: Material permits a persistent top app bar above tab content (a
+  `Scaffold` with *both* `appBar` and `bottomNavigationBar`), but iOS's HIG
+  structures each tab as its own navigation stack with its own nav bar and
+  `CupertinoTabScaffold` has no top-bar slot — so the unified tab app bar is
+  Material-only by design, never a shared param. (Contrast `bottomNavigationBar`,
+  which `PlatformTabScaffold` *owns* — it builds the tab bar — so that slot is
+  exposed on neither record.)
 
 ### What this rules out
 

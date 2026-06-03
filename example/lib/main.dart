@@ -1,51 +1,56 @@
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart' show Drawer, Icons;
+import 'package:material_ui/material_ui.dart' show ThemeMode;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 import 'app/const_theme.dart';
-import 'features/home/home_view.dart';
-import 'features/settings/settings_view.dart';
+import 'app/theme_scope.dart';
+import 'features/root/root_tabs_view.dart';
 
-void main() {
-  runApp(const _MyApp());
-}
+void main() => runApp(const _ExampleApp());
 
-class _MyApp extends StatelessWidget {
-  const _MyApp();
+/// Navigator entry point: `PlatformApp` + a scaffold-managed [RootTabsView].
+/// Owns the app-wide theme mode and publishes it via [ThemeScope] so the About
+/// tab can flip light/dark/system.
+class _ExampleApp extends StatefulWidget {
+  const _ExampleApp();
 
   @override
-  Widget build(BuildContext context) => PlatformApp(
-    title: 'Flutter Demo',
-    home: const _MyRootPage(),
-    materialAppData: MaterialAppData(
-      theme: ConstTheme.materialLightThemeData,
-      darkTheme: ConstTheme.materialDarkThemeData,
+  State<_ExampleApp> createState() => _ExampleAppState();
+}
+
+class _ExampleAppState extends State<_ExampleApp> {
+  final _themeModeNotifier = ValueNotifier(ThemeMode.system);
+
+  @override
+  void dispose() {
+    _themeModeNotifier.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => ValueListenableBuilder(
+    valueListenable: _themeModeNotifier,
+    builder: (_, themeMode, _) => PlatformApp(
+      title: 'Platform Adaptive Widgets',
+      materialAppData: MaterialAppData(
+        theme: ConstTheme.materialLightThemeData,
+        darkTheme: ConstTheme.materialDarkThemeData,
+        themeMode: themeMode,
+      ),
+      cupertinoAppData: CupertinoAppData(
+        theme: ConstTheme.cupertinoThemeData(_cupertinoBrightnessFor(themeMode)),
+      ),
+      builder: (_, child) => ThemeScope(notifier: _themeModeNotifier, child: child!),
+      home: const RootTabsView(),
     ),
   );
-}
 
-class _MyRootPage extends StatelessWidget {
-  const _MyRootPage();
-
-  @override
-  Widget build(BuildContext context) => PlatformTabScaffold(
-    materialTabScaffoldData: const MaterialTabScaffoldData(drawer: Drawer(child: Text('Drawer'))),
-    tabDestinations: [
-      TabDestination(
-        view: const HomeView(args: HomeViewArgs()),
-        inactiveIcon: Icon(
-          context.platformIcon(material: Icons.home, cupertino: CupertinoIcons.home),
-        ),
-        label: 'Home',
-      ),
-      TabDestination(
-        view: const SettingsView(),
-        inactiveIcon: Icon(
-          context.platformIcon(material: Icons.settings, cupertino: CupertinoIcons.settings),
-        ),
-        label: 'Settings',
-      ),
-    ],
-  );
+  /// Cupertino has no `themeMode`; map it to an explicit brightness, or `null`
+  /// to follow the device (the `system` case).
+  Brightness? _cupertinoBrightnessFor(ThemeMode themeMode) => switch (themeMode) {
+    ThemeMode.system => null,
+    ThemeMode.light => Brightness.light,
+    ThemeMode.dark => Brightness.dark,
+  };
 }

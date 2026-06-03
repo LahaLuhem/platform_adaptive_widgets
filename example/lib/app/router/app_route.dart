@@ -1,19 +1,17 @@
-/// Page-routes in the app
+/// Page-routes in the app. Reference routes by `AppRoute.<name>.name`, never by
+/// string literal.
 enum AppRoute {
-  home(_RoutesInfo(routeAddress: '/home')),
-  homeL1(_RoutesInfo(routeAddress: 'l1')),
-  settings(_RoutesInfo(routeAddress: '/settings'));
+  /// The Catalog tab (top-level branch).
+  catalog(routeAddress: '/catalog'),
 
-  final _RoutesInfo _routeInfo;
+  /// The Showcase tab (top-level branch).
+  showcase(routeAddress: '/showcase'),
 
-  /// Address of the route
-  String get routeAddress => _routeInfo.routeAddress;
+  /// The About tab (top-level branch).
+  about(routeAddress: '/about');
 
-  const AppRoute(this._routeInfo);
-}
-
-class _RoutesInfo {
+  /// Address (path) of the route.
   final String routeAddress;
 
-  const _RoutesInfo({required this.routeAddress});
+  const AppRoute({required this.routeAddress});
 }

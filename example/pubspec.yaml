@@ -15,9 +15,10 @@ dependencies:
     path: ../
 
   cupertino_ui: ^0.0.1
-  go_router: ^17.2.3
+  gap: ^3.0.1
+  go_router: ^17.3.0
   material_ui: ^0.0.1
-  persistent_header_adaptive: ^2.1.3
+  multi_value_listenable_builder_typed: ^0.2.1
   platform_icons: ^0.1.1
   pmvvm: ^4.0.1
 
