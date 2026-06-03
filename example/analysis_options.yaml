@@ -314,7 +314,10 @@ linter:
     use_null_aware_elements: true
     use_raw_strings: true
     use_rethrow_when_possible: true
-    use_setters_to_change_properties: true
+    # Conflicts with the on<Event> view-event-callback convention: VM mutators
+    # are named for the view event they handle, not exposed as setters (see
+    # CODESTYLE.md#callback-methods-view-event-suffix).
+    use_setters_to_change_properties: false
     use_string_buffers: true
     use_string_in_part_of_directives: true
     use_super_parameters: true

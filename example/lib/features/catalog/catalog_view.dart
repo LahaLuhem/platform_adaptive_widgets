@@ -1,38 +1,38 @@
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
+import 'package:platform_icons/platform_icons.dart';
+import 'package:pmvvm/pmvvm.dart';
 
 import '/features/core/models/app_args.dart';
+import '/features/core/models/widget_category.dart';
+import 'catalog_view_model.dart';
 
-/// The Catalog tab — browse the library's widgets by category.
-///
-/// Placeholder for now; the category list and per-category detail pages land in
-/// the next chunk. [args] (navigation mode) will drive how detail pages are
-/// pushed.
+/// The Catalog tab — one tappable row per [WidgetCategory], each opening a
+/// detail page of labelled widget demos.
 class CatalogView extends StatelessWidget {
-  /// Host args — selects how category detail pages are navigated to.
+  /// Host args — threaded into the view model to pick the navigation backend.
   final AppArgs args;
 
   const CatalogView({required this.args, super.key});
 
   @override
-  Widget build(BuildContext context) => PlatformScaffold(
-    appBarData: const PlatformAppBar(title: Text('Catalog')),
-    body: Center(
-      child: Column(
-        mainAxisSize: .min,
-        spacing: 8,
-        children: [
-          Icon(
-            context.platformIcon(
-              material: Icons.widgets_outlined,
-              cupertino: CupertinoIcons.square_grid_2x2,
-            ),
-            size: 48,
-          ),
-          const Text('Widget catalog'),
-        ],
+  Widget build(BuildContext context) => MVVM.builder(
+    viewModel: CatalogViewModel(args),
+    viewBuilder: (context, viewModel) => PlatformScaffold(
+      appBarData: const PlatformAppBar(title: Text('Catalog')),
+      body: SafeArea(
+        child: ListView(
+          children: [
+            for (final category in WidgetCategory.values)
+              PlatformListTile(
+                leading: category.icon(context),
+                title: Text(category.label),
+                subtitle: Text(category.description),
+                trailing: const PlatformIcon(PlatformIcons.forward),
+                onTap: () => viewModel.onCategoryPressed(category),
+              ),
+          ],
+        ),
       ),
     ),
   );
