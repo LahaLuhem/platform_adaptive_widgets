@@ -7,6 +7,7 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 import '/app/theme_scope.dart';
 import '/features/core/models/app_args.dart';
+import '/features/core/widgets/labeled_section.dart';
 
 /// The About tab — what the library is, the appearance control (dogfooding
 /// [PlatformSegmentButton] for the theme mode), and a readout of how this build
@@ -54,7 +55,7 @@ class AboutView extends StatelessWidget {
               ],
             ),
             const Gap(32),
-            _AboutSection(
+            LabeledSection(
               title: 'Appearance',
               child: ValueListenableBuilder(
                 valueListenable: themeModeNotifier,
@@ -67,7 +68,7 @@ class AboutView extends StatelessWidget {
               ),
             ),
             const Gap(24),
-            _AboutSection(
+            LabeledSection(
               title: 'This build',
               child: Column(
                 children: [
@@ -115,22 +116,4 @@ class AboutView extends StatelessWidget {
     .android => 'Material widgets (Android)',
     _ => 'Unsupported platform',
   };
-}
-
-/// A titled block: a section label above its [child].
-final class _AboutSection extends StatelessWidget {
-  final String title;
-  final Widget child;
-
-  const _AboutSection({required this.title, required this.child});
-
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: .start,
-    spacing: 8,
-    children: [
-      Text(title, style: const TextStyle(fontSize: 16, fontWeight: .w600)),
-      child,
-    ],
-  );
 }
