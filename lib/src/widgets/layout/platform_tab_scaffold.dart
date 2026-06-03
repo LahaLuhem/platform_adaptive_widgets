@@ -26,6 +26,13 @@ import '/src/models/platform_widget_base.dart';
 /// Exactly one mode must be used — a constructor `assert` enforces "either
 /// `tabBodyBuilder`, or a `view` on every destination".
 ///
+/// **App bars.** By default each tab supplies its own app bar — give each tab a
+/// `PlatformScaffold` (managed) or return one from [tabBodyBuilder] (controlled);
+/// this matches both platforms' tab conventions. Material *additionally* allows
+/// a single persistent top app bar across tabs via [MaterialTabScaffoldData.appBar]
+/// — a Material-only option with no iOS counterpart (iOS HIG disallows a top bar
+/// over tabs).
+///
 /// On iOS the underlying `CupertinoTabScaffold` is controller-driven. In
 /// controlled mode this widget owns one persistent [CupertinoTabController] and
 /// syncs `controller.index` to [selectedIndex] when the external index changes
@@ -245,9 +252,7 @@ class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> {
   void initState() {
     super.initState();
 
-    if (widget.tabBodyBuilder == null) {
-      _selectedIndexNotifier = ValueNotifier(widget.selectedIndex);
-    }
+    if (widget.tabBodyBuilder == null) _selectedIndexNotifier = ValueNotifier(widget.selectedIndex);
   }
 
   @override
@@ -260,6 +265,9 @@ class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> {
   @override
   Widget build(BuildContext context) => Scaffold(
     key: widget.widgetKey,
+    // Material-only: an optional persistent top app bar above the tab content.
+    // iOS has no equivalent (see MaterialTabScaffoldData.appBar).
+    appBar: widget.materialTabScaffoldData?.appBar,
     backgroundColor: widget.materialTabScaffoldData?.backgroundColor ?? widget.backgroundColor,
     resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
     floatingActionButton: widget.materialTabScaffoldData?.floatingActionButton,
@@ -394,8 +402,8 @@ class _TabSwitchingViewState extends State<_TabSwitchingView> {
     _focusActiveTab();
   }
 
-  // Will focus the active tab if the FocusScope above it has focus already. If
-  // not, then it will just mark it as the preferred focus for that scope.
+  // Will focus the active tab if the FocusScope above it has focus already.
+  // If not, then it will just mark it as the preferred focus for that scope.
   void _focusActiveTab() {
     if (tabFocusNodes.length != widget.tabCount) {
       if (tabFocusNodes.length > widget.tabCount) {
@@ -440,9 +448,9 @@ class _TabSwitchingViewState extends State<_TabSwitchingView> {
             enabled: active,
             child: FocusScope(
               node: tabFocusNodes[index],
-              child: shouldBuildTab[index]
-                  ? widget.tabBuilder(context, index)
-                  : const SizedBox.shrink(),
+              child: !shouldBuildTab[index]
+                  ? const SizedBox.shrink()
+                  : widget.tabBuilder(context, index),
             ),
           ),
         ),

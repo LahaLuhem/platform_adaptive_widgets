@@ -1,49 +1,58 @@
 // ignore_for_file: prefer-match-file-name
-//ignore_for_file: unreachable_from_main
 
 import 'package:flutter/widgets.dart';
-import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart' show ThemeMode;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
-import 'package:platform_icons/platform_icons.dart';
 
+import 'app/const_theme.dart';
 import 'app/router/app_router.dart';
+import 'app/theme_scope.dart';
 
-void main() {
-  runApp(const _MyAppGoRouter());
-}
+void main() => runApp(const _ExampleGoRouterApp());
 
-class _MyAppGoRouter extends StatelessWidget {
-  const _MyAppGoRouter();
-
-  @override
-  Widget build(BuildContext context) => PlatformApp.router(
-    title: 'Platform Adaptive Widgets GoRouter Example',
-    debugShowCheckedModeBanner: false,
-    routerConfig: AppRouter.router,
-  );
-}
-
-/// Root page for the GoRouter app.
-class MyGoRouterRootPage extends StatelessWidget {
-  /// The navigation shell that this page is the root of.
-  final StatefulNavigationShell navigationShell;
-  final List<Widget> children;
-
-  /// Creates a [MyGoRouterRootPage].
-  const MyGoRouterRootPage({required this.navigationShell, required this.children, super.key});
+/// go_router entry point: `PlatformApp.router` driven by [AppRouter]. Same
+/// theming + [ThemeScope] wiring as the Navigator entry point — only the
+/// navigation backend differs.
+class _ExampleGoRouterApp extends StatefulWidget {
+  const _ExampleGoRouterApp();
 
   @override
-  Widget build(BuildContext context) => PlatformTabScaffold(
-    selectedIndex: navigationShell.currentIndex,
-    onTabDestinationTap: navigationShell.goBranch,
-    tabBodyBuilder: (_, index) => children[index],
-    tabDestinations: const [
-      TabDestination(
-        inactiveIcon: PlatformIcon(PlatformIcons.home),
-        activeIcon: PlatformIcon(PlatformIcons.homeFilled),
-        label: 'Home',
+  State<_ExampleGoRouterApp> createState() => _ExampleGoRouterAppState();
+}
+
+class _ExampleGoRouterAppState extends State<_ExampleGoRouterApp> {
+  final _themeModeNotifier = ValueNotifier(ThemeMode.system);
+
+  @override
+  void dispose() {
+    _themeModeNotifier.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => ValueListenableBuilder(
+    valueListenable: _themeModeNotifier,
+    builder: (_, themeMode, _) => PlatformApp.router(
+      title: 'Platform Adaptive Widgets (go_router)',
+      routerConfig: AppRouter.router,
+      materialAppData: MaterialAppData(
+        theme: ConstTheme.materialLightThemeData,
+        darkTheme: ConstTheme.materialDarkThemeData,
+        themeMode: themeMode,
       ),
-      TabDestination(inactiveIcon: PlatformIcon(PlatformIcons.settings), label: 'Settings'),
-    ],
+      cupertinoAppData: CupertinoAppData(
+        theme: ConstTheme.cupertinoThemeData(_cupertinoBrightnessFor(themeMode)),
+      ),
+      builder: (_, child) => ThemeScope(notifier: _themeModeNotifier, child: child!),
+    ),
   );
+
+  /// Cupertino has no `themeMode`; map it to an explicit brightness, or `null`
+  /// to follow the device (the `system` case).
+  Brightness? _cupertinoBrightnessFor(ThemeMode themeMode) => switch (themeMode) {
+    ThemeMode.system => null,
+    ThemeMode.light => Brightness.light,
+    ThemeMode.dark => Brightness.dark,
+  };
 }

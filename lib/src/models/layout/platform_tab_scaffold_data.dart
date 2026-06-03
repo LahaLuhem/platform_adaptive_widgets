@@ -1,5 +1,7 @@
 // ignore_for_file: prefer-match-file-name
 
+/// @docImport '/src/widgets/layout/platform_app_bar.dart';
+/// @docImport '/src/widgets/layout/platform_scaffold.dart';
 /// @docImport '/src/widgets/layout/platform_tab_scaffold.dart';
 library;
 
@@ -41,15 +43,27 @@ final class TabDestination {
 
 /// Material-specific data for a tab-based scaffold.
 ///
-/// A curated subclass of [MaterialScaffoldData]: it exposes the Material
-/// `Scaffold` extras that make sense for a tab scaffold (FAB, drawers,
-/// persistent footer, bottom sheet, …) but deliberately omits `appBar` and
-/// `bottomNavigationBar` — a tab scaffold has no app bar and supplies its own
-/// bottom navigation. The tab inputs (selected index, destinations, callbacks,
-/// body builder) are functional and live flat on [PlatformTabScaffold].
+/// A curated subclass of [MaterialScaffoldData].
+///
+/// **`appBar` is exposed — a Material-only capability.** Material permits a
+/// persistent top app bar above tab content (a `Scaffold` with *both* an
+/// `appBar` and a `bottomNavigationBar`), so a Material app can opt into one
+/// unified bar across tabs. iOS has **no equivalent**: its HIG structures each
+/// tab as an independent navigation stack with its own nav bar, and
+/// `CupertinoTabScaffold` has no top-bar slot — so there is deliberately no
+/// Cupertino counterpart. For the cross-platform-idiomatic shape (works on both
+/// platforms), give each tab its own [PlatformScaffold] with its own
+/// [PlatformAppBar] instead, and leave this `appBar` unset.
+///
+/// **`bottomNavigationBar` is omitted** — the tab scaffold owns that slot (it
+/// builds the `NavigationBar`); exposing it would be a conflicting duplicate.
+///
+/// The tab inputs (selected index, destinations, callbacks, body builder) are
+/// functional and live flat on [PlatformTabScaffold].
 final class MaterialTabScaffoldData extends MaterialScaffoldData {
   /// Creates a [MaterialTabScaffoldData].
   const MaterialTabScaffoldData({
+    super.appBar,
     super.backgroundColor,
     super.floatingActionButton,
     super.floatingActionButtonLocation,
