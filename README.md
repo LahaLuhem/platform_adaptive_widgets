@@ -75,7 +75,7 @@ Platform-adaptive widgets that automatically render **Material** widgets on Andr
 | `PlatformApp` / `PlatformApp.router` | `MaterialApp` / `MaterialApp.router`                   | `CupertinoApp` / `CupertinoApp.router`                          | `MaterialAppData`, `CupertinoAppData` (shared config is flat on the widget)                                                  |
 | `PlatformAppBar`                     | `AppBar`                                               | `CupertinoNavigationBar`                                        | `MaterialAppBarData`, `CupertinoNavigationBarData`                                                                           |
 | `PlatformScaffold`                   | `Scaffold`                                             | `CupertinoPageScaffold`                                         | `MaterialScaffoldData`, `CupertinoScaffoldData`                                                                              |
-| `PlatformTabScaffold`                | `Scaffold` + `NavigationBar` + `NavigationDestination` | `CupertinoTabScaffold` + `CupertinoTabBar` + `CupertinoTabView` | `MaterialTabScaffoldData`, `CupertinoTabScaffoldData`, `TabDestination`                                                      |
+| `PlatformTabScaffold`                | `Scaffold` + `NavigationBar` + `NavigationDestination` | `CupertinoTabScaffold` + `CupertinoTabBar` + `CupertinoTabView` | `MaterialTabScaffoldData`, `TabDestination`                                                                                 |
 
 ---
 

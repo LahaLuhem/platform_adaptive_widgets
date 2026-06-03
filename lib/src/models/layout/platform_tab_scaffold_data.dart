@@ -1,5 +1,8 @@
 // ignore_for_file: prefer-match-file-name
 
+/// @docImport '/src/widgets/layout/platform_tab_scaffold.dart';
+library;
+
 import 'package:flutter/widgets.dart';
 
 import 'platform_scaffold_data.dart';
@@ -37,21 +40,14 @@ final class TabDestination {
 }
 
 /// Material-specific data for a tab-based scaffold.
+///
+/// A curated subclass of [MaterialScaffoldData]: it exposes the Material
+/// `Scaffold` extras that make sense for a tab scaffold (FAB, drawers,
+/// persistent footer, bottom sheet, …) but deliberately omits `appBar` and
+/// `bottomNavigationBar` — a tab scaffold has no app bar and supplies its own
+/// bottom navigation. The tab inputs (selected index, destinations, callbacks,
+/// body builder) are functional and live flat on [PlatformTabScaffold].
 final class MaterialTabScaffoldData extends MaterialScaffoldData {
-  /// The index of the currently selected tab. Needed when not using a [tabDestinations].view
-  /// and the state is managed/rebuilt externally.
-  final int? selectedIndex;
-
-  /// A list of destinations to display in the tab bar.
-  final List<TabDestination>? tabDestinations;
-
-  /// A callback that is called when a tab destination is tapped.
-  final ValueChanged<int>? onTabDestinationTap;
-
-  /// A builder for the content of each tab.
-  final IndexedWidgetBuilder? tabBodyBuilder;
-
-  //TODO(lahaluhem): `bottomSheetScrimBuilder` is missing
   /// Creates a [MaterialTabScaffoldData].
   const MaterialTabScaffoldData({
     super.backgroundColor,
@@ -66,6 +62,7 @@ final class MaterialTabScaffoldData extends MaterialScaffoldData {
     super.endDrawer,
     super.onEndDrawerChanged,
     super.bottomSheet,
+    super.bottomSheetScrimBuilder,
     super.primary = MaterialScaffoldData.kPrimary,
     super.drawerDragStartBehavior = MaterialScaffoldData.kDrawerDragStartBehavior,
     super.extendBody = MaterialScaffoldData.kExtendBody,
@@ -76,38 +73,5 @@ final class MaterialTabScaffoldData extends MaterialScaffoldData {
     super.drawerEnableOpenDragGesture = MaterialScaffoldData.kDrawerEnableOpenDragGesture,
     super.endDrawerEnableOpenDragGesture = MaterialScaffoldData.kEndDrawerEnableOpenDragGesture,
     super.restorationId,
-    this.selectedIndex,
-    this.tabDestinations,
-    this.onTabDestinationTap,
-    this.tabBodyBuilder,
   });
-}
-
-/// Cupertino-specific data for a tab-based scaffold.
-final class CupertinoTabScaffoldData extends CupertinoScaffoldData {
-  /// The index of the currently selected tab. Needed when not using a [tabDestinations].view
-  /// and the state is managed/rebuilt externally.
-  final int? selectedIndex;
-
-  /// A list of destinations to display in the tab bar.
-  final List<TabDestination>? tabDestinations;
-
-  /// A builder for the content of each tab.
-  final IndexedWidgetBuilder? tabBodyBuilder;
-
-  /// A callback that is called when a tab destination is tapped.
-  final ValueChanged<int>? onTabDestinationTap;
-
-  /// A restoration ID for the tab scaffold.
-  final String? restorationId;
-
-  /// Creates a [CupertinoTabScaffoldData].
-  const CupertinoTabScaffoldData({
-    super.backgroundColor,
-    this.selectedIndex,
-    this.tabDestinations,
-    this.tabBodyBuilder,
-    this.onTabDestinationTap,
-    this.restorationId,
-  }) : super(navigationBar: null);
 }

@@ -7,11 +7,36 @@ import '/src/models/layout/platform_scaffold_data.dart';
 import '/src/models/layout/platform_tab_scaffold_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive tab scaffold
+/// A platform-adaptive tab scaffold — Material `Scaffold` + `NavigationBar` on
+/// Android, `CupertinoTabScaffold` + `CupertinoTabBar` on iOS.
+///
+/// Works in one of two modes, distinguished by whether [tabBodyBuilder] is set:
+///
+/// - **Managed** — give each [TabDestination] a `view` and omit
+///   [tabBodyBuilder]. The scaffold owns selection: tapping a tab switches
+///   content itself. On iOS each tab gets its own `CupertinoTabView` navigator
+///   (native deep-nav semantics); the Material side replicates the keep-alive
+///   caching via [_TabSwitchingView].
+/// - **Controlled** — provide [tabBodyBuilder] plus [selectedIndex] and
+///   [onTabDestinationTap]. An external emitter owns selection — most commonly
+///   `go_router`'s `StatefulShellRoute`, where `selectedIndex` is
+///   `navigationShell.currentIndex`, `onTabDestinationTap` is `goBranch`, and
+///   `tabBodyBuilder` returns the shell's branch navigators.
+///
+/// Exactly one mode must be used — a constructor `assert` enforces "either
+/// `tabBodyBuilder`, or a `view` on every destination".
+///
+/// On iOS the underlying `CupertinoTabScaffold` is controller-driven. In
+/// controlled mode this widget owns one persistent [CupertinoTabController] and
+/// syncs `controller.index` to [selectedIndex] when the external index changes
+/// — it does **not** recreate the controller each build, so an external emitter
+/// like `go_router` drives it without leaking controllers or rebuild churn.
 class PlatformTabScaffold extends PlatformWidgetKeyedBase {
-  /// The index of the currently selected tab. Needed when not using a [tabDestinations].view
-  /// and the state is managed/rebuilt externally.
-  final int? selectedIndex;
+  /// The selected tab index.
+  ///
+  /// In managed mode this is the initial tab. In controlled mode it's the
+  /// current tab, driven by the external emitter.
+  final int selectedIndex;
 
   /// The background color of the scaffold.
   final Color? backgroundColor;
@@ -22,144 +47,189 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
   /// A restoration ID to save and restore the state of the scaffold.
   final String? restorationId;
 
-  /// A list of destinations to display in the tab bar.
-  final List<TabDestination>? tabDestinations;
+  /// The destinations to display in the tab bar.
+  final List<TabDestination> tabDestinations;
 
-  /// A callback that is called when a tab destination is tapped.
+  /// Called when a tab destination is tapped.
   final ValueChanged<int>? onTabDestinationTap;
 
-  /// A builder for the content of each tab.
+  /// Builds the body for each tab — presence selects controlled mode.
   final IndexedWidgetBuilder? tabBodyBuilder;
 
   /// Material-specific data for the tab scaffold.
   final MaterialTabScaffoldData? materialTabScaffoldData;
 
-  /// Cupertino-specific data for the tab scaffold.
-  final CupertinoTabScaffoldData? cupertinoTabScaffoldData;
-
   /// Creates a platform-adaptive tab scaffold.
-  ///
-  /// [tabBodyBuilder] is central to determining how state is managed.
-  /// When it is provided, it is assumed that the state is managed (and rebuilt) externally ([tabDestinations].view is ignored/not needed in this case).
-  /// When it is not provided, it is assumed that the state is managed internally and [tabDestinations].view is used to build the tab content.
-  ///
-  /// Cupertino already has [CupertinoTabView] that makes it trivial to be able to handle state internally.
-  /// That is used when [tabDestinations].view is provided.
-  ///
-  /// Material revolves around using a `selectedIndex` that is changed when a tab is tapped.
-  ///
-  /// Since [CupertinoTabScaffold].tabBuilder automatically caches the tab content prevent rebuilds when switching tabs,
-  /// the material side has been extended to replicate this functionality.
   const PlatformTabScaffold({
+    required this.tabDestinations,
     this.selectedIndex = 0,
-    this.tabDestinations,
     this.onTabDestinationTap,
     this.tabBodyBuilder,
     this.backgroundColor,
     this.resizeToAvoidBottomInset = kDefaultResizeToAvoidBottomInset,
     this.restorationId,
     this.materialTabScaffoldData,
-    this.cupertinoTabScaffoldData,
     super.widgetKey,
     super.key,
   });
 
-  static const _kDefaultSelectedIndex = 0;
-
   @override
   Widget buildMaterial(BuildContext context) {
-    final selectedIndex = materialTabScaffoldData?.selectedIndex ?? this.selectedIndex;
-    final resolvedTabBodyBuilder = materialTabScaffoldData?.tabBodyBuilder ?? tabBodyBuilder;
-    final resolvedTabDestinations = materialTabScaffoldData?.tabDestinations ?? tabDestinations!;
-
-    assert(
-      (resolvedTabBodyBuilder != null) ^
-          (resolvedTabDestinations.every((tabDest) => tabDest.view != null)),
-      'Either provide a tabBodyBuilder or a view for each tab destination.',
-    );
+    _debugAssertSingleMode();
 
     return _MaterialTabScaffold(
-      resolvedWidgetKey: widgetKey,
-      resolvedSelectedIndex:
-          materialTabScaffoldData?.selectedIndex ?? selectedIndex ?? _kDefaultSelectedIndex,
+      widgetKey: widgetKey,
+      selectedIndex: selectedIndex,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-      backgroundColor: materialTabScaffoldData?.backgroundColor ?? backgroundColor,
-      restorationId: materialTabScaffoldData?.restorationId ?? restorationId,
-      resolvedTabDestinations: resolvedTabDestinations,
+      backgroundColor: backgroundColor,
+      restorationId: restorationId,
+      tabDestinations: tabDestinations,
       onTabDestinationTap: onTabDestinationTap,
-      resolvedTabBodyBuilder: resolvedTabBodyBuilder,
+      tabBodyBuilder: tabBodyBuilder,
       materialTabScaffoldData: materialTabScaffoldData,
     );
   }
 
   @override
   Widget buildCupertino(BuildContext context) {
-    final resolvedSelectedIndex =
-        cupertinoTabScaffoldData?.selectedIndex ?? selectedIndex ?? _kDefaultSelectedIndex;
-    final resolvedTabDestinations = cupertinoTabScaffoldData?.tabDestinations ?? tabDestinations!;
-    final resolvedTabBodyBuilder = cupertinoTabScaffoldData?.tabBodyBuilder ?? tabBodyBuilder;
+    _debugAssertSingleMode();
 
-    assert(
-      (resolvedTabBodyBuilder != null) ^
-          (resolvedTabDestinations.every((tabDest) => tabDest.view != null)),
-      'Either provide a tabBodyBuilder or a view for each tab destination.',
-    );
-
-    return CupertinoTabScaffold(
-      key: widgetKey,
-      backgroundColor: cupertinoTabScaffoldData?.backgroundColor ?? backgroundColor,
+    return _CupertinoTabScaffold(
+      widgetKey: widgetKey,
+      selectedIndex: selectedIndex,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-      restorationId: cupertinoTabScaffoldData?.restorationId ?? restorationId,
-      controller: CupertinoTabController(initialIndex: resolvedSelectedIndex),
-      tabBar: CupertinoTabBar(
-        currentIndex: resolvedSelectedIndex,
-        onTap: cupertinoTabScaffoldData?.onTabDestinationTap ?? onTabDestinationTap,
-        items: [
-          for (final tabDestinationData in resolvedTabDestinations)
-            BottomNavigationBarItem(
-              icon: tabDestinationData.inactiveIcon,
-              activeIcon: tabDestinationData.activeIcon,
-              label: tabDestinationData.label,
-              tooltip: tabDestinationData.tooltip,
-            ),
-        ],
-      ),
-      tabBuilder: (context, index) =>
-          resolvedTabBodyBuilder?.call(context, index) ??
-          CupertinoTabView(builder: (_) => resolvedTabDestinations[index].view!),
+      backgroundColor: backgroundColor,
+      restorationId: restorationId,
+      tabDestinations: tabDestinations,
+      onTabDestinationTap: onTabDestinationTap,
+      tabBodyBuilder: tabBodyBuilder,
+    );
+  }
+
+  /// Asserts exactly one mode is in use: a [tabBodyBuilder] (controlled) XOR a
+  /// `view` on every destination (managed). A constructor `assert` can't run
+  /// this — the `.every` closure isn't a constant expression — so it's checked
+  /// per build (debug-only).
+  void _debugAssertSingleMode() {
+    assert(
+      (tabBodyBuilder != null) ^ tabDestinations.every((destination) => destination.view != null),
+      'Provide either a tabBodyBuilder (controlled mode) or a view for every '
+      'tab destination (managed mode) — not both, not neither.',
     );
   }
 }
 
-class _MaterialTabScaffold extends StatefulWidget {
-  final int resolvedSelectedIndex;
-
-  final Color? backgroundColor;
-
+/// iOS implementation. Owns a persistent [CupertinoTabController] so an external
+/// emitter (controlled mode) can drive selection by [selectedIndex] without the
+/// controller being recreated each build — see [PlatformTabScaffold].
+class _CupertinoTabScaffold extends StatefulWidget {
+  final Key? widgetKey;
+  final int selectedIndex;
   final bool resizeToAvoidBottomInset;
-
+  final Color? backgroundColor;
   final String? restorationId;
-
-  final List<TabDestination> resolvedTabDestinations;
-
+  final List<TabDestination> tabDestinations;
   final ValueChanged<int>? onTabDestinationTap;
+  final IndexedWidgetBuilder? tabBodyBuilder;
 
-  final IndexedWidgetBuilder? resolvedTabBodyBuilder;
-
-  final MaterialTabScaffoldData? materialTabScaffoldData;
-
-  final Key? resolvedWidgetKey;
-
-  const _MaterialTabScaffold({
-    required this.resolvedSelectedIndex,
+  const _CupertinoTabScaffold({
+    required this.selectedIndex,
     required this.resizeToAvoidBottomInset,
-    required this.resolvedTabDestinations,
+    required this.tabDestinations,
+    this.widgetKey,
     this.backgroundColor,
     this.restorationId,
     this.onTabDestinationTap,
-    this.resolvedTabBodyBuilder,
+    this.tabBodyBuilder,
+  });
+
+  @override
+  State<_CupertinoTabScaffold> createState() => _CupertinoTabScaffoldState();
+}
+
+class _CupertinoTabScaffoldState extends State<_CupertinoTabScaffold> {
+  late final CupertinoTabController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = CupertinoTabController(initialIndex: widget.selectedIndex);
+  }
+
+  @override
+  void didUpdateWidget(_CupertinoTabScaffold oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Controlled mode: the external emitter (e.g. go_router's StatefulShell)
+    // owns the index — push it into the persistent controller. In managed mode
+    // selectedIndex is constant, so this never fires and the controller
+    // self-manages on tap. `CupertinoTabScaffold` listens to the controller and
+    // rebuilds on this assignment.
+    if (widget.selectedIndex != oldWidget.selectedIndex &&
+        _controller.index != widget.selectedIndex) {
+      _controller.index = widget.selectedIndex;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => CupertinoTabScaffold(
+    key: widget.widgetKey,
+    controller: _controller,
+    backgroundColor: widget.backgroundColor,
+    resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
+    restorationId: widget.restorationId,
+    tabBar: CupertinoTabBar(
+      currentIndex: _controller.index,
+      onTap: widget.onTabDestinationTap,
+      items: [
+        for (final tabDestination in widget.tabDestinations)
+          BottomNavigationBarItem(
+            icon: tabDestination.inactiveIcon,
+            activeIcon: tabDestination.activeIcon,
+            label: tabDestination.label,
+            tooltip: tabDestination.tooltip,
+          ),
+      ],
+    ),
+    tabBuilder: (context, index) =>
+        widget.tabBodyBuilder?.call(context, index) ??
+        CupertinoTabView(builder: (_) => widget.tabDestinations[index].view!),
+  );
+}
+
+/// Android implementation. In managed mode it owns a [ValueNotifier] for the
+/// selected index; in controlled mode it renders [PlatformTabScaffold.selectedIndex]
+/// directly. [_TabSwitchingView] gives the keep-alive tab caching that
+/// `CupertinoTabScaffold` provides natively but Material's `Scaffold` does not.
+class _MaterialTabScaffold extends StatefulWidget {
+  final int selectedIndex;
+  final Color? backgroundColor;
+  final bool resizeToAvoidBottomInset;
+  final String? restorationId;
+  final List<TabDestination> tabDestinations;
+  final ValueChanged<int>? onTabDestinationTap;
+  final IndexedWidgetBuilder? tabBodyBuilder;
+  final MaterialTabScaffoldData? materialTabScaffoldData;
+  final Key? widgetKey;
+
+  const _MaterialTabScaffold({
+    required this.selectedIndex,
+    required this.resizeToAvoidBottomInset,
+    required this.tabDestinations,
+    this.backgroundColor,
+    this.restorationId,
+    this.onTabDestinationTap,
+    this.tabBodyBuilder,
     this.materialTabScaffoldData,
-    this.resolvedWidgetKey,
+    this.widgetKey,
   });
 
   @override
@@ -167,28 +237,29 @@ class _MaterialTabScaffold extends StatefulWidget {
 }
 
 class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> {
-  late final ValueNotifier<int>? _selectedIndexNotifier;
+  /// Owns the selected index in managed mode; `null` in controlled mode (the
+  /// external [PlatformTabScaffold.selectedIndex] drives selection instead).
+  ValueNotifier<int>? _selectedIndexNotifier;
 
   @override
   void initState() {
     super.initState();
 
-    _selectedIndexNotifier = widget.resolvedTabBodyBuilder != null
-        ? null
-        : ValueNotifier(widget.resolvedSelectedIndex);
+    if (widget.tabBodyBuilder == null) {
+      _selectedIndexNotifier = ValueNotifier(widget.selectedIndex);
+    }
   }
 
   @override
   void dispose() {
     _selectedIndexNotifier?.dispose();
-    _selectedIndexNotifier = null;
 
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    key: widget.resolvedWidgetKey,
+    key: widget.widgetKey,
     backgroundColor: widget.materialTabScaffoldData?.backgroundColor ?? widget.backgroundColor,
     resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
     floatingActionButton: widget.materialTabScaffoldData?.floatingActionButton,
@@ -227,36 +298,36 @@ class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> {
         widget.materialTabScaffoldData?.endDrawerEnableOpenDragGesture ??
         MaterialScaffoldData.kEndDrawerEnableOpenDragGesture,
     restorationId: widget.materialTabScaffoldData?.restorationId ?? widget.restorationId,
-    // Implies that resolvedTabBodyBuilder != null
     bottomNavigationBar: _selectedIndexNotifier == null
+        // Controlled mode: selection is driven externally.
         ? _MaterialNavigationBar(
-            selectedIndex: widget.resolvedSelectedIndex,
-            tabDestinations: widget.resolvedTabDestinations,
+            selectedIndex: widget.selectedIndex,
+            tabDestinations: widget.tabDestinations,
             onTabDestinationTap: widget.onTabDestinationTap,
           )
         : ValueListenableBuilder(
-            valueListenable: _selectedIndexNotifier,
+            valueListenable: _selectedIndexNotifier!,
             builder: (_, selectedIndex, _) => _MaterialNavigationBar(
               selectedIndex: selectedIndex,
-              tabDestinations: widget.resolvedTabDestinations,
+              tabDestinations: widget.tabDestinations,
               onTabDestinationTap: (tabIndex) {
-                _selectedIndexNotifier.value = tabIndex;
+                _selectedIndexNotifier!.value = tabIndex;
                 widget.onTabDestinationTap?.call(tabIndex);
               },
             ),
           ),
-    body: widget.resolvedTabBodyBuilder != null
+    body: widget.tabBodyBuilder != null
         ? _TabSwitchingView(
-            currentTabIndex: widget.resolvedSelectedIndex,
-            tabCount: widget.resolvedTabDestinations.length,
-            tabBuilder: widget.resolvedTabBodyBuilder!,
+            currentTabIndex: widget.selectedIndex,
+            tabCount: widget.tabDestinations.length,
+            tabBuilder: widget.tabBodyBuilder!,
           )
         : ValueListenableBuilder(
             valueListenable: _selectedIndexNotifier!,
             builder: (_, selectedIndex, _) => _TabSwitchingView(
               currentTabIndex: selectedIndex,
-              tabCount: widget.resolvedTabDestinations.length,
-              tabBuilder: (_, index) => widget.resolvedTabDestinations[index].view!,
+              tabCount: widget.tabDestinations.length,
+              tabBuilder: (_, index) => widget.tabDestinations[index].view!,
             ),
           ),
   );
