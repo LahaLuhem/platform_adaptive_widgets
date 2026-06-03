@@ -3,7 +3,13 @@ import 'package:go_router/go_router.dart';
 
 import '/features/about/about_view.dart';
 import '/features/catalog/catalog_view.dart';
+import '/features/catalog/categories/buttons/buttons_demo_view.dart';
+import '/features/catalog/categories/containers/containers_demo_view.dart';
+import '/features/catalog/categories/dialogs/dialogs_demo_view.dart';
+import '/features/catalog/categories/selection/selection_demo_view.dart';
+import '/features/catalog/categories/text/text_demo_view.dart';
 import '/features/core/models/app_args.dart';
+import '/features/core/models/widget_category.dart';
 import '/features/root/root_tabs_router_view.dart';
 import '/features/showcase/showcase_view.dart';
 import 'app_route.dart';
@@ -33,6 +39,33 @@ final class AppRouter {
                 name: AppRoute.catalog.name,
                 path: AppRoute.catalog.routeAddress,
                 builder: (_, _) => const CatalogView(args: _args),
+                routes: [
+                  GoRoute(
+                    name: WidgetCategory.buttons.name,
+                    path: WidgetCategory.buttons.routeAddress,
+                    builder: (_, _) => const ButtonsDemoView(),
+                  ),
+                  GoRoute(
+                    name: WidgetCategory.selection.name,
+                    path: WidgetCategory.selection.routeAddress,
+                    builder: (_, _) => const SelectionDemoView(),
+                  ),
+                  GoRoute(
+                    name: WidgetCategory.text.name,
+                    path: WidgetCategory.text.routeAddress,
+                    builder: (_, _) => const TextDemoView(),
+                  ),
+                  GoRoute(
+                    name: WidgetCategory.containers.name,
+                    path: WidgetCategory.containers.routeAddress,
+                    builder: (_, _) => const ContainersDemoView(),
+                  ),
+                  GoRoute(
+                    name: WidgetCategory.dialogs.name,
+                    path: WidgetCategory.dialogs.routeAddress,
+                    builder: (_, _) => const DialogsDemoView(),
+                  ),
+                ],
               ),
             ],
           ),
