@@ -4,7 +4,7 @@ import 'package:material_ui/material_ui.dart' show Icons, InputDecoration;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
-import '/features/core/widgets/demo_card.dart';
+import '/features/catalog/widgets/demo_card.dart';
 import 'text_demo_view_model.dart';
 
 /// The Text & search section of the Catalog accordion.

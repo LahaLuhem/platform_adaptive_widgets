@@ -73,8 +73,8 @@ All observable VM state is exposed as `ValueListenable<T>`, backed by a private
   extra ticks for zero gain when they always move in lockstep. Promote the record to
   a top-level `typedef` so the public listenable's type does not fail the
   `library_private_types_in_public_api` lint.
-- **Dispose every notifier in `dispose()`** before `super.dispose()`. The current
-  [`features/home/home_view_model.dart`](./lib/features/home/home_view_model.dart)
+- **Dispose every notifier in `dispose()`** before `super.dispose()`. The
+  [`selection_demo_view_model.dart`](./lib/features/catalog/views/selection_demo/selection_demo_view_model.dart)
   models the pattern.
 - **VM-internal state stays plain.** Fields no widget observes (controllers held by
   the VM, subscriptions, thresholds) are plain Dart fields — no notifier ceremony.
@@ -298,7 +298,8 @@ AsyncIconActionButton(
 ```
 
 **Status today:** the wrapper widget does not yet exist in this project — async
-callbacks in [`features/home/home_view_model.dart`](./lib/features/home/home_view_model.dart)
+callbacks like those in
+[`buttons_demo_view_model.dart`](./lib/features/catalog/views/buttons_demo/buttons_demo_view_model.dart)
 return raw `Future<void>` and the view binds them directly to
 `PlatformButton.onPressed`. When introducing the first feature that genuinely needs
 busy-state UI (a network call, a long-running platform action), create the wrapper

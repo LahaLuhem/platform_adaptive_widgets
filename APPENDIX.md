@@ -476,8 +476,8 @@ re-baseline noise.
 
 - **Chosen:** the demo app under `example/lib/` ships two `main()` functions:
   - [`example/lib/main.dart`](./example/lib/main.dart) — boots `PlatformApp` with a
-    nested `Home → Settings` tab structure managed by `PlatformTabScaffold`'s
-    own selected-index state.
+    scaffold-managed tab structure (Catalog / Under the hood / About) where
+    `PlatformTabScaffold` owns the selected-index state.
   - [`example/lib/main_go_router.dart`](./example/lib/main_go_router.dart) — boots
     `PlatformApp.router` with `go_router`'s `StatefulNavigationShell`, where tab
     selection is driven by the router rather than the scaffold.
@@ -487,15 +487,14 @@ re-baseline noise.
   router-less ergonomic demo and the router-integrated showcase; shipping both as
   separate `main` files keeps the example honest about both modes. `flutter run -t
   lib/main.dart` and `flutter run -t lib/main_go_router.dart` pick between them.
-- **What stays shared.** The `features/` tree, the `app/const_theme.dart`, and the
-  feature view-models are reused across both entry points. Only the bootstrap and
-  the `app/router/` subtree are router-specific. New features added to the example
-  should aim to work under both entry points where the navigation shape allows;
-  router-only demos (sub-route push, deep-linking) live in branches that the
-  non-router entry point either hides or shows in a "GoRouter only" affordance —
-  see `HomeViewArgs.isUsingGoRouter` in
-  [`example/lib/features/home/home_view.dart`](./example/lib/features/home/home_view.dart)
-  for the pattern.
+- **What stays shared.** The `features/` tree,
+  `features/core/data/constants/const_theme.dart`, and the feature view-models are
+  reused across both entry points. Only the bootstrap and the `app/router/` subtree
+  are router-specific. New features should work under both entry points where the
+  navigation shape allows. `AppArgs.isUsingGoRouter`
+  ([`example/lib/features/core/data/models/app_args.dart`](./example/lib/features/core/data/models/app_args.dart))
+  carries which backend is active — the About tab surfaces it in its "This build"
+  readout.
 - **Verification implication.** When changing anything that touches
   `PlatformApp`, `PlatformTabScaffold`, or navigation state more broadly, run *both*
   entry points on both Android and iOS before claiming the change is done.

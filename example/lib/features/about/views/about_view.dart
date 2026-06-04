@@ -6,8 +6,8 @@ import 'package:material_ui/material_ui.dart' show Icons, ThemeMode;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 import '/app/theme_scope.dart';
-import '/features/core/models/app_args.dart';
-import '/features/core/widgets/labeled_section.dart';
+import '/features/about/widgets/labeled_section.dart';
+import '/features/core/data/models/app_args.dart';
 
 /// The About tab — what the library is, the appearance control (dogfooding
 /// [PlatformSegmentButton] for the theme mode), and a readout of how this build

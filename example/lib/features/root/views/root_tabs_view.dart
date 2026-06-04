@@ -1,11 +1,11 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-import '/features/about/about_view.dart';
-import '/features/catalog/catalog_view.dart';
-import '/features/core/models/app_args.dart';
-import '/features/showcase/showcase_view.dart';
-import 'root_tab.dart';
+import '/features/about/views/about_view.dart';
+import '/features/catalog/views/catalog_view.dart';
+import '/features/core/data/models/app_args.dart';
+import '/features/root/data/enums/root_tab.dart';
+import '/features/showcase/views/showcase_view.dart';
 
 /// Managed-mode tab shell (the `main.dart` entry point): [PlatformTabScaffold]
 /// owns the selected-tab state and caches each tab's `view`.

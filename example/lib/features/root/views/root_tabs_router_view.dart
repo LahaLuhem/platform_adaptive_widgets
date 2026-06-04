@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-import 'root_tab.dart';
+import '/features/root/data/enums/root_tab.dart';
 
 /// Controlled-mode tab shell (the `main_go_router.dart` entry point): tab
 /// selection is owned by go_router's [StatefulNavigationShell]. The scaffold

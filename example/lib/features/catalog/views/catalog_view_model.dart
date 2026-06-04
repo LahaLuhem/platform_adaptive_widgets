@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
-import '/features/core/models/widget_category.dart';
+import '/features/catalog/data/enums/widget_category.dart';
 
 /// Owns one [ExpansibleController] per [WidgetCategory] so the Catalog accordion
 /// can expand or collapse every section at once — letting the reader flip

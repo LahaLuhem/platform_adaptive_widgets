@@ -4,7 +4,7 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 import 'app/const_theme.dart';
 import 'app/theme_scope.dart';
-import 'features/root/root_tabs_view.dart';
+import 'features/root/views/root_tabs_view.dart';
 
 void main() => runApp(const _ExampleApp());
 

@@ -5,7 +5,7 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:platform_icons/platform_icons.dart';
 import 'package:pmvvm/pmvvm.dart';
 
-import '/features/core/widgets/demo_card.dart';
+import '/features/catalog/widgets/demo_card.dart';
 import 'containers_demo_view_model.dart';
 
 /// The Lists & containers section of the Catalog accordion.

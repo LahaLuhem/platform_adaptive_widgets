@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
-import '/features/core/widgets/demo_card.dart';
+import '/features/catalog/widgets/demo_card.dart';
 import 'dialogs_demo_view_model.dart';
 
 /// The Dialogs & pickers section of the Catalog accordion.

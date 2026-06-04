@@ -1,11 +1,11 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
-import '/features/about/about_view.dart';
-import '/features/catalog/catalog_view.dart';
-import '/features/core/models/app_args.dart';
-import '/features/root/root_tabs_router_view.dart';
-import '/features/showcase/showcase_view.dart';
+import '/features/about/views/about_view.dart';
+import '/features/catalog/views/catalog_view.dart';
+import '/features/core/data/models/app_args.dart';
+import '/features/root/views/root_tabs_router_view.dart';
+import '/features/showcase/views/showcase_view.dart';
 import 'app_route.dart';
 
 final _catalogNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'Catalog');
