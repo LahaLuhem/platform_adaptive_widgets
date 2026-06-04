@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart' show Material;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
+import '/features/showcase/widgets/nuance_card.dart';
 import 'showcase_view_model.dart';
 
 /// The "Under the hood" tab — not a sample screen, but a guided tour of the
@@ -24,7 +24,7 @@ class ShowcaseView extends StatelessWidget {
             crossAxisAlignment: .stretch,
             spacing: 16,
             children: [
-              _NuanceCard(
+              NuanceCard(
                 title: 'Tabs keep their state',
                 body:
                     'Cupertino manages its tab index internally, but the go_router '
@@ -47,7 +47,7 @@ class ShowcaseView extends StatelessWidget {
                   ),
                 ),
               ),
-              _NuanceCard(
+              NuanceCard(
                 title: 'Native page transitions',
                 body:
                     'The library adapts widgets, not routes, so the Navigator entry point '
@@ -60,7 +60,7 @@ class ShowcaseView extends StatelessWidget {
                   child: const Text('Push a page'),
                 ),
               ),
-              _NuanceCard(
+              NuanceCard(
                 title: 'Disable, never un-wire',
                 body:
                     'PlatformSwitch and friends keep onChanged non-null and gate input with '
@@ -104,7 +104,7 @@ class ShowcaseView extends StatelessWidget {
                   ],
                 ),
               ),
-              _NuanceCard(
+              NuanceCard(
                 title: 'Tri-state, faithfully',
                 body:
                     'The Material checkbox has a third, indeterminate state; Cupertino has '
@@ -125,7 +125,7 @@ class ShowcaseView extends StatelessWidget {
                   ),
                 ),
               ),
-              _NuanceCard(
+              NuanceCard(
                 title: 'Large titles, where they belong',
                 body:
                     'iOS has a large navigation title that collapses on scroll; Material has '
@@ -137,7 +137,7 @@ class ShowcaseView extends StatelessWidget {
                   child: const Text('Push a large-title page'),
                 ),
               ),
-              const _NuanceCard(
+              const NuanceCard(
                 title: 'One source of truth',
                 body:
                     'Functional inputs — value, callbacks, controllers — live flat on the '
@@ -146,7 +146,7 @@ class ShowcaseView extends StatelessWidget {
                     'only the visual and behavioural extras specific to each platform.',
                 code: 'PlatformSwitch(value: isOn, onChanged: onChanged)  // not data.value',
               ),
-              const _NuanceCard(
+              const NuanceCard(
                 title: 'Material-only capabilities, modelled honestly',
                 body:
                     'Some things exist on one platform only — a floating action button, or a '
@@ -155,7 +155,7 @@ class ShowcaseView extends StatelessWidget {
                     'Cupertino counterpart.',
                 code: 'MaterialScaffoldData(floatingActionButton: fab)  // iOS has no FAB',
               ),
-              const _NuanceCard(
+              const NuanceCard(
                 title: 'heroTag collisions, handled',
                 body:
                     'Two CupertinoNavigationBars on screen during a transition — a tab '
@@ -164,7 +164,7 @@ class ShowcaseView extends StatelessWidget {
                     'its own.',
                 code: "CupertinoNavigationBarData(heroTag: 'profile')",
               ),
-              const _NuanceCard(
+              const NuanceCard(
                 title: 'The size cost of platformValue',
                 body:
                     'context.platformValue(material:, cupertino:) evaluates both arms eagerly. '
@@ -178,61 +178,5 @@ class ShowcaseView extends StatelessWidget {
         ),
       ),
     ),
-  );
-}
-
-/// One entry in the Under-the-hood tour: a [title], an explanatory [body], an
-/// optional [code] snippet, and an optional live [demo]. A [Material] surface
-/// (not a plain coloured box) so any Material child paints its ink correctly.
-class _NuanceCard extends StatelessWidget {
-  final String title;
-  final String body;
-  final String? code;
-  final Widget? demo;
-
-  const _NuanceCard({required this.title, required this.body, this.code, this.demo});
-
-  @override
-  Widget build(BuildContext context) {
-    final primaryColor = PlatformTheme.of(context).primaryColor;
-
-    return Material(
-      color: primaryColor.withValues(alpha: 0.06),
-      // 12: conventional card corner radius (between the 8 and 16 steps).
-      borderRadius: const .all(.circular(12)),
-      clipBehavior: .antiAlias,
-      child: Padding(
-        padding: const .all(16),
-        child: Column(
-          crossAxisAlignment: .start,
-          spacing: 8,
-          children: [
-            Text(title, style: const TextStyle(fontSize: 16, fontWeight: .w600)),
-            Text(body),
-            if (code != null) _CodeBlock(code: code!),
-            ?demo,
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// A monospace, tinted block for the code snippets in a [_NuanceCard].
-class _CodeBlock extends StatelessWidget {
-  final String code;
-
-  const _CodeBlock({required this.code});
-
-  @override
-  Widget build(BuildContext context) => Container(
-    width: double.infinity,
-    // 12: code-block inset (between the 8 and 16 steps).
-    padding: const .all(12),
-    decoration: BoxDecoration(
-      color: PlatformTheme.of(context).primaryColor.withValues(alpha: 0.1),
-      borderRadius: const .all(.circular(8)),
-    ),
-    child: Text(code, style: const TextStyle(fontFamily: 'monospace', fontSize: 13)),
   );
 }

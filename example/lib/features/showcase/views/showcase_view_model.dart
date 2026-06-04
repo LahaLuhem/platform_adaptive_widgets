@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:pmvvm/pmvvm.dart';
 
-import '/features/core/navigation/platform_route.dart';
+import '/features/showcase/data/navigation/platform_route.dart';
 import 'pushed_demo_page.dart';
 
 /// State for the "Under the hood" tab's interactive proofs: the tap counter

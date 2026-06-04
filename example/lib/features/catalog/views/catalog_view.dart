@@ -3,12 +3,12 @@ import 'package:gap/gap.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
-import '/features/catalog/categories/buttons/buttons_demo_view.dart';
-import '/features/catalog/categories/containers/containers_demo_view.dart';
-import '/features/catalog/categories/dialogs/dialogs_demo_view.dart';
-import '/features/catalog/categories/selection/selection_demo_view.dart';
-import '/features/catalog/categories/text/text_demo_view.dart';
-import '/features/core/models/widget_category.dart';
+import '/features/catalog/data/enums/widget_category.dart';
+import '/features/catalog/views/buttons_demo/buttons_demo_view.dart';
+import '/features/catalog/views/containers_demo/containers_demo_view.dart';
+import '/features/catalog/views/dialogs_demo/dialogs_demo_view.dart';
+import '/features/catalog/views/selection_demo/selection_demo_view.dart';
+import '/features/catalog/views/text_demo/text_demo_view.dart';
 import 'catalog_view_model.dart';
 
 /// The Catalog tab — every widget the library offers, grouped into expandable

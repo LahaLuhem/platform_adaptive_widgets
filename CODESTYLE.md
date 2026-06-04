@@ -790,12 +790,12 @@ and the project is expected to be runnable through DCM checks):
   the directive). Dartdoc (`///`) above the line does not count — the rule looks for a
   regular `//` comment.
 - **`avoid-returning-widgets`** — building-block helpers that return a `Widget`
-  fragment trip this rule. The project allows it (e.g. `_SectionHeader` and other
-  small `final class` helpers in the example), but every occurrence needs a
+  fragment trip this rule. The project allows it (e.g. small one-off helpers in the
+  example), but every occurrence needs a
   `// ignore_for_file: avoid-returning-widgets` (or a single-line `// ignore:`) with a
   reason. Prefer subclassing `StatelessWidget` for any helper that is reused or
-  appears more than once — the `final class _SectionHeader extends StatelessWidget`
-  pattern in [`example/lib/features/home/home_view.dart`](./example/lib/features/home/home_view.dart)
+  appears more than once — the `class LabeledSection extends StatelessWidget`
+  pattern in [`example/lib/features/about/widgets/labeled_section.dart`](./example/lib/features/about/widgets/labeled_section.dart)
   is the model.
 - **`prefer-correct-edge-insets-constructor`** — always pick the simplest valid
   `EdgeInsets[Directional]` constructor. The rule collapses redundant forms:

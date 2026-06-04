@@ -4,8 +4,8 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:platform_icons/platform_icons.dart';
 import 'package:pmvvm/pmvvm.dart';
 
-import '/features/core/data/extensions/platform_adaptive_icons_extension.dart';
-import '/features/core/widgets/demo_card.dart';
+import '/features/catalog/data/extensions/platform_adaptive_icons_extension.dart';
+import '/features/catalog/widgets/demo_card.dart';
 import 'selection_demo_view_model.dart';
 
 /// The Selection-controls section of the Catalog accordion.
