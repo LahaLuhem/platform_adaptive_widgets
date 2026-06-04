@@ -3,58 +3,31 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// A group of widgets shown as one entry in the Catalog tab and as one detail
-/// page. Drives the catalog list (label, description, icon) and the navigation
-/// to each detail page ([name] is the go_router route name, [routeAddress] the
-/// sub-path under `/catalog`).
+/// A group of related widgets shown as one expandable section in the Catalog
+/// tab. Drives the accordion: the section header ([label] + [icon]) and the
+/// iteration order.
 enum WidgetCategory {
   /// Filled, tonal, outlined, text, icon and disabled buttons.
-  buttons(
-    label: 'Buttons',
-    description: 'Filled, tonal, outlined, text, icon and disabled buttons',
-    routeAddress: 'buttons',
-  ),
+  buttons(label: 'Buttons'),
 
   /// Checkbox, switch, slider, segmented button, radios, menu picker.
-  selection(
-    label: 'Selection controls',
-    description: 'Checkbox, switch, slider, segmented button, radios, menu picker',
-    routeAddress: 'selection',
-  ),
+  selection(label: 'Selection controls'),
 
   /// Text field and search bar.
-  text(label: 'Text & search', description: 'Text field and search bar', routeAddress: 'text'),
+  text(label: 'Text & search'),
 
   /// List tile, expansion tile, scrollbar, progress indicator.
-  containers(
-    label: 'Lists & containers',
-    description: 'List tile, expansion tile, scrollbar, progress indicator',
-    routeAddress: 'containers',
-  ),
+  containers(label: 'Lists & containers'),
 
   /// Dialogs, alerts, toast, bottom sheet, date & time pickers.
-  dialogs(
-    label: 'Dialogs & pickers',
-    description: 'Dialogs, alerts, toast, bottom sheet, date & time pickers',
-    routeAddress: 'dialogs',
-  );
+  dialogs(label: 'Dialogs & pickers');
 
-  /// Catalog row title.
+  /// Accordion section header label.
   final String label;
 
-  /// Catalog row subtitle.
-  final String description;
+  const WidgetCategory({required this.label});
 
-  /// Sub-path under the Catalog branch.
-  final String routeAddress;
-
-  const WidgetCategory({
-    required this.label,
-    required this.description,
-    required this.routeAddress,
-  });
-
-  /// The category's leading icon, adapted per platform.
+  /// The category's header icon, adapted per platform.
   Icon icon(BuildContext context) => Icon(_iconData(context));
 
   IconData _iconData(BuildContext context) => switch (this) {
