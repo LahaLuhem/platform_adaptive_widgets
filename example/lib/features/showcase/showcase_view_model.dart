@@ -1,64 +1,47 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
-import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
-import 'activity_level.dart';
+import '/features/core/navigation/platform_route.dart';
+import 'pushed_demo_page.dart';
 
-/// State for the Showcase profile screen: the editable display-name and bio
-/// fields, the notification master/sub toggles (the two subs are gated on the
-/// master), the activity-level segment, the daily step-goal slider, and the
-/// Save action that every primary affordance routes through.
+/// State for the "Under the hood" tab's interactive proofs: the tap counter
+/// that survives tab switches (proving the tab is kept alive, not rebuilt), the
+/// enable/disable gate, and the tri-state checkbox. Also routes the two page
+/// pushes through [pushPlatformRoute].
 final class ShowcaseViewModel extends ViewModel {
-  /// Seeds the header name and the Profile section's first field; the header
-  /// binds to this controller directly so it reflects edits live.
-  final displayNameController = TextEditingController(text: 'Alex Morgan');
-  final bioController = TextEditingController(text: 'Building adaptive Flutter apps.');
+  final _tapCountNotifier = ValueNotifier(0);
+  final _controlEnabledNotifier = ValueNotifier(true);
+  final _gatedValueNotifier = ValueNotifier(true);
+  final _checkboxValueNotifier = ValueNotifier<bool?>(false);
 
-  final _allowNotificationsNotifier = ValueNotifier(true);
-  final _soundNotifier = ValueNotifier(true);
-  final _showPreviewsNotifier = ValueNotifier(false);
-  final _activityLevelNotifier = ValueNotifier(ActivityLevel.regular);
-  final _stepGoalNotifier = ValueNotifier(0.5);
+  /// Tap count for the persistence probe — survives tab switches as long as the
+  /// tab's state is kept alive.
+  ValueListenable<int> get tapCountListenable => _tapCountNotifier;
 
-  /// Master toggle — gates [soundListenable] and [showPreviewsListenable].
-  ValueListenable<bool> get allowNotificationsListenable => _allowNotificationsNotifier;
+  /// Whether the gated control below the master switch is enabled.
+  ValueListenable<bool> get controlEnabledListenable => _controlEnabledNotifier;
 
-  ValueListenable<bool> get soundListenable => _soundNotifier;
+  ValueListenable<bool> get gatedValueListenable => _gatedValueNotifier;
 
-  ValueListenable<bool> get showPreviewsListenable => _showPreviewsNotifier;
+  ValueListenable<bool?> get checkboxValueListenable => _checkboxValueNotifier;
 
-  ValueListenable<ActivityLevel> get activityLevelListenable => _activityLevelNotifier;
+  void onProbeIncremented() => _tapCountNotifier.value++;
 
-  ValueListenable<double> get stepGoalListenable => _stepGoalNotifier;
+  void onControlEnabledToggled({required bool value}) => _controlEnabledNotifier.value = value;
 
-  void onAllowNotificationsToggled({required bool value}) =>
-      _allowNotificationsNotifier.value = value;
+  void onGatedToggled({required bool value}) => _gatedValueNotifier.value = value;
 
-  void onSoundToggled({required bool value}) => _soundNotifier.value = value;
+  void onCheckboxToggled({required bool? value}) => _checkboxValueNotifier.value = value;
 
-  void onShowPreviewsToggled({required bool value}) => _showPreviewsNotifier.value = value;
-
-  void onActivityLevelChanged(ActivityLevel? level) => _activityLevelNotifier.value = level!;
-
-  void onStepGoalChanged({required double value}) => _stepGoalNotifier.value = value;
-
-  Future<void> onSavePressed() => showPlatformToast(context: context, message: 'Profile saved');
-
-  Future<void> onPrivacyPressed() =>
-      showPlatformToast(context: context, message: 'Privacy & security');
-
-  Future<void> onSignOutPressed() => showPlatformToast(context: context, message: 'Signed out');
+  Future<void> onPushPagePressed({required bool large}) =>
+      pushPlatformRoute(context, (_) => PushedDemoPage(large: large));
 
   @override
   void dispose() {
-    displayNameController.dispose();
-    bioController.dispose();
-    _allowNotificationsNotifier.dispose();
-    _soundNotifier.dispose();
-    _showPreviewsNotifier.dispose();
-    _activityLevelNotifier.dispose();
-    _stepGoalNotifier.dispose();
+    _tapCountNotifier.dispose();
+    _controlEnabledNotifier.dispose();
+    _gatedValueNotifier.dispose();
+    _checkboxValueNotifier.dispose();
 
     super.dispose();
   }

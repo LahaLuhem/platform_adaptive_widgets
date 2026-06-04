@@ -10,8 +10,8 @@ enum RootTab {
   /// Browse the widget catalog by category.
   catalog(label: 'Catalog'),
 
-  /// A realistic screen composed from the library's widgets.
-  showcase(label: 'Showcase'),
+  /// The deliberate, easy-to-get-wrong details the library handles for you.
+  showcase(label: 'Under the hood'),
 
   /// Library info and the appearance (theme-mode) control.
   about(label: 'About');
@@ -33,8 +33,8 @@ enum RootTab {
       cupertino: CupertinoIcons.square_grid_2x2,
     ),
     .showcase => context.platformIcon(
-      material: isActive ? Icons.auto_awesome : Icons.auto_awesome_outlined,
-      cupertino: CupertinoIcons.sparkles,
+      material: isActive ? Icons.engineering : Icons.engineering_outlined,
+      cupertino: CupertinoIcons.gear,
     ),
     .about => context.platformIcon(
       material: isActive ? Icons.info : Icons.info_outline,
