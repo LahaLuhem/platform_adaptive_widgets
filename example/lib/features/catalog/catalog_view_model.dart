@@ -1,39 +1,40 @@
-import 'package:go_router/go_router.dart';
+import 'package:flutter/widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
-import '/features/catalog/categories/buttons/buttons_demo_view.dart';
-import '/features/catalog/categories/containers/containers_demo_view.dart';
-import '/features/catalog/categories/dialogs/dialogs_demo_view.dart';
-import '/features/catalog/categories/selection/selection_demo_view.dart';
-import '/features/catalog/categories/text/text_demo_view.dart';
-import '/features/core/models/app_args.dart';
 import '/features/core/models/widget_category.dart';
-import '/features/core/navigation/platform_route.dart';
 
-/// Drives navigation from the Catalog list into each category's detail page.
-/// Routes through go_router branches when the router owns navigation, otherwise
-/// pushes a platform-adaptive page directly.
+/// Owns one [ExpansibleController] per [WidgetCategory] so the Catalog accordion
+/// can expand or collapse every section at once — letting the reader flip
+/// between an everything-open flat scroll and a compact, scannable list. Each
+/// section starts expanded (via the controller, the only cross-platform way —
+/// `initiallyExpanded` is Material-only) so the widgets are immediately
+/// hands-on.
 final class CatalogViewModel extends ViewModel {
-  /// Host args — selects the navigation backend.
-  final AppArgs args;
+  final _sectionControllers = {
+    for (final category in WidgetCategory.values) category: ExpansibleController()..expand(),
+  };
 
-  CatalogViewModel(this.args);
+  /// The expansion controller bound to [category]'s section.
+  ExpansibleController controllerFor(WidgetCategory category) => _sectionControllers[category]!;
 
-  /// Opens [category]'s detail page.
-  Future<void> onCategoryPressed(WidgetCategory category) {
-    if (args.isUsingGoRouter) {
-      return context.pushNamed(category.name);
+  void onExpandAllPressed() {
+    for (final controller in _sectionControllers.values) {
+      if (!controller.isExpanded) controller.expand();
+    }
+  }
+
+  void onCollapseAllPressed() {
+    for (final controller in _sectionControllers.values) {
+      if (controller.isExpanded) controller.collapse();
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final controller in _sectionControllers.values) {
+      controller.dispose();
     }
 
-    return pushPlatformRoute(
-      context,
-      (_) => switch (category) {
-        .buttons => const ButtonsDemoView(),
-        .selection => const SelectionDemoView(),
-        .text => const TextDemoView(),
-        .containers => const ContainersDemoView(),
-        .dialogs => const DialogsDemoView(),
-      },
-    );
+    super.dispose();
   }
 }

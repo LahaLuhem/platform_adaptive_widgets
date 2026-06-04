@@ -23,7 +23,7 @@ class RootTabsView extends StatelessWidget {
           activeIcon: tab.activeIcon(context),
           label: tab.label,
           view: switch (tab) {
-            .catalog => const CatalogView(args: _args),
+            .catalog => const CatalogView(),
             .showcase => const ShowcaseView(),
             .about => const AboutView(args: _args),
           },

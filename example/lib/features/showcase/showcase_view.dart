@@ -152,7 +152,7 @@ class ShowcaseView extends StatelessWidget {
                       ),
                     ),
                     title: const Text('Privacy & security'),
-                    trailing: const PlatformIcon(PlatformIcons.forward),
+                    trailing: const PlatformIcon(.forward),
                     onTap: viewModel.onPrivacyPressed,
                   ),
                   PlatformListTile(
@@ -163,7 +163,7 @@ class ShowcaseView extends StatelessWidget {
                       ),
                     ),
                     title: const Text('Sign out'),
-                    trailing: const PlatformIcon(PlatformIcons.forward),
+                    trailing: const PlatformIcon(.forward),
                     onTap: viewModel.onSignOutPressed,
                   ),
                 ],
