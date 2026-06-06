@@ -1,4 +1,4 @@
-## [Unreleased]
+## [2.0.0] - 2026-06-06
 ### Added
 - PlatformToast (showPlatformToast): a transient, self-dismissing message - Material SnackBar on Android and a custom HUD-style banner on iOS; configured via MaterialToastData / CupertinoToastData
 - PlatformAcknowledge (showPlatformAcknowledge): a must-acknowledge single-OK alert built on showPlatformAlertDialog
@@ -132,5 +132,5 @@
 - Platform scrollbar
 - Platform text-field
 
-[Unreleased]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/1.1.0...HEAD
+[2.0.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/1.1.0...2.0.0
 [1.1.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/1.0.5...1.1.0
