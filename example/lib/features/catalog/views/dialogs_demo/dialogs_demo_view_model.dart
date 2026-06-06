@@ -16,7 +16,24 @@ final class DialogsDemoViewModel extends ViewModel {
 
   Future<void> onShowDialogPressed() => showPlatformDialog(
     context: context,
-    builder: (_) => const Center(child: Text('A centered platform dialog.')),
+    // Custom content must carry its own dismiss affordance: iOS doesn't dismiss
+    // a centered dialog by tapping the barrier (HIG), and has no back button.
+    builder: (context) => Padding(
+      padding: const .all(24),
+      child: Column(
+        mainAxisSize: .min,
+        spacing: 16,
+        children: [
+          const Text('A centered platform dialog.'),
+          if (isIOS)
+            PlatformButton(
+              onPressed: () => Navigator.maybeOf(context)?.pop(),
+              materialButtonVariant: .text,
+              child: const Text('Done'),
+            ),
+        ],
+      ),
+    ),
   );
 
   Future<void> onShowAlertDialogPressed() => showPlatformAlertDialog(
@@ -24,10 +41,6 @@ final class DialogsDemoViewModel extends ViewModel {
     title: const Text('Alert'),
     content: const Text('Actions adapt their layout and styling to the platform.'),
     actions: [
-      PlatformDialogAction(
-        onPressed: (context) => Navigator.maybeOf(context)?.pop(),
-        child: const Text('Cancel'),
-      ),
       PlatformDialogAction(
         isDefaultAction: true,
         onPressed: (context) => Navigator.maybeOf(context)?.pop(),
@@ -37,6 +50,10 @@ final class DialogsDemoViewModel extends ViewModel {
         isDestructiveAction: true,
         onPressed: (context) => Navigator.maybeOf(context)?.pop(),
         child: const Text('Delete'),
+      ),
+      PlatformDialogAction(
+        onPressed: (context) => Navigator.maybeOf(context)?.pop(),
+        child: const Text('Cancel'),
       ),
     ],
   );

@@ -1,5 +1,5 @@
 import 'package:cupertino_ui/cupertino_ui.dart'
-    show CupertinoAlertDialog, CupertinoDialogAction, showCupertinoDialog;
+    show CupertinoAlertDialog, CupertinoDialogAction, CupertinoPopupSurface, showCupertinoDialog;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart'
@@ -12,10 +12,23 @@ import '/src/models/platform_widget_base.dart';
 
 part 'platform_alert_dialog.dart';
 
-/// Shows a centered modal dialog. The [builder]'s widget is wrapped in
-/// Material [Dialog] on Android and shown via [showDialog]; on iOS the widget
-/// is passed directly to [showCupertinoDialog] (Cupertino's modal route is its
-/// own visual shell — no equivalent of `Dialog` wrapping is needed).
+/// Shows a centered modal dialog. The [builder]'s widget is wrapped in a
+/// platform dialog surface: Material [Dialog] on Android (via [showDialog]),
+/// and a screen-centered [CupertinoPopupSurface] on iOS (via
+/// [showCupertinoDialog], whose route paints only the barrier, not a surface).
+///
+/// Pass intrinsically-sized content (e.g. a [Column] with
+/// `mainAxisSize: MainAxisSize.min`). The Cupertino route hands the builder the
+/// full screen, so an unbounded child — a [Center], or a default-`max` [Column]
+/// — stretches the surface to fill it.
+///
+/// **Dismissal on iOS:** the barrier is not tap-to-dismiss by default
+/// (`barrierDismissible` is `false` — matching the iOS HIG, where alerts are
+/// dismissed by a button, not by tapping outside). Give the content its own
+/// dismiss / confirm affordance (e.g. a button that pops the route), or the
+/// dialog is a dead-end on iOS — there is no system back button. Pass
+/// `barrierDismissible: true` only to opt into the non-standard tap-outside
+/// behaviour.
 ///
 /// For fullscreen modals, use [showPlatformFullscreenDialog] — that variant
 /// uses [Dialog.fullscreen] on Material and exposes only the fullscreen-valid
@@ -42,7 +55,7 @@ part 'platform_alert_dialog.dart';
 ///   context: context,
 ///   builder: (context) => Padding(
 ///     padding: const EdgeInsets.all(16),
-///     child: Column(children: [
+///     child: Column(mainAxisSize: MainAxisSize.min, children: [
 ///       ...,
 ///       TextButton(
 ///         onPressed: () => Navigator.maybeOf(context)?.pop('chosen'),
@@ -109,7 +122,8 @@ Future<T?> showPlatformDialog<T>({
     ),
     .iOS => _showCupertinoDialog(
       context: context,
-      builder: cupertinoBuilder ?? builder!,
+      // iOS counterpart to the Android Dialog wrap — see _cupertinoDialogSurface.
+      builder: _cupertinoDialogSurface(cupertinoBuilder ?? builder!),
       anchorPoint: anchorPoint,
       barrierColor: barrierColor,
       barrierDismissible: barrierDismissible,
@@ -125,9 +139,9 @@ Future<T?> showPlatformDialog<T>({
 /// Shows a fullscreen modal dialog. The [builder]'s widget is wrapped in
 /// Material [Dialog.fullscreen] on Android (and shown via [showDialog] with
 /// `fullscreenDialog: true` to also flip the route presentation); on iOS the
-/// widget is passed directly to [showCupertinoDialog] — Cupertino has no
-/// native fullscreen-dialog concept, so the iOS branch presents the same
-/// centered dialog as [showPlatformDialog].
+/// widget is wrapped in a screen-centered [CupertinoPopupSurface] and shown via
+/// [showCupertinoDialog] — Cupertino has no native fullscreen-dialog concept,
+/// so the iOS branch presents the same centered dialog as [showPlatformDialog].
 ///
 /// Material's surface is split: [MaterialFullscreenDialogData] exposes only
 /// the [Dialog.fullscreen]-valid params (background, animation, semantics,
@@ -137,7 +151,9 @@ Future<T?> showPlatformDialog<T>({
 /// — this kills the v1 footgun where they were silently dropped when
 /// `fullscreenDialog: true` was set.
 ///
-/// Content-builder selection follows the same rules as [showPlatformDialog].
+/// Content-builder selection — and the iOS dismissal caveat (the barrier isn't
+/// tap-to-dismiss by default, so content needs its own dismiss affordance) —
+/// follows the same rules as [showPlatformDialog].
 Future<T?> showPlatformFullscreenDialog<T>({
   required BuildContext context,
   WidgetBuilder? builder,
@@ -185,7 +201,8 @@ Future<T?> showPlatformFullscreenDialog<T>({
     ),
     .iOS => _showCupertinoDialog(
       context: context,
-      builder: cupertinoBuilder ?? builder!,
+      // iOS counterpart to the Android Dialog wrap — see _cupertinoDialogSurface.
+      builder: _cupertinoDialogSurface(cupertinoBuilder ?? builder!),
       anchorPoint: anchorPoint,
       barrierColor: barrierColor,
       barrierDismissible: barrierDismissible,
@@ -285,3 +302,16 @@ Future<T?> _showCupertinoDialog<T>({
   useRootNavigator: useRootNavigator,
   requestFocus: requestFocus,
 );
+
+/// Wraps [content] in a screen-centered [CupertinoPopupSurface] — the iOS
+/// counterpart to the Material [Dialog] the Android branch applies in
+/// [showPlatformDialog] / [showPlatformFullscreenDialog]. Needed because
+/// [showCupertinoDialog]'s route paints only the barrier and runs the transition
+/// (its transition builder returns the child unchanged); the route is *not* a
+/// visual shell, so unwrapped content would float on the dim with no card.
+///
+/// Deliberately not folded into [_showCupertinoDialog]: [showPlatformAlertDialog]
+/// builds its own [CupertinoAlertDialog] (which already carries a surface), so it
+/// must skip this to avoid double-wrapping.
+WidgetBuilder _cupertinoDialogSurface(WidgetBuilder content) =>
+    (context) => Center(child: CupertinoPopupSurface(child: content(context)));

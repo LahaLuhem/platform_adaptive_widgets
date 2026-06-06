@@ -2,7 +2,7 @@
 const kDefaultUseRootNavigator = true;
 
 /// Default barrier dismissibility for Material dialogs.
-const kMaterialBarrierDismissible = false;
+const kMaterialBarrierDismissible = true;
 
 /// Default barrier dismissibility for Cupertino dialogs.
-const kCupertinoBarrierDismissible = true;
+const kCupertinoBarrierDismissible = false;

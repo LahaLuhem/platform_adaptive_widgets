@@ -1,4 +1,4 @@
-import 'package:cupertino_ui/cupertino_ui.dart' show showCupertinoModalPopup;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoPopupSurface, showCupertinoModalPopup;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show showModalBottomSheet;
@@ -8,7 +8,9 @@ import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 
 /// Shows a platform-adaptive modal popup that slides up from the bottom of
 /// the screen. Material [showModalBottomSheet] on Android,
-/// [showCupertinoModalPopup] on iOS.
+/// [showCupertinoModalPopup] on iOS — with the iOS content wrapped in a
+/// [CupertinoPopupSurface], since that route only positions and dims (it paints
+/// no sheet surface of its own, unlike Material's bottom sheet).
 ///
 /// These two upstream APIs are conceptually similar (a modal that takes over
 /// the bottom portion of the screen) but expose largely disjoint param sets —
@@ -93,7 +95,10 @@ Future<T?> showPlatformModalBottomSheet<T>({
     ),
     .iOS => showCupertinoModalPopup(
       context: context,
-      builder: cupertinoBuilder ?? builder!,
+      // Wrap in a CupertinoPopupSurface — the popup route only positions and
+      // dims; it paints no surface, so unwrapped content has no sheet behind it.
+      // (The route bottom-aligns the child, so no Center is needed here.)
+      builder: (context) => CupertinoPopupSurface(child: (cupertinoBuilder ?? builder!)(context)),
       filter: cupertinoModalPopupData?.filter,
       barrierColor:
           cupertinoModalPopupData?.barrierColor ?? kDefaultCupertinoModalPopupBarrierColor,
