@@ -279,7 +279,7 @@ style.
   it. Within constructors, unnamed first, then factories. Static helpers go after the
   methods. Applies to data classes (`PlatformDialogData`, `PlatformButtonData`, …),
   widget classes (`PlatformButton`, `PlatformScaffold`), and helper types
-  (`TabDestination`, `HomeViewArgs`) — wherever a class has both state and a
+  (`TabDestination`, `AppArgs`) — wherever a class has both state and a
   constructor. The abstract `PlatformWidgetBase` family follows the same ordering
   even though most members are abstract.
 - **`assert` for dev-time errors, `throw` for runtime ones.** Constraints a caller can
@@ -321,7 +321,7 @@ style.
   in the constructor signature (cross-parameter conditions, value-range checks,
   Iterable-length constraints, etc.).
 - **Value types override `toString`.** Immutable data classes (`Date`,
-  `TabDestination`, the various `*Data` value records, `HomeViewArgs`) implement
+  `TabDestination`, the various `*Data` value records) implement
   `toString()` returning `'ClassName(field1: value1, field2: value2)'`. The default
   `Instance of 'ClassName'` is hostile in logs, exception traces, and `print`
   debugging. Include every field with a meaningful string representation;

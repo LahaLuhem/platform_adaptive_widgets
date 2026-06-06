@@ -109,7 +109,7 @@ make the read-site speak plain English. The bare-noun form (`acceptAny`,
 | `isRunning`          | (removed — view-local; [Async-action buttons](#async-action-buttons))     |
 
 **`is` prefix is allowed for true state-of-being predicates** that are not user
-toggles — `HomeViewArgs.isUsingGoRouter` (the navigation mode the host chose) reads
+toggles — `AppArgs.isUsingGoRouter` (the navigation mode the host chose) reads
 as a fact, not a preference, so `is` stays. The `should` form is for what the user
 *wants*; the `is` form is for what the world *is*.
 
@@ -171,7 +171,7 @@ Apply this ordering to every `ViewModel` subclass. It lets a reader scan depende
 backtracking.
 
 1. **External-ref fields** — DI / services held by reference (the example has none
-   today, but `HomeViewArgs`-style args land here if introduced).
+   today, but `AppArgs`-style args land here if introduced).
 2. **Constructors** — unnamed first, then factories. Constructors assign to the
    external-ref fields.
 3. **State fields** — notifiers, controllers, `late` connections, subscriptions.
@@ -329,6 +329,6 @@ The router-flavoured entry point lives in
   new route to switch tabs in this mode — go_router's branch-switching is the
   contract.
 - **Features that demonstrate router-only flows** (sub-routes, deep links) gate
-  their UI on `HomeViewArgs.isUsingGoRouter`. The router-less `main.dart` passes
+  their UI on `AppArgs.isUsingGoRouter`. The router-less `main.dart` passes
   `isUsingGoRouter: false`; `main_go_router.dart` passes `true`. The pattern keeps
   both entry points runnable without compile-time forking.
