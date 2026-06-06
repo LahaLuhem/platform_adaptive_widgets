@@ -1,4 +1,6 @@
 {
+  "url": "https://context7.com/lahaluhem/platform_adaptive_widgets",
+  "public_key": "pk_zRQqaALefsVNkJ7uS6fVf",
   "projectTitle": "Platform Adaptive Widgets",
   "description": "Flutter package exposing PlatformXxx widgets that render Material on Android and Cupertino on iOS without app-code branching.",
   "branch": "master",
