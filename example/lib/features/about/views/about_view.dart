@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:material_ui/material_ui.dart' show Icons, ThemeMode;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
+import '/app/platform_scope.dart';
 import '/app/theme_scope.dart';
 import '/features/about/widgets/labeled_section.dart';
 import '/features/core/data/models/app_args.dart';
@@ -24,6 +25,7 @@ class AboutView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeModeNotifier = ThemeScope.of(context);
+    final platformNotifier = PlatformScope.of(context);
     final primaryColor = PlatformTheme.of(context).primaryColor;
 
     return PlatformScaffold(
@@ -65,6 +67,27 @@ class AboutView extends StatelessWidget {
                   segmentBuilder: (mode) => Text(_themeModeLabel(mode)),
                   onSelectionChanged: (mode) => themeModeNotifier.value = mode!,
                 ),
+              ),
+            ),
+            const Gap(24),
+            LabeledSection(
+              title: 'Platform',
+              child: Column(
+                crossAxisAlignment: .start,
+                spacing: 8,
+                children: [
+                  ValueListenableBuilder(
+                    valueListenable: platformNotifier,
+                    builder: (_, platformOverride, _) => PlatformSegmentButton(
+                      choices: const [TargetPlatform.android, TargetPlatform.iOS],
+                      // null = follow the device; show the effective platform.
+                      selectedChoice: platformOverride ?? defaultTargetPlatform,
+                      segmentBuilder: (platform) => Text(platform.name),
+                      onSelectionChanged: (platform) => platformNotifier.value = platform,
+                    ),
+                  ),
+                  const Text('Preview the other platform without its device. Debug builds only.'),
+                ],
               ),
             ),
             const Gap(24),
