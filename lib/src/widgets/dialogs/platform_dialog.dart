@@ -215,6 +215,79 @@ Future<T?> showPlatformFullscreenDialog<T>({
   };
 }
 
+/// Shows a raw, unopinionated modal dialog: the content is passed **without any
+/// surface wrapping** to [showDialog] on Android and [showCupertinoDialog] on
+/// iOS. Unlike [showPlatformDialog], the package adds no [Dialog] /
+/// [CupertinoPopupSurface] around your widget — you own the surface, or render
+/// none (a floating image, a custom-painted card, an onboarding coachmark).
+/// Both routes still provide the platform-native barrier and transition, so you
+/// get adaptive presentation without hand-rolling a
+/// `switch (defaultTargetPlatform)`.
+///
+/// Reach for this over [showPlatformDialog] when its centered card gets in the
+/// way — e.g. dropping in your own [CupertinoAlertDialog] or a custom-shaped
+/// surface on iOS without it being double-wrapped, or presenting full-bleed
+/// media.
+///
+/// **Dismissal on iOS** is unchanged from [showPlatformDialog]: the barrier is
+/// not tap-to-dismiss by default and there is no system back button, so the
+/// content must carry its own dismiss affordance (or pass
+/// `barrierDismissible: true`).
+///
+/// Content-builder selection follows the same rules as [showPlatformDialog]. No
+/// Material `*Data` record is exposed — there is no [Dialog] to configure.
+Future<T?> showRawDialog<T>({
+  required BuildContext context,
+  WidgetBuilder? builder,
+  WidgetBuilder? materialBuilder,
+  WidgetBuilder? cupertinoBuilder,
+  Offset? anchorPoint,
+  Color? barrierColor,
+  bool? barrierDismissible,
+  String? barrierLabel,
+  RouteSettings? routeSettings,
+  bool useRootNavigator = kDefaultUseRootNavigator,
+  bool? requestFocus,
+}) {
+  _assertBuilderInvariant(
+    hasBuilder: builder != null,
+    hasMaterialBuilder: materialBuilder != null,
+    hasCupertinoBuilder: cupertinoBuilder != null,
+  );
+
+  return switch (defaultTargetPlatform) {
+    .android => _showMaterialDialog(
+      context: context,
+      // No Dialog wrap — the caller owns the surface.
+      builder: materialBuilder ?? builder!,
+      isFullscreenRoute: false,
+      anchorPoint: anchorPoint,
+      barrierColor: barrierColor,
+      barrierDismissible: barrierDismissible,
+      barrierLabel: barrierLabel,
+      routeSettings: routeSettings,
+      useRootNavigator: useRootNavigator,
+      requestFocus: requestFocus,
+      animationStyle: null,
+      traversalEdgeBehavior: null,
+      useSafeArea: kDefaultMaterialDialogUseSafeArea,
+    ),
+    .iOS => _showCupertinoDialog(
+      context: context,
+      // No CupertinoPopupSurface wrap — the caller owns the surface.
+      builder: cupertinoBuilder ?? builder!,
+      anchorPoint: anchorPoint,
+      barrierColor: barrierColor,
+      barrierDismissible: barrierDismissible,
+      barrierLabel: barrierLabel,
+      routeSettings: routeSettings,
+      useRootNavigator: useRootNavigator,
+      requestFocus: requestFocus,
+    ),
+    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+  };
+}
+
 /// Asserts exactly one of the two valid builder-input shapes was used:
 /// `builder` alone, or both `materialBuilder` and `cupertinoBuilder` together.
 ///
