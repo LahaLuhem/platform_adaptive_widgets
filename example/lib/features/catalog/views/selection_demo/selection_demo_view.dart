@@ -21,12 +21,11 @@ class SelectionDemoView extends StatelessWidget {
       children: [
         DemoCard(
           title: 'Checkbox',
-          description: 'Tri-state — taps cycle checked, unchecked and null.',
+          description: 'Material Checkbox · CupertinoCheckbox.',
           child: ValueListenableBuilder(
             valueListenable: viewModel.checkboxValueListenable,
             builder: (_, checkboxValue, _) => PlatformCheckbox(
               value: checkboxValue,
-              tristate: true,
               onChanged: (value) => viewModel.onCheckboxToggled(value: value),
             ),
           ),

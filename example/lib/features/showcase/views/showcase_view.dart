@@ -107,17 +107,17 @@ class ShowcaseView extends StatelessWidget {
               NuanceCard(
                 title: 'Tri-state, faithfully',
                 body:
-                    'The Material checkbox has a third, indeterminate state; Cupertino has '
-                    'none. PlatformCheckbox carries tristate across both and renders null as '
-                    'the closest platform equivalent. Tap to cycle true, false, null.',
+                    'Both the Material and Cupertino checkboxes have a native third, '
+                    'indeterminate state — rendered as a dash rather than a check. '
+                    'PlatformCheckbox.tristate exposes it on both: value and onChanged go '
+                    'nullable, and taps cycle true, false, null.',
                 demo: ValueListenableBuilder(
                   valueListenable: viewModel.checkboxValueListenable,
                   builder: (_, value, _) => Row(
                     spacing: 12,
                     children: [
-                      PlatformCheckbox(
+                      PlatformCheckbox.tristate(
                         value: value,
-                        tristate: true,
                         onChanged: (newValue) => viewModel.onCheckboxToggled(value: newValue),
                       ),
                       Text('Value: $value'),

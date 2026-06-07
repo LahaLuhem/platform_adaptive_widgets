@@ -208,6 +208,64 @@ When a widget is fundamentally interactive but a caller wants a display-only
 variant, the right answer is to use a different widget (e.g. `Text` instead of
 `PlatformButton` with a no-op callback), not to make the callback nullable.
 
+<a id="checkbox-tristate-split"></a>
+### Tristate checkbox split
+
+`PlatformCheckbox`'s default constructor exposes non-null `value: bool` /
+`onChanged: ValueChanged<bool>` — the common two-state case. The indeterminate
+(third) state — supported natively on both platforms — is a second constructor,
+`PlatformCheckbox.tristate`, whose `value` / `onChanged` are nullable (`bool?`).
+
+**Why not one `tristate`-flagged widget with nullable `value` / `onChanged`
+(Flutter's own shape).** That forces the nullability dance (`v!`, `v ?? false`,
+`bool?`-typed state) onto the *common* two-state caller, contradicting
+[#callback-nullability](#callback-nullability): the package's interactive
+widgets give callers non-null callbacks, with `PlatformSwitch` as the model.
+The checkbox is the one control with a genuine third state, so the third state
+gets its own constructor and the default stays non-null. Dropping tristate
+entirely was rejected — both platforms support the indeterminate state natively
+(Cupertino renders `null` as a dash, like Material), and it's demonstrated in
+the example.
+
+**Why two constructors on one class can't share a single `onChanged` field.**
+`buildMaterial` / `buildCupertino` hand `onChanged` to `Checkbox` /
+`CupertinoCheckbox`, both of which type it `ValueChanged<bool?>?`, so a stored
+callback must be `ValueChanged<bool?>`. `value` *can* be one shared `bool?`
+field (the default constructor narrows it with a `required bool this.value`
+formal — `bool` is a subtype of `bool?`), but `onChanged` cannot: function
+parameters are contravariant, so `ValueChanged<bool>` is a *supertype* of
+`ValueChanged<bool?>`, and storing the default's `ValueChanged<bool>` into a
+`ValueChanged<bool?>` field needs an adapter closure — which can't run in a
+`const` constructor.
+
+**How.** Two **private** callback fields — `_onChanged` (`ValueChanged<bool>?`)
+and `_onChangedTristate` (`ValueChanged<bool?>?`), exactly one non-null per
+instance — keep both constructors `const`. The default ctor binds its callback
+as a `this._onChanged` initializing formal *typed* `ValueChanged<bool>`: Dart
+drops the leading underscore, so callers still pass a non-null `onChanged:` and
+no `prefer_initializing_formals` ignore is needed. Private fields as named
+initializing formals is a Dart 3.12 feature, gated by the package's
+`sdk: >=3.12.0` constraint. (Omit the type and the formal inherits the field's
+nullable type, silently re-opening `onChanged` to `null` — the bug to avoid.) The `.tristate` ctor assigns in the initializer list instead;
+it can't use the formal because its field `_onChangedTristate` would surface as
+`onChangedTristate`, while its public parameter must also be `onChanged` (the
+lint leaves that assignment alone for the same reason). Widening to the
+underlying `ValueChanged<bool?>?` happens at *build* time, not construction (so
+both ctors stay `const`): build uses `_onChangedTristate ?? _adaptedOnChanged`,
+with `_adaptedOnChanged` = `(v) => _onChanged!(v!)` — safe, reached only in
+two-state mode where `tristate: false` never yields null. `_isTristate` is
+`_onChangedTristate != null`.
+
+**Chosen over two sibling classes** (`PlatformCheckbox` +
+`PlatformTristateCheckbox`) for the single discoverable name plus a `.tristate`
+constructor. The costs are minor and accepted:
+- One extra null pointer-slot per instance (the unused callback field). Not a
+  heap allocation — `null` doesn't allocate — and object layout is per-class,
+  so it isn't elided; ~8 bytes on an immutable widget.
+- `value` is one `bool?` field, so `widget.value` reads back as `bool?` even on
+  the two-state path (the default constructor still rejects `null` at the call
+  site via the narrowing formal).
+
 ### Carve-outs
 
 - **Callbacks tightly coupled to a single visual field** (e.g.

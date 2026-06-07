@@ -6,12 +6,12 @@ import 'package:pmvvm/pmvvm.dart';
 /// menu picker all read and write [selectedDirectionListenable], so changing
 /// one updates the others — a small showcase of shared `ValueNotifier` state.
 final class SelectionDemoViewModel extends ViewModel {
-  final _checkboxValueNotifier = ValueNotifier<bool?>(true);
+  final _checkboxValueNotifier = ValueNotifier(true);
   final _isSwitchOnNotifier = ValueNotifier(false);
   final _sliderValueNotifier = ValueNotifier<double>(0);
   final _selectedDirectionNotifier = ValueNotifier(AxisDirection.left);
 
-  ValueListenable<bool?> get checkboxValueListenable => _checkboxValueNotifier;
+  ValueListenable<bool> get checkboxValueListenable => _checkboxValueNotifier;
 
   ValueListenable<bool> get isSwitchOnListenable => _isSwitchOnNotifier;
 
@@ -19,7 +19,7 @@ final class SelectionDemoViewModel extends ViewModel {
 
   ValueListenable<AxisDirection> get selectedDirectionListenable => _selectedDirectionNotifier;
 
-  void onCheckboxToggled({required bool? value}) => _checkboxValueNotifier.value = value;
+  void onCheckboxToggled({required bool value}) => _checkboxValueNotifier.value = value;
 
   void onSwitchToggled({required bool value}) => _isSwitchOnNotifier.value = value;
 
