@@ -36,6 +36,16 @@ final class DialogsDemoViewModel extends ViewModel {
     ),
   );
 
+  Future<void> onShowRawDialogPressed() => showPlatformRawDialog(
+    context: context,
+    // Raw: no Dialog / CupertinoPopupSurface wrap
+    // `barrierDismissible: true` opts into tap-outside dismissal
+    barrierDismissible: true,
+    builder: (_) => const Center(
+      child: Text('A raw dialog — the package adds no card here.\nTap outside to dismiss.'),
+    ),
+  );
+
   Future<void> onShowAlertDialogPressed() => showPlatformAlertDialog(
     context: context,
     title: const Text('Alert'),
@@ -78,6 +88,18 @@ final class DialogsDemoViewModel extends ViewModel {
           'A modal bottom sheet — a Material sheet on Android, an action-sheet-style '
           'popup on iOS.',
         ),
+      ),
+    ),
+  );
+
+  Future<void> onShowRawBottomSheetPressed() => showPlatformRawModalBottomSheet(
+    context: context,
+    // Raw: no CupertinoPopupSurface wrap — the content floats on iOS (Android
+    // keeps showModalBottomSheet's own native Material sheet).
+    builder: (_) => const SafeArea(
+      child: Padding(
+        padding: .all(24),
+        child: Text('A raw bottom sheet — the package adds no surface on iOS.'),
       ),
     ),
   );

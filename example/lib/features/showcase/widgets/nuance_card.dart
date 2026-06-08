@@ -56,7 +56,7 @@ class _CodeBlock extends StatelessWidget {
     // 12: code-block inset (between the 8 and 16 steps).
     padding: const .all(12),
     decoration: BoxDecoration(
-      color: PlatformTheme.of(context).primaryColor.withValues(alpha: 0.10),
+      color: PlatformTheme.of(context).primaryColor.withValues(alpha: 0.1),
       borderRadius: const .all(.circular(8)),
     ),
     child: Text(code, style: const TextStyle(fontFamily: 'monospace', fontSize: 13)),

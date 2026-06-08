@@ -11,6 +11,9 @@ import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 /// The iOS content wrapped in a [CupertinoPopupSurface], since that route only positions and dims
 /// (it paints no sheet surface of its own, unlike Material's bottom sheet).
 ///
+/// To skip the iOS [CupertinoPopupSurface] wrap — e.g. to drop in a `CupertinoActionSheet`
+/// without double-chroming it — use [showPlatformRawModalBottomSheet].
+///
 /// These two upstream APIs are conceptually similar (a modal that takes over the bottom portion of the screen)
 /// but expose largely disjoint param sets. Material has a rich set of sheet-shape / drag / safe-area knobs,
 /// Cupertino has fewer (filter, barrier, semantics). Common show-function args are flat on this function;
@@ -89,7 +92,7 @@ Future<T?> showPlatformModalBottomSheet<T>({
 /// dispatch and the platform-native transition.
 ///
 /// Accepts the same parameters as [showPlatformModalBottomSheet]; only the iOS [CupertinoPopupSurface] wrap is dropped.
-Future<T?> showRawModalBottomSheet<T>({
+Future<T?> showPlatformRawModalBottomSheet<T>({
   required BuildContext context,
   WidgetBuilder? builder,
   WidgetBuilder? materialBuilder,
@@ -135,7 +138,7 @@ Future<T?> showRawModalBottomSheet<T>({
 /// `materialBuilder` and `cupertinoBuilder` together. Mirrors the dialog-side check; takes the args'
 /// *nullness* (booleans) rather than the builders so it can't name `material*`/`cupertino*`
 /// function-typed params and trip the AOT-pruning guard (`test/aot_pruning_regression_test.dart`).
-/// Used by [showPlatformModalBottomSheet] and [showRawModalBottomSheet].
+/// Used by [showPlatformModalBottomSheet] and [showPlatformRawModalBottomSheet].
 void _assertBuilderInvariant({
   required bool hasBuilder,
   required bool hasMaterialBuilder,
@@ -196,7 +199,7 @@ Future<T?> _showMaterialModalBottomSheet<T>({
 
 /// Shared Cupertino-side plumbing — see [_showMaterialModalBottomSheet]. Callers
 /// pass an already-shaped [builder]: wrapped in [CupertinoPopupSurface] by
-/// [showPlatformModalBottomSheet], or bare by [showRawModalBottomSheet].
+/// [showPlatformModalBottomSheet], or bare by [showPlatformRawModalBottomSheet].
 Future<T?> _showCupertinoModalPopup<T>({
   required BuildContext context,
   required WidgetBuilder builder,

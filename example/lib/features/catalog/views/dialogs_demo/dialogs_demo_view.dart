@@ -25,6 +25,14 @@ class DialogsDemoView extends StatelessWidget {
           ),
         ),
         DemoCard(
+          title: 'Raw dialog',
+          description: 'No surface wrap — you supply the surface (or none).',
+          child: PlatformButton(
+            onPressed: viewModel.onShowRawDialogPressed,
+            child: const Text('Show raw dialog'),
+          ),
+        ),
+        DemoCard(
           title: 'Alert dialog',
           description: 'Title, message, and adaptive action buttons.',
           child: PlatformButton(
@@ -46,6 +54,14 @@ class DialogsDemoView extends StatelessWidget {
           child: PlatformButton(
             onPressed: viewModel.onShowBottomSheetPressed,
             child: const Text('Show bottom sheet'),
+          ),
+        ),
+        DemoCard(
+          title: 'Raw bottom sheet',
+          description: 'No surface wrap — content floats on iOS; Android keeps its native sheet.',
+          child: PlatformButton(
+            onPressed: viewModel.onShowRawBottomSheetPressed,
+            child: const Text('Show raw bottom sheet'),
           ),
         ),
         DemoCard(

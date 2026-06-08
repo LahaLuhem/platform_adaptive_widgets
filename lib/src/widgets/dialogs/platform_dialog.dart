@@ -17,6 +17,9 @@ part 'platform_alert_dialog.dart';
 /// and a screen-centered [CupertinoPopupSurface] on iOS (via
 /// [showCupertinoDialog], whose route paints only the barrier, not a surface).
 ///
+/// To skip the surface wrap entirely — supplying your own surface, or none (a
+/// floating image, a custom card) — use [showPlatformRawDialog].
+///
 /// Pass intrinsically-sized content (e.g. a [Column] with
 /// `mainAxisSize: MainAxisSize.min`). The Cupertino route hands the builder the
 /// full screen, so an unbounded child — a [Center], or a default-`max` [Column]
@@ -236,7 +239,7 @@ Future<T?> showPlatformFullscreenDialog<T>({
 ///
 /// Content-builder selection follows the same rules as [showPlatformDialog]. No
 /// Material `*Data` record is exposed — there is no [Dialog] to configure.
-Future<T?> showRawDialog<T>({
+Future<T?> showPlatformRawDialog<T>({
   required BuildContext context,
   WidgetBuilder? builder,
   WidgetBuilder? materialBuilder,
