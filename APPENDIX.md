@@ -442,7 +442,7 @@ lexical references actually get pruned depends on **how** the dispatch is shaped
 | Inline `switch (defaultTargetPlatform)` at the construction site | ✓ | The unused arm becomes dead code; its lexical refs are unreachable. |
 | `PlatformWidgetBase.build` virtual dispatch to `buildMaterial` / `buildCupertino` (small subclass count) | ✓ | Const-folded switch in the base's `build`; subclass methods are devirtualized when the compiler can prove monomorphic call sites. |
 | `PlatformWidgetBase.build` with many concrete subclasses in the binary | partial | Vtable entries for `buildCupertino` remain on each class; method bodies are usually pruned, but class names linger as strings (~30 bytes/class). Real code shrinks; symbol lists do not. |
-| Helper that takes both platform values/closures as args (`platformValue`, `platformLazyValue`, `context.platformLazyValue(material: …, cupertino: …)`) | ✗ | Both args are evaluated at the call site, *before* the helper's internal switch picks one. The unused arg's expression — including any closure construction with lexical refs — stays compiled. |
+| Helper that takes both platform values/closures as args (top-level `platformValue` / `platformValueNullable` / `platformLazyValue` / `platformLazyNullable`) | ✗ | Both args are evaluated at the call site, *before* the helper's internal switch picks one. The unused arg's expression — including any closure construction with lexical refs — stays compiled. **Measured: lazy and eager ship byte-identical Cupertino symbols (49,913 B); a `CupertinoDatePicker` so routed cost ≈342 KB an inline switch pruned.** |
 | `cupertinoBuilder: (ctx) => CupertinoXxx(...)` passed as an argument | ✗ | Same as above — the closure literal is constructed at the call site regardless of whether the receiving function ever invokes it. |
 
 ### Internal rules the package follows
@@ -466,13 +466,24 @@ lexical references actually get pruned depends on **how** the dispatch is shaped
    not leak code** — verified empirically; the AOT compiler treats them as
    metadata and prunes when unreferenced.
 
-### Public helpers in [`context_extensions.dart`](./lib/src/extensions/context_extensions.dart)
+### Public value selectors in [`platform_value.dart`](./lib/src/utils/platform_value.dart)
 `platformValue`, `platformValueNullable`, `platformLazyValue`, `platformLazyNullable`
-are deliberately kept for ergonomic use, but their dartdoc warns about the
-size-cost. The package itself does not use the lazy variants internally; the
-eager `platformValue` is used only for cheap primitives like `IconData`. If you
-need the helpers internally for new code, ask whether an inline switch would do
-the same job — usually it does.
+are top-level functions (no `BuildContext`), kept for ergonomic use with the
+size-cost spelled out in their dartdoc. The package does not use the lazy
+variants internally; eager `platformValue` is used only for cheap primitives.
+The `context.platformIcon` extension in
+[`context_extensions.dart`](./lib/src/extensions/context_extensions.dart) selects
+`IconData` via an inline `switch` — `IconData` drags no platform code, so it has
+no size cost.
+
+**Empirically measured** (`tool/size_harness`, `android-arm64` release): routing a
+`CupertinoDatePicker` through any of these selectors instead of an inline
+`switch (defaultTargetPlatform)` left it in the Android binary — ≈48.7 KB of
+cupertino-pathed symbols (≈342 KB once transitive dependencies are counted),
+versus ≈1.8 KB when inlined. The eager and lazy forms produced **byte-identical**
+Cupertino symbols (49,913 B): laziness defers the runtime build, never the
+binary size. This is why the helpers are lint-banned inside `lib/src/`
+(see below).
 
 ### Why the `targetPlatform` shim was removed (v2.0.0 breaking change)
 The old `lib/src/utils/target_platform.dart` used to provide a `targetPlatform`
@@ -504,7 +515,7 @@ via `.github/workflows/package.yml`.
 
 1. **Static AST lint** — [`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart).
    Walks `lib/src/` and fails if any file (other than
-   [`context_extensions.dart`](./lib/src/extensions/context_extensions.dart),
+   [`platform_value.dart`](./lib/src/utils/platform_value.dart),
    where they're defined) calls `platformValue` / `platformLazyValue` /
    `platformValueNullable` / `platformLazyNullable`, or if any private helper
    declares both a `material*`- and a `cupertino*`-named function-typed

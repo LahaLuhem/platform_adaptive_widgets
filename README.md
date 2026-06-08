@@ -111,17 +111,21 @@ Platform-adaptive widgets that automatically render **Material** widgets on Andr
 | `scaffoldBackgroundColor` | `Theme.of(context).scaffoldBackgroundColor`     | `CupertinoTheme.of(context).scaffoldBackgroundColor` |
 | `selectionHandleColor`    | `Theme.of(context).colorScheme.onSurface`       | `CupertinoTheme.of(context).selectionHandleColor`    |
 
-#### Context Extensions
+#### Platform value selectors
 
-Extensions on `BuildContext` for inline platform-specific values:
+The value selectors are top-level functions (no `BuildContext`); `platformIcon`
+is a `BuildContext` extension. The selectors evaluate the unused-platform arm
+too, so its code is **not** tree-shaken from release builds (empirically
+≈342 KB for one Cupertino widget) — prefer an inline `switch
+(defaultTargetPlatform)` when an arm builds a platform-specific widget:
 
-| Extension                                         | Description                                                  |
+| Helper                                            | Description                                                  |
 |---------------------------------------------------|--------------------------------------------------------------|
 | `platformValue<T>(material:, cupertino:)`         | Returns the value matching the current platform.             |
 | `platformValueNullable<T>(material:, cupertino:)` | Nullable variant of `platformValue`.                         |
 | `platformLazyValue<T>(material:, cupertino:)`     | Lazily evaluates only the callback for the current platform. |
 | `platformLazyNullable<T>(material:, cupertino:)`  | Nullable variant of `platformLazyValue`.                     |
-| `platformIcon(material:, cupertino:)`             | Convenience for selecting platform-specific `IconData`.      |
+| `platformIcon(material:, cupertino:)`             | `BuildContext` extension for platform-specific `IconData`.   |
 
 #### Other Extensions
 

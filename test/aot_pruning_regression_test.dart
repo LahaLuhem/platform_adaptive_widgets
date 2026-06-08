@@ -30,7 +30,7 @@ import 'package:analyzer/source/line_info.dart';
 import 'package:checks/checks.dart';
 import 'package:test/test.dart';
 
-const _helperHomeBasename = 'context_extensions.dart';
+const _helperHomeBasename = 'platform_value.dart';
 
 const _forbiddenHelperNames = {
   'platformValue',
