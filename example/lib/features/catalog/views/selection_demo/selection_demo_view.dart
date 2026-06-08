@@ -6,9 +6,14 @@ import 'package:pmvvm/pmvvm.dart';
 
 import '/features/catalog/data/extensions/platform_adaptive_icons_extension.dart';
 import '/features/catalog/widgets/demo_card.dart';
+import '/features/catalog/widgets/property_editor/bool_knob.dart';
+import '/features/catalog/widgets/property_editor/color_knob.dart';
+import '/features/catalog/widgets/property_editor/property_editor.dart';
 import 'selection_demo_view_model.dart';
 
-/// The Selection-controls section of the Catalog accordion.
+/// The Selection-controls section of the Catalog accordion — checkbox / switch /
+/// slider playgrounds, plus a shared-selection showcase (segmented button, radio
+/// group and menu picker all bound to one value).
 class SelectionDemoView extends StatelessWidget {
   const SelectionDemoView({super.key});
 
@@ -20,94 +25,124 @@ class SelectionDemoView extends StatelessWidget {
       spacing: 16,
       children: [
         DemoCard(
-          title: 'Checkbox',
+          title: 'PlatformCheckbox',
           description: 'Material Checkbox · CupertinoCheckbox.',
-          child: ValueListenableBuilder(
-            valueListenable: viewModel.checkboxValueListenable,
-            builder: (_, checkboxValue, _) => PlatformCheckbox(
-              value: checkboxValue,
+          child: PropertyEditor(
+            preview: PlatformCheckbox(
+              value: viewModel.checkboxValue,
               onChanged: (value) => viewModel.onCheckboxToggled(value: value),
+              isEnabled: viewModel.shouldEnableCheckbox,
+              activeColor: viewModel.checkboxActiveColor,
             ),
+            knobs: [
+              BoolKnob(
+                label: 'isEnabled',
+                value: viewModel.shouldEnableCheckbox,
+                onChanged: (value) => viewModel.onCheckboxEnabledToggled(value: value),
+              ),
+              ColorKnob(
+                label: 'activeColor',
+                value: viewModel.checkboxActiveColor,
+                onChanged: viewModel.onCheckboxActiveColorSelected,
+              ),
+            ],
           ),
         ),
         DemoCard(
-          title: 'Switch',
+          title: 'PlatformSwitch',
           description: 'Material Switch · CupertinoSwitch.',
-          child: ValueListenableBuilder(
-            valueListenable: viewModel.isSwitchOnListenable,
-            builder: (_, isSwitchOn, _) => PlatformSwitch(
-              value: isSwitchOn,
+          child: PropertyEditor(
+            preview: PlatformSwitch(
+              value: viewModel.isSwitchOn,
               onChanged: (value) => viewModel.onSwitchToggled(value: value),
+              isEnabled: viewModel.shouldEnableSwitch,
+              activeTrackColor: viewModel.switchActiveTrackColor,
             ),
+            knobs: [
+              BoolKnob(
+                label: 'isEnabled',
+                value: viewModel.shouldEnableSwitch,
+                onChanged: (value) => viewModel.onSwitchEnabledToggled(value: value),
+              ),
+              ColorKnob(
+                label: 'activeTrackColor',
+                value: viewModel.switchActiveTrackColor,
+                onChanged: viewModel.onSwitchActiveTrackColorSelected,
+              ),
+            ],
           ),
         ),
         DemoCard(
-          title: 'Slider',
+          title: 'PlatformSlider',
           description: 'Material Slider · CupertinoSlider.',
-          child: ValueListenableBuilder(
-            valueListenable: viewModel.sliderValueListenable,
-            builder: (_, sliderValue, _) => PlatformSlider(
-              value: sliderValue,
-              onChanged: (value) => viewModel.onSliderChanged(value: value),
+          child: PropertyEditor(
+            preview: PlatformSlider(
+              value: viewModel.sliderValue,
+              onChanged: viewModel.onSliderChanged,
+              isEnabled: viewModel.shouldEnableSlider,
+              activeColor: viewModel.sliderActiveColor,
             ),
-          ),
-        ),
-        DemoCard(
-          title: 'Segmented button',
-          description: 'Shares its selection with the radios and menu picker below.',
-          child: ValueListenableBuilder(
-            valueListenable: viewModel.selectedDirectionListenable,
-            builder: (_, selectedDirection, _) => PlatformSegmentButton(
-              choices: AxisDirection.values,
-              selectedChoice: selectedDirection,
-              segmentBuilder: (direction) => Text(direction.name),
-              onSelectionChanged: viewModel.onDirectionChanged,
-            ),
-          ),
-        ),
-        DemoCard(
-          title: 'Radio group',
-          description: 'Bound to the same selection as the segmented button.',
-          child: ValueListenableBuilder(
-            valueListenable: viewModel.selectedDirectionListenable,
-            builder: (_, selectedDirection, _) => PlatformRadioGroupBuilder<AxisDirection>(
-              values: AxisDirection.values,
-              groupValue: selectedDirection,
-              onChanged: viewModel.onDirectionChanged,
-              itemBuilder: (_, direction) => Row(
-                mainAxisSize: .min,
-                children: [
-                  PlatformRadio(
-                    value: direction,
-                    materialRadioData: const MaterialRadioData(visualDensity: .compact),
-                  ),
-                  Text(direction.name),
-                ],
+            knobs: [
+              BoolKnob(
+                label: 'isEnabled',
+                value: viewModel.shouldEnableSlider,
+                onChanged: (value) => viewModel.onSliderEnabledToggled(value: value),
               ),
-            ),
+              ColorKnob(
+                label: 'activeColor',
+                value: viewModel.sliderActiveColor,
+                onChanged: viewModel.onSliderActiveColorSelected,
+              ),
+            ],
           ),
         ),
         DemoCard(
-          title: 'Menu picker',
-          description: 'A dropdown on Android, an action sheet on iOS.',
-          child: ValueListenableBuilder(
-            valueListenable: viewModel.selectedDirectionListenable,
-            builder: (context, selectedDirection, _) => PlatformMenuPicker(
-              items: AxisDirection.values,
-              currentValue: selectedDirection,
-              onSelected: viewModel.onDirectionChanged,
-              labelText: 'Direction',
-              leadingIcon: const PlatformIcon(.crop),
-              menuPickerItemTransformer: (direction) => MenuPickerItem(
-                label: direction.name,
-                iconData: switch (direction) {
-                  .left => Icons.adaptive.arrow_back,
-                  .right => Icons.adaptive.arrow_forward,
-                  .up => context.platformAdaptiveIcons.arrowUpward,
-                  .down => context.platformAdaptiveIcons.arrowDownward,
-                },
+          title: 'Shared selection',
+          description:
+              'Segmented button, radio group and menu picker bound to one value — '
+              'change any one and the others follow.',
+          child: Column(
+            crossAxisAlignment: .stretch,
+            spacing: 16,
+            children: [
+              PlatformSegmentButton(
+                choices: AxisDirection.values,
+                selectedChoice: viewModel.selectedDirection,
+                segmentBuilder: (direction) => Text(direction.name),
+                onSelectionChanged: viewModel.onDirectionChanged,
               ),
-            ),
+              PlatformRadioGroupBuilder<AxisDirection>(
+                values: AxisDirection.values,
+                groupValue: viewModel.selectedDirection,
+                onChanged: viewModel.onDirectionChanged,
+                itemBuilder: (_, direction) => Row(
+                  mainAxisSize: .min,
+                  children: [
+                    PlatformRadio(
+                      value: direction,
+                      materialRadioData: const MaterialRadioData(visualDensity: .compact),
+                    ),
+                    Text(direction.name),
+                  ],
+                ),
+              ),
+              PlatformMenuPicker(
+                items: AxisDirection.values,
+                currentValue: viewModel.selectedDirection,
+                onSelected: viewModel.onDirectionChanged,
+                labelText: 'Direction',
+                leadingIcon: const PlatformIcon(.crop),
+                menuPickerItemTransformer: (direction) => MenuPickerItem(
+                  label: direction.name,
+                  iconData: switch (direction) {
+                    .left => Icons.adaptive.arrow_back,
+                    .right => Icons.adaptive.arrow_forward,
+                    .up => context.platformAdaptiveIcons.arrowUpward,
+                    .down => context.platformAdaptiveIcons.arrowDownward,
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ],
