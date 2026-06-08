@@ -6,9 +6,15 @@ import 'package:platform_icons/platform_icons.dart';
 import 'package:pmvvm/pmvvm.dart';
 
 import '/features/catalog/widgets/demo_card.dart';
+import '/features/catalog/widgets/property_editor/bool_knob.dart';
+import '/features/catalog/widgets/property_editor/color_knob.dart';
+import '/features/catalog/widgets/property_editor/double_knob.dart';
+import '/features/catalog/widgets/property_editor/property_editor.dart';
 import 'containers_demo_view_model.dart';
 
-/// The Lists & containers section of the Catalog accordion.
+/// The Lists & containers section of the Catalog accordion — list tile,
+/// scrollbar and progress-indicator playgrounds, plus an interactive expansion
+/// tile (which has no shared-visual scalar properties to knob).
 class ContainersDemoView extends StatelessWidget {
   const ContainersDemoView({super.key});
 
@@ -20,19 +26,41 @@ class ContainersDemoView extends StatelessWidget {
       spacing: 16,
       children: [
         DemoCard(
-          title: 'List tile',
+          title: 'PlatformListTile',
           description: 'Material ListTile · CupertinoListTile.',
-          child: PlatformListTile(
-            leading: Icon(
-              context.platformIcon(material: Icons.list_alt, cupertino: CupertinoIcons.square_list),
+          child: PropertyEditor(
+            preview: PlatformListTile(
+              leading: Icon(
+                context.platformIcon(
+                  material: Icons.list_alt,
+                  cupertino: CupertinoIcons.square_list,
+                ),
+              ),
+              title: const Text('List tile'),
+              subtitle: const Text('With leading and trailing'),
+              trailing: const PlatformIcon(.forward),
+              isEnabled: viewModel.shouldEnableListTile,
+              leadingWidth: viewModel.listTileLeadingWidth,
             ),
-            title: const Text('List tile'),
-            subtitle: const Text('With leading and trailing'),
-            trailing: const PlatformIcon(.forward),
+            knobs: [
+              BoolKnob(
+                label: 'isEnabled',
+                value: viewModel.shouldEnableListTile,
+                onChanged: (value) => viewModel.onListTileEnabledToggled(value: value),
+              ),
+              DoubleKnob(
+                label: 'leadingWidth',
+                min: 24,
+                max: 72,
+                divisions: 12,
+                value: viewModel.listTileLeadingWidth,
+                onChanged: viewModel.onListTileLeadingWidthChanged,
+              ),
+            ],
           ),
         ),
         DemoCard(
-          title: 'Expansion tile',
+          title: 'PlatformExpansionTile',
           description: 'Expands to reveal content.',
           child: PlatformExpansionTile(
             title: const Text('Tap to expand'),
@@ -42,25 +70,52 @@ class ContainersDemoView extends StatelessWidget {
           ),
         ),
         DemoCard(
-          title: 'Scrollbar',
-          description: 'An always-visible scrollbar over a scrolling list.',
-          child: SizedBox(
-            height: 160,
-            child: PlatformScrollbar(
-              thumbVisibility: true,
-              controller: viewModel.scrollController,
-              child: ListView.builder(
+          title: 'PlatformScrollbar',
+          description: 'A scrollbar over a scrolling list.',
+          child: PropertyEditor(
+            preview: SizedBox(
+              height: 160,
+              child: PlatformScrollbar(
+                thumbVisibility: viewModel.shouldShowScrollbarThumb,
+                thickness: viewModel.scrollbarThickness,
                 controller: viewModel.scrollController,
-                itemCount: 50,
-                itemBuilder: (_, index) => Text('Item $index'),
+                child: ListView.builder(
+                  controller: viewModel.scrollController,
+                  itemCount: 50,
+                  itemBuilder: (_, index) => Text('Item $index'),
+                ),
               ),
             ),
+            knobs: [
+              BoolKnob(
+                label: 'thumbVisibility',
+                value: viewModel.shouldShowScrollbarThumb,
+                onChanged: (value) => viewModel.onScrollbarThumbToggled(value: value),
+              ),
+              DoubleKnob(
+                label: 'thickness',
+                min: 2,
+                max: 16,
+                divisions: 14,
+                value: viewModel.scrollbarThickness,
+                onChanged: viewModel.onScrollbarThicknessChanged,
+              ),
+            ],
           ),
         ),
-        const DemoCard(
-          title: 'Progress indicator',
+        DemoCard(
+          title: 'PlatformProgressIndicator',
           description: 'Material CircularProgressIndicator · CupertinoActivityIndicator.',
-          child: Center(child: PlatformProgressIndicator()),
+          child: PropertyEditor(
+            preview: PlatformProgressIndicator(color: viewModel.progressColor),
+            knobs: [
+              ColorKnob(
+                label: 'color',
+                value: viewModel.progressColor,
+                onChanged: viewModel.onProgressColorSelected,
+              ),
+            ],
+          ),
         ),
       ],
     ),
