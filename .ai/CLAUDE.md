@@ -140,6 +140,9 @@ explicitly says "cut a release"; see *Forbidden / confirm-first actions* below.
 ## Definition of done
 - `flutter analyze` clean (the project's `errors:` block promotes many lints to errors
   — non-negotiable).
+- `dcm analyze` clean — the `dart_code_metrics` rules (e.g. `avoid-returning-widgets`)
+  are **not** surfaced by `flutter analyze`, so they need their own pass via the `dcm`
+  CLI (`dcm analyze <dir>`). Treat it as a separate, required lint gate.
 - `dart format --output=none --set-exit-if-changed .` clean (100-column width matches
   `analysis_options.yaml`'s `formatter.page_width`).
 - `flutter test` green (where tests exist).

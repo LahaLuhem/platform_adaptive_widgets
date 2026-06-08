@@ -107,12 +107,57 @@ class ContainersDemoView extends StatelessWidget {
           title: 'PlatformProgressIndicator',
           description: 'Material CircularProgressIndicator · CupertinoActivityIndicator.',
           child: PropertyEditor(
-            preview: PlatformProgressIndicator(color: viewModel.progressColor),
+            preview: PlatformProgressIndicator(
+              color: viewModel.progressColor,
+              materialProgressIndicatorData: MaterialProgressIndicatorData(
+                // 0 is the knob's "indeterminate" sentinel (labelled "animating").
+                value: viewModel.progressValue == 0 ? null : viewModel.progressValue,
+                strokeWidth: viewModel.progressStrokeWidth,
+              ),
+              cupertinoProgressIndicatorData: CupertinoProgressIndicatorData(
+                animating: viewModel.shouldAnimateProgress,
+                radius: viewModel.progressRadius,
+              ),
+            ),
             knobs: [
               ColorKnob(
                 label: 'color',
                 value: viewModel.progressColor,
                 onChanged: viewModel.onProgressColorSelected,
+              ),
+            ],
+            materialKnobs: [
+              DoubleKnob(
+                label: 'value',
+                min: 0,
+                max: 1,
+                divisions: 10,
+                value: viewModel.progressValue,
+                onChanged: viewModel.onProgressValueChanged,
+                valueLabel: (value) => value == 0 ? 'animating' : value.toStringAsFixed(1),
+              ),
+              DoubleKnob(
+                label: 'strokeWidth',
+                min: 2,
+                max: 10,
+                divisions: 8,
+                value: viewModel.progressStrokeWidth,
+                onChanged: viewModel.onProgressStrokeWidthChanged,
+              ),
+            ],
+            cupertinoKnobs: [
+              BoolKnob(
+                label: 'animating',
+                value: viewModel.shouldAnimateProgress,
+                onChanged: (value) => viewModel.onProgressAnimatingToggled(value: value),
+              ),
+              DoubleKnob(
+                label: 'radius',
+                min: 8,
+                max: 30,
+                divisions: 11,
+                value: viewModel.progressRadius,
+                onChanged: viewModel.onProgressRadiusChanged,
               ),
             ],
           ),

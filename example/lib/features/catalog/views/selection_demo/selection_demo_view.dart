@@ -81,6 +81,7 @@ class SelectionDemoView extends StatelessWidget {
               onChanged: viewModel.onSliderChanged,
               isEnabled: viewModel.shouldEnableSlider,
               activeColor: viewModel.sliderActiveColor,
+              materialSliderData: MaterialSliderData(inactiveColor: viewModel.sliderInactiveColor),
             ),
             knobs: [
               BoolKnob(
@@ -92,6 +93,13 @@ class SelectionDemoView extends StatelessWidget {
                 label: 'activeColor',
                 value: viewModel.sliderActiveColor,
                 onChanged: viewModel.onSliderActiveColorSelected,
+              ),
+            ],
+            materialKnobs: [
+              ColorKnob(
+                label: 'inactiveColor',
+                value: viewModel.sliderInactiveColor,
+                onChanged: viewModel.onSliderInactiveColorSelected,
               ),
             ],
           ),

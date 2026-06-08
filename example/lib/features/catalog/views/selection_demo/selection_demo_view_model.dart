@@ -19,6 +19,7 @@ final class SelectionDemoViewModel extends ViewModel {
   double _sliderValue = 0;
   var _shouldEnableSlider = true;
   var _sliderActiveColor = const Color(0xFF2196F3);
+  var _sliderInactiveColor = const Color(0xFFFFFFFF);
 
   var _selectedDirection = AxisDirection.left;
 
@@ -39,6 +40,8 @@ final class SelectionDemoViewModel extends ViewModel {
   bool get shouldEnableSlider => _shouldEnableSlider;
 
   Color get sliderActiveColor => _sliderActiveColor;
+
+  Color get sliderInactiveColor => _sliderInactiveColor;
 
   AxisDirection get selectedDirection => _selectedDirection;
 
@@ -84,6 +87,11 @@ final class SelectionDemoViewModel extends ViewModel {
 
   void onSliderActiveColorSelected(Color color) {
     _sliderActiveColor = color;
+    notifyListeners();
+  }
+
+  void onSliderInactiveColorSelected(Color color) {
+    _sliderInactiveColor = color;
     notifyListeners();
   }
 

@@ -3,7 +3,8 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 /// A labelled double control for a property editor, backed by a
 /// [PlatformSlider] over a fixed [min]–[max] range. The current value is shown
-/// numerically beside the label.
+/// beside the label — formatted by [valueLabel] when given (e.g. to name a
+/// sentinel value), else as a one-decimal number.
 class DoubleKnob extends StatelessWidget {
   /// The property name shown beside the value.
   final String label;
@@ -23,6 +24,10 @@ class DoubleKnob extends StatelessWidget {
   /// Optional discrete divisions across the range.
   final int? divisions;
 
+  /// Optional formatter for the numeric readout. Defaults to the value at one
+  /// decimal place.
+  final String Function(double)? valueLabel;
+
   /// Creates a double knob over a fixed range.
   const DoubleKnob({
     required this.label,
@@ -31,6 +36,7 @@ class DoubleKnob extends StatelessWidget {
     required this.min,
     required this.max,
     this.divisions,
+    this.valueLabel,
     super.key,
   });
 
@@ -42,7 +48,7 @@ class DoubleKnob extends StatelessWidget {
         spacing: 16,
         children: [
           Expanded(child: Text(label)),
-          Text(value.toStringAsFixed(1)),
+          Text(valueLabel?.call(value) ?? value.toStringAsFixed(1)),
         ],
       ),
       PlatformSlider(value: value, min: min, max: max, divisions: divisions, onChanged: onChanged),
