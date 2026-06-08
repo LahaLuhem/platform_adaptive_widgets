@@ -33,6 +33,7 @@ class SelectionDemoView extends StatelessWidget {
               onChanged: (value) => viewModel.onCheckboxToggled(value: value),
               isEnabled: viewModel.shouldEnableCheckbox,
               activeColor: viewModel.checkboxActiveColor,
+              checkColor: viewModel.checkboxCheckColor,
             ),
             knobs: [
               BoolKnob(
@@ -44,6 +45,11 @@ class SelectionDemoView extends StatelessWidget {
                 label: 'activeColor',
                 value: viewModel.checkboxActiveColor,
                 onChanged: viewModel.onCheckboxActiveColorSelected,
+              ),
+              ColorKnob(
+                label: 'checkColor',
+                value: viewModel.checkboxCheckColor,
+                onChanged: viewModel.onCheckboxCheckColorSelected,
               ),
             ],
           ),
@@ -57,6 +63,8 @@ class SelectionDemoView extends StatelessWidget {
               onChanged: (value) => viewModel.onSwitchToggled(value: value),
               isEnabled: viewModel.shouldEnableSwitch,
               activeTrackColor: viewModel.switchActiveTrackColor,
+              activeThumbColor: viewModel.switchActiveThumbColor,
+              inactiveThumbColor: viewModel.switchInactiveThumbColor,
             ),
             knobs: [
               BoolKnob(
@@ -68,6 +76,16 @@ class SelectionDemoView extends StatelessWidget {
                 label: 'activeTrackColor',
                 value: viewModel.switchActiveTrackColor,
                 onChanged: viewModel.onSwitchActiveTrackColorSelected,
+              ),
+              ColorKnob(
+                label: 'activeThumbColor',
+                value: viewModel.switchActiveThumbColor,
+                onChanged: viewModel.onSwitchActiveThumbColorSelected,
+              ),
+              ColorKnob(
+                label: 'inactiveThumbColor',
+                value: viewModel.switchInactiveThumbColor,
+                onChanged: viewModel.onSwitchInactiveThumbColorSelected,
               ),
             ],
           ),
@@ -81,6 +99,7 @@ class SelectionDemoView extends StatelessWidget {
               onChanged: viewModel.onSliderChanged,
               isEnabled: viewModel.shouldEnableSlider,
               activeColor: viewModel.sliderActiveColor,
+              thumbColor: viewModel.sliderThumbColor,
               materialSliderData: MaterialSliderData(inactiveColor: viewModel.sliderInactiveColor),
             ),
             knobs: [
@@ -93,6 +112,11 @@ class SelectionDemoView extends StatelessWidget {
                 label: 'activeColor',
                 value: viewModel.sliderActiveColor,
                 onChanged: viewModel.onSliderActiveColorSelected,
+              ),
+              ColorKnob(
+                label: 'thumbColor',
+                value: viewModel.sliderThumbColor,
+                onChanged: viewModel.onSliderThumbColorSelected,
               ),
             ],
             materialKnobs: [

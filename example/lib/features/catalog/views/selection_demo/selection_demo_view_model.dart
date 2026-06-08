@@ -11,15 +11,19 @@ final class SelectionDemoViewModel extends ViewModel {
   var _checkboxValue = true;
   var _shouldEnableCheckbox = true;
   var _checkboxActiveColor = const Color(0xFF2196F3);
+  var _checkboxCheckColor = const Color(0xFFFFFFFF);
 
   var _isSwitchOn = false;
   var _shouldEnableSwitch = true;
   var _switchActiveTrackColor = const Color(0xFF4CAF50);
+  var _switchActiveThumbColor = const Color(0xFFFFFFFF);
+  var _switchInactiveThumbColor = const Color(0xFFFFFFFF);
 
   double _sliderValue = 0;
   var _shouldEnableSlider = true;
   var _sliderActiveColor = const Color(0xFF2196F3);
   var _sliderInactiveColor = const Color(0xFFFFFFFF);
+  var _sliderThumbColor = const Color(0xFFFFFFFF);
 
   var _selectedDirection = AxisDirection.left;
 
@@ -29,11 +33,17 @@ final class SelectionDemoViewModel extends ViewModel {
 
   Color get checkboxActiveColor => _checkboxActiveColor;
 
+  Color get checkboxCheckColor => _checkboxCheckColor;
+
   bool get isSwitchOn => _isSwitchOn;
 
   bool get shouldEnableSwitch => _shouldEnableSwitch;
 
   Color get switchActiveTrackColor => _switchActiveTrackColor;
+
+  Color get switchActiveThumbColor => _switchActiveThumbColor;
+
+  Color get switchInactiveThumbColor => _switchInactiveThumbColor;
 
   double get sliderValue => _sliderValue;
 
@@ -42,6 +52,8 @@ final class SelectionDemoViewModel extends ViewModel {
   Color get sliderActiveColor => _sliderActiveColor;
 
   Color get sliderInactiveColor => _sliderInactiveColor;
+
+  Color get sliderThumbColor => _sliderThumbColor;
 
   AxisDirection get selectedDirection => _selectedDirection;
 
@@ -60,6 +72,11 @@ final class SelectionDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
+  void onCheckboxCheckColorSelected(Color color) {
+    _checkboxCheckColor = color;
+    notifyListeners();
+  }
+
   void onSwitchToggled({required bool value}) {
     _isSwitchOn = value;
     notifyListeners();
@@ -72,6 +89,16 @@ final class SelectionDemoViewModel extends ViewModel {
 
   void onSwitchActiveTrackColorSelected(Color color) {
     _switchActiveTrackColor = color;
+    notifyListeners();
+  }
+
+  void onSwitchActiveThumbColorSelected(Color color) {
+    _switchActiveThumbColor = color;
+    notifyListeners();
+  }
+
+  void onSwitchInactiveThumbColorSelected(Color color) {
+    _switchInactiveThumbColor = color;
     notifyListeners();
   }
 
@@ -92,6 +119,11 @@ final class SelectionDemoViewModel extends ViewModel {
 
   void onSliderInactiveColorSelected(Color color) {
     _sliderInactiveColor = color;
+    notifyListeners();
+  }
+
+  void onSliderThumbColorSelected(Color color) {
+    _sliderThumbColor = color;
     notifyListeners();
   }
 
