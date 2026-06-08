@@ -84,6 +84,21 @@ All observable VM state is exposed as `ValueListenable<T>`, backed by a private
   [*Separation of concerns*](#separation-of-concerns) for what belongs on the VM
   vs. the view.
 
+> **Exception — property-editor / playground view-models.** A view-model whose
+> job is to drive one rebuildable preview from many independent "knobs" (the
+> catalog playgrounds under `catalog/widgets/property_editor/`) may instead
+> expose its editable props as **flat private fields + a getter**, mutated by
+> `on<Event>` methods that call `notifyListeners()`. `MVVM.builder` wraps the
+> `viewBuilder` in a `Consumer`, so a notify rebuilds that demo's small, scoped
+> subtree — which is what pmvvm is built for; the ValueNotifier-first rule was
+> the initial reference point, not a ban. This trades surgical rebuilds for far
+> less ceremony (no `ValueNotifier` / `Listenable.merge` / `ValueListenableBuilder`,
+> no notifier disposal) exactly where a whole-subtree rebuild is free. Keep the
+> getter + private-field split (never a public mutable field) so the view still
+> can't mutate state without a notifying `on<Event>` method, and keep the knobs
+> themselves dumb controlled widgets (`value` + `onChanged`). Ordinary feature
+> view-models stay ValueNotifier-first.
+
 ---
 
 <a id="naming"></a>

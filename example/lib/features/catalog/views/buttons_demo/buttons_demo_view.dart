@@ -5,10 +5,14 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
 import '/features/catalog/widgets/demo_card.dart';
+import '/features/catalog/widgets/property_editor/bool_knob.dart';
+import '/features/catalog/widgets/property_editor/enum_knob.dart';
+import '/features/catalog/widgets/property_editor/property_editor.dart';
 import 'buttons_demo_view_model.dart';
 
-/// The Buttons section of the Catalog accordion — the `PlatformButton`
-/// variants, the icon constructor, and the disabled state.
+/// The Buttons section of the Catalog accordion — a live `PlatformButton`
+/// playground over its shared-visual properties (per-platform variant, enabled
+/// state, and the child-vs-`.icon` constructor).
 class ButtonsDemoView extends StatelessWidget {
   const ButtonsDemoView({super.key});
 
@@ -20,61 +24,51 @@ class ButtonsDemoView extends StatelessWidget {
       spacing: 16,
       children: [
         DemoCard(
-          title: 'Filled',
-          description: 'High-emphasis primary action.',
-          child: PlatformButton(
-            onPressed: () => viewModel.onButtonPressed('Filled'),
-            materialButtonVariant: .filled,
-            cupertinoButtonVariant: .filled,
-            child: const Text('Filled'),
-          ),
-        ),
-        DemoCard(
-          title: 'Tonal & tinted',
-          description: 'Medium emphasis — Material tonal, Cupertino tinted.',
-          child: PlatformButton(
-            onPressed: () => viewModel.onButtonPressed('Tonal'),
-            materialButtonVariant: .tonal,
-            cupertinoButtonVariant: .tinted,
-            child: const Text('Tonal / tinted'),
-          ),
-        ),
-        DemoCard(
-          title: 'Outlined',
-          description: 'Material outline; Cupertino renders its normal button.',
-          child: PlatformButton(
-            onPressed: () => viewModel.onButtonPressed('Outlined'),
-            materialButtonVariant: .outlined,
-            child: const Text('Outlined'),
-          ),
-        ),
-        DemoCard(
-          title: 'Text',
-          description: 'Low-emphasis — Material text button, Cupertino plain.',
-          child: PlatformButton(
-            onPressed: () => viewModel.onButtonPressed('Text'),
-            materialButtonVariant: .text,
-            child: const Text('Text'),
-          ),
-        ),
-        DemoCard(
-          title: 'Icon + label',
-          description: 'PlatformButton.icon — an adaptive icon-and-label layout.',
-          child: PlatformButton.icon(
-            onPressed: () => viewModel.onButtonPressed('Icon'),
-            materialButtonVariant: .filled,
-            cupertinoButtonVariant: .filled,
-            icon: Icon(context.platformIcon(material: Icons.add, cupertino: CupertinoIcons.add)),
-            label: const Text('Add'),
-          ),
-        ),
-        DemoCard(
-          title: 'Disabled',
-          description: 'isEnabled: false — the callback never fires.',
-          child: PlatformButton(
-            onPressed: () => viewModel.onButtonPressed('Disabled'),
-            isEnabled: false,
-            child: const Text('Disabled'),
+          title: 'PlatformButton',
+          description: 'Material variants on Android · Cupertino variants on iOS.',
+          child: PropertyEditor(
+            preview: viewModel.shouldUseIcon
+                ? PlatformButton.icon(
+                    onPressed: () => viewModel.onButtonPressed('Playground'),
+                    isEnabled: viewModel.shouldEnable,
+                    materialButtonVariant: viewModel.materialVariant,
+                    cupertinoButtonVariant: viewModel.cupertinoVariant,
+                    icon: Icon(
+                      context.platformIcon(material: Icons.add, cupertino: CupertinoIcons.add),
+                    ),
+                    label: const Text('Add'),
+                  )
+                : PlatformButton(
+                    onPressed: () => viewModel.onButtonPressed('Playground'),
+                    isEnabled: viewModel.shouldEnable,
+                    materialButtonVariant: viewModel.materialVariant,
+                    cupertinoButtonVariant: viewModel.cupertinoVariant,
+                    child: const Text('Button'),
+                  ),
+            knobs: [
+              EnumKnob<MaterialButtonVariant>(
+                label: 'materialButtonVariant',
+                value: viewModel.materialVariant,
+                values: MaterialButtonVariant.values,
+                onChanged: viewModel.onMaterialVariantSelected,
+              ),
+              EnumKnob<CupertinoButtonVariant>(
+                label: 'cupertinoButtonVariant',
+                value: viewModel.cupertinoVariant,
+                values: CupertinoButtonVariant.values,
+                onChanged: viewModel.onCupertinoVariantSelected,
+              ),
+              BoolKnob(
+                label: 'isEnabled',
+                value: viewModel.shouldEnable,
+                onChanged: (value) => viewModel.onEnabledToggled(value: value),
+              ),
+              BoolKnob(
+                label: 'icon + label',
+                value: viewModel.shouldUseIcon,
+                onChanged: (value) => viewModel.onUseIconToggled(value: value),
+              ),
+            ],
           ),
         ),
       ],
