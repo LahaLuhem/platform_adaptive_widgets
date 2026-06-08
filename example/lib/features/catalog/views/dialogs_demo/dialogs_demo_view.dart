@@ -3,9 +3,14 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
 import '/features/catalog/widgets/demo_card.dart';
+import '/features/catalog/widgets/property_editor/bool_knob.dart';
+import '/features/catalog/widgets/property_editor/property_editor.dart';
+import '/features/catalog/widgets/property_editor/string_knob.dart';
 import 'dialogs_demo_view_model.dart';
 
-/// The Dialogs & pickers section of the Catalog accordion.
+/// The Dialogs & pickers section of the Catalog accordion. Dialogs are
+/// imperative, so the playgrounds are configure-then-trigger: knobs set the
+/// args, the button fires the dialog.
 class DialogsDemoView extends StatelessWidget {
   const DialogsDemoView({super.key});
 
@@ -27,17 +32,45 @@ class DialogsDemoView extends StatelessWidget {
         DemoCard(
           title: 'Raw dialog',
           description: 'No surface wrap — you supply the surface (or none).',
-          child: PlatformButton(
-            onPressed: viewModel.onShowRawDialogPressed,
-            child: const Text('Show raw dialog'),
+          child: PropertyEditor(
+            preview: PlatformButton(
+              onPressed: viewModel.onShowRawDialogPressed,
+              child: const Text('Show raw dialog'),
+            ),
+            knobs: [
+              BoolKnob(
+                label: 'barrierDismissible',
+                value: viewModel.shouldDismissRawDialogOnBarrierTap,
+                onChanged: (value) => viewModel.onBarrierDismissibleToggled(value: value),
+              ),
+            ],
           ),
         ),
         DemoCard(
           title: 'Alert dialog',
           description: 'Title, message, and adaptive action buttons.',
-          child: PlatformButton(
-            onPressed: viewModel.onShowAlertDialogPressed,
-            child: const Text('Show alert'),
+          child: PropertyEditor(
+            preview: PlatformButton(
+              onPressed: viewModel.onShowAlertDialogPressed,
+              child: const Text('Show alert'),
+            ),
+            knobs: [
+              StringKnob(
+                label: 'title',
+                value: viewModel.alertTitle,
+                onChanged: viewModel.onAlertTitleChanged,
+              ),
+              StringKnob(
+                label: 'message',
+                value: viewModel.alertMessage,
+                onChanged: viewModel.onAlertMessageChanged,
+              ),
+              BoolKnob(
+                label: 'destructive action',
+                value: viewModel.shouldIncludeDestructiveAction,
+                onChanged: (value) => viewModel.onDestructiveActionToggled(value: value),
+              ),
+            ],
           ),
         ),
         DemoCard(
@@ -69,10 +102,7 @@ class DialogsDemoView extends StatelessWidget {
           description: 'A calendar dialog on Android, a wheel on iOS.',
           child: PlatformButton(
             onPressed: viewModel.onShowDatePickerPressed,
-            child: ValueListenableBuilder(
-              valueListenable: viewModel.selectedDateListenable,
-              builder: (_, selectedDate, _) => Text(selectedDate?.toString() ?? 'Pick a date'),
-            ),
+            child: Text(viewModel.selectedDate?.toString() ?? 'Pick a date'),
           ),
         ),
         DemoCard(
@@ -80,10 +110,7 @@ class DialogsDemoView extends StatelessWidget {
           description: 'A clock dialog on Android, a wheel on iOS.',
           child: PlatformButton(
             onPressed: viewModel.onShowTimePickerPressed,
-            child: ValueListenableBuilder(
-              valueListenable: viewModel.selectedTimeListenable,
-              builder: (_, selectedTime, _) => Text(selectedTime?.toString() ?? 'Pick a time'),
-            ),
+            child: Text(viewModel.selectedTime?.toString() ?? 'Pick a time'),
           ),
         ),
       ],
