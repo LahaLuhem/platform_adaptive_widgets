@@ -1,18 +1,52 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show TimeOfDay;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
-/// Triggers for the dialog / sheet / picker showcase, plus the last-picked date
-/// and time the buttons display.
+/// Triggers for the dialog / sheet / picker showcase. The alert dialog and raw
+/// dialog are configure-then-trigger playgrounds — knobs set their args (held as
+/// flat fields, mutated via `notifyListeners()`; see `CODESTYLE.md`'s reactivity
+/// note on playground view-models), and the button fires the dialog. The date /
+/// time buttons display the last-picked value.
 final class DialogsDemoViewModel extends ViewModel {
-  final _selectedDateNotifier = ValueNotifier<Date?>(null);
-  final _selectedTimeNotifier = ValueNotifier<TimeOfDay?>(null);
+  var _alertTitle = 'Alert';
+  var _alertMessage = 'Actions adapt their layout and styling to the platform.';
+  var _shouldIncludeDestructiveAction = true;
+  var _shouldDismissRawDialogOnBarrierTap = true;
+  Date? _selectedDate;
+  TimeOfDay? _selectedTime;
 
-  ValueListenable<Date?> get selectedDateListenable => _selectedDateNotifier;
+  String get alertTitle => _alertTitle;
 
-  ValueListenable<TimeOfDay?> get selectedTimeListenable => _selectedTimeNotifier;
+  String get alertMessage => _alertMessage;
+
+  bool get shouldIncludeDestructiveAction => _shouldIncludeDestructiveAction;
+
+  bool get shouldDismissRawDialogOnBarrierTap => _shouldDismissRawDialogOnBarrierTap;
+
+  Date? get selectedDate => _selectedDate;
+
+  TimeOfDay? get selectedTime => _selectedTime;
+
+  void onAlertTitleChanged(String value) {
+    _alertTitle = value;
+    notifyListeners();
+  }
+
+  void onAlertMessageChanged(String value) {
+    _alertMessage = value;
+    notifyListeners();
+  }
+
+  void onDestructiveActionToggled({required bool value}) {
+    _shouldIncludeDestructiveAction = value;
+    notifyListeners();
+  }
+
+  void onBarrierDismissibleToggled({required bool value}) {
+    _shouldDismissRawDialogOnBarrierTap = value;
+    notifyListeners();
+  }
 
   Future<void> onShowDialogPressed() => showPlatformDialog(
     context: context,
@@ -38,29 +72,27 @@ final class DialogsDemoViewModel extends ViewModel {
 
   Future<void> onShowRawDialogPressed() => showPlatformRawDialog(
     context: context,
-    // Raw: no Dialog / CupertinoPopupSurface wrap
-    // `barrierDismissible: true` opts into tap-outside dismissal
-    barrierDismissible: true,
-    builder: (_) => const Center(
-      child: Text('A raw dialog — the package adds no card here.\nTap outside to dismiss.'),
-    ),
+    // Raw: no Dialog / CupertinoPopupSurface wrap.
+    barrierDismissible: _shouldDismissRawDialogOnBarrierTap,
+    builder: (_) => const Center(child: Text('A raw dialog — the package adds no card here.')),
   );
 
   Future<void> onShowAlertDialogPressed() => showPlatformAlertDialog(
     context: context,
-    title: const Text('Alert'),
-    content: const Text('Actions adapt their layout and styling to the platform.'),
+    title: Text(_alertTitle),
+    content: Text(_alertMessage),
     actions: [
       PlatformDialogAction(
         isDefaultAction: true,
         onPressed: (context) => Navigator.maybeOf(context)?.pop(),
         child: const Text('OK'),
       ),
-      PlatformDialogAction(
-        isDestructiveAction: true,
-        onPressed: (context) => Navigator.maybeOf(context)?.pop(),
-        child: const Text('Delete'),
-      ),
+      if (_shouldIncludeDestructiveAction)
+        PlatformDialogAction(
+          isDestructiveAction: true,
+          onPressed: (context) => Navigator.maybeOf(context)?.pop(),
+          child: const Text('Delete'),
+        ),
       PlatformDialogAction(
         onPressed: (context) => Navigator.maybeOf(context)?.pop(),
         child: const Text('Cancel'),
@@ -105,25 +137,18 @@ final class DialogsDemoViewModel extends ViewModel {
   );
 
   Future<void> onShowDatePickerPressed() async {
-    _selectedDateNotifier.value = await showPlatformDatePicker(
+    final picked = await showPlatformDatePicker(
       context: context,
       firstDate: const Date(year: 1900),
       lastDate: Date.now().add(const Duration(days: 365)),
     );
+    _selectedDate = picked;
+    notifyListeners();
   }
 
   Future<void> onShowTimePickerPressed() async {
-    _selectedTimeNotifier.value = await showPlatformTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-  }
-
-  @override
-  void dispose() {
-    _selectedDateNotifier.dispose();
-    _selectedTimeNotifier.dispose();
-
-    super.dispose();
+    final picked = await showPlatformTimePicker(context: context, initialTime: TimeOfDay.now());
+    _selectedTime = picked;
+    notifyListeners();
   }
 }
