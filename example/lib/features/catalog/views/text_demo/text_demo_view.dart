@@ -1,6 +1,6 @@
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons, OverlayVisibilityMode;
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart' show Icons;
+import 'package:material_ui/material_ui.dart' show Icons, InputDecoration;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
@@ -37,6 +37,12 @@ class TextDemoView extends StatelessWidget {
               cursorWidth: viewModel.cursorWidth,
               obscureText: viewModel.shouldObscure,
               textAlign: viewModel.textAlign,
+              materialTextFieldData: MaterialTextFieldData(
+                decoration: InputDecoration(labelText: viewModel.textFieldLabel),
+              ),
+              cupertinoTextFieldData: CupertinoTextFieldData(
+                clearButtonMode: viewModel.clearButtonMode,
+              ),
             ),
             knobs: [
               StringKnob(
@@ -67,6 +73,21 @@ class TextDemoView extends StatelessWidget {
                 value: viewModel.textAlign,
                 values: TextAlign.values,
                 onChanged: viewModel.onTextAlignSelected,
+              ),
+            ],
+            materialKnobs: [
+              StringKnob(
+                label: 'labelText',
+                value: viewModel.textFieldLabel,
+                onChanged: viewModel.onTextFieldLabelChanged,
+              ),
+            ],
+            cupertinoKnobs: [
+              EnumKnob<OverlayVisibilityMode>(
+                label: 'clearButtonMode',
+                value: viewModel.clearButtonMode,
+                values: OverlayVisibilityMode.values,
+                onChanged: viewModel.onClearButtonModeSelected,
               ),
             ],
           ),

@@ -1,12 +1,13 @@
+import 'package:cupertino_ui/cupertino_ui.dart' show OverlayVisibilityMode;
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
 /// State for the text & search demos — the field controllers the views bind to,
-/// the live search query, and the text-field playground's editable shared-visual
-/// properties. The query and playground props are flat fields mutated via
-/// `notifyListeners()` (see `CODESTYLE.md`'s reactivity note on playground
-/// view-models).
+/// the live search query, and the text-field playground's editable shared and
+/// per-platform properties. The query and playground props are flat fields
+/// mutated via `notifyListeners()` (see `CODESTYLE.md`'s reactivity note on
+/// playground view-models).
 final class TextDemoViewModel extends ViewModel {
   final searchController = TextEditingController();
   final textFieldController = TextEditingController();
@@ -18,6 +19,8 @@ final class TextDemoViewModel extends ViewModel {
   double _cursorWidth = 2;
   var _shouldObscure = false;
   var _textAlign = TextAlign.start;
+  var _textFieldLabel = 'Label';
+  var _clearButtonMode = OverlayVisibilityMode.editing;
 
   String get searchQuery => _searchQuery;
 
@@ -30,6 +33,10 @@ final class TextDemoViewModel extends ViewModel {
   bool get shouldObscure => _shouldObscure;
 
   TextAlign get textAlign => _textAlign;
+
+  String get textFieldLabel => _textFieldLabel;
+
+  OverlayVisibilityMode get clearButtonMode => _clearButtonMode;
 
   void onSearchChanged(String query) {
     _searchQuery = query;
@@ -61,6 +68,16 @@ final class TextDemoViewModel extends ViewModel {
 
   void onTextAlignSelected(TextAlign align) {
     _textAlign = align;
+    notifyListeners();
+  }
+
+  void onTextFieldLabelChanged(String value) {
+    _textFieldLabel = value;
+    notifyListeners();
+  }
+
+  void onClearButtonModeSelected(OverlayVisibilityMode mode) {
+    _clearButtonMode = mode;
     notifyListeners();
   }
 
