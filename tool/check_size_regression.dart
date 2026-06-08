@@ -32,12 +32,20 @@ import 'dart:io';
 
 /// Budget for total Cupertino-pathed bytes in the size-harness Android build.
 ///
-/// Baseline at time of writing: ~118 KB (with all six `showPlatformXxx`,
-/// PlatformButton, `context.platformIcon`, and the `isAndroid`/`isIOS`
-/// getters exercised). Threshold set ~70% above baseline to absorb
-/// Flutter SDK variance while remaining below the ~300 KB watermark of a
-/// full deferred-dispatch regression.
-const int _maxCupertinoBytes = 200 * 1024;
+/// Baseline (2026-06-08, current SDK): ~107 KB — all six `showPlatformXxx`,
+/// PlatformButton, `context.platformIcon`, and the `isAndroid`/`isIOS` getters
+/// exercised; dominated by SDK-internal Cupertino (text-selection toolbars
+/// etc.) that can't be driven to zero from outside the SDK.
+///
+/// Threshold sits ~33 KB above baseline — deliberately *below* the empirically
+/// measured cost of the dominant regression, so that regression trips it. A
+/// leaked `CupertinoDatePicker` adds ~61 KB cupertino-pathed (`tool/size_harness`
+/// experiment, 2026-06-08), pushing the build to ~166 KB — well over this
+/// 140 KB budget. The prior 200 KB budget (~93 KB headroom) sat *above* that
+/// 61 KB leak and would have missed a single-widget pruning regression. The
+/// ~33 KB margin still absorbs SDK drift (the baseline fell ~11 KB since the
+/// last reading) roughly threefold.
+const int _maxCupertinoBytes = 140 * 1024;
 
 /// Number of top offenders to print on failure.
 const _maxOffendersShown = 30;
