@@ -1,40 +1,94 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart' show AxisDirection;
+import 'package:flutter/widgets.dart' show AxisDirection, Color;
 import 'package:pmvvm/pmvvm.dart';
 
-/// State for the Selection-controls demo. The segmented button, radio group and
-/// menu picker all read and write [selectedDirectionListenable], so changing
-/// one updates the others — a small showcase of shared `ValueNotifier` state.
+/// State for the Selection-controls demo. The checkbox / switch / slider each
+/// back a small playground (live value + visual knobs); the segmented button,
+/// radio group and menu picker all read and write [selectedDirection], so
+/// changing one updates the others — a showcase of shared selection state. All
+/// state is flat fields mutated via `notifyListeners()` (see `CODESTYLE.md`'s
+/// reactivity note on playground view-models).
 final class SelectionDemoViewModel extends ViewModel {
-  final _checkboxValueNotifier = ValueNotifier(true);
-  final _isSwitchOnNotifier = ValueNotifier(false);
-  final _sliderValueNotifier = ValueNotifier<double>(0);
-  final _selectedDirectionNotifier = ValueNotifier(AxisDirection.left);
+  var _checkboxValue = true;
+  var _shouldEnableCheckbox = true;
+  var _checkboxActiveColor = const Color(0xFF2196F3);
 
-  ValueListenable<bool> get checkboxValueListenable => _checkboxValueNotifier;
+  var _isSwitchOn = false;
+  var _shouldEnableSwitch = true;
+  var _switchActiveTrackColor = const Color(0xFF4CAF50);
 
-  ValueListenable<bool> get isSwitchOnListenable => _isSwitchOnNotifier;
+  double _sliderValue = 0;
+  var _shouldEnableSlider = true;
+  var _sliderActiveColor = const Color(0xFF2196F3);
 
-  ValueListenable<double> get sliderValueListenable => _sliderValueNotifier;
+  var _selectedDirection = AxisDirection.left;
 
-  ValueListenable<AxisDirection> get selectedDirectionListenable => _selectedDirectionNotifier;
+  bool get checkboxValue => _checkboxValue;
 
-  void onCheckboxToggled({required bool value}) => _checkboxValueNotifier.value = value;
+  bool get shouldEnableCheckbox => _shouldEnableCheckbox;
 
-  void onSwitchToggled({required bool value}) => _isSwitchOnNotifier.value = value;
+  Color get checkboxActiveColor => _checkboxActiveColor;
 
-  void onSliderChanged({required double value}) => _sliderValueNotifier.value = value;
+  bool get isSwitchOn => _isSwitchOn;
 
-  void onDirectionChanged(AxisDirection? direction) =>
-      _selectedDirectionNotifier.value = direction!;
+  bool get shouldEnableSwitch => _shouldEnableSwitch;
 
-  @override
-  void dispose() {
-    _checkboxValueNotifier.dispose();
-    _isSwitchOnNotifier.dispose();
-    _sliderValueNotifier.dispose();
-    _selectedDirectionNotifier.dispose();
+  Color get switchActiveTrackColor => _switchActiveTrackColor;
 
-    super.dispose();
+  double get sliderValue => _sliderValue;
+
+  bool get shouldEnableSlider => _shouldEnableSlider;
+
+  Color get sliderActiveColor => _sliderActiveColor;
+
+  AxisDirection get selectedDirection => _selectedDirection;
+
+  void onCheckboxToggled({required bool value}) {
+    _checkboxValue = value;
+    notifyListeners();
+  }
+
+  void onCheckboxEnabledToggled({required bool value}) {
+    _shouldEnableCheckbox = value;
+    notifyListeners();
+  }
+
+  void onCheckboxActiveColorSelected(Color color) {
+    _checkboxActiveColor = color;
+    notifyListeners();
+  }
+
+  void onSwitchToggled({required bool value}) {
+    _isSwitchOn = value;
+    notifyListeners();
+  }
+
+  void onSwitchEnabledToggled({required bool value}) {
+    _shouldEnableSwitch = value;
+    notifyListeners();
+  }
+
+  void onSwitchActiveTrackColorSelected(Color color) {
+    _switchActiveTrackColor = color;
+    notifyListeners();
+  }
+
+  void onSliderChanged(double value) {
+    _sliderValue = value;
+    notifyListeners();
+  }
+
+  void onSliderEnabledToggled({required bool value}) {
+    _shouldEnableSlider = value;
+    notifyListeners();
+  }
+
+  void onSliderActiveColorSelected(Color color) {
+    _sliderActiveColor = color;
+    notifyListeners();
+  }
+
+  void onDirectionChanged(AxisDirection? direction) {
+    _selectedDirection = direction!;
+    notifyListeners();
   }
 }
