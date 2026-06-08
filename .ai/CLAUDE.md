@@ -2,8 +2,8 @@
 
 Claude-Code-specific guidance. Project facts, stack, hard rules, and AI-agent
 guidelines live in [AGENTS.md](./AGENTS.md); the full code-style guide lives in
-[`../CODESTYLE.md`](../CODESTYLE.md); design rationale lives in
-[`../APPENDIX.md`](../APPENDIX.md). Read AGENTS.md and CODESTYLE.md first.
+[`CODESTYLE.md`](CODESTYLE.md); design rationale lives in
+[`APPENDIX.md`](APPENDIX.md). Read AGENTS.md and CODESTYLE.md first.
 
 ## Role & context
 You're assisting with **platform_adaptive_widgets**: a Flutter package that exposes
@@ -23,7 +23,7 @@ triggers an automated publish).
 - **Do not silently pick between reasonable alternatives.** Whenever a task admits more
   than one defensible approach (which Cupertino primitive to wrap, whether a new field
   is functional / shared-visual / platform-only per
-  [`APPENDIX.md#field-classification`](../APPENDIX.md#field-classification), whether a
+  [`APPENDIX.md#field-classification`](APPENDIX.md#field-classification), whether a
   symbol belongs in the public re-exports or stays under `lib/src/`, function-vs-class
   API shape, whether to add a dependency, etc.), **stop and ask**. Recommendations in
   the question are expected — list the options with trade-offs, say which you'd pick
@@ -57,7 +57,7 @@ triggers an automated publish).
   `lib/platform_adaptive_widgets.dart`.
 - **`example/` edits** are local — no publish impact. The demo app is the living usage
   reference; keep it building and runnable on both Android and iOS. See
-  [`example/.ai/AGENTS.md`](../example/.ai/AGENTS.md) for sub-scope conventions.
+  [`example/.ai/AGENTS.md`](example/.ai/AGENTS.md) for sub-scope conventions.
 - **`analysis_options.yaml` edits** affect every file. Surface lint-posture changes
   loudly and add a written reason in `APPENDIX.md`.
 - **`pubspec.yaml` edits** that touch `dependencies` add to every downstream user's
@@ -93,7 +93,7 @@ triggers an automated publish).
   code.
 - You're touching anything in `lib/src/models/platform_widget_base.dart`. The abstract
   base hierarchy is the dispatch invariant for every widget in the package — see
-  [`../APPENDIX.md#platform-widget-base-hierarchy`](../APPENDIX.md#platform-widget-base-hierarchy).
+  [`APPENDIX.md#platform-widget-base-hierarchy`](APPENDIX.md#platform-widget-base-hierarchy).
 
 For single-file, single-concern fixes inside `lib/src/`: just do it.
 
@@ -128,7 +128,7 @@ explicitly says "cut a release"; see *Forbidden / confirm-first actions* below.
   `example/pubspec.lock` without an explicit user instruction to cut a release —
   the three are pipeline-owned and move in lockstep. Routine CHANGELOG appends are
   handled by the `changelog.yml` bot on PR merge. When the user authorises a
-  release, run [`scripts/release.sh`](../scripts/release.sh); full mechanics in
+  release, run [`scripts/release.sh`](scripts/release.sh); full mechanics in
   [`scripts/README.md`](../scripts/README.md).
 - **Never** edit `pubspec.lock` directly (root or `example/`). It's `flutter pub get`'s
   output.

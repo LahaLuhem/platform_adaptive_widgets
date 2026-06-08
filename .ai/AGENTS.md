@@ -141,12 +141,12 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    `PlatformWidgetBase`.** For top-level helpers like `showPlatformXxx`, route the
    switch directly at the construction site and call only the matching-platform
    private helper from each arm — do not pass both platforms' values/closures into
-   `context.platformLazyValue(material: …, cupertino: …)` or any other
+   `platformLazyValue(material: …, cupertino: …)` or any other
    argument-taking helper from internal code. Closure args are evaluated at the
    call site before the helper's switch runs, which defeats AOT pruning of the
    unused-platform branch (verified empirically — recovering pruning shaved
    ~192 KB from the example's Android `libapp.so` on 2026-05-30). The public
-   `platform*` extension helpers stay around for callers who knowingly accept
+   `platform*` value selectors stay around for callers who knowingly accept
    the size cost; internally we always inline. See
    [`APPENDIX.md#aot-pruning-rules`](../APPENDIX.md#aot-pruning-rules).
    **Enforced on every PR** by two CI guards:
