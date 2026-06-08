@@ -49,7 +49,7 @@ class PropertyEditor extends StatelessWidget {
         if (platformKnobs.isEmpty)
           Column(crossAxisAlignment: .stretch, spacing: 8, children: knobs)
         else ...[
-          _KnobGroup(label: 'Shared', knobs: knobs),
+          if (knobs.isNotEmpty) _KnobGroup(label: 'Shared', knobs: knobs),
           _KnobGroup(
             label: platformValue(material: 'Material', cupertino: 'Cupertino'),
             knobs: platformKnobs,

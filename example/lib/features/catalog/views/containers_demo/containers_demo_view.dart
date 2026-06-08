@@ -1,6 +1,6 @@
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart' show Icons;
+import 'package:material_ui/material_ui.dart' show Icons, ListTileTitleAlignment;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:platform_icons/platform_icons.dart';
 import 'package:pmvvm/pmvvm.dart';
@@ -9,12 +9,13 @@ import '/features/catalog/widgets/demo_card.dart';
 import '/features/catalog/widgets/property_editor/bool_knob.dart';
 import '/features/catalog/widgets/property_editor/color_knob.dart';
 import '/features/catalog/widgets/property_editor/double_knob.dart';
+import '/features/catalog/widgets/property_editor/enum_knob.dart';
 import '/features/catalog/widgets/property_editor/property_editor.dart';
+import '/features/catalog/widgets/property_editor/segment_knob.dart';
 import 'containers_demo_view_model.dart';
 
 /// The Lists & containers section of the Catalog accordion — list tile,
-/// scrollbar and progress-indicator playgrounds, plus an interactive expansion
-/// tile (which has no shared-visual scalar properties to knob).
+/// scrollbar, progress-indicator and expansion-tile playgrounds.
 class ContainersDemoView extends StatelessWidget {
   const ContainersDemoView({super.key});
 
@@ -41,6 +42,12 @@ class ContainersDemoView extends StatelessWidget {
               trailing: const PlatformIcon(.forward),
               isEnabled: viewModel.shouldEnableListTile,
               leadingWidth: viewModel.listTileLeadingWidth,
+              color: viewModel.listTileColor,
+              materialListTileData: MaterialListTileData(
+                iconColor: viewModel.listTileIconColor,
+                textColor: viewModel.listTileTextColor,
+                titleAlignment: viewModel.listTileTitleAlignment,
+              ),
             ),
             knobs: [
               BoolKnob(
@@ -56,29 +63,82 @@ class ContainersDemoView extends StatelessWidget {
                 value: viewModel.listTileLeadingWidth,
                 onChanged: viewModel.onListTileLeadingWidthChanged,
               ),
+              ColorKnob(
+                label: 'color',
+                value: viewModel.listTileColor,
+                onChanged: viewModel.onListTileColorSelected,
+              ),
+            ],
+            materialKnobs: [
+              ColorKnob(
+                label: 'iconColor',
+                value: viewModel.listTileIconColor,
+                onChanged: viewModel.onListTileIconColorSelected,
+              ),
+              ColorKnob(
+                label: 'textColor',
+                value: viewModel.listTileTextColor,
+                onChanged: viewModel.onListTileTextColorSelected,
+              ),
+              EnumKnob<ListTileTitleAlignment>(
+                label: 'titleAlignment',
+                value: viewModel.listTileTitleAlignment,
+                values: ListTileTitleAlignment.values,
+                onChanged: viewModel.onListTileTitleAlignmentSelected,
+              ),
             ],
           ),
         ),
         DemoCard(
           title: 'PlatformExpansionTile',
           description: 'Expands to reveal content.',
-          child: PlatformExpansionTile(
-            title: const Text('Tap to expand'),
-            controller: viewModel.expansibleController,
-            cupertinoExpansionTileData: const CupertinoExpansionTileData(transitionMode: .scroll),
-            child: const Text('Expansion tile content.'),
+          child: PropertyEditor(
+            preview: PlatformExpansionTile(
+              title: const Text('Tap to expand'),
+              controller: viewModel.expansibleController,
+              cupertinoExpansionTileData: const CupertinoExpansionTileData(transitionMode: .scroll),
+              materialExpansionTileData: MaterialExpansionTileData(
+                showTrailingIcon: viewModel.shouldShowExpansionTrailingIcon,
+                textColor: viewModel.expansionTextColor,
+                iconColor: viewModel.expansionIconColor,
+              ),
+              child: const Text('Expansion tile content.'),
+            ),
+            knobs: const [],
+            materialKnobs: [
+              BoolKnob(
+                label: 'showTrailingIcon',
+                value: viewModel.shouldShowExpansionTrailingIcon,
+                onChanged: (value) => viewModel.onExpansionTrailingIconToggled(value: value),
+              ),
+              ColorKnob(
+                label: 'textColor',
+                value: viewModel.expansionTextColor,
+                onChanged: viewModel.onExpansionTextColorSelected,
+              ),
+              ColorKnob(
+                label: 'iconColor',
+                value: viewModel.expansionIconColor,
+                onChanged: viewModel.onExpansionIconColorSelected,
+              ),
+            ],
           ),
         ),
         DemoCard(
           title: 'PlatformScrollbar',
-          description: 'A scrollbar over a scrolling list.',
+          description: 'A scrollbar over a vertical list.',
           child: PropertyEditor(
             preview: SizedBox(
               height: 160,
               child: PlatformScrollbar(
                 thumbVisibility: viewModel.shouldShowScrollbarThumb,
                 thickness: viewModel.scrollbarThickness,
+                scrollbarOrientation: viewModel.scrollbarOrientation,
                 controller: viewModel.scrollController,
+                materialScrollbarData: MaterialScrollbarData(
+                  trackVisibility: viewModel.shouldShowScrollbarTrack,
+                  interactive: viewModel.isScrollbarInteractive,
+                ),
                 child: ListView.builder(
                   controller: viewModel.scrollController,
                   itemCount: 50,
@@ -99,6 +159,53 @@ class ContainersDemoView extends StatelessWidget {
                 divisions: 14,
                 value: viewModel.scrollbarThickness,
                 onChanged: viewModel.onScrollbarThicknessChanged,
+              ),
+              SegmentKnob<ScrollbarOrientation>(
+                label: 'scrollbarOrientation',
+                value: viewModel.scrollbarOrientation,
+                values: const [.left, .right],
+                onChanged: viewModel.onScrollbarOrientationSelected,
+              ),
+            ],
+            materialKnobs: [
+              BoolKnob(
+                label: 'trackVisibility',
+                value: viewModel.shouldShowScrollbarTrack,
+                onChanged: (value) => viewModel.onScrollbarTrackToggled(value: value),
+              ),
+              BoolKnob(
+                label: 'interactive',
+                value: viewModel.isScrollbarInteractive,
+                onChanged: (value) => viewModel.onScrollbarInteractiveToggled(value: value),
+              ),
+            ],
+          ),
+        ),
+        DemoCard(
+          title: 'PlatformScrollbar (horizontal)',
+          description: 'The same widget over a horizontal list — top / bottom orientation.',
+          child: PropertyEditor(
+            preview: SizedBox(
+              height: 80,
+              child: PlatformScrollbar(
+                thumbVisibility: true,
+                scrollbarOrientation: viewModel.horizontalScrollbarOrientation,
+                controller: viewModel.horizontalScrollController,
+                child: ListView.builder(
+                  scrollDirection: .horizontal,
+                  controller: viewModel.horizontalScrollController,
+                  itemCount: 50,
+                  itemBuilder: (_, index) =>
+                      SizedBox(width: 80, child: Center(child: Text('Item $index'))),
+                ),
+              ),
+            ),
+            knobs: [
+              SegmentKnob<ScrollbarOrientation>(
+                label: 'scrollbarOrientation',
+                value: viewModel.horizontalScrollbarOrientation,
+                values: const [.top, .bottom],
+                onChanged: viewModel.onHorizontalScrollbarOrientationSelected,
               ),
             ],
           ),
