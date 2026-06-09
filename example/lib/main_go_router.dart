@@ -37,7 +37,7 @@ class _ExampleGoRouterAppState extends State<_ExampleGoRouterApp> {
   }
 
   @override
-  Widget build(BuildContext context) => DualValueListenableBuilder<ThemeMode, TargetPlatform?>(
+  Widget build(BuildContext context) => DualValueListenableBuilder(
     firstListenable: _themeModeNotifier,
     secondListenable: _platformNotifier,
     builder: (_, themeMode, platformOverride, _) {
