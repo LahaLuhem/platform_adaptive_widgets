@@ -14,24 +14,25 @@ for one.
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 
 - [Why you'd want it](#why-youd-want-it)
+- [How it compares](#how-it-compares)
 - [Getting started](#getting-started)
 - [See it live](#see-it-live)
 - [Widget catalog](#widget-catalog)
-  * [Dialogs](#dialogs)
-  * [Interaction](#interaction)
-  * [Layout](#layout)
-  * [Painting](#painting)
-    + [Generic Platform Widgets](#generic-platform-widgets)
-    + [Platform Theme](#platform-theme)
-    + [Platform value selectors](#platform-value-selectors)
-    + [Other Extensions](#other-extensions)
-    + [Models](#models)
+   * [Dialogs](#dialogs)
+   * [Interaction](#interaction)
+   * [Layout](#layout)
+   * [Painting](#painting)
+      + [Generic Platform Widgets](#generic-platform-widgets)
+      + [Platform Theme](#platform-theme)
+      + [Platform value selectors](#platform-value-selectors)
+      + [Other Extensions](#other-extensions)
+      + [Models](#models)
 - [Customizing per platform](#customizing-per-platform)
-  * [Base Classes](#base-classes)
+   * [Base Classes](#base-classes)
 - [Compile-time platform pruning, verified](#compile-time-platform-pruning-verified)
 - [Coming from flutter_platform_widgets?](#coming-from-flutter_platform_widgets)
 - [Contributing](#contributing)
-  * [Optional: AI-agent discovery symlinks](#optional-ai-agent-discovery-symlinks)
+   * [Optional: AI-agent discovery symlinks](#optional-ai-agent-discovery-symlinks)
 - [Contributors](#contributors)
 - [Authors](#authors)
 - [Used By](#used-by)
@@ -71,6 +72,33 @@ Widget build(BuildContext context) {
 // With this package: one widget, the right look on each platform.
 PlatformButton(onPressed: _save, child: const Text('Save'));
 ```
+
+---
+
+## How it compares
+
+These packages all fill the same gap — Flutter ships Material *and* Cupertino but won't choose
+between them for you. They fall into two camps: **pure-Dart dispatch** (render Flutter's own
+Material/Cupertino widgets per platform) and **native bridging** (embed real platform UI through
+platform views + channels). This package is firmly pure-Dart.
+
+> Landscape as of June 2026 — pub.dev moves fast; check each package for its current state.
+
+| Package | How it adapts | Status & notes |
+|---|---|---|
+| **`platform_adaptive_widgets`** (this) | Pure-Dart `PlatformXxx` dispatch on `defaultTargetPlatform`; `*Data` per-platform overrides; release builds AOT-prune the unused platform (CI-verified) | Active · Android + iOS |
+| [`flutter_platform_widgets`](https://pub.dev/packages/flutter_platform_widgets) | Same pure-Dart `PlatformXxx` idea — the spiritual predecessor | **Discontinued** — retired when Flutter split Material/Cupertino into separate packages, the very split this package is built on |
+| [`adaptive_platform_ui`](https://pub.dev/packages/adaptive_platform_ui) | Renders **real UIKit** via `UiKitView` + platform channels for iOS 26 *Liquid Glass*; pure-Dart Cupertino as the ≤ iOS 18 fallback | Pre-1.0 · needs native iOS setup · some native components flagged experimental |
+| Flutter SDK `.adaptive` constructors | First-party: `Switch.adaptive`, `Slider.adaptive`, `showAdaptiveDialog`, … | Stable, but only a handful of widgets — no app / scaffold / navigation level |
+
+The real fork is **`adaptive_platform_ui`**, and it's a difference in philosophy rather than
+better-or-worse. It reaches through to native UIKit, so you get pixel-authentic iOS 26 Liquid Glass
+that Flutter's Cupertino widgets can't reproduce today — at the cost of platform-view compositing,
+method-channel round-trips, an iOS-version gate, required native setup, and a native dependency that
+can't be tree-shaken. `platform_adaptive_widgets` takes the opposite trade: it renders Flutter's
+Cupertino (not real UIKit) and stays pure Dart — no channels, no native setup, and the unused
+platform pruned out of your binary. Want the latest *native* iOS chrome? Go native. Want a light,
+no-bridge, prunable adaptive layer across a broad widget set? That's this.
 
 ---
 
