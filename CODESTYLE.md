@@ -697,6 +697,63 @@ assignment target, the return slot) already pins them. Keep them when inference 
 otherwise fall back to `dynamic` — e.g. `MaterialPageRoute<void>(builder: …)` stays,
 because nothing else constrains the route's `T`.
 
+<a id="library-pipeline-methods-over-hand-rolled-loops"></a>
+### Library pipeline methods over hand-rolled loops (for data manipulation)
+
+The deliberate flip side of the
+[collection-for rule](#collection-for-collection-if-over-iterablemaptolist) above.
+That rule is about *constructing* a data / widget literal — there, `[for (…) …]`
+reads as data. This rule is about *transforming, filtering, flattening, or reducing*
+data — a genuine pipeline, where a stream-style chain reads as exactly what it is, and
+re-deriving it with an imperative loop plus a mutable accumulator obscures the intent
+(and re-implements a method the SDK already ships).
+
+Prefer the `dart:core` `Iterable` / `Set` / `Map` methods — `where`, `whereType<T>()`,
+`map`, `expand`, `Set.difference` / `intersection`, `Map.fromEntries`, `followedBy` —
+over a `for` loop that pushes into a growable collection, and over a `[for … if …]`
+comprehension when the work is filtering / flattening rather than literal construction:
+
+```dart
+// Prefer — set algebra states the intent directly:
+final missingFields = baseFields.difference(widgetFields);
+
+// Over — a loop that re-derives `difference` by hand:
+final missingFields = <String>{};
+for (final field in baseFields) {
+  if (!widgetFields.contains(field)) missingFields.add(field);
+}
+```
+
+```dart
+// Prefer — whereType + where + expand + map + toSet:
+Set<String> fieldNames(ClassDeclaration node) => node.body.members
+    .whereType<FieldDeclaration>()
+    .where((member) => !member.isStatic)
+    .expand((member) => member.fields.variables)
+    .map((variable) => variable.name.lexeme)
+    .toSet();
+```
+
+When a symmetric check repeats per case (e.g. the Material vs Cupertino build
+branches), key the variants in a `Map` and `.entries.expand(…)` over it rather than
+duplicating the loop body — data-as-a-map beats copy-pasted control flow. The worked
+example is [`test/data_widget_parity_test.dart`](test/data_widget_parity_test.dart).
+
+**Boundary:** building a widget `children:` list or any data literal → collection-for
+(the rule above). Running a filter / flatten / reduce / set-op pipeline → these
+methods. A tell: if you seed an empty collection and mutate it in a loop, that's
+usually a pipeline wearing a loop's clothes.
+
+**Stay lazy; materialise deliberately.** Don't end a chain with a reflexive
+`.toList()`. Leave it an `Iterable` and let the terminal consumer drive evaluation —
+`check(…)`, a `for`-in loop, `Map.fromEntries(…)`, or another pipeline stage all accept
+an `Iterable` directly. Materialise only when (a) the result is iterated more than once
+— a lazy chain re-runs end to end on every pass, including any I/O such as `parseFile`
+— or (b) an API genuinely requires a `List`. When you do materialise a result that
+won't be mutated, use `.toList(growable: false)` to say so. In the parity guard `bases`
+is `.toList(growable: false)` (three readers, never mutated) while each test's
+`offenders` stays a lazy `Iterable` (read once, by `check`).
+
 <a id="dartasync-wait-extensions-over-static-futurewait"></a>
 ### `dart:async` `wait` extensions over static `Future.wait(...)`
 

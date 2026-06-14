@@ -42,17 +42,16 @@ const _forbiddenHelperNames = {
 void main() {
   group('AOT pruning regression guard', () {
     test('no caller of dispatch helpers outside $_helperHomeBasename', () {
-      final offenders = <String>[];
-      for (final file in _dartFilesIn('lib/src')) {
-        if (_isHelperHome(file)) continue;
+      final offenders = _lintableFiles().expand((file) {
         final parsed = parseFile(
           path: file.absolute.path,
           featureSet: FeatureSet.latestLanguageVersion(),
         );
         final visitor = _HelperCallVisitor(file.path, parsed.lineInfo);
         parsed.unit.accept(visitor);
-        offenders.addAll(visitor.offenders);
-      }
+
+        return visitor.offenders;
+      });
       check(
         because:
             'Files in lib/src/ call the dispatch helpers '
@@ -67,17 +66,16 @@ void main() {
 
     test('no private helper in lib/src takes both material* and cupertino* '
         'function-typed params', () {
-      final offenders = <String>[];
-      for (final file in _dartFilesIn('lib/src')) {
-        if (_isHelperHome(file)) continue;
+      final offenders = _lintableFiles().expand((file) {
         final parsed = parseFile(
           path: file.absolute.path,
           featureSet: FeatureSet.latestLanguageVersion(),
         );
         final visitor = _DispatchHelperVisitor(file.path, parsed.lineInfo);
         parsed.unit.accept(visitor);
-        offenders.addAll(visitor.offenders);
-      }
+
+        return visitor.offenders;
+      });
       check(
         because:
             'Found private function(s) that take both a material*-named and '
@@ -94,16 +92,18 @@ void main() {
   });
 }
 
-bool _isHelperHome(File f) {
-  final segments = f.uri.pathSegments;
+/// The `lib/src/` Dart files both checks lint: every `.dart` except the file
+/// that *defines* the dispatch helpers (their own definitions aren't calls).
+/// Lazy — nothing is read until the returned iterable is iterated.
+Iterable<File> _lintableFiles() => Directory('lib/src')
+    .listSync(recursive: true)
+    .whereType<File>()
+    .where((file) => file.path.endsWith('.dart') && !_isHelperHome(file));
+
+bool _isHelperHome(File file) {
+  final segments = file.uri.pathSegments;
 
   return segments.isNotEmpty && segments.last == _helperHomeBasename;
-}
-
-Iterable<File> _dartFilesIn(String dir) sync* {
-  for (final entity in Directory(dir).listSync(recursive: true)) {
-    if (entity is File && entity.path.endsWith('.dart')) yield entity;
-  }
 }
 
 class _HelperCallVisitor extends RecursiveAstVisitor<void> {
@@ -150,14 +150,13 @@ class _DispatchHelperVisitor extends RecursiveAstVisitor<void> {
 
   void _check(String name, FormalParameterList? params, int offset) {
     if (params == null) return;
-    var hasMaterial = false;
-    var hasCupertino = false;
-    for (final param in params.parameters) {
-      final pname = (param.name?.lexeme ?? '').toLowerCase();
-      if (!_isFunctionTyped(param)) continue;
-      if (pname.startsWith('material')) hasMaterial = true;
-      if (pname.startsWith('cupertino')) hasCupertino = true;
-    }
+
+    final functionTypedNames = params.parameters
+        .where(_isFunctionTyped)
+        .map((param) => (param.name?.lexeme ?? '').toLowerCase())
+        .toList(growable: false);
+    final hasMaterial = functionTypedNames.any((paramName) => paramName.startsWith('material'));
+    final hasCupertino = functionTypedNames.any((paramName) => paramName.startsWith('cupertino'));
     if (hasMaterial && hasCupertino) {
       final loc = _lineInfo.getLocation(offset);
       offenders.add(
