@@ -155,7 +155,10 @@ Build-method resolution:
   per platform reach for `materialXxxData` / `cupertinoXxxData`.
 - **Private `_PlatformXxxData` base, not public.** Exists only so per-platform
   records inherit shared-visual fields via `super.x` forwarding —
-  compile-time-checked, no codegen needed for that edge. Never exported from
+  compile-time-checked, no codegen needed for that edge. (The other two edges —
+  the widget mirroring the base's fields, and the `?? ` build-method wiring — are
+  *not* compiler-checked; they're held by the parity guard, see
+  [*Enforcement*](#field-classification) below.) Never exported from
   [`lib/platform_adaptive_widgets.dart`](./lib/platform_adaptive_widgets.dart);
   callers never see it.
 
@@ -302,6 +305,40 @@ constructor. The costs are minor and accepted:
 - Direct passthrough to `Switch` / `CupertinoSwitch` constructor signatures.
   The widget still owns its public API; per-platform records do not leak the
   underlying widget's full surface.
+
+### Enforcement: the data ↔ widget parity guard
+
+The two halves of this contract the Dart compiler does **not** check are guarded
+by a static AST test that runs on every PR (via `flutter test` in
+[`.github/workflows/package.yml`](./.github/workflows/package.yml)):
+[`test/data_widget_parity_test.dart`](./test/data_widget_parity_test.dart). For
+every canonical widget — those whose shared-visual fields live on a private
+`_PlatformXxxData` base — it asserts:
+
+1. **Field-set parity** — every field on the `_PlatformXxxData` base also exists
+   as a flat field on the matching `PlatformXxx` widget. Dart already checks
+   `super.x` forwarding (base → records) and constructor-params → field
+   declarations, but nothing forces the widget to mirror the base: a base field
+   with no flat twin compiles, yet can never be set at the call site.
+2. **Build-method wiring** — every base field is merged via
+   `materialXxxData?.field ?? field` in `buildMaterial` *and*
+   `cupertinoXxxData?.field ?? field` in `buildCupertino` (the resolution idiom
+   from [*Where each bucket lives*](#field-classification)). A forgotten or
+   misdirected fallback compiles, type-checks, and silently drops the
+   per-platform override — the more dangerous edge, and the one the compiler is
+   blindest to.
+
+A third check asserts the guard actually discovered the known canonical widgets,
+so a future analyzer-AST change or a `lib/src/models/` move can't quietly reduce
+it to a vacuous pass. Bases that exist only to DRY a single field across their
+two records with no flat widget twin by design — `_PlatformScaffoldData` and
+`_PlatformAppBarData`, whose lone `backgroundColor` is read straight off the
+record — are listed in the test's `_basesWithoutFlatMirror` and skipped.
+
+The guard catches the two *mechanical* drift modes (a new shared field left
+unmirrored, or wired in only one builder); it does not adjudicate whether a
+field *belongs* on the shared base vs a per-platform record — that's the human
+judgement the buckets above describe.
 
 ---
 

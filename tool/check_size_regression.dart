@@ -62,11 +62,10 @@ Future<void> main(List<String> args) async {
   }
 
   final root = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
-  final hits = <_Symbol>[];
-  _walk(root, const [], hits);
-
-  hits.sort((a, b) => b.bytes.compareTo(a.bytes));
-  final total = hits.fold<int>(0, (sum, h) => sum + h.bytes);
+  // Read more than once (sort, sum, slice), so materialise the lazy walk once.
+  final hits = _cupertinoSymbols(root).toList(growable: false)
+    ..sort((a, b) => b.bytes.compareTo(a.bytes));
+  final total = hits.fold<int>(0, (sum, hit) => sum + hit.bytes);
 
   stdout
     ..writeln('AOT-pruning size-regression check')
@@ -94,24 +93,24 @@ Future<void> main(List<String> args) async {
   exit(1);
 }
 
-void _walk(Map<String, dynamic> node, List<String> ancestors, List<_Symbol> hits) {
-  final name = node['n']?.toString() ?? '';
-  final path = [...ancestors, name];
+/// Lazily flattens the `--analyze-size` JSON tree to every leaf symbol whose
+/// full `/`-joined path contains "cupertino" (case-insensitive). A leaf is a
+/// node with a numeric `value` and no children.
+Iterable<_Symbol> _cupertinoSymbols(
+  Map<String, dynamic> node, [
+  List<String> ancestors = const [],
+]) {
+  final path = [...ancestors, node['n']?.toString() ?? ''];
   final children = node['children'];
-
   if (children is List && children.isNotEmpty) {
-    for (final child in children) {
-      _walk(child as Map<String, dynamic>, path, hits);
-    }
-
-    return;
+    return children.expand((child) => _cupertinoSymbols(child as Map<String, dynamic>, path));
   }
 
   final value = node['value'];
-  if (value is! num) return;
+  if (value is! num) return const [];
   final full = path.join('/');
-  if (!full.toLowerCase().contains('cupertino')) return;
-  hits.add(_Symbol(full, value.toInt()));
+
+  return full.toLowerCase().contains('cupertino') ? [_Symbol(full, value.toInt())] : const [];
 }
 
 class _Symbol {

@@ -110,6 +110,15 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    [`APPENDIX.md#cross-platform-field-mappings`](../APPENDIX.md#cross-platform-field-mappings)
    for shared-visual fields whose native names or types diverge.
 
+   A new shared-visual field must be added in **both** places — flat on the
+   widget *and* on the `_PlatformXxxData` base — and merged with `?? ` in both
+   `buildMaterial` and `buildCupertino`. The
+   [data ↔ widget parity guard](../test/data_widget_parity_test.dart) fails the
+   PR if either edge drifts (these two edges are the ones the Dart compiler does
+   not catch; `super.x` forwarding base → records, it does). See
+   [`APPENDIX.md#field-classification`](../APPENDIX.md#field-classification)
+   (*Enforcement*).
+
 ## Hard rules
 1. **The public API lives only in `lib/platform_adaptive_widgets.dart`.** That file
    re-exports from `lib/src/`. Don't make users import from
