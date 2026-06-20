@@ -39,7 +39,5 @@ example/android/
 example/ios/
 example/devtools_options.yaml
 
-# Demo media — screenshots / recordings shown in README.md. Referenced via absolute
-# GitHub raw URLs, so they render on pub.dev without riding along in the tarball; they
-# stay tracked in git so GitHub serves them.
-doc/screenshots/
+# Demo media — declared in pubspec.yaml's `screenshots:` field, so they ship in the tarball
+# for pub.dev's gallery to render them (and are inlined in README.md via GitHub raw URLs).
