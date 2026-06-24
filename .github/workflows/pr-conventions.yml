@@ -20,6 +20,11 @@ jobs:
   branch-name:
     name: Branch name
     runs-on: ubuntu-latest
+    # Dependabot branches are always `dependabot/...` and can't be made to match
+    # the required pattern; exempt bot-authored PRs. Keyed off the PR author
+    # (not github.actor) so it still holds when a human triggers a `labeled`
+    # event on a bot PR.
+    if: github.event.pull_request.user.login != 'dependabot[bot]'
     steps:
       - name: Validate branch name pattern
         env:
@@ -78,6 +83,9 @@ jobs:
   sem-label:
     name: Sem-* label
     runs-on: ubuntu-latest
+    # Bot PRs carry no sem-* label and are exempt from the changelog flow too
+    # (see changelog.yml), so don't require one here.
+    if: github.event.pull_request.user.login != 'dependabot[bot]'
     env:
       LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
     steps:

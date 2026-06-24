@@ -21,7 +21,10 @@ permissions:
 jobs:
   log:
     name: Append cider entry
-    if: github.event.pull_request.merged == true
+    # Skip merged bot PRs: they carry no sem-* label, so there's no cider type
+    # to resolve. Dependabot bumps don't get an automatic CHANGELOG entry —
+    # add one by hand if a root-package bump is user-visible.
+    if: github.event.pull_request.merged == true && github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Resolve sem-* label → cider type
