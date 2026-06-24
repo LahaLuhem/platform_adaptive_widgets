@@ -2,6 +2,9 @@
 ### Added
 - \[#0\] Widget parity test
 
+### Changed
+- \[#9\] Create initital depandabot workflow
+
 ## [2.1.0] - 2026-06-09
 ### Added
 - \[#6\] Property playground added for the example app
