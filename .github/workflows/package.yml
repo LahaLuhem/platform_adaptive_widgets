@@ -21,7 +21,7 @@ jobs:
     name: Flutter analyze
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-flutter
       - run: flutter --no-version-check analyze lib
 
@@ -29,7 +29,7 @@ jobs:
     name: Dependency validator
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-flutter
       - run: dart pub global activate dependency_validator
       - run: dart pub global run dependency_validator
@@ -38,7 +38,7 @@ jobs:
     name: Tests (AOT pruning guard)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-flutter
       - run: flutter --no-version-check test
 
@@ -46,7 +46,7 @@ jobs:
     name: AOT pruning size regression
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-flutter
       - uses: actions/setup-java@v5
         with:
