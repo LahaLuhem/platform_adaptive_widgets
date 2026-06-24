@@ -62,7 +62,7 @@ jobs:
       # surface-able in the ruleset's bypass list. The App is — via the
       # ruleset's "Apps" bypass tab — and the install token authenticates
       # as the App.
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v3
         id: app-token
         if: steps.sem.outputs.type != 'skip'
         with:
