@@ -4,6 +4,7 @@
 
 ### Changed
 - \[#9\] Create initital depandabot workflow
+- \[#0\] Refactor to the docker-based linters
 
 ## [2.1.0] - 2026-06-09
 ### Added
