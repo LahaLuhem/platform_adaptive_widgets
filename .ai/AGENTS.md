@@ -24,6 +24,14 @@ README for the full widget catalogue; APPENDIX for design rationale.
   `strict-casts`, `strict-inference`, `strict-raw-types`, plus the
   `errors:`-promoted rules. Pedantic mode is intentional, not negotiable.
 - **`flutter_test`** for widget / unit tests.
+- **CLI linting via the [linterpol](https://github.com/LahaLuhem/linterpol) Docker image.**
+  Shell scripts (`shellcheck`) and GitHub workflows (`actionlint`) are linted by running
+  the public, multi-arch `ghcr.io/lahaluhem/linterpol:latest` image
+  (`docker run --rm -v "$PWD:/work:ro" "$LINTERPOL_IMAGE" <tool>`), not hand-installed
+  tools. CI jobs live in `.github/workflows/repo.yml`; `scripts/release.sh` runs
+  `shellcheck` the same way (image-only, so Docker must be running). Don't reintroduce
+  `brew` / `pip` / `uv` linter installs; the image ref is one `LINTERPOL_IMAGE` var per
+  file (swap to a digest there to pin).
 - **Android + iOS only.** `platforms:` in `pubspec.yaml` declares the supported set; the
   `PlatformWidgetBase.build` switch throws `UnsupportedError` for anything else.
 - **Published to pub.dev.** `.pubignore` controls what ships in the tarball. The

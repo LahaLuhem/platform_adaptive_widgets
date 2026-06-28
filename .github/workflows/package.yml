@@ -76,6 +76,6 @@ jobs:
             --target-platform=android-arm64
       - name: Check size regression
         run: |
-          json_file=$(ls -t "$HOME/.flutter-devtools/"apk-code-size-analysis_*.json | head -1)
+          json_file=$(find "$HOME/.flutter-devtools" -maxdepth 1 -name 'apk-code-size-analysis_*.json' -printf '%T@\t%p\n' | sort -rn | cut -f2- | head -1)
           echo "Using $json_file"
           dart tool/check_size_regression.dart "$json_file"
