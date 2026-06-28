@@ -11,6 +11,12 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  # Single source of truth for the linter image ref. linterpol is public and
+  # multi-arch on GHCR, so runners pull it anonymously (no docker login). Only a
+  # mutable :latest exists upstream; swap in an @sha256 digest here to pin.
+  LINTERPOL_IMAGE: ghcr.io/lahaluhem/linterpol:latest
+
 jobs:
   format:
     name: Dart format
@@ -24,3 +30,21 @@ jobs:
       # is reserved for jobs that need resolved dependencies — skipping it here
       # saves ~10-30s per run.
       - run: dart format --output=none --set-exit-if-changed .
+
+  shellcheck:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # ubuntu-latest ships Docker. The glob expands on the runner (cwd is the
+      # repo root) to scripts/release.sh, which resolves under /work in the image.
+      - run: docker run --rm -v "$PWD:/work:ro" "$LINTERPOL_IMAGE" shellcheck scripts/*.sh
+
+  actionlint:
+    name: Actionlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # No args: actionlint auto-discovers .github/workflows/ under /work, and
+      # runs shellcheck on every run: block (shellcheck is on PATH in the image).
+      - run: docker run --rm -v "$PWD:/work:ro" "$LINTERPOL_IMAGE" actionlint

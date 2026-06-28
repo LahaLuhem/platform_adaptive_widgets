@@ -83,7 +83,9 @@ The script refuses to proceed unless every check passes:
 - `flutter` resolvable (prefers `.fvm/flutter_sdk/bin/flutter` if present, else PATH).
   Also gives us `dart` from the same SDK directory for `dart format`.
 - `cider` on PATH.
-- `shellcheck` on PATH.
+- `docker` on PATH with the daemon running. shellcheck runs via the linterpol image
+  (`ghcr.io/lahaluhem/linterpol:latest`), not a local install; a stopped daemon fails
+  preflight fast with a clear message.
 - Working tree clean, on `master`, in sync with `origin/master` (fetches first).
 - `CHANGELOG.md` has a non-empty `## Unreleased` (or `## [Unreleased]`) section.
 - `dart format`, `flutter analyze`, and `flutter test` all clean.

@@ -60,6 +60,10 @@ fi
 
 MAIN_BRANCH="master"
 
+# Linter image (linterpol): public + multi-arch on GHCR, pulled anonymously.
+# Single source of truth for the ref; swap in an @sha256 digest here to pin.
+LINTERPOL_IMAGE="ghcr.io/lahaluhem/linterpol:latest"
+
 BUMP=""
 YES=0
 DRY_RUN=0
@@ -86,10 +90,10 @@ Options:
 Preflight (all must pass):
   - `flutter` resolvable (via `.fvm/flutter_sdk/bin/` if FVM is set up, else PATH)
   - cider on PATH
-  - shellcheck on PATH
+  - docker on PATH + daemon running (linters run via the linterpol image)
   - working tree clean, on `master`, in sync with origin/master (fetches first)
   - CHANGELOG.md has a non-empty `## Unreleased` (or `## [Unreleased]`) section
-  - `shellcheck scripts/*.sh` clean
+  - `shellcheck scripts/*.sh` clean (via the linterpol image)
   - `dart format --output=none --set-exit-if-changed .` clean
   - `flutter --no-version-check analyze .` clean
   - `flutter --no-version-check test` green
@@ -170,11 +174,15 @@ if ! command -v cider >/dev/null 2>&1; then
     exit 1
 fi
 log 'cider available.'
-if ! command -v shellcheck >/dev/null 2>&1; then
-    err 'shellcheck not on PATH. Install: brew install shellcheck'
+if ! command -v docker >/dev/null 2>&1; then
+    err 'docker not on PATH. Linters run via the linterpol image; install Docker.'
     exit 1
 fi
-log 'shellcheck available.'
+if ! docker info >/dev/null 2>&1; then
+    err 'docker daemon not reachable. Start Docker (or its daemon) and re-run.'
+    exit 1
+fi
+log 'docker available.'
 
 # ---------------------------------------------------------------------------
 # Preflight: git state
@@ -277,8 +285,8 @@ log "'## Unreleased' populated."
 # ---------------------------------------------------------------------------
 # Preflight: format / analyze / test (cheapest → slowest)
 # ---------------------------------------------------------------------------
-step 'Preflight: shellcheck scripts/'
-if ! shellcheck scripts/*.sh; then
+step 'Preflight: shellcheck scripts/ (linterpol image)'
+if ! docker run --rm -v "${REPO_ROOT}:/work:ro" "$LINTERPOL_IMAGE" shellcheck scripts/*.sh; then
     err 'shellcheck failed on one or more shell scripts.'
     exit 1
 fi
