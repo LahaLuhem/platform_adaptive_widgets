@@ -239,6 +239,21 @@ For everything else — naming, idioms, class structure, DCM rules, markdown con
   — in tables, bullet lists, headings, inline — so the user can scan and reply by
   echoing or overriding (e.g. "★ for 1–4, change 5 to B"). Exactly one star per option
   set in most cases; occasionally a combined choice warrants more.
+- **Refactor first when the change needs it.** Before building a feature, check whether
+  the current structure fits it. If you catch yourself adding a special case, threading a
+  flag through layers, duplicating a block, or working around an abstraction, do the
+  enabling refactor *first* as its own behaviour-preserving step (separate commit,
+  verified green), then build the new behaviour on the clean shape. Long-term
+  maintainability of the package outranks shipping the immediate change faster. Two
+  repo-specific teeth: a preparatory refactor that touches the public surface (a
+  re-export, a `PlatformXxx` constructor, a `*Data` field) is itself a semver event, so
+  classify it (patch / minor / major) and surface that before doing it, like any
+  public-API change; and because the package is published and breakage is slow to walk
+  back, baking a feature onto a mismatched structure is expensive here, which lowers the
+  bar for restructuring first. The in-flight v2 `*Data` restructure (migrating the legacy
+  public `PlatformXxxData` shape out widget-by-widget before new per-platform-record
+  features land) is the worked example. Keep the refactor minimal and tied to a change
+  you can actually see coming, not speculative architecture.
 - **Document new public widgets in the README's widget catalogue.** Any new
   `PlatformXxx` widget, `showPlatformXxx` function, or public `*Data` class must be
   added to the appropriate table in `README.md` in the same change. Rationale + design
