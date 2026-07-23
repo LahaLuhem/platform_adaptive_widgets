@@ -2,8 +2,8 @@ import 'dart:ui' show BoxHeightStyle, BoxWidthStyle;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoTextField;
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '/src/models/interaction/platform_text_field_data.dart';
 import '/src/models/platform_widget_base.dart';

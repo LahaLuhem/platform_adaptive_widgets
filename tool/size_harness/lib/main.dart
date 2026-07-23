@@ -6,8 +6,8 @@
 // future refactor that re-introduces deferred-dispatch (closures-as-args
 // passed into a sub-helper) fails the size check on the surface it broke.
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 void main() => runApp(const _App());
