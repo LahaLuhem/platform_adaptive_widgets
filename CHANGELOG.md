@@ -1,4 +1,4 @@
-## [Unreleased]
+## [2.1.1] - 2026-07-23
 ### Added
 - \[#0\] Widget parity test
 
@@ -153,7 +153,7 @@
 - Platform scrollbar
 - Platform text-field
 
-[Unreleased]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.1.0...HEAD
+[2.1.1]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/1.1.0...2.0.0
 [1.1.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/1.0.5...1.1.0
