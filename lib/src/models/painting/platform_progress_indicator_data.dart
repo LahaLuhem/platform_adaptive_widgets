@@ -1,8 +1,8 @@
 // Multiple data classes in one file; private base + per-platform records.
 // ignore_for_file: prefer-match-file-name
 
-/// @docImport 'package:flutter/cupertino.dart';
-/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:cupertino_ui/cupertino_ui.dart';
+/// @docImport 'package:material_ui/material_ui.dart';
 /// @docImport '/src/widgets/painting/platform_progress_indicator.dart';
 library;
 

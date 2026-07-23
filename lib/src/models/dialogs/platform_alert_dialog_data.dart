@@ -3,8 +3,8 @@
 // Material and Cupertino visual surfaces don't overlap in type).
 // ignore_for_file: prefer-match-file-name
 
-/// @docImport 'package:flutter/cupertino.dart';
-/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:cupertino_ui/cupertino_ui.dart';
+/// @docImport 'package:material_ui/material_ui.dart';
 /// @docImport '/src/widgets/dialogs/platform_dialog.dart';
 library;
 

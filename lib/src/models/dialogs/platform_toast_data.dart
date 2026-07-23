@@ -1,8 +1,8 @@
 // Per-platform records for showPlatformToast.
 // ignore_for_file: prefer-match-file-name
 
-/// @docImport 'package:flutter/cupertino.dart';
-/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:cupertino_ui/cupertino_ui.dart';
+/// @docImport 'package:material_ui/material_ui.dart';
 /// @docImport '/src/widgets/dialogs/platform_toast.dart';
 library;
 
@@ -174,5 +174,5 @@ final class CupertinoToastData {
 }
 
 /// Re-exported for callers awaiting the Material toast's close future — saves
-/// them an explicit `package:flutter/material.dart` import for the enum.
+/// them an explicit `package:material_ui/material_ui.dart` import for the enum.
 typedef PlatformToastClosedReason = SnackBarClosedReason;

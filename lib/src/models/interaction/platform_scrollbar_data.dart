@@ -1,7 +1,7 @@
 // Multiple data classes in one file; private base + per-platform records.
 // ignore_for_file: prefer-match-file-name
 
-/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:material_ui/material_ui.dart';
 /// @docImport '/src/widgets/interaction/platform_scrollbar.dart';
 library;
 

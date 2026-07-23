@@ -1,12 +1,12 @@
 // Multiple data classes in one file; private base + per-platform records.
 // ignore_for_file: prefer-match-file-name
 
-/// @docImport 'package:flutter/cupertino.dart';
-/// @docImport 'package:flutter/material.dart';
+/// @docImport 'package:cupertino_ui/cupertino_ui.dart';
+/// @docImport 'package:material_ui/material_ui.dart';
 /// @docImport '/src/widgets/interaction/platform_slider.dart';
 library;
 
-import 'package:flutter/cupertino.dart' show CupertinoColors;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoColors;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart'
     show SemanticFormatterCallback, ShowValueIndicator, SliderInteraction;
