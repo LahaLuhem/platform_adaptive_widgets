@@ -5,6 +5,10 @@
 ### Changed
 - \[#9\] Create initital depandabot workflow
 - \[#0\] Refactor to the docker-based linters
+- material\_ui + cupertino\_ui bumped to ^0.0.2
+
+### Fixed
+- some material and cupertino references from the SDK were still present, leaking conflicting class symbols
 
 ## [2.1.0] - 2026-06-09
 ### Added
