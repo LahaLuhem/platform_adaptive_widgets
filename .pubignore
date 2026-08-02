@@ -10,7 +10,8 @@ test/
 .fvmrc
 analysis_options.yaml
 
-# Build / IDE artefacts.
+# Build / IDE artefacts. `.idea/`, `.vscode/` need no entry: pub drops hidden paths
+# itself. `*.iml` does, since it sits at the package root.
 build/
 *.iml
 

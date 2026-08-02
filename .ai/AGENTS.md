@@ -181,6 +181,10 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    commit, the publish workflow's tag push will mismatch the in-tree state. Do not
    edit either file without an explicit user instruction to cut a release; see
    [*Forbidden / confirm-first actions* in CLAUDE.md](./CLAUDE.md#forbidden-confirm-first-actions).
+9. **`.idea/` is deliberately part-tracked.** Only [`.idea/.gitignore`](../.idea/.gitignore)
+   and [`.idea/runConfigurations/`](../.idea/runConfigurations/) are committed; `/.idea/*`
+   in `.gitignore` drops the rest. The run configs are shared tooling, so don't let a
+   cleanliness sweep untrack `.idea/` wholesale. Extend the negations to share a new path.
 
 ## PR conventions
 The `.github/workflows/pr-conventions.yml` workflow enforces branch-name, PR-label,
