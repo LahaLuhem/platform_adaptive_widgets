@@ -37,10 +37,10 @@ packages:
     dependency: "direct main"
     description:
       name: cupertino_ui
-      sha256: "427360789a03b76eaf659c37131570d2fc98e381f80d55f252bd9e30f37e7126"
+      sha256: "58191e8c198d274d299b4a92e5fa9bf1abf1d870067cf064b67f2217957aefe9"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.2"
+    version: "0.0.3+1"
   fluentui_system_icons:
     dependency: transitive
     description:
@@ -116,10 +116,10 @@ packages:
     dependency: "direct main"
     description:
       name: material_ui
-      sha256: e1fa67393d807bd1841e5ece1ec260ed84f440ae7351e40b6406f733e4fe31cf
+      sha256: ba53669b1fac77c3481ffba90833e2d847f2510faba8781a1bbe11e8f2c71a94
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.2"
+    version: "0.0.3+1"
   meta:
     dependency: transitive
     description:
