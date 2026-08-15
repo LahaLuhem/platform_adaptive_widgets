@@ -1,10 +1,15 @@
+## [Unreleased]
+### Changed
+- Upgrade to Flutter 3.47 / Dart 3.13
+- Bump material\_ui + cupertino\_ui bumped to ^1.0.0
+
 ## [2.1.1] - 2026-07-23
 ### Added
-- \[#0\] Widget parity test
+- Widget parity test
 
 ### Changed
 - \[#9\] Create initital depandabot workflow
-- \[#0\] Refactor to the docker-based linters
+- Refactor to the docker-based linters
 - material\_ui + cupertino\_ui bumped to ^0.0.2
 
 ### Fixed
@@ -153,6 +158,7 @@
 - Platform scrollbar
 - Platform text-field
 
+[Unreleased]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.1.1...HEAD
 [2.1.1]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/1.1.0...2.0.0
