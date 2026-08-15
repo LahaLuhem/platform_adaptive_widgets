@@ -6,5 +6,5 @@ final class PlatformAdaptiveIcons {
   final BuildContext context;
 
   /// Creates a new instance of [PlatformAdaptiveIcons].
-  const PlatformAdaptiveIcons(this.context);
+  const new(this.context);
 }

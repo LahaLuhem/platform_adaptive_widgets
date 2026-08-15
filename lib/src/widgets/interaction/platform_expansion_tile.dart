@@ -54,7 +54,7 @@ class PlatformExpansionTile extends PlatformWidgetKeyedBase {
   final CupertinoExpansionTileData? cupertinoExpansionTileData;
 
   /// Creates a platform-adaptive expansion tile.
-  const PlatformExpansionTile({
+  const new({
     required this.title,
     required this.child,
     this.controller,

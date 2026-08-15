@@ -31,7 +31,7 @@ final class TabDestination {
 
   //TODO(lahaluhem): account for material's `enabled` property
   /// Creates a [TabDestination].
-  const TabDestination({
+  const new({
     required this.inactiveIcon,
     this.view,
     this.activeIcon,
@@ -62,7 +62,7 @@ final class TabDestination {
 /// functional and live flat on [PlatformTabScaffold].
 final class MaterialTabScaffoldData extends MaterialScaffoldData {
   /// Creates a [MaterialTabScaffoldData].
-  const MaterialTabScaffoldData({
+  const new({
     super.appBar,
     super.backgroundColor,
     super.floatingActionButton,

@@ -28,7 +28,7 @@ abstract class _PlatformProgressIndicatorData {
   /// The color of the progress indicator.
   final Color? color;
 
-  const _PlatformProgressIndicatorData({this.color});
+  const new({this.color});
 }
 
 /// Material-only configuration for [PlatformProgressIndicator].
@@ -85,7 +85,7 @@ final class MaterialProgressIndicatorData extends _PlatformProgressIndicatorData
   final AnimationController? controller;
 
   /// Creates Material-only configuration for [PlatformProgressIndicator].
-  const MaterialProgressIndicatorData({
+  const new({
     super.color,
     this.value,
     this.backgroundColor,
@@ -119,7 +119,7 @@ final class CupertinoProgressIndicatorData extends _PlatformProgressIndicatorDat
   final double radius;
 
   /// Creates Cupertino-only configuration for [PlatformProgressIndicator].
-  const CupertinoProgressIndicatorData({
+  const new({
     super.color,
     this.animating = kDefaultProgressIndicatorAnimating,
     this.radius = kDefaultProgressIndicatorRadius,

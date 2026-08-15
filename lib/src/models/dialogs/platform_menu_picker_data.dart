@@ -41,7 +41,7 @@ final class MaterialMenuPickerData {
 
   /// Creates Material-only configuration for [PlatformMenuPicker] in its
   /// standard full-width-field rendering.
-  const MaterialMenuPickerData({
+  const new({
     this.expandedInsets,
     this.showTrailingIcon = kDefaultMaterialMenuPickerShowTrailingIcon,
     this.inputDecorationThemeData,
@@ -54,7 +54,7 @@ final class MaterialMenuPickerData {
   ///
   /// The icon itself is the widget's flat [PlatformMenuPicker.leadingIcon];
   /// `labelText` is ignored in this variant.
-  const MaterialMenuPickerData.iconButton({this.expandedInsets})
+  const new iconButton({this.expandedInsets})
     : showTrailingIcon = false,
       inputDecorationThemeData = const InputDecorationThemeData(
         contentPadding: EdgeInsets.zero,
@@ -79,7 +79,7 @@ final class CupertinoMenuPickerData {
 
   /// Creates Cupertino-only configuration for [PlatformMenuPicker] in its
   /// standard full-width-field rendering.
-  const CupertinoMenuPickerData({this.backgroundColor})
+  const new({this.backgroundColor})
     : useIconButtonVariant = kDefaultCupertinoMenuPickerUseIconButtonVariant;
 
   /// Creates Cupertino-only configuration for the **icon-button variant** —
@@ -88,7 +88,7 @@ final class CupertinoMenuPickerData {
   ///
   /// The icon itself is the widget's flat [PlatformMenuPicker.leadingIcon];
   /// `labelText` is ignored in this variant.
-  const CupertinoMenuPickerData.iconButton({this.backgroundColor}) : useIconButtonVariant = true;
+  const new iconButton({this.backgroundColor}) : useIconButtonVariant = true;
 }
 
 /// One entry in the menu picker's dropdown / wheel list.
@@ -109,5 +109,5 @@ final class MenuPickerItem {
   final IconData? iconData;
 
   /// Creates a menu picker item.
-  const MenuPickerItem({this.label, this.iconData});
+  const new({this.label, this.iconData});
 }

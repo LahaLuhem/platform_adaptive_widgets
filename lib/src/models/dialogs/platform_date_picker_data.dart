@@ -135,7 +135,7 @@ final class MaterialDatePickerData {
   final CalendarDelegate<DateTime> calendarDelegate;
 
   /// Creates Material-only configuration for `showPlatformDatePicker`.
-  const MaterialDatePickerData({
+  const new({
     this.currentDate,
     this.initialEntryMode = kDefaultMaterialDatePickerInitialEntryMode,
     this.helpText,
@@ -226,7 +226,7 @@ final class CupertinoDatePickerData {
   final bool use24hFormat;
 
   /// Creates Cupertino-only configuration for the iOS date/time picker.
-  const CupertinoDatePickerData({
+  const new({
     this.filter,
     this.requestFocus,
     this.semanticsDismissible = kDefaultCupertinoDatePickerSemanticsDismissible,

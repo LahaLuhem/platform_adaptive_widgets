@@ -111,7 +111,7 @@ final class MaterialModalBottomSheetData {
   final AnimationStyle? sheetAnimationStyle;
 
   /// Creates Material-only configuration for `showPlatformModalBottomSheet`.
-  const MaterialModalBottomSheetData({
+  const new({
     this.backgroundColor,
     this.barrierLabel,
     this.elevation,
@@ -153,7 +153,7 @@ final class CupertinoModalPopupData {
   final bool semanticsDismissible;
 
   /// Creates Cupertino-only configuration for `showPlatformModalBottomSheet`.
-  const CupertinoModalPopupData({
+  const new({
     this.filter,
     this.barrierColor = kDefaultCupertinoModalPopupBarrierColor,
     this.barrierDismissible = kDefaultCupertinoModalPopupBarrierDismissible,

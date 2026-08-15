@@ -96,7 +96,7 @@ abstract class _PlatformListTileData {
   /// `APPENDIX.md#cross-platform-field-mappings`.
   final EdgeInsetsGeometry? padding;
 
-  const _PlatformListTileData({this.leadingWidth, this.color, this.padding});
+  const new({this.leadingWidth, this.color, this.padding});
 }
 
 /// Material-only configuration for [PlatformListTile].
@@ -214,7 +214,7 @@ final class MaterialListTileData extends _PlatformListTileData {
   final VisualDensity? visualDensity;
 
   /// Creates Material-only configuration for [PlatformListTile].
-  const MaterialListTileData({
+  const new({
     super.leadingWidth,
     super.color,
     super.padding,
@@ -289,7 +289,7 @@ final class CupertinoListTileData extends _PlatformListTileData {
   final bool isNotched;
 
   /// Creates Cupertino-only configuration for [PlatformListTile].
-  const CupertinoListTileData({
+  const new({
     super.leadingWidth,
     super.color,
     super.padding,

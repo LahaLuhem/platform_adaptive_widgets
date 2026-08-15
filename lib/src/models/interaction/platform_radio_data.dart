@@ -44,7 +44,7 @@ abstract class _PlatformRadioData {
   /// resolution policy.
   final WidgetStateProperty<Color?>? fillColor;
 
-  const _PlatformRadioData({this.activeColor, this.focusColor, this.mouseCursor, this.fillColor});
+  const new({this.activeColor, this.focusColor, this.mouseCursor, this.fillColor});
 }
 
 /// Material-only configuration for [PlatformRadio].
@@ -83,7 +83,7 @@ final class MaterialRadioData extends _PlatformRadioData {
   final WidgetStateProperty<double?>? innerRadius;
 
   /// Creates Material-only configuration for [PlatformRadio].
-  const MaterialRadioData({
+  const new({
     super.activeColor,
     super.focusColor,
     super.mouseCursor,
@@ -119,7 +119,7 @@ final class CupertinoRadioData extends _PlatformRadioData {
   final bool useCheckmarkStyle;
 
   /// Creates Cupertino-only configuration for [PlatformRadio].
-  const CupertinoRadioData({
+  const new({
     super.activeColor,
     super.focusColor,
     super.mouseCursor,

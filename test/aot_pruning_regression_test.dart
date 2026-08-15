@@ -107,7 +107,7 @@ bool _isHelperHome(File file) {
 }
 
 class _HelperCallVisitor extends RecursiveAstVisitor<void> {
-  _HelperCallVisitor(this._filePath, this._lineInfo);
+  new(this._filePath, this._lineInfo);
 
   final String _filePath;
   final LineInfo _lineInfo;
@@ -124,7 +124,7 @@ class _HelperCallVisitor extends RecursiveAstVisitor<void> {
 }
 
 class _DispatchHelperVisitor extends RecursiveAstVisitor<void> {
-  _DispatchHelperVisitor(this._filePath, this._lineInfo);
+  new(this._filePath, this._lineInfo);
 
   final String _filePath;
   final LineInfo _lineInfo;

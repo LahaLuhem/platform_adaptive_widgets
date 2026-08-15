@@ -69,7 +69,7 @@ class PlatformAppBar implements PlatformAppBarData {
   final CupertinoNavigationBarData? cupertinoNavigationBarData;
 
   /// Creates a platform-adaptive app bar.
-  const PlatformAppBar({
+  const new({
     this.widgetKey,
     this.materialAppBarData,
     this.cupertinoNavigationBarData,

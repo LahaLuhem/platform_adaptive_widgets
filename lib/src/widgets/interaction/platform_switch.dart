@@ -123,7 +123,7 @@ class PlatformSwitch extends PlatformWidgetKeyedBase {
   ///
   /// [value] and [onChanged] are required and non-null. Disable the switch
   /// via [isEnabled], not by passing a null callback.
-  const PlatformSwitch({
+  const new({
     required this.value,
     required this.onChanged,
     this.isEnabled = true,

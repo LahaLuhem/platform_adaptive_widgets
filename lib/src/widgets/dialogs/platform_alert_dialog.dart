@@ -155,7 +155,7 @@ class PlatformDialogAction extends PlatformWidgetKeyedBuilderBase {
   final bool isDefaultAction;
 
   /// Creates a platform-adaptive dialog action.
-  const PlatformDialogAction({
+  const new({
     required super.child,
     this.onPressed,
     this.isDestructiveAction = false,

@@ -94,7 +94,7 @@ final class MaterialButtonData {
   final bool? isSemanticButton;
 
   /// Creates Material-only configuration for [PlatformButton].
-  const MaterialButtonData({
+  const new({
     this.onHover,
     this.style,
     this.clipBehavior,
@@ -155,7 +155,7 @@ final class CupertinoButtonData {
   final MouseCursor? mouseCursor;
 
   /// Creates Cupertino-only configuration for [PlatformButton].
-  const CupertinoButtonData({
+  const new({
     this.sizeStyle = kDefaultCupertinoButtonSizeStyle,
     this.padding,
     this.color,
@@ -192,5 +192,5 @@ enum CupertinoButtonVariant {
   /// path bit-identical to instantiating Cupertino's button directly.
   final Color defaultDisabledColor;
 
-  const CupertinoButtonVariant({required this.defaultDisabledColor});
+  new({required this.defaultDisabledColor});
 }

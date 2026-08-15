@@ -88,7 +88,7 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
       MenuPickerItem(label: choice.toString());
 
   /// Creates a platform-adaptive menu picker.
-  const PlatformMenuPicker({
+  const new({
     required this.items,
     this.currentValue,
     this.isEnabled = true,
@@ -192,7 +192,7 @@ final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget 
   /// <https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons>).
   /// Below that, prefer a different UI element (segmented control,
   /// inline radio group, etc.).
-  const _SmallItemCupertinoPicker({
+  const new({
     required this.items,
     required this.transformed,
     required this.currentValue,
@@ -248,7 +248,7 @@ final class _LargeItemCupertinoPicker<T extends Object> extends StatelessWidget 
   final Color? backgroundColor;
   final ValueChanged<T>? onSelected;
 
-  const _LargeItemCupertinoPicker({
+  const new({
     required this.items,
     required this.transformed,
     required this.currentValue,
@@ -319,7 +319,7 @@ final class _CupertinoPickerField<T extends Object> extends StatelessWidget {
   final Color? backgroundColor;
   final Widget? leadingIcon;
 
-  const _CupertinoPickerField({
+  const new({
     required this.currentValue,
     required this.transformed,
     required this.items,

@@ -38,7 +38,7 @@ class PlatformProgressIndicator extends PlatformWidgetKeyedBase {
   final CupertinoProgressIndicatorData? cupertinoProgressIndicatorData;
 
   /// Creates a platform-adaptive progress indicator.
-  const PlatformProgressIndicator({
+  const new({
     this.color,
     this.materialProgressIndicatorData,
     this.cupertinoProgressIndicatorData,

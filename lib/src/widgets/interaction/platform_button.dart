@@ -124,7 +124,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   bool get _hasIconChild => _icon != null;
 
   /// Creates a text-only / arbitrary-`child` platform-adaptive button.
-  const PlatformButton({
+  const new({
     required this.onPressed,
     required Widget child,
     this.onLongPress,
@@ -154,7 +154,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   /// [iconAlignment] controls the order: `.start` renders the icon before
   /// the label; `.end` renders the label before the icon. Cupertino has no
   /// native icon-button factory, so this is the package's bridge.
-  const PlatformButton.icon({
+  const new icon({
     required this.onPressed,
     required Widget icon,
     required Widget label,

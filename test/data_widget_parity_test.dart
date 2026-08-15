@@ -220,7 +220,7 @@ Set<String> _mergedFields(ClassDeclaration node, String methodName, String acces
 }
 
 class _MergeVisitor extends RecursiveAstVisitor<void> {
-  _MergeVisitor(this._accessorPrefix);
+  new(this._accessorPrefix);
 
   final String _accessorPrefix;
   final Set<String> merged = {};
@@ -242,7 +242,7 @@ class _MergeVisitor extends RecursiveAstVisitor<void> {
 }
 
 class _Base {
-  _Base({
+  new({
     required this.name,
     required this.widgetName,
     required this.fields,
@@ -256,7 +256,7 @@ class _Base {
 }
 
 class _Widget {
-  _Widget({
+  new({
     required this.filePath,
     required this.fieldNames,
     required this.materialMerged,

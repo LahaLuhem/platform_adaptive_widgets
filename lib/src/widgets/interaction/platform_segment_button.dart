@@ -82,7 +82,7 @@ class PlatformSegmentButton<T extends Object> extends PlatformWidgetKeyedBase {
   final CupertinoSegmentButtonData<T>? cupertinoSegmentButtonData;
 
   /// Creates a platform-adaptive segmented button.
-  const PlatformSegmentButton({
+  const new({
     required this.choices,
     required this.segmentBuilder,
     required this.selectedChoice,

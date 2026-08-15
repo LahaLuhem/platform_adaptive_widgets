@@ -67,7 +67,7 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
   final MaterialTabScaffoldData? materialTabScaffoldData;
 
   /// Creates a platform-adaptive tab scaffold.
-  const PlatformTabScaffold({
+  const new({
     required this.tabDestinations,
     this.selectedIndex = 0,
     this.onTabDestinationTap,
@@ -139,7 +139,7 @@ class _CupertinoTabScaffold extends StatefulWidget {
   final ValueChanged<int>? onTabDestinationTap;
   final IndexedWidgetBuilder? tabBodyBuilder;
 
-  const _CupertinoTabScaffold({
+  const new({
     required this.selectedIndex,
     required this.resizeToAvoidBottomInset,
     required this.tabDestinations,
@@ -227,7 +227,7 @@ class _MaterialTabScaffold extends StatefulWidget {
   final MaterialTabScaffoldData? materialTabScaffoldData;
   final Key? widgetKey;
 
-  const _MaterialTabScaffold({
+  const new({
     required this.selectedIndex,
     required this.resizeToAvoidBottomInset,
     required this.tabDestinations,
@@ -346,7 +346,7 @@ class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> {
 /// A widget laying out multiple tabs with only one active tab being built
 /// at a time and on stage. Off stage tabs' animations are stopped.
 class _TabSwitchingView extends StatefulWidget {
-  const _TabSwitchingView({
+  const new({
     required this.currentTabIndex,
     required this.tabCount,
     required this.tabBuilder,
@@ -464,7 +464,7 @@ class _MaterialNavigationBar extends StatelessWidget {
   final List<TabDestination> tabDestinations;
   final ValueChanged<int>? onTabDestinationTap;
 
-  const _MaterialNavigationBar({
+  const new({
     required this.selectedIndex,
     required this.tabDestinations,
     this.onTabDestinationTap,

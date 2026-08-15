@@ -101,7 +101,7 @@ final class MaterialDialogData {
   final Color? surfaceTintColor;
 
   /// Creates Material-only configuration for `showPlatformDialog`.
-  const MaterialDialogData({
+  const new({
     this.animationStyle,
     this.traversalEdgeBehavior,
     this.useSafeArea = kDefaultMaterialDialogUseSafeArea,
@@ -155,7 +155,7 @@ final class MaterialFullscreenDialogData {
   final SemanticsRole semanticsRole;
 
   /// Creates Material-only configuration for `showPlatformFullscreenDialog`.
-  const MaterialFullscreenDialogData({
+  const new({
     this.animationStyle,
     this.traversalEdgeBehavior,
     this.useSafeArea = kDefaultMaterialDialogUseSafeArea,

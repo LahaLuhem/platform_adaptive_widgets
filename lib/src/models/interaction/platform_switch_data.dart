@@ -76,7 +76,7 @@ abstract class _PlatformSwitchData {
   /// `APPENDIX.md#cross-platform-field-mappings`.
   final WidgetStateProperty<MouseCursor>? mouseCursor;
 
-  const _PlatformSwitchData({
+  const new({
     this.activeThumbColor,
     this.activeTrackColor,
     this.inactiveThumbColor,
@@ -124,7 +124,7 @@ final class MaterialSwitchData extends _PlatformSwitchData {
   final EdgeInsetsGeometry? padding;
 
   /// Creates Material-only visual overrides for [PlatformSwitch].
-  const MaterialSwitchData({
+  const new({
     super.activeThumbColor,
     super.activeTrackColor,
     super.inactiveThumbColor,
@@ -165,7 +165,7 @@ final class CupertinoSwitchData extends _PlatformSwitchData {
   final Color? offLabelColor;
 
   /// Creates Cupertino-only visual overrides for [PlatformSwitch].
-  const CupertinoSwitchData({
+  const new({
     super.activeThumbColor,
     super.activeTrackColor,
     super.inactiveThumbColor,

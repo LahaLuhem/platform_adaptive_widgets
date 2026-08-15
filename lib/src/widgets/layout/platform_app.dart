@@ -157,7 +157,7 @@ class PlatformApp extends PlatformWidgetKeyedBase {
   /// Creates a platform-adaptive app using navigator-based routing.
   ///
   /// Renders [MaterialApp] on Android and [CupertinoApp] on iOS.
-  const PlatformApp({
+  const new({
     this.title,
     this.onGenerateTitle,
     this.color,
@@ -199,7 +199,7 @@ class PlatformApp extends PlatformWidgetKeyedBase {
   /// Creates a platform-adaptive app using Flutter's declarative router API.
   ///
   /// Renders `MaterialApp.router` on Android and `CupertinoApp.router` on iOS.
-  const PlatformApp.router({
+  const new router({
     this.title,
     this.onGenerateTitle,
     this.color,

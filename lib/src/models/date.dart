@@ -15,7 +15,7 @@ final class Date implements Comparable<Date> {
   final int day;
 
   /// Creates a [Date] with the given [year], [month], and [day].
-  const Date({required this.year, this.month = 1, this.day = 1});
+  const new({required this.year, this.month = 1, this.day = 1});
 
   /// The current date
   static Date now({bool utc = false}) {

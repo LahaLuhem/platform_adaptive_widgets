@@ -15,7 +15,7 @@ import 'package:flutter/widgets.dart';
 @protected
 abstract class PlatformWidgetBase extends StatelessWidget {
   /// Creates a platform-adaptive widget.
-  const PlatformWidgetBase({super.key});
+  const new({super.key});
 
   @override
   @protected
@@ -44,7 +44,7 @@ abstract class PlatformWidgetKeyedBase extends PlatformWidgetBase {
   final Key? widgetKey;
 
   /// Creates a keyed platform-adaptive widget.
-  const PlatformWidgetKeyedBase({this.widgetKey, super.key});
+  const new({this.widgetKey, super.key});
 }
 
 /// A [PlatformWidgetBase] that wraps a required [child] widget.
@@ -53,7 +53,7 @@ abstract class PlatformWidgetBuilderBase extends PlatformWidgetBase {
   final Widget child;
 
   /// Creates a platform-adaptive builder widget with a required [child].
-  const PlatformWidgetBuilderBase({required this.child, super.key});
+  const new({required this.child, super.key});
 }
 
 /// A [PlatformWidgetBase] that combines both a [widgetKey] and a required [child].
@@ -62,5 +62,5 @@ abstract class PlatformWidgetKeyedBuilderBase extends PlatformWidgetKeyedBase {
   final Widget child;
 
   /// Creates a keyed platform-adaptive builder widget with a required [child].
-  const PlatformWidgetKeyedBuilderBase({required this.child, super.widgetKey, super.key});
+  const new({required this.child, super.widgetKey, super.key});
 }

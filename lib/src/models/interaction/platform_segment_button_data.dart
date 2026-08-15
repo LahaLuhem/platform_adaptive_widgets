@@ -87,7 +87,7 @@ final class MaterialSegmentButtonData {
   final Axis direction;
 
   /// Creates Material-only configuration for [PlatformSegmentButton].
-  const MaterialSegmentButtonData({
+  const new({
     this.style,
     this.selectedIcon,
     this.expandedInsets,
@@ -133,7 +133,7 @@ final class CupertinoSegmentButtonData<T extends Object> {
   final bool isMomentary;
 
   /// Creates Cupertino-only configuration for [PlatformSegmentButton].
-  const CupertinoSegmentButtonData({
+  const new({
     this.disabledChildren = kDefaultCupertinoSegmentButtonDisabledChildren,
     this.thumbColor = kDefaultCupertinoSegmentButtonThumbColor,
     this.padding = kDefaultCupertinoSegmentButtonPadding,
