@@ -95,10 +95,11 @@ void main() {
 /// The `lib/src/` Dart files both checks lint: every `.dart` except the file
 /// that *defines* the dispatch helpers (their own definitions aren't calls).
 /// Lazy — nothing is read until the returned iterable is iterated.
-Iterable<File> _lintableFiles() => Directory('lib/src')
-    .listSync(recursive: true)
-    .whereType<File>()
-    .where((file) => file.path.endsWith('.dart') && !_isHelperHome(file));
+Iterable<File> _lintableFiles() =>
+    Directory('lib/src')
+        .listSync(recursive: true)
+        .whereType<File>()
+        .where((file) => file.path.endsWith('.dart') && !_isHelperHome(file));
 
 bool _isHelperHome(File file) {
   final segments = file.uri.pathSegments;

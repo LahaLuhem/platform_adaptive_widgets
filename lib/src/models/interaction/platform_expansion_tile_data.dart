@@ -177,7 +177,5 @@ final class CupertinoExpansionTileData {
   final ExpansionTileTransitionMode transitionMode;
 
   /// Creates Cupertino-only configuration for [PlatformExpansionTile].
-  const new({
-    this.transitionMode = kDefaultCupertinoExpansionTileTransitionMode,
-  });
+  const new({this.transitionMode = kDefaultCupertinoExpansionTileTransitionMode});
 }

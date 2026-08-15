@@ -147,9 +147,11 @@ void main() {
   });
 }
 
-Iterable<File> _dartFilesIn(String dir) => Directory(
-  dir,
-).listSync(recursive: true).whereType<File>().where((file) => file.path.endsWith('.dart'));
+Iterable<File> _dartFilesIn(String dir) =>
+    Directory(dir)
+        .listSync(recursive: true)
+        .whereType<File>()
+        .where((file) => file.path.endsWith('.dart'));
 
 Iterable<_Base> _collectBases() => _dartFilesIn('lib/src/models').expand((file) {
   final parsed = parseFile(
@@ -242,12 +244,7 @@ class _MergeVisitor extends RecursiveAstVisitor<void> {
 }
 
 class _Base {
-  new({
-    required this.name,
-    required this.widgetName,
-    required this.fields,
-    required this.location,
-  });
+  new({required this.name, required this.widgetName, required this.fields, required this.location});
 
   final String name;
   final String widgetName;
