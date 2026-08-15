@@ -346,11 +346,8 @@ class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> {
 /// A widget laying out multiple tabs with only one active tab being built
 /// at a time and on stage. Off stage tabs' animations are stopped.
 class _TabSwitchingView extends StatefulWidget {
-  const new({
-    required this.currentTabIndex,
-    required this.tabCount,
-    required this.tabBuilder,
-  }) : assert(tabCount > 0, 'Tab count must be greater than 0');
+  const new({required this.currentTabIndex, required this.tabCount, required this.tabBuilder})
+    : assert(tabCount > 0, 'Tab count must be greater than 0');
 
   final int currentTabIndex;
   final int tabCount;
@@ -464,11 +461,7 @@ class _MaterialNavigationBar extends StatelessWidget {
   final List<TabDestination> tabDestinations;
   final ValueChanged<int>? onTabDestinationTap;
 
-  const new({
-    required this.selectedIndex,
-    required this.tabDestinations,
-    this.onTabDestinationTap,
-  });
+  const new({required this.selectedIndex, required this.tabDestinations, this.onTabDestinationTap});
 
   @override
   Widget build(BuildContext context) => NavigationBar(
