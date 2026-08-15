@@ -37,7 +37,7 @@ abstract final class _PlatformAppBarData {
   final Color? backgroundColor;
 
   /// Creates a [_PlatformAppBarData].
-  const _PlatformAppBarData({this.backgroundColor});
+  const new({this.backgroundColor});
 }
 
 /// Material-specific configuration for a platform app bar.
@@ -162,7 +162,7 @@ final class MaterialAppBarData extends _PlatformAppBarData {
   static const kAnimateColor = false;
 
   /// Creates Material-specific app bar configuration.
-  const MaterialAppBarData({
+  const new({
     super.backgroundColor,
     this.actions,
     this.automaticallyImplyActions = kAutomaticallyImplyActions,
@@ -260,7 +260,7 @@ final class CupertinoNavigationBarData extends _PlatformAppBarData {
   static const kTransitionBetweenRoutes = true;
 
   /// Creates Cupertino-specific navigation bar configuration.
-  const CupertinoNavigationBarData({
+  const new({
     super.backgroundColor,
     this.large = kLarge,
     this.automaticallyImplyMiddle = kAutomaticallyImplyMiddle,

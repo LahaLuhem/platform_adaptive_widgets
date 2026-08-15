@@ -114,7 +114,7 @@ Iterable<_Symbol> _cupertinoSymbols(
 }
 
 class _Symbol {
-  _Symbol(this.path, this.bytes);
+  new(this.path, this.bytes);
   final String path;
   final int bytes;
 }

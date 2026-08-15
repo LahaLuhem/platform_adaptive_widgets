@@ -55,7 +55,7 @@ class PlatformScaffold extends PlatformWidgetKeyedBase {
   /// The scaffold renders as a Material `Scaffold` on Android and a
   /// `CupertinoPageScaffold` on iOS. [appBarData] has a premade implementation
   /// of [PlatformAppBar].
-  const PlatformScaffold({
+  const new({
     required this.body,
     this.materialScaffoldData,
     this.cupertinoScaffoldData,

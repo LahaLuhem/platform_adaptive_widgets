@@ -108,7 +108,7 @@ final class MaterialAlertDialogData {
   final bool scrollable;
 
   /// Creates Material-only configuration for `showPlatformAlertDialog`.
-  const MaterialAlertDialogData({
+  const new({
     this.icon,
     this.iconPadding,
     this.iconColor,
@@ -159,7 +159,7 @@ final class CupertinoAlertDialogData {
   final Curve insetAnimationCurve;
 
   /// Creates Cupertino-only configuration for `showPlatformAlertDialog`.
-  const CupertinoAlertDialogData({
+  const new({
     this.scrollController,
     this.actionScrollController,
     this.insetAnimationDuration = kDefaultCupertinoAlertDialogInsetAnimationDuration,

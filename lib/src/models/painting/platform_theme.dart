@@ -8,7 +8,7 @@ final class PlatformTheme {
   final BuildContext context;
 
   /// Creates a [PlatformTheme] with the given [context].
-  const PlatformTheme.of(this.context);
+  const new of(this.context);
 
   /// The background color of the app bar.
   Color get barBackgroundColor => switch (defaultTargetPlatform) {

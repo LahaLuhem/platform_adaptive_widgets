@@ -35,7 +35,7 @@ abstract class _PlatformScrollbarData {
   /// The orientation of the scrollbar.
   final ScrollbarOrientation? scrollbarOrientation;
 
-  const _PlatformScrollbarData({this.thickness, this.radius, this.scrollbarOrientation});
+  const new({this.thickness, this.radius, this.scrollbarOrientation});
 }
 
 /// Material-only configuration for [PlatformScrollbar].
@@ -55,7 +55,7 @@ final class MaterialScrollbarData extends _PlatformScrollbarData {
   final bool? interactive;
 
   /// Creates Material-only configuration for [PlatformScrollbar].
-  const MaterialScrollbarData({
+  const new({
     super.thickness,
     super.radius,
     super.scrollbarOrientation,
@@ -87,7 +87,7 @@ final class CupertinoScrollbarData extends _PlatformScrollbarData {
   /// values via [CupertinoScrollbar.defaultThickness] / `.defaultRadius`
   /// (referenced directly so the package automatically tracks upstream
   /// changes).
-  const CupertinoScrollbarData({
+  const new({
     super.thickness = CupertinoScrollbar.defaultThickness,
     super.radius = CupertinoScrollbar.defaultRadius,
     super.scrollbarOrientation,

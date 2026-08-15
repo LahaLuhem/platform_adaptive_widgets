@@ -103,7 +103,7 @@ class PlatformRadio<T extends Object> extends PlatformWidgetKeyedBase {
   final CupertinoRadioData? cupertinoRadioData;
 
   /// Creates a platform-adaptive radio button.
-  const PlatformRadio({
+  const new({
     required this.value,
     this.toggleable = false,
     this.isEnabled = true,
@@ -232,7 +232,7 @@ class PlatformRadioGroupBuilder<T extends Object> extends StatelessWidget {
   final Key? widgetKey;
 
   /// Creates a [PlatformRadio]-aware group + layout convenience widget.
-  const PlatformRadioGroupBuilder({
+  const new({
     required this.values,
     required this.groupValue,
     required this.onChanged,

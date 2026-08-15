@@ -112,7 +112,7 @@ class PlatformListTile extends PlatformWidgetKeyedBase {
   final CupertinoListTileData? cupertinoListTileData;
 
   /// Creates a platform-adaptive list tile.
-  const PlatformListTile({
+  const new({
     required this.title,
     this.subtitle,
     this.leading,

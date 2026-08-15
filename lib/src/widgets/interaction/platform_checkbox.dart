@@ -112,7 +112,7 @@ class PlatformCheckbox extends PlatformWidgetKeyedBase {
   /// [value] and `onChanged` are required and non-null. Disable the checkbox
   /// via [isEnabled], not by passing a null callback. For the indeterminate
   /// state, use [PlatformCheckbox.tristate].
-  const PlatformCheckbox({
+  const new({
     required bool this.value,
     required ValueChanged<bool> this._onChanged,
     this.isEnabled = true,
@@ -139,7 +139,7 @@ class PlatformCheckbox extends PlatformWidgetKeyedBase {
   /// disable via [isEnabled], not a null callback. For the common two-state
   /// case, prefer the default [PlatformCheckbox] constructor, whose [value]
   /// and `onChanged` are non-null `bool`.
-  const PlatformCheckbox.tristate({
+  const new tristate({
     required this.value,
     required ValueChanged<bool?> onChanged,
     this.isEnabled = true,

@@ -70,7 +70,7 @@ final class MaterialTimePickerData {
   final bool emptyInitialInput;
 
   /// Creates Material-only configuration for `showPlatformTimePicker`.
-  const MaterialTimePickerData({
+  const new({
     this.barrierLabel,
     this.initialEntryMode = kDefaultMaterialTimePickerInitialEntryMode,
     this.cancelText,

@@ -111,7 +111,7 @@ class PlatformSearchBar extends PlatformWidgetKeyedBase {
   final CupertinoSearchBarData? cupertinoSearchBarData;
 
   /// Creates a platform-adaptive search bar.
-  const PlatformSearchBar({
+  const new({
     required this.onChanged,
     this.controller,
     this.hintText,

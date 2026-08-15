@@ -65,7 +65,7 @@ class PlatformScrollbar extends PlatformWidgetKeyedBuilderBase {
   final CupertinoScrollbarData? cupertinoScrollbarData;
 
   /// Creates a platform-adaptive scrollbar.
-  const PlatformScrollbar({
+  const new({
     required super.child,
     this.controller,
     this.thumbVisibility,

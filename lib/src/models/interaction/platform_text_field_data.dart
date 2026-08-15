@@ -105,7 +105,7 @@ final class MaterialTextFieldData {
   final WidgetStatesController? statesController;
 
   /// Creates Material-only configuration for [PlatformTextField].
-  const MaterialTextFieldData({
+  const new({
     this.buildCounter,
     this.canRequestFocus = kDefaultMaterialTextFieldCanRequestFocus,
     this.cursorErrorColor,
@@ -178,7 +178,7 @@ final class CupertinoTextFieldData {
   final OverlayVisibilityMode suffixMode;
 
   /// Creates Cupertino-only configuration for [PlatformTextField].
-  const CupertinoTextFieldData({
+  const new({
     this.decoration,
     this.clearButtonMode = kDefaultCupertinoTextFieldClearButtonMode,
     this.clearButtonSemanticLabel,

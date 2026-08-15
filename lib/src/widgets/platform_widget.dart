@@ -43,7 +43,7 @@ class PlatformWidget extends PlatformWidgetBase {
   ///
   /// [materialBuilder] and [cupertinoBuilder] are required and must not be null.
   /// Both builders are eagerly evaluated when the widget is built.
-  const PlatformWidget({required this.materialBuilder, required this.cupertinoBuilder, super.key});
+  const new({required this.materialBuilder, required this.cupertinoBuilder, super.key});
 
   @override
   Widget buildMaterial(BuildContext context) => materialBuilder(context);
@@ -96,7 +96,7 @@ class PlatformWidgetBuilder extends PlatformWidgetBase {
   ///
   /// [materialWidgetBuilder] and [cupertinoWidgetBuilder] are required and must not be null.
   /// [child] is also required and will be passed to the appropriate builder.
-  const PlatformWidgetBuilder({
+  const new({
     required this.materialWidgetBuilder,
     required this.cupertinoWidgetBuilder,
     required this.child,

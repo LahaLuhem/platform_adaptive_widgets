@@ -45,7 +45,7 @@ abstract class _PlatformSliderData {
   /// `APPENDIX.md#cross-platform-field-mappings`.
   final Color? thumbColor;
 
-  const _PlatformSliderData({this.activeColor, this.thumbColor});
+  const new({this.activeColor, this.thumbColor});
 }
 
 /// Material-only configuration for [PlatformSlider].
@@ -108,7 +108,7 @@ final class MaterialSliderData extends _PlatformSliderData {
   final ShowValueIndicator? showValueIndicator;
 
   /// Creates Material-only configuration for [PlatformSlider].
-  const MaterialSliderData({
+  const new({
     super.activeColor,
     super.thumbColor,
     this.secondaryTrackValue,
@@ -136,5 +136,5 @@ final class MaterialSliderData extends _PlatformSliderData {
 /// in here.
 final class CupertinoSliderData extends _PlatformSliderData {
   /// Creates Cupertino-only configuration for [PlatformSlider].
-  const CupertinoSliderData({super.activeColor, super.thumbColor});
+  const new({super.activeColor, super.thumbColor});
 }

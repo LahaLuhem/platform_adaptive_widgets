@@ -29,7 +29,7 @@ base class _PlatformScaffoldData {
   final Color? backgroundColor;
 
   /// Creates platform scaffold data with the shared-visual properties.
-  const _PlatformScaffoldData({this.backgroundColor});
+  const new({this.backgroundColor});
 }
 
 /// Material-specific scaffold data.
@@ -162,7 +162,7 @@ base class MaterialScaffoldData extends _PlatformScaffoldData {
   static const _kMaxBottomSheetScrimOpacity = 0.6;
 
   /// Creates Material-specific scaffold data.
-  const MaterialScaffoldData({
+  const new({
     super.backgroundColor,
     this.appBar,
     this.floatingActionButton,
@@ -200,5 +200,5 @@ base class CupertinoScaffoldData extends _PlatformScaffoldData {
   final ObstructingPreferredSizeWidget? navigationBar;
 
   /// Creates Cupertino-specific scaffold data.
-  const CupertinoScaffoldData({super.backgroundColor, this.navigationBar});
+  const new({super.backgroundColor, this.navigationBar});
 }

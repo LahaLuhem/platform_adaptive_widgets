@@ -285,7 +285,7 @@ class PlatformTextField extends PlatformWidgetKeyedBase {
   final CupertinoTextFieldData? cupertinoTextFieldData;
 
   /// Creates a platform-adaptive text field.
-  const PlatformTextField({
+  const new({
     this.hintText,
     this.prefix,
     this.suffix,
@@ -338,7 +338,7 @@ class PlatformTextField extends PlatformWidgetKeyedBase {
     this.onTapUpOutside,
     this.scrollController,
     this.scrollPhysics,
-    this.scrollPadding = const EdgeInsets.all(20),
+    this.scrollPadding = const .all(20),
     this.dragStartBehavior = .start,
     this.clipBehavior = .hardEdge,
     this.autofillHints,

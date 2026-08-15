@@ -43,7 +43,7 @@ abstract class _PlatformCheckboxData {
   /// Border side of the checkbox.
   final BorderSide? side;
 
-  const _PlatformCheckboxData({
+  const new({
     this.mouseCursor,
     this.activeColor,
     this.fillColor,
@@ -85,7 +85,7 @@ final class MaterialCheckboxData extends _PlatformCheckboxData {
   final bool isError;
 
   /// Creates Material-only visual overrides for [PlatformCheckbox].
-  const MaterialCheckboxData({
+  const new({
     super.mouseCursor,
     super.activeColor,
     super.fillColor,
@@ -117,7 +117,7 @@ final class CupertinoCheckboxData extends _PlatformCheckboxData {
   final Size? tapTargetSize;
 
   /// Creates Cupertino-only visual overrides for [PlatformCheckbox].
-  const CupertinoCheckboxData({
+  const new({
     super.mouseCursor,
     super.activeColor,
     super.fillColor,

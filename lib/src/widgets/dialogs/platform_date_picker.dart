@@ -192,7 +192,7 @@ Future<DateTime?> _showCupertinoModePickerPopup({
 class _CupertinoPickerContainer extends StatelessWidget {
   final CupertinoDatePicker pickerWidget;
 
-  const _CupertinoPickerContainer({required this.pickerWidget});
+  const new({required this.pickerWidget});
 
   @override
   Widget build(BuildContext context) => Container(

@@ -134,7 +134,7 @@ final class MaterialExpansionTileData {
   final WidgetStatesController? statesController;
 
   /// Creates Material-only configuration for [PlatformExpansionTile].
-  const MaterialExpansionTileData({
+  const new({
     this.onExpansionChanged,
     this.leading,
     this.subtitle,
@@ -177,7 +177,7 @@ final class CupertinoExpansionTileData {
   final ExpansionTileTransitionMode transitionMode;
 
   /// Creates Cupertino-only configuration for [PlatformExpansionTile].
-  const CupertinoExpansionTileData({
+  const new({
     this.transitionMode = kDefaultCupertinoExpansionTileTransitionMode,
   });
 }

@@ -114,7 +114,7 @@ class _CupertinoToastOverlay extends StatefulWidget {
   final CupertinoToastData data;
   final VoidCallback onDismiss;
 
-  const _CupertinoToastOverlay({
+  const new({
     required this.message,
     required this.duration,
     required this.data,
@@ -141,7 +141,7 @@ class _CupertinoToastOverlayState extends State<_CupertinoToastOverlay>
       CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic, reverseCurve: Curves.easeIn),
     );
     _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
-    unawaited(_controller.forward());
+    _controller.forward();
     _dismissTimer = Timer(widget.duration, _startDismiss);
   }
 

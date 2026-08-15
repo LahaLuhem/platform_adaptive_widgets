@@ -155,7 +155,7 @@ final class MaterialSearchBarData {
   final bool readOnly;
 
   /// Creates Material-only configuration for [PlatformSearchBar].
-  const MaterialSearchBarData({
+  const new({
     this.trailing,
     this.onTapOutside,
     this.constraints,
@@ -267,7 +267,7 @@ final class CupertinoSearchBarData {
   final Color? cursorColor;
 
   /// Creates Cupertino-only configuration for [PlatformSearchBar].
-  const CupertinoSearchBarData({
+  const new({
     this.style,
     this.placeholderStyle,
     this.decoration,

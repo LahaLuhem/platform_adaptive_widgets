@@ -95,7 +95,7 @@ class PlatformSlider extends PlatformWidgetKeyedBase {
   final CupertinoSliderData? cupertinoSliderData;
 
   /// Creates a platform-adaptive slider.
-  const PlatformSlider({
+  const new({
     required this.value,
     required this.onChanged,
     this.isEnabled = true,

@@ -103,7 +103,7 @@ final class MaterialToastData {
   final Clip clipBehavior;
 
   /// Creates Material-only configuration for `showPlatformToast`.
-  const MaterialToastData({
+  const new({
     this.backgroundColor,
     this.elevation,
     this.margin,
@@ -161,7 +161,7 @@ final class CupertinoToastData {
   final Duration transitionDuration;
 
   /// Creates Cupertino-only configuration for `showPlatformToast`.
-  const CupertinoToastData({
+  const new({
     this.backgroundColor = kDefaultCupertinoToastBackgroundColor,
     this.foregroundColor = kDefaultCupertinoToastForegroundColor,
     this.padding = kDefaultCupertinoToastPadding,

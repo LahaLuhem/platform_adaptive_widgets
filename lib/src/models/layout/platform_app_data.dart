@@ -89,7 +89,7 @@ final class MaterialAppData {
   final AnimationStyle? themeAnimationStyle;
 
   /// Creates Material-only configuration for [PlatformApp].
-  const MaterialAppData({
+  const new({
     this.scaffoldMessengerKey,
     this.theme,
     this.darkTheme,
@@ -112,5 +112,5 @@ final class CupertinoAppData {
   final CupertinoThemeData? theme;
 
   /// Creates Cupertino-only configuration for [PlatformApp].
-  const CupertinoAppData({this.theme});
+  const new({this.theme});
 }
