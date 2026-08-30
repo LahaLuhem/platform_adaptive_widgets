@@ -30,12 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-flutter
-      # 5.0.5 caps analyzer below the 14.1.0 that parses Dart 3.13, so run the
-      # branch from Workiva/dependency_validator#181 until it ships.
-      - run: |
-          dart pub global activate --source git \
-            https://github.com/Workiva/dependency_validator \
-            --git-ref dependabot/pub/major-0f75c2771b
+      - run: dart pub global activate dependency_validator
       - run: dart pub global run dependency_validator
 
   test:
