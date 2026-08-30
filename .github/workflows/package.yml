@@ -84,3 +84,24 @@ jobs:
           json_file=$(find "$HOME/.flutter-devtools" -maxdepth 1 -name 'apk-code-size-analysis_*.json' -printf '%T@\t%p\n' | sort -rn | cut -f2- | head -1)
           echo "Using $json_file"
           dart tool/check_size_regression.dart "$json_file"
+
+  # Job id is the check name master's ruleset requires. Renaming it, or adding a
+  # `name:`, silently breaks the gate. always() keeps it reporting when upstream
+  # fails, and results get read by hand because a skipped job counts as a pass.
+  package-ok:
+    needs: [analyze, deps, test, size-regression]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Fail if any upstream job failed or was cancelled
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        env:
+          RESULTS: >-
+            analyze=${{ needs.analyze.result }}
+            deps=${{ needs.deps.result }}
+            test=${{ needs.test.result }}
+            size-regression=${{ needs.size-regression.result }}
+        run: |
+          echo "$RESULTS"
+          exit 1
