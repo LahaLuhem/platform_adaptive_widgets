@@ -48,3 +48,23 @@ jobs:
       # No args: actionlint auto-discovers .github/workflows/ under /work, and
       # runs shellcheck on every run: block (shellcheck is on PATH in the image).
       - run: docker run --rm -v "$PWD:/work:ro" "$LINTERPOL_IMAGE" actionlint
+
+  # Job id is the check name master's ruleset requires. Renaming it, or adding a
+  # `name:`, silently breaks the gate. always() keeps it reporting when upstream
+  # fails, and results get read by hand because a skipped job counts as a pass.
+  repo-ok:
+    needs: [format, shellcheck, actionlint]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Fail if any upstream job failed or was cancelled
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        env:
+          RESULTS: >-
+            format=${{ needs.format.result }}
+            shellcheck=${{ needs.shellcheck.result }}
+            actionlint=${{ needs.actionlint.result }}
+        run: |
+          echo "$RESULTS"
+          exit 1

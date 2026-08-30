@@ -107,3 +107,24 @@ jobs:
               exit 1
               ;;
           esac
+
+  # Job id is the check name master's ruleset requires. Renaming it, or adding a
+  # `name:`, silently breaks the gate. always() keeps it reporting when upstream
+  # fails, and results get read by hand because a skipped job counts as a pass.
+  # That last part is what keeps bot PRs green, since they skip two jobs below.
+  conventions-ok:
+    needs: [branch-name, commit-conventions, sem-label]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Fail if any upstream job failed or was cancelled
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        env:
+          RESULTS: >-
+            branch-name=${{ needs.branch-name.result }}
+            commit-conventions=${{ needs.commit-conventions.result }}
+            sem-label=${{ needs.sem-label.result }}
+        run: |
+          echo "$RESULTS"
+          exit 1
