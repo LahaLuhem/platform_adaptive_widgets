@@ -7,9 +7,8 @@ on:
     branches: [master]
 
 concurrency:
-  # Pull-request runs cancel each other per PR; master-branch runs cancel only
-  # against later master commits. The `|| github.ref` fallback keeps the group
-  # well-formed on push events where `pull_request.number` is empty.
+  # PR runs cancel per PR, master runs cancel against later master commits. The
+  # `|| github.ref` fallback covers push events, where there's no PR number.
   group: pkg-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
@@ -31,8 +30,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-flutter
-      # 5.0.5 caps `analyzer` below the 14.1.0 that parses Dart 3.13. Until
-      # Workiva/dependency_validator#181 releases, run its branch; merging breaks this
+      # 5.0.5 caps analyzer below the 14.1.0 that parses Dart 3.13, so run the
+      # branch from Workiva/dependency_validator#181 until it ships.
       - run: |
           dart pub global activate --source git \
             https://github.com/Workiva/dependency_validator \
@@ -57,10 +56,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      # `flutter create` fills in the android/ scaffolding without touching
-      # the checked-in pubspec.yaml or lib/main.dart (it skips existing
-      # files unless --overwrite is passed). See tool/size_harness/.gitignore
-      # for the full list of regenerated paths.
+      # flutter create fills in the android/ scaffolding and leaves existing files
+      # alone. tool/size_harness/.gitignore lists what gets regenerated.
       - name: Generate Android scaffolding for size harness
         working-directory: tool/size_harness
         run: |
@@ -85,9 +82,8 @@ jobs:
           echo "Using $json_file"
           dart tool/check_size_regression.dart "$json_file"
 
-  # Job id is the check name master's ruleset requires. Renaming it, or adding a
-  # `name:`, silently breaks the gate. always() keeps it reporting when upstream
-  # fails, and results get read by hand because a skipped job counts as a pass.
+  # Job id is the check name master requires, so don't rename it or add a `name:`.
+  # Skipped jobs count as passes, so the results get checked by hand.
   package-ok:
     needs: [analyze, deps, test, size-regression]
     if: always()
