@@ -1,0 +1,66 @@
+name: Dependabot auto-merge
+
+# Dependabot has no automerge setting of its own, so arm GitHub's built-in one.
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+    branches: [master]
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}-automerge
+  cancel-in-progress: true
+
+# pull_request_target because Dependabot's own runs get a read-only token and this
+# needs write. Safe because nothing from the PR is checked out.
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    name: Enable auto-merge
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@v3
+
+      # CI wiring and the demo app's deps, since neither reaches anyone installing
+      # the package. Root pub moves downstream version ranges, so it stays manual,
+      # as does every major. Ecosystem arrives underscored, update-type is a max.
+      - name: Decide eligibility
+        id: gate
+        env:
+          ECOSYSTEM: ${{ steps.meta.outputs.package-ecosystem }}
+          UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
+          DIRECTORY: ${{ steps.meta.outputs.directory }}
+        run: |
+          eligible=false
+          case "$UPDATE_TYPE" in
+            version-update:semver-patch | version-update:semver-minor)
+              case "$ECOSYSTEM" in
+                github_actions)
+                  eligible=true
+                  ;;
+                gradle | pub)
+                  case "$DIRECTORY" in
+                    /example | /example/*)
+                      eligible=true
+                      ;;
+                  esac
+                  ;;
+              esac
+              ;;
+          esac
+          echo "eligible=$eligible" >> "$GITHUB_OUTPUT"
+          echo "$ECOSYSTEM / $UPDATE_TYPE @ $DIRECTORY -> automerge: $eligible"
+
+      # --auto only queues it, master's required checks decide. GITHUB_TOKEN not the
+      # changelog App, since that App bypasses the ruleset it would need to wait on.
+      - name: Enable auto-merge
+        if: steps.gate.outputs.eligible == 'true'
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge --auto --rebase "$PR_URL"

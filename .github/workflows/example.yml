@@ -38,15 +38,14 @@ jobs:
       - run: dart pub global run dependency_validator
 
 
-  # Job id is the check name master's ruleset requires. Renaming it, or adding a
-  # `name:`, silently breaks the gate. always() keeps it reporting when upstream
-  # fails, and results get read by hand because a skipped job counts as a pass.
+  # Job id is the check name master requires, so don't rename it or add a `name:`.
+  # Skipped jobs count as passes, so the results get checked by hand.
   example-ok:
     needs: [analyze, deps]
     if: always()
     runs-on: ubuntu-latest
     permissions: {}
-    # Nothing gets checked out here, so back out of the file-level example/ default.
+    # Nothing is checked out here, so undo the file-level example/ default.
     defaults:
       run:
         working-directory: .

@@ -2,10 +2,8 @@ name: PR conventions
 
 on:
   pull_request:
-    # `labeled` / `unlabeled` are in the trigger set so the sem-label job
-    # re-runs whenever a label is added or removed. The other two jobs
-    # (branch-name, commit-conventions) re-running on label events is a
-    # harmless few seconds of bash.
+    # labeled/unlabeled are here so sem-label re-runs when a label changes. The
+    # other two jobs re-running then costs a few seconds of bash.
     types: [opened, synchronize, reopened, labeled, unlabeled]
     branches: [master]
 
@@ -20,10 +18,8 @@ jobs:
   branch-name:
     name: Branch name
     runs-on: ubuntu-latest
-    # Dependabot branches are always `dependabot/...` and can't be made to match
-    # the required pattern; exempt bot-authored PRs. Keyed off the PR author
-    # (not github.actor) so it still holds when a human triggers a `labeled`
-    # event on a bot PR.
+    # Dependabot branches can never match the pattern, so skip bot PRs. Keyed off
+    # the PR author, not github.actor, so it holds when a human adds a label.
     if: github.event.pull_request.user.login != 'dependabot[bot]'
     steps:
       - name: Validate branch name pattern
@@ -83,8 +79,7 @@ jobs:
   sem-label:
     name: Sem-* label
     runs-on: ubuntu-latest
-    # Bot PRs carry no sem-* label and are exempt from the changelog flow too
-    # (see changelog.yml), so don't require one here.
+    # Bot PRs carry no sem-* label and skip the changelog flow, so don't ask for one.
     if: github.event.pull_request.user.login != 'dependabot[bot]'
     env:
       LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
@@ -108,10 +103,8 @@ jobs:
               ;;
           esac
 
-  # Job id is the check name master's ruleset requires. Renaming it, or adding a
-  # `name:`, silently breaks the gate. always() keeps it reporting when upstream
-  # fails, and results get read by hand because a skipped job counts as a pass.
-  # That last part is what keeps bot PRs green, since they skip two jobs below.
+  # Job id is the check name master requires, so don't rename it or add a `name:`.
+  # Skipped jobs count as passes, which is what keeps bot PRs green here.
   conventions-ok:
     needs: [branch-name, commit-conventions, sem-label]
     if: always()
