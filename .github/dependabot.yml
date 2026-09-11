@@ -1,21 +1,18 @@
 # Dependabot version updates.
 # Reference: https://docs.github.com/code-security/dependabot/working-with-dependabot/dependabot-options-reference
 #
-# Bot PRs branch as `dependabot/...` and carry no `sem-*` label. The
-# PR-convention and changelog workflows exempt `dependabot[bot]` from the
-# branch-name, sem-label and changelog jobs (see
-# .github/workflows/{pr-conventions,changelog}.yml), so these PRs land WITHOUT
-# an automatic CHANGELOG entry — add one by hand if a root-package bump is
-# user-visible. The commit-length / no-merge-commit gate still applies to them.
+# pr-conventions.yml and changelog.yml skip dependabot[bot], so these PRs land
+# with no CHANGELOG entry. Add one by hand if a root-package bump is
+# user-visible. The commit-length and no-merge-commit checks still apply.
 #
-# Minor + patch bumps are grouped into one PR per ecosystem to cut noise; major
-# bumps still arrive as individual PRs so they can be reviewed in isolation.
+# Bumps are grouped into one PR per ecosystem to cut noise. Majors arrive on
+# their own so they can be reviewed in isolation, Actions aside.
 version: 2
 
 updates:
   # --- Dart / Flutter: published library ---
   # Bumps the version constraints in the root pubspec.yaml. pub.dev packages
-  # only — git / path deps are not eligible.
+  # only. Git and path deps are not eligible.
   - package-ecosystem: "pub"
     directory: "/"
     schedule:
@@ -49,7 +46,7 @@ updates:
         update-types: ["minor", "patch"]
 
   # --- GitHub Actions ---
-  # `directory: "/"` scans everything under .github/ — the workflows and the
+  # `directory: "/"` scans everything under .github/, both the workflows and the
   # local composite action at .github/actions/setup-flutter.
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -58,4 +55,5 @@ updates:
     groups:
       actions:
         patterns: ["*"]
-        update-types: ["minor", "patch"]
+        # Majors included, since dependabot-automerge.yml merges these anyway.
+        update-types: ["major", "minor", "patch"]
