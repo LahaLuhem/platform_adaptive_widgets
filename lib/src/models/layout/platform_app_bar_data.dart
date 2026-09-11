@@ -23,14 +23,14 @@ abstract class PlatformAppBarData {
 
 /// Shared-visual base for the per-platform app-bar records.
 ///
-/// Holds only [backgroundColor] — the one app-bar property that exists on both
+/// Holds only [backgroundColor], the one app-bar property that exists on both
 /// platforms and that a caller may reasonably want to differ per platform (iOS
 /// nav bars are often translucent, Android app bars opaque). Everything
 /// functional (title, leading, bottom, `automaticallyImplyLeading`, widgetKey)
 /// is flat on `PlatformAppBar`, the single source of truth.
 ///
-/// Private — [MaterialAppBarData] and [CupertinoNavigationBarData] inherit
-/// [backgroundColor] via `super`-forwarding; never constructed or exported
+/// Private, [MaterialAppBarData] and [CupertinoNavigationBarData] inherit
+/// [backgroundColor] via `super`-forwarding. Never constructed or exported
 /// directly.
 abstract final class _PlatformAppBarData {
   /// The background color of the app bar.
@@ -50,9 +50,9 @@ final class MaterialAppBarData extends _PlatformAppBarData {
 
   /// Whether to imply the actions widget when [actions] is null or empty.
   ///
-  /// When true (the default), the framework tries to deduce the actions; when
+  /// When true (the default), the framework tries to deduce the actions. When
   /// false, the actions list is kept empty. No effect when [actions] is set.
-  /// Material-only — Cupertino's navigation bar has no actions list. Defaults
+  /// Material-only. Cupertino's navigation bar has no actions list. Defaults
   /// to [kAutomaticallyImplyActions].
   final bool automaticallyImplyActions;
 
@@ -204,7 +204,7 @@ final class CupertinoNavigationBarData extends _PlatformAppBarData {
   /// Whether to render the expanded, left-aligned large-title navigation bar
   /// (`CupertinoNavigationBar.large`) instead of the standard centered one.
   ///
-  /// iOS-only — Material has no static large-title app bar, so this has no
+  /// iOS-only. Material has no static large-title app bar, so this has no
   /// effect on Android. When true, `PlatformAppBar.title` becomes the
   /// `largeTitle` and [automaticallyImplyMiddle] drives the `.large` ctor's
   /// `automaticallyImplyTitle`. Defaults to [kLarge].
@@ -241,7 +241,7 @@ final class CupertinoNavigationBarData extends _PlatformAppBarData {
   ///
   /// Defaults to `null`, which lets `CupertinoNavigationBar` use its built-in
   /// default tag. Only set this when a single route hosts more than one
-  /// navigation bar — each needs a distinct tag to animate correctly.
+  /// navigation bar, each needs a distinct tag to animate correctly.
   final Object? heroTag;
 
   /// Default value for [large].

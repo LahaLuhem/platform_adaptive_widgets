@@ -9,7 +9,7 @@ import '/src/models/platform_widget_base.dart';
 /// [CircularProgressIndicator] on Android and [CupertinoActivityIndicator]
 /// on iOS.
 ///
-/// Display-only widget — no callbacks, no value/onChanged at the widget
+/// Display-only widget, no callbacks, no value/onChanged at the widget
 /// level. Material's value-based progress and animation control live on
 /// [MaterialProgressIndicatorData]; Cupertino's animating toggle and radius
 /// live on [CupertinoProgressIndicatorData]. The only field shared at the
@@ -20,7 +20,7 @@ import '/src/models/platform_widget_base.dart';
 /// PlatformProgressIndicator(color: Colors.blue)
 /// ```
 class PlatformProgressIndicator extends PlatformWidgetKeyedBase {
-  /// Color of the progress indicator. Shared visual — overridable per
+  /// Color of the progress indicator. Shared visual, overridable per
   /// platform via [materialProgressIndicatorData] / [cupertinoProgressIndicatorData].
   final Color? color;
 
@@ -28,7 +28,7 @@ class PlatformProgressIndicator extends PlatformWidgetKeyedBase {
   ///
   /// Houses both Material-only visual fields (`backgroundColor`,
   /// `strokeWidth`, etc.) and Material-only functional fields (`value`,
-  /// `controller`, `semanticsLabel`, `semanticsValue`) — the latter because
+  /// `controller`, `semanticsLabel`, `semanticsValue`), the latter because
   /// they have no equivalent on Cupertino's activity indicator.
   final MaterialProgressIndicatorData? materialProgressIndicatorData;
 

@@ -12,15 +12,15 @@
 //   - The pruning contract we care about: a refactor that re-introduces
 //     deferred-dispatch (closures-as-args passed into a sub-helper instead of
 //     dispatched inline at the public entry point) drags in entire Cupertino
-//     widget implementations — `CupertinoAlertDialog`, `CupertinoDatePicker`,
-//     etc. — adding ~150–200 KB. The threshold is calibrated so the current
+//     widget implementations, `CupertinoAlertDialog`, `CupertinoDatePicker`,
+//     etc., adding ~150-200 KB. The threshold is calibrated so the current
 //     correctly-pruned build passes with comfortable headroom, while a full
 //     deferred-dispatch regression fails loudly.
 //
 // When the threshold needs raising: a Flutter SDK update genuinely grew the
 // baseline. Re-run the build locally, read the printed "actual" number, and
 // raise [_maxCupertinoBytes] above it by a small buffer. Don't raise it to
-// silence an actual leak — investigate first against
+// silence an actual leak, investigate first against
 // APPENDIX.md#aot-pruning-rules.
 //
 // Usage: dart tool/check_size_regression.dart <path-to-app-size-analysis.json>
@@ -32,15 +32,15 @@ import 'dart:io';
 
 /// Budget for total Cupertino-pathed bytes in the size-harness Android build.
 ///
-/// Baseline (2026-06-08, current SDK): ~107 KB — all six `showPlatformXxx`,
+/// Baseline (2026-06-08, current SDK): ~107 KB, all six `showPlatformXxx`,
 /// PlatformButton, `context.platformIcon`, and the `isAndroid`/`isIOS` getters
-/// exercised; dominated by SDK-internal Cupertino (text-selection toolbars
+/// exercised. Dominated by SDK-internal Cupertino (text-selection toolbars
 /// etc.) that can't be driven to zero from outside the SDK.
 ///
-/// Threshold sits ~33 KB above baseline — deliberately *below* the empirically
+/// Threshold sits ~33 KB above baseline, deliberately *below* the empirically
 /// measured cost of the dominant regression, so that regression trips it. A
 /// leaked `CupertinoDatePicker` adds ~61 KB cupertino-pathed (`tool/size_harness`
-/// experiment, 2026-06-08), pushing the build to ~166 KB — well over this
+/// experiment, 2026-06-08), pushing the build to ~166 KB, well over this
 /// 140 KB budget. The prior 200 KB budget (~93 KB headroom) sat *above* that
 /// 61 KB leak and would have missed a single-widget pruning regression. The
 /// ~33 KB margin still absorbs SDK drift (the baseline fell ~11 KB since the

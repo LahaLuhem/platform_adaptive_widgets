@@ -5,7 +5,7 @@ import 'package:pmvvm/pmvvm.dart';
 import '/features/showcase/widgets/nuance_card.dart';
 import 'showcase_view_model.dart';
 
-/// The "Under the hood" tab — not a sample screen, but a guided tour of the
+/// The "Under the hood" tab, not a sample screen, but a guided tour of the
 /// deliberate, easy-to-get-wrong details the library handles for you. Each card
 /// names a decision, says what a naive `Platform.isIOS ? … : …` wrapper gets
 /// wrong, and (where it can) proves it live.
@@ -32,7 +32,7 @@ class ShowcaseView extends StatelessWidget {
                     'CupertinoTabController for the scaffold lifetime and syncs its index '
                     'in didUpdateWidget, so the external source and Cupertino do not fight '
                     'and switching tabs does not rebuild a tab from scratch. Tap +, switch '
-                    'tabs, then come back — the count is still here.',
+                    'tabs, then come back, the count is still here.',
                 demo: ValueListenableBuilder(
                   valueListenable: viewModel.tapCountListenable,
                   builder: (_, count, _) => Row(
@@ -108,7 +108,7 @@ class ShowcaseView extends StatelessWidget {
                 title: 'Tri-state, faithfully',
                 body:
                     'Both the Material and Cupertino checkboxes have a native third, '
-                    'indeterminate state — rendered as a dash rather than a check. '
+                    'indeterminate state, rendered as a dash rather than a check. '
                     'PlatformCheckbox.tristate exposes it on both: value and onChanged go '
                     'nullable, and taps cycle true, false, null.',
                 demo: ValueListenableBuilder(
@@ -129,7 +129,7 @@ class ShowcaseView extends StatelessWidget {
                 title: 'Large titles, where they belong',
                 body:
                     'iOS has a large navigation title that collapses on scroll; Material has '
-                    'no static equivalent. CupertinoNavigationBarData.large opts in — the same '
+                    'no static equivalent. CupertinoNavigationBarData.large opts in, the same '
                     'PlatformAppBar is just a standard bar on Android.',
                 code: 'cupertinoNavigationBarData: CupertinoNavigationBarData(large: true)',
                 demo: PlatformButton(
@@ -140,7 +140,7 @@ class ShowcaseView extends StatelessWidget {
               const NuanceCard(
                 title: 'One source of truth',
                 body:
-                    'Functional inputs — value, callbacks, controllers — live flat on the '
+                    'Functional inputs, value, callbacks, controllers, live flat on the '
                     'widget, never duplicated inside a *Data class. No question of '
                     'widget.value versus data.value: the per-platform *Data classes carry '
                     'only the visual and behavioural extras specific to each platform.',
@@ -149,7 +149,7 @@ class ShowcaseView extends StatelessWidget {
               const NuanceCard(
                 title: 'Material-only capabilities, modelled honestly',
                 body:
-                    'Some things exist on one platform only — a floating action button, or a '
+                    'Some things exist on one platform only, a floating action button, or a '
                     'unified app bar above a tab scaffold (the iOS HIG forbids both). Rather '
                     'than fake them everywhere, they live on the Material *Data class with no '
                     'Cupertino counterpart.',
@@ -158,8 +158,8 @@ class ShowcaseView extends StatelessWidget {
               const NuanceCard(
                 title: 'heroTag collisions, handled',
                 body:
-                    'Two CupertinoNavigationBars on screen during a transition — a tab '
-                    'scaffold and a pushed page — share a default hero tag and crash the '
+                    'Two CupertinoNavigationBars on screen during a transition, a tab '
+                    'scaffold and a pushed page, share a default hero tag and crash the '
                     'animation; so do two FABs. The library exposes heroTag so each can have '
                     'its own.',
                 code: "CupertinoNavigationBarData(heroTag: 'profile')",
@@ -170,7 +170,7 @@ class ShowcaseView extends StatelessWidget {
                     'platformValue(material:, cupertino:) evaluates both arms eagerly. '
                     'Fine for cheap values, but when an arm builds a platform-specific widget, '
                     'an inline switch on defaultTargetPlatform lets the dead arm be '
-                    'tree-shaken — ≈342 KB lighter for one Cupertino widget in our size harness.',
+                    'tree-shaken, ≈342 KB lighter for one Cupertino widget in our size harness.',
                 code: 'switch (defaultTargetPlatform) { .iOS => CupertinoX(), _ => MaterialX() }',
               ),
             ],

@@ -14,7 +14,7 @@ final class ShowcaseViewModel extends ViewModel {
   final _gatedValueNotifier = ValueNotifier(true);
   final _checkboxValueNotifier = ValueNotifier<bool?>(false);
 
-  /// Tap count for the persistence probe — survives tab switches as long as the
+  /// Tap count for the persistence probe, survives tab switches as long as the
   /// tab's state is kept alive.
   ValueListenable<int> get tapCountListenable => _tapCountNotifier;
 

@@ -7,7 +7,7 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 ///
 /// Pushed via `pushPlatformRoute`, so it arrives with a `CupertinoPageRoute`
 /// (swipe-back) on iOS or a `MaterialPageRoute` on Android. With [large], its
-/// nav bar opts into the iOS large, collapse-on-scroll title — a no-op styling
+/// nav bar opts into the iOS large, collapse-on-scroll title, a no-op styling
 /// difference on Android, where there is no such bar.
 class PushedDemoPage extends StatelessWidget {
   /// Whether the nav bar uses the iOS large-title variant.
@@ -30,7 +30,7 @@ class PushedDemoPage extends StatelessWidget {
                 ? 'This nav bar sets large: true. On iOS the title is large and '
                       'collapses as you scroll; on Android the same PlatformAppBar '
                       'is a standard bar.'
-                : 'Pushed with pushPlatformRoute — a CupertinoPageRoute on iOS '
+                : 'Pushed with pushPlatformRoute, a CupertinoPageRoute on iOS '
                       '(swipe from the left edge to go back), a MaterialPageRoute '
                       'on Android.',
           ),

@@ -11,8 +11,8 @@ import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 /// The iOS content wrapped in a [CupertinoPopupSurface], since that route only positions and dims
 /// (it paints no sheet surface of its own, unlike Material's bottom sheet).
 ///
-/// To skip the iOS [CupertinoPopupSurface] wrap — e.g. to drop in a `CupertinoActionSheet`
-/// without double-chroming it — use [showPlatformRawModalBottomSheet].
+/// To skip the iOS [CupertinoPopupSurface] wrap, e.g. to drop in a `CupertinoActionSheet`
+/// without double-chroming it. Use [showPlatformRawModalBottomSheet].
 ///
 /// These two upstream APIs are conceptually similar (a modal that takes over the bottom portion of the screen)
 /// but expose largely disjoint param sets. Material has a rich set of sheet-shape / drag / safe-area knobs,
@@ -64,7 +64,7 @@ Future<T?> showPlatformModalBottomSheet<T>({
     ),
     .iOS => _showCupertinoModalPopup(
       context: context,
-      // Wrap in a CupertinoPopupSurface — the popup route only positions and dims; it paints no surface,
+      // Wrap in a CupertinoPopupSurface, the popup route only positions and dims. It paints no surface,
       // so unwrapped content has no sheet behind it.
       // (The route bottom-aligns the child, so no Center is needed here.)
       builder: (context) =>
@@ -83,7 +83,7 @@ Future<T?> showPlatformModalBottomSheet<T>({
 /// to [showModalBottomSheet] on Android and [showCupertinoModalPopup] on iOS.
 /// Unlike [showPlatformModalBottomSheet], the package adds no [CupertinoPopupSurface] on iOS.
 /// The content is bare there unless you bring your own surface (e.g. a `CupertinoActionSheet` for
-/// quick actions, which carries its own — wrapping it would double-chrome it).
+/// quick actions, which carries its own, wrapping it would double-chrome it).
 ///
 /// The two platforms differ here because their native primitives do: Android's [showModalBottomSheet]
 /// always renders its own `Material` sheet surface (tune it via [materialModalBottomSheetData],
@@ -122,7 +122,7 @@ Future<T?> showPlatformRawModalBottomSheet<T>({
     ),
     .iOS => _showCupertinoModalPopup(
       context: context,
-      // Raw: no CupertinoPopupSurface wrap — the caller owns the surface.
+      // Raw: no CupertinoPopupSurface wrap, the caller owns the surface.
       builder: cupertinoBuilder ?? builder!,
       data: cupertinoModalPopupData,
       routeSettings: routeSettings,
@@ -135,7 +135,7 @@ Future<T?> showPlatformRawModalBottomSheet<T>({
 }
 
 /// Asserts exactly one of the two valid builder-input shapes was used: `builder` alone, or both
-/// `materialBuilder` and `cupertinoBuilder` together. Mirrors the dialog-side check; takes the args'
+/// `materialBuilder` and `cupertinoBuilder` together. Mirrors the dialog-side check. Takes the args'
 /// *nullness* (booleans) rather than the builders so it can't name `material*`/`cupertino*`
 /// function-typed params and trip the AOT-pruning guard (`test/aot_pruning_regression_test.dart`).
 /// Used by [showPlatformModalBottomSheet] and [showPlatformRawModalBottomSheet].
@@ -156,9 +156,9 @@ void _assertBuilderInvariant({
   );
 }
 
-/// Shared Material-side plumbing — marshals [showModalBottomSheet]'s args from
+/// Shared Material-side plumbing, marshals [showModalBottomSheet]'s args from
 /// [data] without imposing content wrapping. Single-builder (the dispatch lives
-/// at the public entry point) so the AOT compiler can fold the unused arm; see
+/// at the public entry point) so the AOT compiler can fold the unused arm. See
 /// `test/aot_pruning_regression_test.dart`.
 Future<T?> _showMaterialModalBottomSheet<T>({
   required BuildContext context,
@@ -177,7 +177,7 @@ Future<T?> _showMaterialModalBottomSheet<T>({
   shape: data?.shape,
   clipBehavior: data?.clipBehavior,
   constraints: data?.constraints,
-  // Material's barrierColor not surfaced — sheet-level barrier tinting is rare
+  // Material's barrierColor not surfaced, sheet-level barrier tinting is rare
   // and the upstream default (null → theme-derived) is right almost always. Add
   // a flat shared `barrierColor` here if a real use case appears.
   isScrollControlled:
@@ -197,7 +197,7 @@ Future<T?> _showMaterialModalBottomSheet<T>({
   requestFocus: requestFocus,
 );
 
-/// Shared Cupertino-side plumbing — see [_showMaterialModalBottomSheet]. Callers
+/// Shared Cupertino-side plumbing. See [_showMaterialModalBottomSheet]. Callers
 /// pass an already-shaped [builder]: wrapped in [CupertinoPopupSurface] by
 /// [showPlatformModalBottomSheet], or bare by [showPlatformRawModalBottomSheet].
 Future<T?> _showCupertinoModalPopup<T>({

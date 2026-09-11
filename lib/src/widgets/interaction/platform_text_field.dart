@@ -13,15 +13,15 @@ import '/src/models/platform_widget_base.dart';
 ///
 /// All shared functional inputs (controller, focus, keyboard, text-behavior,
 /// cursor, scrolling, autofill, IME, selection, context menu, …) live as flat
-/// constructor parameters. The three most-common content slots — [hintText],
-/// [prefix], and [suffix] — are also flat on the widget, since forcing every
+/// constructor parameters. The three most-common content slots, [hintText],
+/// [prefix], and [suffix], are also flat on the widget, since forcing every
 /// caller through a per-platform data record for these is exactly the kind of
 /// boilerplate this package exists to remove.
 ///
 /// **Slot mapping.**
 /// - [hintText] → Material `decoration.hintText` + Cupertino `placeholder`.
 /// - [prefix]   → Material `decoration.prefixIcon` + Cupertino `prefix`
-///   (always visible by default; matches Cupertino's `prefixMode = always`).
+///   (always visible by default, matches Cupertino's `prefixMode = always`).
 /// - [suffix]   → Material `decoration.suffixIcon` + Cupertino `suffix`
 ///   (always visible by default).
 ///
@@ -29,7 +29,7 @@ import '/src/models/platform_widget_base.dart';
 /// with `hintText` / `prefixIcon` / `suffixIcon` set, those win for the
 /// Material branch. If you pass [CupertinoTextFieldData.placeholder] /
 /// `prefix` / `suffix`, those win for the Cupertino branch. The flat
-/// widget-level values are the cross-platform default; data-class values are
+/// widget-level values are the cross-platform default. Data-class values are
 /// per-platform overrides. See `APPENDIX.md#cross-platform-field-mappings`.
 ///
 /// Per-platform tuning beyond the common slots is opt-in via
@@ -81,8 +81,8 @@ class PlatformTextField extends PlatformWidgetKeyedBase {
   final UndoHistoryController? undoController;
 
   /// Whether the field is enabled and responds to input. Defaults to `true`.
-  /// Maps to Material `enabled: bool?` and Cupertino `enabled: bool` directly
-  /// — see `APPENDIX.md#cross-platform-field-mappings`.
+  /// Maps to Material `enabled: bool?` and Cupertino `enabled: bool` directly,
+  /// see `APPENDIX.md#cross-platform-field-mappings`.
   final bool isEnabled;
 
   /// Whether the field is read-only.
@@ -204,7 +204,7 @@ class PlatformTextField extends PlatformWidgetKeyedBase {
 
   // ---- Callbacks ------------------------------------------------------------
 
-  /// Callback fired when the text changes. Optional — text fields are
+  /// Callback fired when the text changes. Optional, text fields are
   /// frequently controller-driven (read `controller.text` on submit), so
   /// nullable per Flutter's own [TextField.onChanged] shape.
   final ValueChanged<String>? onChanged;
@@ -356,7 +356,7 @@ class PlatformTextField extends PlatformWidgetKeyedBase {
   @override
   Widget buildMaterial(BuildContext context) {
     // Merge widget-level flat slots into the Material decoration. Data-class values win
-    // when explicitly set; flat widget values fill the gaps.
+    // when explicitly set. Flat widget values fill the gaps.
     final baseDecoration = materialTextFieldData?.decoration ?? kDefaultMaterialTextFieldDecoration;
     final mergedDecoration = baseDecoration.copyWith(
       hintText: baseDecoration.hintText ?? hintText,
@@ -475,7 +475,7 @@ class PlatformTextField extends PlatformWidgetKeyedBase {
     enabled: isEnabled,
     cursorWidth: cursorWidth,
     cursorHeight: cursorHeight,
-    // Cupertino's cursorRadius is non-null with an inline default; substitute
+    // Cupertino's cursorRadius is non-null with an inline default. Substitute
     // when the package's nullable flat field is null. Material's stays nullable.
     cursorRadius: cursorRadius ?? const Radius.circular(2),
     cursorOpacityAnimates: cursorOpacityAnimates,
@@ -490,7 +490,7 @@ class PlatformTextField extends PlatformWidgetKeyedBase {
     selectionControls: selectionControls,
     onTap: onTap,
     onTapOutside: onTapOutside,
-    // Pattern match binds the non-null callback in the match arm — that
+    // Pattern match binds the non-null callback in the match arm, that
     // local IS promoted across the closure boundary (an instance field would not be).
     // See [onTapUpOutside] dartdoc for the upstream Cupertino-typing bug this conversion compensates for.
     onTapUpOutside: switch (onTapUpOutside) {
@@ -526,7 +526,7 @@ class PlatformTextField extends PlatformWidgetKeyedBase {
 
 /// Bridges Cupertino's [PointerDownEvent]-typed `onTapUpOutside` callback to
 /// the package's exposed [TapRegionUpCallback] (which takes [PointerUpEvent]).
-/// Upstream Flutter bug — Cupertino names the param `onTapUpOutside` but types
+/// Upstream Flutter bug. Cupertino names the param `onTapUpOutside` but types
 /// it as if it received a tap-down event. [PlatformTextField.buildCupertino]
 /// uses this extension to fabricate a [PointerUpEvent] with the same pointer
 /// metadata so the caller's single [TapRegionUpCallback] works on both

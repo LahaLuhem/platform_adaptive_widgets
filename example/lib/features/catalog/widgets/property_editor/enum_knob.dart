@@ -6,7 +6,7 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 /// label is the value's `name`.
 ///
 /// `PlatformMenuPicker`'s Cupertino small-item rendering asserts at least three
-/// items, so use this knob only for enums with three or more values; reach for
+/// items, so use this knob only for enums with three or more values. Reach for
 /// a segmented control or a boolean toggle for smaller enums.
 class EnumKnob<T extends Enum> extends StatelessWidget {
   /// The property name shown as the picker's label.
@@ -15,7 +15,7 @@ class EnumKnob<T extends Enum> extends StatelessWidget {
   /// The current value.
   final T value;
 
-  /// All selectable values — typically `MyEnum.values`.
+  /// All selectable values, typically `MyEnum.values`.
   final List<T> values;
 
   /// Fired when the user picks a different value.

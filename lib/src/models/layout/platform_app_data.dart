@@ -1,5 +1,5 @@
 // The ~26 fields shared by MaterialApp and CupertinoApp are functional
-// (identity, routing, localization, callbacks) — per APPENDIX#field-classification
+// (identity, routing, localization, callbacks), per APPENDIX#field-classification
 // they live flat on the PlatformApp widget, single source of truth. Only the
 // platform-divergent theme surface lives here: ThemeData and CupertinoThemeData
 // are disjoint types, so theme is platform-only, not shared-visual.

@@ -10,7 +10,7 @@ import '/features/root/data/enums/root_tab.dart';
 /// [StatefulNavigationShell.goBranch]; the branch navigators arrive as
 /// [children] and are shown via `tabBodyBuilder`.
 class RootTabsRouterView extends StatelessWidget {
-  /// go_router's shell — the source of truth for the selected tab.
+  /// go_router's shell, the source of truth for the selected tab.
   final StatefulNavigationShell navigationShell;
 
   /// The branch navigators, one per tab, indexed by tab position.

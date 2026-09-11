@@ -19,7 +19,7 @@ analyzer:
     - "**/*.gform.dart"
     - "**/generated/**"
     - "**/*.freezed.dart"
-    # The AOT-pruning size harness is a separate Flutter sub-package. CI builds it standalone; the root analyzer should not recurse into it.
+    # The AOT-pruning size harness is a separate Flutter sub-package. CI builds it standalone. The root analyzer should not recurse into it.
     - "tool/size_harness/**"
     - build/**
     - android/**

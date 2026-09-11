@@ -1,5 +1,5 @@
 // PlatformCheckbox's two private callback fields multiplex its default and
-// .tristate constructors — exactly one is non-null per instance (see the field
+// .tristate constructors, exactly one is non-null per instance (see the field
 // comment). The default ctor binds its callback as a `this._onChanged`
 // initializing formal, which Dart surfaces to callers as `onChanged` (the field
 // name minus the underscore). The .tristate ctor can't reuse that: its public
@@ -20,7 +20,7 @@ import '/src/models/platform_widget_base.dart';
 ///
 /// The default constructor is the common two-state case: [value] is non-null
 /// `bool` and `onChanged` hands back a non-null `bool`. For the indeterminate
-/// (third) state — supported natively on both platforms — use
+/// (third) state, supported natively on both platforms. Use
 /// [PlatformCheckbox.tristate], whose [value] and `onChanged` are nullable so
 /// taps can cycle `false → true → null`.
 ///
@@ -42,7 +42,7 @@ class PlatformCheckbox extends PlatformWidgetKeyedBase {
   /// Current value of the checkbox.
   ///
   /// For the default (two-state) constructor this is always `true` (checked)
-  /// or `false` (unchecked) — that constructor rejects `null`. For
+  /// or `false` (unchecked), that constructor rejects `null`. For
   /// [PlatformCheckbox.tristate] it may also be `null` (indeterminate).
   final bool? value;
 
@@ -58,7 +58,7 @@ class PlatformCheckbox extends PlatformWidgetKeyedBase {
   ///
   /// When `false`, the underlying platform widget receives `null` for its own `onChanged` parameter,
   /// producing the platform's standard disabled-checkbox rendering.
-  /// The `onChanged` callback is still required and non-null at construction — the disable gate is read here.
+  /// The `onChanged` callback is still required and non-null at construction, the disable gate is read here.
   /// See `APPENDIX.md#callback-nullability`.
   final bool isEnabled;
 
@@ -68,7 +68,7 @@ class PlatformCheckbox extends PlatformWidgetKeyedBase {
   /// Whether the checkbox should autofocus.
   final bool autofocus;
 
-  /// Semantic label for accessibility. Read by screen readers; same value
+  /// Semantic label for accessibility. Read by screen readers. Same value
   /// is used on both platforms.
   final String? semanticLabel;
 
@@ -135,7 +135,7 @@ class PlatformCheckbox extends PlatformWidgetKeyedBase {
   /// Creates a platform-adaptive tristate checkbox.
   ///
   /// [value] may be `true`, `false`, or `null` (indeterminate); `onChanged`
-  /// receives the same `bool?`. The callback itself is required and non-null —
+  /// receives the same `bool?`. The callback itself is required and non-null,
   /// disable via [isEnabled], not a null callback. For the common two-state
   /// case, prefer the default [PlatformCheckbox] constructor, whose [value]
   /// and `onChanged` are non-null `bool`.

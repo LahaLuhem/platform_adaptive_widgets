@@ -13,7 +13,7 @@ import '/features/catalog/widgets/property_editor/property_editor.dart';
 import '/features/catalog/widgets/property_editor/string_knob.dart';
 import 'text_demo_view_model.dart';
 
-/// The Text & search section of the Catalog accordion — a live
+/// The Text & search section of the Catalog accordion, a live
 /// `PlatformTextField` playground plus a `PlatformSearchBar` demo.
 class TextDemoView extends StatelessWidget {
   const TextDemoView({super.key});
@@ -27,8 +27,7 @@ class TextDemoView extends StatelessWidget {
       children: [
         DemoCard(
           title: 'PlatformTextField',
-          description:
-              'Fiddle the shared-visual properties live — type into the field to see them.',
+          description: 'Fiddle the shared-visual properties live, type into the field to see them.',
           child: PropertyEditor(
             preview: PlatformTextField(
               controller: viewModel.playgroundController,

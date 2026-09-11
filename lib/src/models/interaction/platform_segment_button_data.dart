@@ -1,4 +1,4 @@
-// Per-platform records for PlatformSegmentButton (no shared private base — the
+// Per-platform records for PlatformSegmentButton (no shared private base, the
 // Material and Cupertino visual surfaces don't overlap).
 // ignore_for_file: prefer-match-file-name
 
@@ -27,7 +27,7 @@ const kDefaultCupertinoSegmentButtonDisabledChildren = <Never>{};
 ///
 /// Mirrors Flutter's private `_kThumbColor` in
 /// `package:flutter/src/cupertino/sliding_segmented_control.dart`. Re-validate on
-/// Flutter SDK bumps — the upstream constant is private.
+/// Flutter SDK bumps, the upstream constant is private.
 const kDefaultCupertinoSegmentButtonThumbColor = CupertinoDynamicColor.withBrightness(
   color: Color(0xFFFFFFFF),
   darkColor: Color(0xFF636366),
@@ -37,7 +37,7 @@ const kDefaultCupertinoSegmentButtonThumbColor = CupertinoDynamicColor.withBrigh
 ///
 /// Mirrors Flutter's private `_kHorizontalItemPadding` in
 /// `package:flutter/src/cupertino/sliding_segmented_control.dart`. Re-validate on
-/// Flutter SDK bumps — the upstream constant is private.
+/// Flutter SDK bumps, the upstream constant is private.
 const kDefaultCupertinoSegmentButtonPadding = EdgeInsets.symmetric(vertical: 2, horizontal: 3);
 
 /// Default value for [CupertinoSegmentButtonData.backgroundColor].
@@ -54,11 +54,11 @@ const kDefaultCupertinoSegmentButtonIsMomentary = false;
 /// Pass this via `PlatformSegmentButton.materialSegmentButtonData` when tuning Material
 /// rendering. The fields declared here have no Cupertino equivalent.
 ///
-/// Not generic on the segment value type — none of these fields reference `T`. Pass
+/// Not generic on the segment value type, none of these fields reference `T`. Pass
 /// directly: `MaterialSegmentButtonData(direction: .vertical)`, without spelling the
 /// type parameter.
 ///
-/// **No multi-select** — see [PlatformSegmentButton]'s class dartdoc for why
+/// **No multi-select**: see [PlatformSegmentButton]'s class dartdoc for why
 /// [SegmentedButton.multiSelectionEnabled] / `Set<T>` selection state are intentionally
 /// not surfaced.
 final class MaterialSegmentButtonData {
@@ -73,7 +73,7 @@ final class MaterialSegmentButtonData {
   final EdgeInsets? expandedInsets;
 
   /// Whether tapping the currently-selected segment is allowed to clear the selection.
-  /// Functional, Material-only — Cupertino has no equivalent "empty selection"
+  /// Functional, Material-only. Cupertino has no equivalent "empty selection"
   /// affordance (use [CupertinoSegmentButtonData.isMomentary] for tap-resets-after).
   /// Defaults to [kDefaultSegmentButtonEmptySelectionAllowed].
   final bool emptySelectionAllowed;
@@ -82,7 +82,7 @@ final class MaterialSegmentButtonData {
   /// Material-only. Defaults to [kDefaultSegmentButtonShowSelectedIcon].
   final bool showSelectedIcon;
 
-  /// Layout direction. Material-only — Cupertino's sliding segmented control is always
+  /// Layout direction. Material-only. Cupertino's sliding segmented control is always
   /// horizontal. Defaults to [kDefaultSegmentButtonDirection].
   final Axis direction;
 
@@ -107,7 +107,7 @@ final class MaterialSegmentButtonData {
 /// infers `T` from the surrounding `PlatformSegmentButton<T>`'s slot).
 final class CupertinoSegmentButtonData<T extends Object> {
   /// Subset of segment values that should be disabled (un-tappable). Functional,
-  /// Cupertino-only — Material's [SegmentedButton] has no per-segment-disabled list
+  /// Cupertino-only. Material's [SegmentedButton] has no per-segment-disabled list
   /// (per-segment `enabled` lives on [ButtonSegment], which the package doesn't
   /// currently surface). Defaults to [kDefaultCupertinoSegmentButtonDisabledChildren].
   final Set<T> disabledChildren;

@@ -15,11 +15,11 @@ import '/src/models/dialogs/platform_time_picker_data.dart';
 
 part 'platform_time_picker.dart';
 
-/// Shows a platform-adaptive date picker — Material [showDatePicker] on
+/// Shows a platform-adaptive date picker. Material [showDatePicker] on
 /// Android, [CupertinoDatePicker] in date mode wrapped in
 /// [showCupertinoModalPopup] on iOS.
 ///
-/// On iOS the picker is rendered inside a bottom-sheet popup; the value is
+/// On iOS the picker is rendered inside a bottom-sheet popup. The value is
 /// observed continuously and returned when the popup is dismissed. Use
 /// [CupertinoDatePickerData.changeReportingBehavior] to tune *when* iOS reports
 /// changes.
@@ -29,7 +29,7 @@ part 'platform_time_picker.dart';
 /// [selectableDayPredicate], [builder]) live flat on the function;
 /// per-platform tuning is opt-in via [materialDatePickerData] and
 /// [cupertinoDatePickerData] (the same Cupertino data class is reused by
-/// [showPlatformTimePicker] — see [CupertinoDatePickerData]).
+/// [showPlatformTimePicker]. See [CupertinoDatePickerData]).
 ///
 /// Example:
 /// ```dart
@@ -115,13 +115,13 @@ Future<Date?> showPlatformDatePicker({
   };
 }
 
-/// Shared iOS modal-popup helper — the same [CupertinoDatePicker] +
+/// Shared iOS modal-popup helper, the same [CupertinoDatePicker] +
 /// [showCupertinoModalPopup] scaffolding is used by both
 /// [showPlatformDatePicker] (mode `.date`) and [showPlatformTimePicker] (mode
 /// `.time`). Returns the picker's final [DateTime] value (callers slice it to
 /// [Date] or [TimeOfDay] downstream).
 ///
-/// Library-private; reachable from `platform_time_picker.dart` via the
+/// Library-private. Reachable from `platform_time_picker.dart` via the
 /// `part of` directive.
 Future<DateTime?> _showCupertinoModePickerPopup({
   required BuildContext context,
@@ -186,7 +186,7 @@ Future<DateTime?> _showCupertinoModePickerPopup({
 }
 
 /// Standard 216pt-high container used to wrap [CupertinoDatePicker] inside
-/// [showCupertinoModalPopup] — provides background, top padding, and safe-area
+/// [showCupertinoModalPopup], provides background, top padding, and safe-area
 /// adjustment for the system navigation bar. Shared by both date and time
 /// picker iOS paths.
 class _CupertinoPickerContainer extends StatelessWidget {

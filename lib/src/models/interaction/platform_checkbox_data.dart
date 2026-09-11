@@ -1,4 +1,4 @@
-// Multiple data classes in one file; private base + per-platform records.
+// Multiple data classes in one file. Private base + per-platform records.
 // ignore_for_file: prefer-match-file-name
 
 /// @docImport 'package:cupertino_ui/cupertino_ui.dart';
@@ -16,8 +16,8 @@ const kDefaultCheckboxIsError = false;
 ///
 /// Inherited by [MaterialCheckboxData] and [CupertinoCheckboxData] so each
 /// per-platform record carries the shared-visual surface via `super.x`
-/// constructor forwarding. Library-private — never exported from the
-/// package; callers never reference this type directly.
+/// constructor forwarding. Library-private, never exported from the
+/// package. Callers never reference this type directly.
 ///
 /// See `APPENDIX.md#field-classification` for the rule placing
 /// shared-visual fields on a private base.
@@ -58,7 +58,7 @@ abstract class _PlatformCheckboxData {
 ///
 /// Pass this via `PlatformCheckbox.materialCheckboxData` when tuning
 /// Material rendering. Inherited shared-visual fields override the widget's
-/// flat defaults on the Material branch; the fields declared here have no
+/// flat defaults on the Material branch. The fields declared here have no
 /// Cupertino equivalent.
 final class MaterialCheckboxData extends _PlatformCheckboxData {
   /// Color when hovering over the checkbox.
@@ -73,7 +73,7 @@ final class MaterialCheckboxData extends _PlatformCheckboxData {
   /// Material tap target size.
   ///
   /// Conceptually similar to but distinct from
-  /// [CupertinoCheckboxData.tapTargetSize] — Material uses an enum of
+  /// [CupertinoCheckboxData.tapTargetSize]. Material uses an enum of
   /// presets ([MaterialTapTargetSize.shrinkWrap] / `.padded`), Cupertino
   /// uses an explicit [Size]. They are not unified at the widget level.
   final MaterialTapTargetSize? materialTapTargetSize;
@@ -106,13 +106,13 @@ final class MaterialCheckboxData extends _PlatformCheckboxData {
 ///
 /// Pass this via `PlatformCheckbox.cupertinoCheckboxData` when tuning
 /// Cupertino rendering. Inherited shared-visual fields override the
-/// widget's flat defaults on the Cupertino branch; the fields declared
+/// widget's flat defaults on the Cupertino branch. The fields declared
 /// here have no Material equivalent.
 final class CupertinoCheckboxData extends _PlatformCheckboxData {
   /// Custom tap target size for the checkbox, as an explicit [Size].
   ///
   /// Conceptually similar to but distinct from
-  /// [MaterialCheckboxData.materialTapTargetSize] — see that field's
+  /// [MaterialCheckboxData.materialTapTargetSize]. See that field's
   /// dartdoc.
   final Size? tapTargetSize;
 

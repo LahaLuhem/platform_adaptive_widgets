@@ -4,7 +4,7 @@
 //   1. No call to the closure-arg dispatch helpers (`platformValue`,
 //      `platformLazyValue`, `platformValueNullable`, `platformLazyNullable`)
 //      outside the file that defines them. These helpers take both Material
-//      and Cupertino arms as values/closures; the unused arm stays lexically
+//      and Cupertino arms as values/closures. The unused arm stays lexically
 //      reachable and defeats AOT pruning.
 //
 //   2. No private helper takes both a `material*`-named and a `cupertino*`-named
@@ -13,7 +13,7 @@
 //      call site and prevents the AOT compiler from folding the unused arm.
 //
 // Necessary-but-not-sufficient. The empirical guarantee lives in the
-// size-regression CI job; see `tool/check_size_regression.dart`.
+// size-regression CI job. See `tool/check_size_regression.dart`.
 
 // ignore_for_file: prefer-match-file-name
 
@@ -94,7 +94,7 @@ void main() {
 
 /// The `lib/src/` Dart files both checks lint: every `.dart` except the file
 /// that *defines* the dispatch helpers (their own definitions aren't calls).
-/// Lazy — nothing is read until the returned iterable is iterated.
+/// Lazy, nothing is read until the returned iterable is iterated.
 Iterable<File> _lintableFiles() =>
     Directory('lib/src')
         .listSync(recursive: true)

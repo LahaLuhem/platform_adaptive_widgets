@@ -2,10 +2,10 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show ListTileTitleAlignment;
 import 'package:pmvvm/pmvvm.dart';
 
-/// State for the Lists & containers demos — the expansion tile's controller and
+/// State for the Lists & containers demos, the expansion tile's controller and
 /// the scrollbar's scroll controller, plus the list-tile / scrollbar / progress /
 /// expansion playgrounds' editable shared and per-platform properties (flat
-/// fields mutated via `notifyListeners()`; see `CODESTYLE.md`'s reactivity note
+/// fields mutated via `notifyListeners()`. See `CODESTYLE.md`'s reactivity note
 /// on playground view-models).
 final class ContainersDemoViewModel extends ViewModel {
   final expansibleController = ExpansibleController()..expand();

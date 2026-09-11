@@ -15,7 +15,7 @@ void main() => runApp(const _ExampleGoRouterApp());
 
 /// go_router entry point: `PlatformApp.router` driven by [AppRouter]. Same
 /// theming, [ThemeScope] and [PlatformScope] wiring as the Navigator entry
-/// point — only the navigation backend differs.
+/// point, only the navigation backend differs.
 class _ExampleGoRouterApp extends StatefulWidget {
   const _ExampleGoRouterApp();
 
@@ -42,7 +42,7 @@ class _ExampleGoRouterAppState extends State<_ExampleGoRouterApp> {
     secondListenable: _platformNotifier,
     builder: (_, themeMode, platformOverride, _) {
       // Flip the whole app's rendered platform above PlatformApp.
-      // Debug/JIT — const-folded (ignored) in AOT release builds.
+      // Debug/JIT, const-folded (ignored) in AOT release builds.
       debugDefaultTargetPlatformOverride = platformOverride;
 
       return PlatformApp.router(
@@ -64,7 +64,7 @@ class _ExampleGoRouterAppState extends State<_ExampleGoRouterApp> {
     },
   );
 
-  /// Cupertino has no `themeMode`; map it to an explicit brightness, or `null`
+  /// Cupertino has no `themeMode`. Map it to an explicit brightness, or `null`
   /// to follow the device (the `system` case).
   Brightness? _cupertinoBrightnessFor(ThemeMode themeMode) => switch (themeMode) {
     ThemeMode.system => null,

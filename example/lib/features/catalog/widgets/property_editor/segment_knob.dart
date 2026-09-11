@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 /// A labelled enum control for a property editor, backed by a
-/// [PlatformSegmentButton] — for small enums (two or more values), where
+/// [PlatformSegmentButton], for small enums (two or more values), where
 /// `EnumKnob`'s dropdown can't go (its Cupertino rendering needs ≥3 items).
 /// Each option's label is the value's `name`.
 class SegmentKnob<T extends Enum> extends StatelessWidget {

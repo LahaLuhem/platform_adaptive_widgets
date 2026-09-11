@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
-/// State for the Buttons demo — the `PlatformButton` playground's editable
+/// State for the Buttons demo, the `PlatformButton` playground's editable
 /// properties, exposed as flat fields mutated by `on…` methods that call
 /// `notifyListeners()` (see `CODESTYLE.md`'s reactivity note on playground
 /// view-models). The `cupertino…` fields back the iOS-only panel (fed to

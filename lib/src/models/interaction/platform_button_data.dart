@@ -1,4 +1,4 @@
-// Per-platform records for PlatformButton (no shared private base — Material
+// Per-platform records for PlatformButton (no shared private base. Material
 // concentrates its visual surface in a single `ButtonStyle` blob while
 // Cupertino exposes individual color/border/padding/etc. fields, so nothing
 // overlaps in type).
@@ -26,7 +26,7 @@ const kDefaultCupertinoButtonAlignment = Alignment.center;
 
 /// Default gap between the icon and the label rendered by
 /// [PlatformButton.icon]. On the Material branch this spacing is implicit in
-/// the underlying `.icon` factory's layout; on the Cupertino branch the
+/// the underlying `.icon` factory's layout. On the Cupertino branch the
 /// package wraps the icon and label in a [Row] with `spacing` set to this
 /// constant (Cupertino has no native icon-button factory).
 const kDefaultButtonIconLabelGap = 8.0;
@@ -52,7 +52,7 @@ enum MaterialButtonVariant {
 
   /// Renders as [FilledButton.tonal] (or [FilledButton.tonalIcon] via
   /// [PlatformButton.icon]). The tonal variant is a middle ground between
-  /// [filled] and [outlined] — useful for secondary actions that need more
+  /// [filled] and [outlined], useful for secondary actions that need more
   /// emphasis than an outline but less than a fill.
   tonal,
 }
@@ -60,12 +60,12 @@ enum MaterialButtonVariant {
 /// Material-only configuration for [PlatformButton].
 ///
 /// Pass this via `PlatformButton.materialButtonData` when tuning Material
-/// rendering. The fields declared here have no Cupertino equivalent — Material
+/// rendering. The fields declared here have no Cupertino equivalent. Material
 /// concentrates its visual surface in [ButtonStyle], while Cupertino exposes
 /// individual colour / border / padding fields on [CupertinoButtonData].
 ///
 /// **Mouse cursor.** Material's button classes don't expose a top-level
-/// `mouseCursor` parameter — set it via `style.mouseCursor`
+/// `mouseCursor` parameter. Set it via `style.mouseCursor`
 /// ([ButtonStyle.mouseCursor]). Cupertino's equivalent lives on
 /// [CupertinoButtonData.mouseCursor].
 final class MaterialButtonData {
@@ -88,7 +88,7 @@ final class MaterialButtonData {
 
   /// Whether the button is announced as a semantic button. Honoured only when
   /// [PlatformButton.materialButtonVariant] is `.text` and the button is
-  /// constructed via [PlatformButton.new] (not [PlatformButton.icon]) —
+  /// constructed via [PlatformButton.new] (not [PlatformButton.icon]),
   /// upstream's other variants and all `.icon` factories don't surface the
   /// parameter, and the package silently drops it for those combinations.
   final bool? isSemanticButton;
@@ -106,7 +106,7 @@ final class MaterialButtonData {
 /// Cupertino-only configuration for [PlatformButton].
 ///
 /// Pass this via `PlatformButton.cupertinoButtonData` when tuning Cupertino
-/// rendering. The fields declared here have no Material equivalent — Material
+/// rendering. The fields declared here have no Material equivalent. Material
 /// concentrates its visual surface in [ButtonStyle] on [MaterialButtonData].
 final class CupertinoButtonData {
   /// Size style. Defaults to [kDefaultCupertinoButtonSizeStyle].
@@ -126,7 +126,7 @@ final class CupertinoButtonData {
 
   /// Colour used when the button is disabled. When `null`, the build site
   /// substitutes [CupertinoButtonVariant.defaultDisabledColor] for the
-  /// rendered variant — mirrors upstream's per-ctor inline default.
+  /// rendered variant, mirrors upstream's per-ctor inline default.
   final Color? disabledColor;
 
   /// Minimum size of the button. When `null`, Cupertino applies its
@@ -149,7 +149,7 @@ final class CupertinoButtonData {
   /// the theme's focus colour.
   final Color? focusColor;
 
-  /// Mouse cursor while hovering. Cupertino-only — Material's equivalent
+  /// Mouse cursor while hovering. Cupertino-only. Material's equivalent
   /// lives at `style.mouseCursor` on [MaterialButtonData] (Material's button
   /// classes don't expose a top-level `mouseCursor` parameter).
   final MouseCursor? mouseCursor;
@@ -173,7 +173,7 @@ final class CupertinoButtonData {
 /// Cupertino button variants for [PlatformButton.cupertinoButtonVariant].
 ///
 /// Each variant carries the [defaultDisabledColor] applied by the build site
-/// when [CupertinoButtonData.disabledColor] is `null` — mirrors upstream's
+/// when [CupertinoButtonData.disabledColor] is `null`: mirrors upstream's
 /// per-ctor inline default (`quaternarySystemFill` for the unfilled
 /// [CupertinoButton], `tertiarySystemFill` for `.filled` and `.tinted`).
 enum CupertinoButtonVariant {
@@ -188,7 +188,7 @@ enum CupertinoButtonVariant {
 
   /// Colour applied by [PlatformButton]'s build site when
   /// [CupertinoButtonData.disabledColor] is `null`. Mirrors the matching
-  /// upstream constructor's inline default — keeps the package's "no override"
+  /// upstream constructor's inline default, keeps the package's "no override"
   /// path bit-identical to instantiating Cupertino's button directly.
   final Color defaultDisabledColor;
 

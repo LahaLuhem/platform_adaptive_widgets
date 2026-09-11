@@ -11,7 +11,7 @@ import '/features/catalog/widgets/property_editor/color_knob.dart';
 import '/features/catalog/widgets/property_editor/property_editor.dart';
 import 'selection_demo_view_model.dart';
 
-/// The Selection-controls section of the Catalog accordion — checkbox / switch /
+/// The Selection-controls section of the Catalog accordion, checkbox / switch /
 /// slider playgrounds, plus a shared-selection showcase (segmented button, radio
 /// group and menu picker all bound to one value).
 class SelectionDemoView extends StatelessWidget {
@@ -131,7 +131,7 @@ class SelectionDemoView extends StatelessWidget {
         DemoCard(
           title: 'Shared selection',
           description:
-              'Segmented button, radio group and menu picker bound to one value — '
+              'Segmented button, radio group and menu picker bound to one value, '
               'change any one and the others follow.',
           child: Column(
             crossAxisAlignment: .stretch,

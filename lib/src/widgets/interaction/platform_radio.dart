@@ -11,12 +11,12 @@ import '/src/models/platform_widget_base.dart';
 /// A platform-adaptive radio button that renders Material [Radio] on Android and
 /// [CupertinoRadio] on iOS.
 ///
-/// **Leaf widget** — must be a descendant of an ancestor [RadioGroup] (from
+/// **Leaf widget**: must be a descendant of an ancestor [RadioGroup] (from
 /// `package:flutter/widgets.dart`) which holds the group's selected value and
 /// `onChanged` callback. This widget contributes one selectable option.
 ///
 /// For the common pattern of "a layout of radios paired with labels", use
-/// [PlatformRadioGroupBuilder] — a convenience widget that bundles the [RadioGroup] +
+/// [PlatformRadioGroupBuilder], a convenience widget that bundles the [RadioGroup] +
 /// a `Wrap` layout + per-item rendering.
 ///
 /// All functional inputs (value, state-gating, focus) and shared visual defaults live
@@ -51,7 +51,7 @@ class PlatformRadio<T extends Object> extends PlatformWidgetKeyedBase {
 
   /// Whether this radio is enabled and responds to taps.
   ///
-  /// - `true` (default): defers to the ancestor `RadioGroup`'s state — the underlying
+  /// - `true` (default): defers to the ancestor `RadioGroup`'s state, the underlying
   ///   [Radio.enabled] / [CupertinoRadio.enabled] receives `null`.
   /// - `false`: force-disables this specific radio (underlying widget receives
   ///   `enabled: false`), regardless of the group's state.
@@ -67,7 +67,7 @@ class PlatformRadio<T extends Object> extends PlatformWidgetKeyedBase {
 
   /// Colour applied when the radio is selected.
   ///
-  /// Shared visual — overridable per platform via [materialRadioData] /
+  /// Shared visual, overridable per platform via [materialRadioData] /
   /// [cupertinoRadioData].
   final Color? activeColor;
 
@@ -82,8 +82,8 @@ class PlatformRadio<T extends Object> extends PlatformWidgetKeyedBase {
   /// Maps to [Radio.fillColor] on Android directly (richer
   /// `WidgetStateProperty<Color?>?` passes through) and to [CupertinoRadio.fillColor]
   /// on iOS after resolving to a single `Color?` via
-  /// `.resolve({.selected, if (!isEnabled) .disabled})` — radios primarily show fill
-  /// when selected; disabled state forwarded based on [isEnabled]. See
+  /// `.resolve({.selected, if (!isEnabled) .disabled})`: radios primarily show fill
+  /// when selected. Disabled state forwarded based on [isEnabled]. See
   /// `APPENDIX.md#cross-platform-field-mappings`.
   final WidgetStateProperty<Color?>? fillColor;
 
@@ -172,13 +172,13 @@ class PlatformRadio<T extends Object> extends PlatformWidgetKeyedBase {
 /// Collapses the boilerplate of "wrap a [RadioGroup] around a layout of [PlatformRadio]-
 /// plus-label rows" into a single widget. The caller supplies [values] and an
 /// [itemBuilder]; this widget owns group state (delegated to the underlying
-/// [RadioGroup]) and lays the items out with [Wrap] — which degrades to row/column
+/// [RadioGroup]) and lays the items out with [Wrap], which degrades to row/column
 /// behaviour when items fit and wraps to the next run on narrow screens.
 ///
 /// Intentionally extends [StatelessWidget] rather than `PlatformWidgetBase`: the
 /// underlying [RadioGroup] is itself platform-agnostic (`package:flutter/widgets.dart`),
 /// so branching on [defaultTargetPlatform] would only return the same widget on both
-/// branches — misleading.
+/// branches, misleading.
 ///
 /// When this widget's layout knobs aren't enough (mixing radios with non-radio
 /// siblings, scrollable layouts, alignment beyond [Wrap]'s surface), fall back to
@@ -210,7 +210,7 @@ class PlatformRadioGroupBuilder<T extends Object> extends StatelessWidget {
   /// underlying [RadioGroup].
   final ValueChanged<T?> onChanged;
 
-  /// Builds the widget for one value — typically a [PlatformRadio] paired with a
+  /// Builds the widget for one value, typically a [PlatformRadio] paired with a
   /// label, but any composition that includes a [PlatformRadio] (with the same
   /// `value`) somewhere in its subtree works.
   final Widget Function(BuildContext context, T value) itemBuilder;

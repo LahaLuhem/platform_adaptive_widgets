@@ -1,4 +1,4 @@
-// Multiple data classes in one file; private base + per-platform records.
+// Multiple data classes in one file. Private base + per-platform records.
 // ignore_for_file: prefer-match-file-name
 
 /// @docImport 'package:material_ui/material_ui.dart';
@@ -20,7 +20,7 @@ const kDefaultCupertinoScrollbarMainAxisMargin = 3.0;
 ///
 /// Inherited by [MaterialScrollbarData] and [CupertinoScrollbarData] so each
 /// per-platform record carries the shared-visual surface via `super.x`
-/// constructor forwarding. Library-private — never exported from the
+/// constructor forwarding. Library-private, never exported from the
 /// package.
 ///
 /// See `APPENDIX.md#field-classification` for the rule placing shared-visual
@@ -42,7 +42,7 @@ abstract class _PlatformScrollbarData {
 ///
 /// Pass this via `PlatformScrollbar.materialScrollbarData` when tuning
 /// Material rendering. Inherited shared-visual fields override the widget's
-/// flat defaults on the Material branch; the fields declared here have no
+/// flat defaults on the Material branch. The fields declared here have no
 /// Cupertino equivalent.
 final class MaterialScrollbarData extends _PlatformScrollbarData {
   /// Whether the scrollbar track is visible.
@@ -50,7 +50,7 @@ final class MaterialScrollbarData extends _PlatformScrollbarData {
 
   /// Whether the scrollbar is interactive (can be dragged).
   ///
-  /// Functional behavioral toggle, but Material-only — Cupertino's
+  /// Functional behavioral toggle, but Material-only. Cupertino's
   /// scrollbar has no equivalent.
   final bool? interactive;
 
@@ -69,7 +69,7 @@ final class MaterialScrollbarData extends _PlatformScrollbarData {
 /// Pass this via `PlatformScrollbar.cupertinoScrollbarData` when tuning
 /// Cupertino rendering. Inherited shared-visual fields override the widget's
 /// flat defaults on the Cupertino branch with Cupertino-idiomatic defaults
-/// applied at construction; the fields declared here have no Material
+/// applied at construction. The fields declared here have no Material
 /// equivalent.
 final class CupertinoScrollbarData extends _PlatformScrollbarData {
   /// Thickness of the scrollbar while being dragged.

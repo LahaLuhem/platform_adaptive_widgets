@@ -14,7 +14,7 @@ import '/features/catalog/widgets/property_editor/property_editor.dart';
 import '/features/catalog/widgets/property_editor/segment_knob.dart';
 import 'containers_demo_view_model.dart';
 
-/// The Lists & containers section of the Catalog accordion — list tile,
+/// The Lists & containers section of the Catalog accordion, list tile,
 /// scrollbar, progress-indicator and expansion-tile playgrounds.
 class ContainersDemoView extends StatelessWidget {
   const ContainersDemoView({super.key});
@@ -183,7 +183,7 @@ class ContainersDemoView extends StatelessWidget {
         ),
         DemoCard(
           title: 'PlatformScrollbar (horizontal)',
-          description: 'The same widget over a horizontal list — top / bottom orientation.',
+          description: 'The same widget over a horizontal list, top / bottom orientation.',
           child: PropertyEditor(
             preview: SizedBox(
               height: 80,

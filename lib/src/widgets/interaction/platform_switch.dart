@@ -30,7 +30,7 @@ class PlatformSwitch extends PlatformWidgetKeyedBase {
   /// Callback fired when the user changes the switch value.
   ///
   /// Required and non-null. To disable the switch, set [isEnabled] to
-  /// `false` — do **not** pass `null` here. See
+  /// `false`: do **not** pass `null` here. See
   /// `APPENDIX.md#callback-nullability`.
   final ValueChanged<bool> onChanged;
 
@@ -39,7 +39,7 @@ class PlatformSwitch extends PlatformWidgetKeyedBase {
   /// When `false`, the underlying platform widget receives `null` for its
   /// own `onChanged` parameter, producing the platform's standard
   /// disabled-switch rendering. [onChanged] is still required and non-null
-  /// at construction — the disable gate is read here, not encoded by a
+  /// at construction, the disable gate is read here, not encoded by a
   /// null callback.
   final bool isEnabled;
 
@@ -78,14 +78,14 @@ class PlatformSwitch extends PlatformWidgetKeyedBase {
   final ImageProvider? activeThumbImage;
 
   /// Error listener for the active thumb image. Tightly coupled to
-  /// [activeThumbImage] — classified as shared visual rather than functional.
+  /// [activeThumbImage], classified as shared visual rather than functional.
   final ImageErrorListener? onActiveThumbImageError;
 
   /// Image displayed on the thumb when the switch is inactive.
   final ImageProvider? inactiveThumbImage;
 
   /// Error listener for the inactive thumb image. Tightly coupled to
-  /// [inactiveThumbImage] — classified as shared visual rather than functional.
+  /// [inactiveThumbImage], classified as shared visual rather than functional.
   final ImageErrorListener? onInactiveThumbImageError;
 
   /// Track outline color as a [WidgetStateProperty].

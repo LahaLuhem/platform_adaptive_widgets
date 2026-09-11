@@ -1,4 +1,4 @@
-// Per-platform records for showPlatformDatePicker (no shared private base —
+// Per-platform records for showPlatformDatePicker (no shared private base,
 // shared show-function args are flat on the function signatures, and the
 // Material / Cupertino visual surfaces don't overlap).
 // ignore_for_file: prefer-match-file-name
@@ -72,7 +72,7 @@ const kDefaultCupertinoDatePickerUse24hFormat = false;
 /// Material-only configuration for `showPlatformDatePicker`.
 ///
 /// Pass this via `showPlatformDatePicker`'s `materialDatePickerData` parameter.
-/// The fields declared here have no Cupertino equivalent — Material's
+/// The fields declared here have no Cupertino equivalent. Material's
 /// `showDatePicker` exposes a richer set of entry-mode / locale / error-text /
 /// keyboard knobs that don't map to Cupertino's spinning-wheel picker.
 final class MaterialDatePickerData {
@@ -161,12 +161,12 @@ final class MaterialDatePickerData {
 /// of both `showPlatformDatePicker` and `showPlatformTimePicker`.
 ///
 /// Reused across both pickers because iOS uses the *same widget*
-/// ([CupertinoDatePicker]) for date and time selection — only the `mode`
+/// ([CupertinoDatePicker]) for date and time selection, only the `mode`
 /// passed to the picker differs (date vs time). Pass this via
 /// `cupertinoDatePickerData` on either show function.
 ///
 /// Fields that are mode-irrelevant (e.g. [showDayOfWeek] on the time picker)
-/// are still accepted but have no visible effect for that mode — Cupertino's
+/// are still accepted but have no visible effect for that mode. Cupertino's
 /// picker silently ignores them.
 final class CupertinoDatePickerData {
   /// Image filter applied to the modal background (typically a Gaussian blur

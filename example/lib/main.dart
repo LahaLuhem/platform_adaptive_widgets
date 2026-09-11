@@ -41,7 +41,7 @@ class _ExampleAppState extends State<_ExampleApp> {
     secondListenable: _platformNotifier,
     builder: (_, themeMode, platformOverride, _) {
       // Flip the whole app's rendered platform above PlatformApp. Debug/JIT
-      // only — const-folded (ignored) in AOT release builds.
+      // only, const-folded (ignored) in AOT release builds.
       debugDefaultTargetPlatformOverride = platformOverride;
 
       return PlatformApp(
@@ -63,7 +63,7 @@ class _ExampleAppState extends State<_ExampleApp> {
     },
   );
 
-  /// Cupertino has no `themeMode`; map it to an explicit brightness, or `null`
+  /// Cupertino has no `themeMode`. Map it to an explicit brightness, or `null`
   /// to follow the device (the `system` case).
   Brightness? _cupertinoBrightnessFor(ThemeMode themeMode) => switch (themeMode) {
     ThemeMode.system => null,

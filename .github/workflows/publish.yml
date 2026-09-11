@@ -8,7 +8,7 @@ on:
 # Inlined instead of using dart-lang/setup-dart/.github/workflows/publish.yml@v1.
 # That reusable workflow runs plain `dart pub get` (no `--no-example` flag) at
 # the package root, which transitively resolves `example/` against CI's Flutter
-# SDK — different from the `.fvmrc`-pinned local Flutter, so the resolution
+# SDK, different from the `.fvmrc`-pinned local Flutter, so the resolution
 # rewrites `example/pubspec.lock`. The next step (`pub publish --dry-run`) then
 # trips its "checked-in files are modified" guard. `--no-example` keeps the
 # committed lockfile byte-identical. This is a Flutter package, so
@@ -27,7 +27,7 @@ jobs:
         with:
           channel: stable
           cache: true
-      - name: Install dependencies (root only — skip example/)
+      - name: Install dependencies (root only, skip example/)
         run: flutter --no-version-check pub get --no-example
       - name: Publish dry-run
         run: flutter --no-version-check pub publish --dry-run

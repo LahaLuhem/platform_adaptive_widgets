@@ -23,7 +23,7 @@ class DialogsDemoView extends StatelessWidget {
       children: [
         DemoCard(
           title: 'Dialog',
-          description: 'A centered modal — showDialog on Android, showCupertinoDialog on iOS.',
+          description: 'A centered modal, showDialog on Android, showCupertinoDialog on iOS.',
           child: PlatformButton(
             onPressed: viewModel.onShowDialogPressed,
             child: const Text('Show dialog'),
@@ -31,7 +31,7 @@ class DialogsDemoView extends StatelessWidget {
         ),
         DemoCard(
           title: 'Raw dialog',
-          description: 'No surface wrap — you supply the surface (or none).',
+          description: 'No surface wrap, you supply the surface (or none).',
           child: PropertyEditor(
             preview: PlatformButton(
               onPressed: viewModel.onShowRawDialogPressed,
@@ -91,7 +91,7 @@ class DialogsDemoView extends StatelessWidget {
         ),
         DemoCard(
           title: 'Raw bottom sheet',
-          description: 'No surface wrap — content floats on iOS; Android keeps its native sheet.',
+          description: 'No surface wrap, content floats on iOS; Android keeps its native sheet.',
           child: PlatformButton(
             onPressed: viewModel.onShowRawBottomSheetPressed,
             child: const Text('Show raw bottom sheet'),

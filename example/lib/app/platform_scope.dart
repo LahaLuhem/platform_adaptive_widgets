@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 /// it into `debugDefaultTargetPlatformOverride` and rebuilds `PlatformApp` when
 /// it ticks, and publishes it through this scope via the app's `builder`. The
 /// About tab reads it with [PlatformScope.of] and writes a new value to flip
-/// which platform the whole app renders as — handy for previewing the other
+/// which platform the whole app renders as, handy for previewing the other
 /// platform without its hardware.
 class PlatformScope extends InheritedNotifier<ValueNotifier<TargetPlatform?>> {
   /// Creates a [PlatformScope] publishing [notifier] to [child]'s subtree.

@@ -4,8 +4,8 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
 /// Triggers for the dialog / sheet / picker showcase. The alert dialog and raw
-/// dialog are configure-then-trigger playgrounds — knobs set their args (held as
-/// flat fields, mutated via `notifyListeners()`; see `CODESTYLE.md`'s reactivity
+/// dialog are configure-then-trigger playgrounds, knobs set their args (held as
+/// flat fields, mutated via `notifyListeners()`. See `CODESTYLE.md`'s reactivity
 /// note on playground view-models), and the button fires the dialog. The date /
 /// time buttons display the last-picked value.
 final class DialogsDemoViewModel extends ViewModel {
@@ -74,7 +74,7 @@ final class DialogsDemoViewModel extends ViewModel {
     context: context,
     // Raw: no Dialog / CupertinoPopupSurface wrap.
     barrierDismissible: _shouldDismissRawDialogOnBarrierTap,
-    builder: (_) => const Center(child: Text('A raw dialog — the package adds no card here.')),
+    builder: (_) => const Center(child: Text('A raw dialog, the package adds no card here.')),
   );
 
   Future<void> onShowAlertDialogPressed() => showPlatformAlertDialog(
@@ -101,7 +101,7 @@ final class DialogsDemoViewModel extends ViewModel {
   );
 
   Future<void> onShowToastAndAcknowledgePressed() async {
-    await showPlatformToast(context: context, message: 'Transient toast — auto-dismisses');
+    await showPlatformToast(context: context, message: 'Transient toast, auto-dismisses');
     if (!context.mounted) return;
 
     await showPlatformAcknowledge(
@@ -117,7 +117,7 @@ final class DialogsDemoViewModel extends ViewModel {
       child: Padding(
         padding: .all(24),
         child: Text(
-          'A modal bottom sheet — a Material sheet on Android, an action-sheet-style '
+          'A modal bottom sheet, a Material sheet on Android, an action-sheet-style '
           'popup on iOS.',
         ),
       ),
@@ -126,12 +126,12 @@ final class DialogsDemoViewModel extends ViewModel {
 
   Future<void> onShowRawBottomSheetPressed() => showPlatformRawModalBottomSheet(
     context: context,
-    // Raw: no CupertinoPopupSurface wrap — the content floats on iOS (Android
+    // Raw: no CupertinoPopupSurface wrap, the content floats on iOS (Android
     // keeps showModalBottomSheet's own native Material sheet).
     builder: (_) => const SafeArea(
       child: Padding(
         padding: .all(24),
-        child: Text('A raw bottom sheet — the package adds no surface on iOS.'),
+        child: Text('A raw bottom sheet, the package adds no surface on iOS.'),
       ),
     ),
   );

@@ -34,11 +34,11 @@ const _kCupertinoPickerModalItemExtent = 32.0;
 ///   [CupertinoMenuAnchor] + [CupertinoMenuItem] (each entry can carry an
 ///   icon).
 /// - More items → a modal-popup [CupertinoPicker] wheel (text-only, no
-///   per-item icons — see [MenuPickerItem]'s class-level note).
+///   per-item icons. See [MenuPickerItem]'s class-level note).
 ///
 /// Per-platform tuning is opt-in via [materialMenuPickerData] /
 /// [cupertinoMenuPickerData]. Both data classes provide an `.iconButton`
-/// named ctor for the compact icon-button rendering — the widget's
+/// named ctor for the compact icon-button rendering, the widget's
 /// [leadingIcon] becomes the button's content; `labelText` is ignored.
 ///
 /// Example:
@@ -52,7 +52,7 @@ const _kCupertinoPickerModalItemExtent = 32.0;
 /// )
 /// ```
 class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
-  /// Items shown in the picker. Must be non-empty; for the Cupertino
+  /// Items shown in the picker. Must be non-empty. For the Cupertino
   /// small-item variant, three is the practical minimum (HIG guideline).
   final List<T> items;
 
@@ -83,7 +83,7 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
   /// Cupertino-only configuration. Optional.
   final CupertinoMenuPickerData? cupertinoMenuPickerData;
 
-  /// Default transformer — calls `toString()` on the choice.
+  /// Default transformer, calls `toString()` on the choice.
   static MenuPickerItem _defaultMenuPickerItemTransformer<T extends Object>(T choice) =>
       MenuPickerItem(label: choice.toString());
 
@@ -102,7 +102,7 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
     super.key,
   }) : menuPickerItemTransformer = menuPickerItemTransformer ?? _defaultMenuPickerItemTransformer;
 
-  /// Transformed-item list for this build — computed once and shared across
+  /// Transformed-item list for this build, computed once and shared across
   /// the Material and Cupertino branches (avoids the v1 issue of invoking the
   /// transformer 3+ times per build).
   List<MenuPickerItem> _transformedItems() => [
@@ -174,7 +174,7 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
 }
 
 /// Cupertino rendering for ≤[kCupertinoMenuPickerSmallItemCountThreshold]
-/// items — a [CupertinoMenuAnchor] whose menu shows one [CupertinoMenuItem]
+/// items, a [CupertinoMenuAnchor] whose menu shows one [CupertinoMenuItem]
 /// per choice (each can carry an icon).
 final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget {
   final List<T> items;
@@ -234,7 +234,7 @@ final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget 
 }
 
 /// Cupertino rendering for >[kCupertinoMenuPickerSmallItemCountThreshold]
-/// items — a tappable field that opens a modal-popup [CupertinoPicker] wheel.
+/// items, a tappable field that opens a modal-popup [CupertinoPicker] wheel.
 /// Per-item icons aren't supported in this mode (HIG / [CupertinoPicker]
 /// constraint).
 final class _LargeItemCupertinoPicker<T extends Object> extends StatelessWidget {
@@ -302,7 +302,7 @@ final class _LargeItemCupertinoPicker<T extends Object> extends StatelessWidget 
   }
 }
 
-/// The clickable field rendered in the Cupertino branch — either a
+/// The clickable field rendered in the Cupertino branch, either a
 /// [CupertinoButton] (icon-button variant) or a [CupertinoListTile] (standard
 /// variant) showing the current selection.
 final class _CupertinoPickerField<T extends Object> extends StatelessWidget {

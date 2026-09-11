@@ -1,7 +1,7 @@
 // Per-platform records for showPlatformModalBottomSheet (no shared private
-// base — Material's showModalBottomSheet and Cupertino's showCupertinoModalPopup
+// base. Material's showModalBottomSheet and Cupertino's showCupertinoModalPopup
 // have only a small set of overlapping show-function args that live as flat
-// parameters; everything else is platform-only).
+// parameters. Everything else is platform-only).
 // ignore_for_file: prefer-match-file-name
 
 /// @docImport 'package:cupertino_ui/cupertino_ui.dart';
@@ -50,7 +50,7 @@ const kDefaultCupertinoModalPopupSemanticsDismissible = false;
 /// Material-only configuration for `showPlatformModalBottomSheet`.
 ///
 /// Pass this via `showPlatformModalBottomSheet`'s `materialModalBottomSheetData`
-/// parameter. The fields declared here have no Cupertino equivalent —
+/// parameter. The fields declared here have no Cupertino equivalent,
 /// `showCupertinoModalPopup` is a much simpler popup surface, with its own
 /// platform-only fields living on [CupertinoModalPopupData].
 ///
@@ -58,7 +58,7 @@ const kDefaultCupertinoModalPopupSemanticsDismissible = false;
 /// concepts: [isDismissible] (tap-outside-or-swipe-down to dismiss) and
 /// [enableDrag] (allow dragging the sheet to resize/dismiss). Cupertino's
 /// popup has just [CupertinoModalPopupData.barrierDismissible] (tap-outside
-/// to dismiss). The package does not unify these — set on each per-platform
+/// to dismiss). The package does not unify these. Set on each per-platform
 /// record explicitly.
 final class MaterialModalBottomSheetData {
   /// Background colour of the sheet surface.
@@ -134,9 +134,9 @@ final class MaterialModalBottomSheetData {
 ///
 /// Pass this via `showPlatformModalBottomSheet`'s `cupertinoModalPopupData`
 /// parameter. The fields declared here have no Material equivalent (or are
-/// genuinely Cupertino-specific — [filter] applies the iOS-typical blur).
+/// genuinely Cupertino-specific, [filter] applies the iOS-typical blur).
 final class CupertinoModalPopupData {
-  /// Image filter applied to the popup background — typically a Gaussian blur
+  /// Image filter applied to the popup background, typically a Gaussian blur
   /// to mimic iOS's frosted-glass effect.
   final ImageFilter? filter;
 

@@ -5,14 +5,14 @@
 // checks over `lib/src/` keep the two edges the Dart compiler does NOT check
 // honest:
 //
-//   1. Field-set parity — every field on the `_PlatformXxxData` base also
+//   1. Field-set parity, every field on the `_PlatformXxxData` base also
 //      exists as a flat field on the matching `PlatformXxx` widget. Dart
 //      compiler-checks `super.x` forwarding (base -> records) and ctor-params
-//      -> field-decls, but nothing forces the widget to mirror the base; a base
+//      -> field-decls, but nothing forces the widget to mirror the base. A base
 //      field added without a flat widget twin compiles, yet can never be set at
 //      the call site.
 //
-//   2. Build-method wiring — every base field is merged via
+//   2. Build-method wiring, every base field is merged via
 //      `materialXxxData?.field ?? field` in `buildMaterial` AND
 //      `cupertinoXxxData?.field ?? field` in `buildCupertino`. A forgotten
 //      fallback (or one pointing at the wrong flat field) compiles, type-checks,
@@ -20,7 +20,7 @@
 //      edge and the one the compiler is blindest to.
 //
 // Bases listed in `_basesWithoutFlatMirror` exist only to DRY a single field
-// across the two records and have no flat widget twin by design — see that
+// across the two records and have no flat widget twin by design. See that
 // set's comment.
 
 // This guard declares several private visitor / record classes in one file.
@@ -40,7 +40,7 @@ import 'package:test/test.dart';
 
 /// Private `_PlatformXxxData` bases that intentionally have NO flat mirror on
 /// their widget. Their base exists only to share a single field declaration
-/// (`backgroundColor`) across the two per-platform records; the widget reads it
+/// (`backgroundColor`) across the two per-platform records. The widget reads it
 /// straight off the record, so there is no widget-flat field to keep in parity.
 /// See APPENDIX.md#field-classification (scaffold / app-bar carve-out).
 const _basesWithoutFlatMirror = {'_PlatformAppBarData', '_PlatformScaffoldData'};
@@ -71,7 +71,7 @@ void main() {
         because:
             'The parity guard discovered fewer `_PlatformXxxData` bases than the '
             'known canonical set. If the analyzer AST API or the lib/src/models '
-            'layout changed, base discovery may be silently broken — which would '
+            'layout changed, base discovery may be silently broken, which would '
             'let the parity checks below pass vacuously. Fix discovery in '
             '`_collectBases`, or update `_knownCanonicalWidgets` if a widget was '
             'intentionally removed.',
@@ -103,7 +103,7 @@ void main() {
         because:
             'A `_PlatformXxxData` base field has no matching flat field on its '
             '`PlatformXxx` widget. Shared-visual fields must live in BOTH places '
-            '(widget default + per-platform override) — the compiler checks '
+            '(widget default + per-platform override), the compiler checks '
             'neither direction. Add the flat field to the widget, or, if the '
             'field is genuinely platform-only, move it onto the Material / '
             'Cupertino record instead of the shared base. See '

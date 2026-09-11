@@ -10,33 +10,33 @@ heading text, so renames don't break callers.
 - [MVVM architecture](#mvvm-architecture)
 - [Reactivity (ValueNotifier-first)](#reactivity-valuenotifier-first)
 - [Naming](#naming)
-    * [Boolean fields — modal verbs](#boolean-fields-modal-verbs)
-    * [Callback methods — view-event suffix](#callback-methods-view-event-suffix)
+    * [Boolean fields, modal verbs](#boolean-fields-modal-verbs)
+    * [Callback methods, view-event suffix](#callback-methods-view-event-suffix)
 - [ViewModel member ordering](#viewmodel-member-ordering)
 - [Separation of concerns](#separation-of-concerns)
 - [Widget composition](#widget-composition)
     * [Native widget parameters](#native-widget-parameters)
-    * [Spacing — rule of 8](#spacing-rule-of-8)
+    * [Spacing, rule of 8](#spacing-rule-of-8)
 - [Async-action buttons](#async-action-buttons)
-- [Routing — `go_router` integration](#routing-go-router-integration)
+- [Routing, `go_router` integration](#routing-go-router-integration)
 
 <!-- TOC end -->
 
-> **Note on rule vs. current state.** Some conventions below are aspirational — the
+> **Note on rule vs. current state.** Some conventions below are aspirational, the
 > demo code under `lib/features/` does not yet follow them in every place. The rules
-> are still the contract; new code should comply, and refactors are welcome.
+> are still the contract. New code should comply, and refactors are welcome.
 
 <a id="mvvm-architecture"></a>
 ## MVVM architecture
 
-The example uses [pmvvm](https://pub.dev/packages/pmvvm) —
+The example uses [pmvvm](https://pub.dev/packages/pmvvm),
 `MVVM.builder(viewModel: …, viewBuilder: …)` binds a `ViewModel` to a
 `StatelessWidget` view. Each feature is a pair:
 `lib/features/<feature>/<feature>_view.dart` +
 `lib/features/<feature>/<feature>_view_model.dart`.
 
 Features without observable state (e.g. `settings/`) may ship a view-only file. When
-in doubt, add the VM — the cost is small and the symmetry pays off when the feature
+in doubt, add the VM, the cost is small and the symmetry pays off when the feature
 grows.
 
 ---
@@ -49,7 +49,7 @@ All observable VM state is exposed as `ValueListenable<T>`, backed by a private
 
 - **No `notifyListeners()`.** Every state-mutating method writes
   `_xNotifier.value = …` on the relevant notifier. `MVVM.builder`'s outer
-  `viewBuilder` becomes a static frame; pmvvm earns its keep as DI + lifecycle, not as
+  `viewBuilder` becomes a static frame. Pmvvm earns its keep as DI + lifecycle, not as
   a rebuild trigger.
 - **Naming: `_xNotifier` for the private field, `xListenable` for the public getter.**
 
@@ -60,7 +60,7 @@ All observable VM state is exposed as `ValueListenable<T>`, backed by a private
   ```
 
   The suffixes make it unambiguous which side reads vs. writes, and prevent the
-  bare-noun field from colliding with the getter name. The view binds the getter; it
+  bare-noun field from colliding with the getter name. The view binds the getter. It
   cannot mutate.
 - **Omit the obvious `<T>` on `ValueNotifier(…)`.** When the initial value pins the
   type, drop the explicit type argument (`ValueNotifier(false)`,
@@ -77,20 +77,20 @@ All observable VM state is exposed as `ValueListenable<T>`, backed by a private
   [`selection_demo_view_model.dart`](./lib/features/catalog/views/selection_demo/selection_demo_view_model.dart)
   models the pattern.
 - **VM-internal state stays plain.** Fields no widget observes (controllers held by
-  the VM, subscriptions, thresholds) are plain Dart fields — no notifier ceremony.
+  the VM, subscriptions, thresholds) are plain Dart fields, no notifier ceremony.
   Widget controllers the view binds to *are* notifier-shaped already
-  (`TextEditingController`, `ScrollController`, `ExpansibleController`); they're
+  (`TextEditingController`, `ScrollController`, `ExpansibleController`), they're
   passed straight through. See
   [*Separation of concerns*](#separation-of-concerns) for what belongs on the VM
   vs. the view.
 
-> **Exception — property-editor / playground view-models.** A view-model whose
+> **Exception, property-editor / playground view-models.** A view-model whose
 > job is to drive one rebuildable preview from many independent "knobs" (the
 > catalog playgrounds under `catalog/widgets/property_editor/`) may instead
 > expose its editable props as **flat private fields + a getter**, mutated by
 > `on<Event>` methods that call `notifyListeners()`. `MVVM.builder` wraps the
 > `viewBuilder` in a `Consumer`, so a notify rebuilds that demo's small, scoped
-> subtree — which is what pmvvm is built for; the ValueNotifier-first rule was
+> subtree, which is what pmvvm is built for. The ValueNotifier-first rule was
 > the initial reference point, not a ban. This trades surgical rebuilds for far
 > less ceremony (no `ValueNotifier` / `Listenable.merge` / `ValueListenableBuilder`,
 > no notifier disposal) exactly where a whole-subtree rebuild is free. Keep the
@@ -105,14 +105,14 @@ All observable VM state is exposed as `ValueListenable<T>`, backed by a private
 ## Naming
 
 <a id="boolean-fields-modal-verbs"></a>
-### Boolean fields — modal verbs
+### Boolean fields, modal verbs
 
 For boolean values and their derivatives (notifiers, listenables, getters), prefix
-the identifier with a **modal verb** — `should`, `can`, `may`, `would`, `must` — to
+the identifier with a **modal verb**: `should`, `can`, `may`, `would`, `must`: to
 make the read-site speak plain English. The bare-noun form (`acceptAny`,
 `includeBogusTarget`) reads as a noun and forces the reader to mentally add the verb.
 
-- ★ Default to `should` for user preferences and UI toggle state — declarative,
+- ★ Default to `should` for user preferences and UI toggle state, declarative,
   expresses the intent the user is encoding.
 - Reach for `can` when the bool gates a capability rather than a preference, `may`
   when it gates permission, `would` for hypothetical intent in unrun branches.
@@ -121,21 +121,21 @@ make the read-site speak plain English. The bare-noun form (`acceptAny`,
 |----------------------|---------------------------------------------------------------------------|
 | `acceptAny`          | `shouldAcceptAny`                                                         |
 | `includeBogusTarget` | `shouldIncludeBogusTarget`                                                |
-| `isRunning`          | (removed — view-local; [Async-action buttons](#async-action-buttons))     |
+| `isRunning`          | (removed, view-local; [Async-action buttons](#async-action-buttons))     |
 
 **`is` prefix is allowed for true state-of-being predicates** that are not user
-toggles — `AppArgs.isUsingGoRouter` (the navigation mode the host chose) reads
+toggles, `AppArgs.isUsingGoRouter` (the navigation mode the host chose) reads
 as a fact, not a preference, so `is` stays. The `should` form is for what the user
 *wants*; the `is` form is for what the world *is*.
 
-This applies to the field, its notifier, and its listenable getter together — they
+This applies to the field, its notifier, and its listenable getter together, they
 refer to the same concept, so the modal-prefix stays consistent across the trio.
 Callback method names (e.g. `onAcceptAnyToggled`) describe the **event** and
 continue to match the UI label, so they keep the bare-noun form even when they mutate
-a `shouldXxx` field — the event and the state describe different things.
+a `shouldXxx` field, the event and the state describe different things.
 
 <a id="callback-methods-view-event-suffix"></a>
-### Callback methods — view-event suffix
+### Callback methods, view-event suffix
 
 VM methods invoked from the view are named **from the view's perspective**: what the
 user did, not what the VM does in response. Pattern: `on<Event>` with a suffix
@@ -151,12 +151,12 @@ matching the widget kind that produced the event.
 | `TextField.onChanged` | `Changed`  | `onSearchChanged`                    |
 | `TextField.onSubmitted` | `Submitted` | `onTextSubmitted`                  |
 
-Avoid VM-leaking names like `setX`, `runX`, `commitX`, `forceX` — those describe what
+Avoid VM-leaking names like `setX`, `runX`, `commitX`, `forceX`: those describe what
 the VM does internally. The VM is still free to do whatever it likes inside the
-method body (mutate notifiers, rebuild a connection, show a snackbar); only the
+method body (mutate notifiers, rebuild a connection, show a snackbar), only the
 method *name* must reflect the view event.
 
-**Named-arg style** — keep the parameter name on the call site when the type is
+**Named-arg style**: keep the parameter name on the call site when the type is
 bare-`bool` (and elsewhere where `avoid_positional_boolean_parameters` would fire on
 the VM signature):
 
@@ -185,20 +185,20 @@ Apply this ordering to every `ViewModel` subclass. It lets a reader scan depende
 → construction → state → lifecycle entry → reads → writes → teardown without
 backtracking.
 
-1. **External-ref fields** — DI / services held by reference (the example has none
+1. **External-ref fields**: DI / services held by reference (the example has none
    today, but `AppArgs`-style args land here if introduced).
-2. **Constructors** — unnamed first, then factories. Constructors assign to the
+2. **Constructors**: unnamed first, then factories. Constructors assign to the
    external-ref fields.
-3. **State fields** — notifiers, controllers, `late` connections, subscriptions.
+3. **State fields**: notifiers, controllers, `late` connections, subscriptions.
    Static class-level constants live with this group at the top.
-4. **`init()`** — pmvvm lifecycle entry; sets up streams / triggers. Optional.
-5. **Getters** — the `xListenable` getters and any other pure reads.
-6. **Getter-like methods** — pure / near-pure reads expressed as methods (rare).
-7. **Logic methods** — `on<Event>` handlers and complex orchestration. Simplest
-   first if you can rank them; otherwise grouped by feature.
-8. **Private helpers** — anything `_` -prefixed, including static helpers at the end
+4. **`init()`**: pmvvm lifecycle entry. Sets up streams / triggers. Optional.
+5. **Getters**: the `xListenable` getters and any other pure reads.
+6. **Getter-like methods**: pure / near-pure reads expressed as methods (rare).
+7. **Logic methods**: `on<Event>` handlers and complex orchestration. Simplest
+   first if you can rank them. Otherwise grouped by feature.
+8. **Private helpers**: anything `_` -prefixed, including static helpers at the end
    of this group.
-9. **`dispose()`** — teardown, last; dispose every notifier and every controller the
+9. **`dispose()`**: teardown, last. Dispose every notifier and every controller the
    VM owns, then call `super.dispose()`.
 
 ---
@@ -207,19 +207,19 @@ backtracking.
 ## Separation of concerns
 
 - **The view is agnostic to the VM's inner workings.** It reads VM state, invokes VM
-  callbacks, renders widgets. It does NOT know *how* the VM implements an action —
+  callbacks, renders widgets. It does NOT know *how* the VM implements an action,
   only *what event* it is reporting.
 - **Widget-state holding domain input belongs on the VM.** `TextEditingController`,
-  `ScrollController`, `FocusNode`, `ExpansibleController` — these carry user input
+  `ScrollController`, `FocusNode`, `ExpansibleController`: these carry user input
   the VM operates on (validates a URL, scrolls to an offset on save, expands /
-  collapses on demand). The VM owns construction and disposal; the view binds
+  collapses on demand). The VM owns construction and disposal. The view binds
   directly (`controller: viewModel.searchController`). They ARE the state, not
   implementation that should be hidden.
 - **Widget-state describing pure UI presentation belongs on the view.** "This button
-  is mid-async, show a spinner" is purely visual — no VM logic and no other widget
-  consume it. Use `tap_debouncer` (via a shared async-button widget; see
+  is mid-async, show a spinner" is purely visual, no VM logic and no other widget
+  consume it. Use `tap_debouncer` (via a shared async-button widget, see
   [*Async-action buttons*](#async-action-buttons)) so the view tracks its own
-  in-flight gate. Do NOT add an `isRunning` field on the VM for this — that's a
+  in-flight gate. Do NOT add an `isRunning` field on the VM for this, that's a
   regression of the past pattern.
 
 ---
@@ -234,8 +234,8 @@ When a widget exposes a native parameter for what you need, use it. Do not reinv
 it with extra children, padding wrappers, or string tricks.
 
 - **`Row(spacing:)` / `Column(spacing:)` over interleaved `Gap` / `SizedBox`.** Use
-  whenever the gap should be uniform between every adjacent child pair — including
-  cases where some pairs are currently flush; lean toward making the rhythm
+  whenever the gap should be uniform between every adjacent child pair, including
+  cases where some pairs are currently flush. Lean toward making the rhythm
   consistent.
 - **`spacing:` over trailing whitespace in label strings.** A `Text('Label:  ')`
   with magic trailing spaces is a hack;
@@ -266,13 +266,13 @@ Column(
 ```
 
 <a id="spacing-rule-of-8"></a>
-### Spacing — rule of 8
+### Spacing, rule of 8
 
 All spacing values (`Gap`, `spacing:`, `Padding`, `EdgeInsets`, margins) follow an
 8-pixel grid. This keeps the UI visually consistent and stops ad-hoc values from
 drifting in.
 
-- **Default ladder: `8 → 16 → 24 → 32 …`** — multiples of 8 for any spacing ≥ 8.
+- **Default ladder: `8 → 16 → 24 → 32 …`**: multiples of 8 for any spacing ≥ 8.
 - **Sub-8 escape hatch: `2`, `4`, `8`.** Used only when an 8-grid value would be too
   generous (tight typography, internal row padding, list-card vertical margin).
   Other sub-8 values (3, 5, 6, 7) are effectively never right.
@@ -281,7 +281,7 @@ drifting in.
   required (a third-party widget pinning a specific dimension, alignment to an
   external mockup that itself is on a non-8 grid). When you keep a 12, drop a
   one-line `//` comment explaining why.
-- **Card content `Padding`: `.all(16)`** by default — matches Material 3's standard
+- **Card content `Padding`: `.all(16)`** by default, matches Material 3's standard
   content padding.
 - **Card vertical margin in a list: `4`** is fine (8 total between cards).
   Horizontal margin: `16` for screen-edge inset.
@@ -312,7 +312,7 @@ AsyncIconActionButton(
 )
 ```
 
-**Status today:** the wrapper widget does not yet exist in this project — async
+**Status today:** the wrapper widget does not yet exist in this project, async
 callbacks like those in
 [`buttons_demo_view_model.dart`](./lib/features/catalog/views/buttons_demo/buttons_demo_view_model.dart)
 return raw `Future<void>` and the view binds them directly to
@@ -325,15 +325,15 @@ Add a flexible (builder-based) variant only when a real non-icon caller appears.
 ---
 
 <a id="routing-go-router-integration"></a>
-## Routing — `go_router` integration
+## Routing, `go_router` integration
 
 The router-flavoured entry point lives in
 [`lib/main_go_router.dart`](./lib/main_go_router.dart) and binds to
 `PlatformApp.router`. Router configuration lives under `lib/app/router/`:
 
-- [`app_router.dart`](./lib/app/router/app_router.dart) — the `GoRouter` instance,
+- [`app_router.dart`](./lib/app/router/app_router.dart), the `GoRouter` instance,
   branches, and `StatefulShellRoute.indexedStack` wiring.
-- [`app_route.dart`](./lib/app/router/app_route.dart) — the enum / typed route
+- [`app_route.dart`](./lib/app/router/app_route.dart), the enum / typed route
   registry. **Always reference routes by `AppRoute.<name>.name`**, never by string
   literal. Adding a new screen is a two-line change (add the enum case + add the
   route to `app_router.dart`), and the enum is the grep-handle for "where do we go
@@ -341,7 +341,7 @@ The router-flavoured entry point lives in
 - **`StatefulNavigationShell` owns tab selection** when running through go_router.
   `PlatformTabScaffold` binds to `navigationShell.currentIndex` and routes the tap
   through `navigationShell.goBranch`. Do not call `setState` on a parent or push a
-  new route to switch tabs in this mode — go_router's branch-switching is the
+  new route to switch tabs in this mode, go_router's branch-switching is the
   contract.
 - **Features that demonstrate router-only flows** (sub-routes, deep links) gate
   their UI on `AppArgs.isUsingGoRouter`. The router-less `main.dart` passes

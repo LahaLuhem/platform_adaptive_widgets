@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show MaterialPageRoute;
 
-/// Pushes [builder]'s screen with the platform's native page transition —
+/// Pushes [builder]'s screen with the platform's native page transition,
 /// Cupertino's swipe-back route on iOS, the Material route on Android.
 ///
 /// The library adapts *widgets*, not routes, so the Navigator entry point

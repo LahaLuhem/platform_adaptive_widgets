@@ -30,7 +30,7 @@ class PlatformSlider extends PlatformWidgetKeyedBase {
   /// Callback fired when the user changes the slider value.
   ///
   /// Required and non-null. To disable the slider, set [isEnabled] to
-  /// `false` — do **not** pass `null` here. See
+  /// `false`: do **not** pass `null` here. See
   /// `APPENDIX.md#callback-nullability`.
   final ValueChanged<double> onChanged;
 
@@ -64,7 +64,7 @@ class PlatformSlider extends PlatformWidgetKeyedBase {
 
   /// Colour of the active portion of the slider track.
   ///
-  /// Shared visual — overridable per platform via [materialSliderData] /
+  /// Shared visual, overridable per platform via [materialSliderData] /
   /// [cupertinoSliderData].
   final Color? activeColor;
 

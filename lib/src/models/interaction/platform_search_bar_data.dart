@@ -1,4 +1,4 @@
-// Per-platform records for PlatformSearchBar (no shared private base — every
+// Per-platform records for PlatformSearchBar (no shared private base, every
 // visual-overlap field has a divergent type per platform, e.g. Material's
 // WidgetStateProperty<…> vs Cupertino's direct value).
 // ignore_for_file: prefer-match-file-name
@@ -16,7 +16,7 @@ import 'package:flutter/widgets.dart';
 /// Default leading widget for the Cupertino branch of [PlatformSearchBar].
 ///
 /// `CupertinoSearchTextField.prefixIcon` is non-nullable with an inline
-/// default of `Icon(CupertinoIcons.search)`; no public
+/// default of `Icon(CupertinoIcons.search)`. No public
 /// `CupertinoSearchTextField.defaultPrefixIcon` constant exists upstream, so
 /// the package owns this constant. The Cupertino branch substitutes it when
 /// the widget's flat `PlatformSearchBar.leading` is `null`.
@@ -31,7 +31,7 @@ const kDefaultSearchBarReadOnly = false;
 
 /// Default value for [CupertinoSearchBarData.padding]. Matches upstream
 /// `CupertinoSearchTextField.padding` (`EdgeInsetsDirectional.fromSTEB(5.5,
-/// 8, 5.5, 8)` — simplified here since start == end makes the directional
+/// 8, 5.5, 8)`: simplified here since start == end makes the directional
 /// form redundant).
 const kDefaultCupertinoSearchBarPadding = EdgeInsets.symmetric(horizontal: 5.5, vertical: 8);
 
@@ -44,7 +44,7 @@ const kDefaultCupertinoSearchBarItemSize = 20.0;
 
 /// Default value for [CupertinoSearchBarData.prefixInsets]. Matches upstream
 /// `CupertinoSearchTextField.prefixInsets` (`EdgeInsetsDirectional.fromSTEB(6,
-/// 8, 0, 8)` — simplified to `.only` since end is zero).
+/// 8, 0, 8)`: simplified to `.only` since end is zero).
 const kDefaultCupertinoSearchBarPrefixInsets = EdgeInsetsDirectional.only(
   start: 6,
   top: 8,
@@ -53,7 +53,7 @@ const kDefaultCupertinoSearchBarPrefixInsets = EdgeInsetsDirectional.only(
 
 /// Default value for [CupertinoSearchBarData.suffixInsets]. Matches upstream
 /// `CupertinoSearchTextField.suffixInsets` (`EdgeInsetsDirectional.fromSTEB(0,
-/// 8, 5, 8)` — simplified to `.only` since start is zero).
+/// 8, 5, 8)`: simplified to `.only` since start is zero).
 const kDefaultCupertinoSearchBarSuffixInsets = EdgeInsetsDirectional.only(
   top: 8,
   end: 5,
@@ -88,7 +88,7 @@ const kDefaultCupertinoSearchBarCursorOpacityAnimates = true;
 /// Pass this via `PlatformSearchBar.materialSearchBarData` when tuning
 /// Material rendering. The fields declared here have no Cupertino equivalent
 /// (or have a Cupertino equivalent whose underlying type diverges enough
-/// that sharing would lose fidelity — e.g. Material's
+/// that sharing would lose fidelity, e.g. Material's
 /// `WidgetStateProperty<Color?>?` vs Cupertino's `Color?` for
 /// `backgroundColor`). See `APPENDIX.md#cross-platform-field-mappings`.
 final class MaterialSearchBarData {
@@ -106,7 +106,7 @@ final class MaterialSearchBarData {
 
   /// Background colour as a [WidgetStateProperty]. Material's state-driven
   /// shape can't collapse to Cupertino's plain `Color?` without losing
-  /// hover/pressed/focused tints; lives Material-only.
+  /// hover/pressed/focused tints. Lives Material-only.
   final WidgetStateProperty<Color?>? backgroundColor;
 
   /// Shadow colour as a [WidgetStateProperty].
@@ -182,7 +182,7 @@ final class MaterialSearchBarData {
 /// Pass this via `PlatformSearchBar.cupertinoSearchBarData` when tuning
 /// Cupertino rendering. The fields declared here have no Material equivalent
 /// (or have a Material equivalent whose underlying type diverges enough that
-/// sharing would lose fidelity — see Material's `WidgetStateProperty<…>`
+/// sharing would lose fidelity. See Material's `WidgetStateProperty<…>`
 /// variants of `backgroundColor`, `padding`, `textStyle`, `hintStyle`). See
 /// `APPENDIX.md#cross-platform-field-mappings`.
 final class CupertinoSearchBarData {

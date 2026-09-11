@@ -1,6 +1,6 @@
-// Per-platform records for PlatformMenuPicker (no shared private base — the
+// Per-platform records for PlatformMenuPicker (no shared private base, the
 // inherited `leadingIcon`/`labelText` fields in the v1 wrapper were dead code
-// because the widget reads its own flat copies; they're gone).
+// because the widget reads its own flat copies. They're gone).
 // ignore_for_file: prefer-match-file-name
 
 /// @docImport 'package:cupertino_ui/cupertino_ui.dart';
@@ -16,7 +16,7 @@ import 'package:material_ui/material_ui.dart' show InputBorder, InputDecorationT
 const kDefaultMaterialMenuPickerShowTrailingIcon = true;
 
 /// Default value for [CupertinoMenuPickerData.useIconButtonVariant]. The
-/// default full-width field variant is the common case; the icon-button
+/// default full-width field variant is the common case. The icon-button
 /// variant is opt-in via the `.iconButton` named ctor.
 const kDefaultCupertinoMenuPickerUseIconButtonVariant = false;
 
@@ -47,7 +47,7 @@ final class MaterialMenuPickerData {
     this.inputDecorationThemeData,
   });
 
-  /// Creates Material-only configuration for the **icon-button variant** —
+  /// Creates Material-only configuration for the **icon-button variant**,
   /// renders the picker as a compact 24x24 icon button instead of the standard
   /// full-width field. Sets [showTrailingIcon] to `false` and uses a tight
   /// input-decoration theme matching the icon-button visual.
@@ -82,7 +82,7 @@ final class CupertinoMenuPickerData {
   const new({this.backgroundColor})
     : useIconButtonVariant = kDefaultCupertinoMenuPickerUseIconButtonVariant;
 
-  /// Creates Cupertino-only configuration for the **icon-button variant** —
+  /// Creates Cupertino-only configuration for the **icon-button variant**,
   /// renders the picker as a compact `CupertinoButton` with the icon as its
   /// child, instead of the standard `CupertinoListTile` field.
   ///
@@ -97,7 +97,7 @@ final class CupertinoMenuPickerData {
 /// in the picker's `items` list.
 ///
 /// **Note.** The [iconData] is ignored on iOS when the item count exceeds the
-/// small-item threshold (5) — Apple's HIG specifies a wheel picker for
+/// small-item threshold (5). Apple's HIG specifies a wheel picker for
 /// medium-to-long lists, and [CupertinoPicker] doesn't render per-item icons.
 /// See <https://developer.apple.com/design/human-interface-guidelines/pickers#Best-practices>.
 final class MenuPickerItem {

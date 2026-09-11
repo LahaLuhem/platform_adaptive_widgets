@@ -33,7 +33,7 @@ const kDefaultCupertinoToastForegroundColor = CupertinoDynamicColor.withBrightne
 /// notification banner inset.
 const kDefaultCupertinoToastPadding = EdgeInsets.symmetric(horizontal: 16, vertical: 12);
 
-/// Default value for [CupertinoToastData.outerMargin] — the gap between the
+/// Default value for [CupertinoToastData.outerMargin], the gap between the
 /// toast and the screen edges (so it doesn't hug the sides on phones).
 const kDefaultCupertinoToastOuterMargin = EdgeInsets.symmetric(horizontal: 16, vertical: 8);
 
@@ -41,7 +41,7 @@ const kDefaultCupertinoToastOuterMargin = EdgeInsets.symmetric(horizontal: 16, v
 /// notification banner corner radius.
 const kDefaultCupertinoToastBorderRadius = BorderRadius.all(Radius.circular(14));
 
-/// Default value for [CupertinoToastData.maxWidth] — caps the toast width on
+/// Default value for [CupertinoToastData.maxWidth], caps the toast width on
 /// tablets/desktops so it doesn't span the full screen.
 const kDefaultCupertinoToastMaxWidth = 480.0;
 
@@ -72,7 +72,7 @@ final class MaterialToastData {
   /// Hit-test behaviour for the snack bar.
   final HitTestBehavior? hitTestBehavior;
 
-  /// SnackBar behaviour — fixed (anchored to bottom) vs floating.
+  /// SnackBar behaviour, fixed (anchored to bottom) vs floating.
   final SnackBarBehavior? snackBarBehavior;
 
   /// Optional inline action button on the snack bar (e.g. "Undo").
@@ -128,12 +128,12 @@ final class MaterialToastData {
 /// custom HUD-style overlay banner (iOS has no native toast primitive).
 final class CupertinoToastData {
   /// Background colour of the toast. Defaults to
-  /// [kDefaultCupertinoToastBackgroundColor] — a translucent
+  /// [kDefaultCupertinoToastBackgroundColor], a translucent
   /// theme-adaptive HUD.
   final Color backgroundColor;
 
   /// Foreground (text) colour. Defaults to
-  /// [kDefaultCupertinoToastForegroundColor] — inverted of the background.
+  /// [kDefaultCupertinoToastForegroundColor], inverted of the background.
   final Color foregroundColor;
 
   /// Padding around the message text. Defaults to
@@ -173,6 +173,6 @@ final class CupertinoToastData {
   });
 }
 
-/// Re-exported for callers awaiting the Material toast's close future — saves
+/// Re-exported for callers awaiting the Material toast's close future, saves
 /// them an explicit `package:material_ui/material_ui.dart` import for the enum.
 typedef PlatformToastClosedReason = SnackBarClosedReason;

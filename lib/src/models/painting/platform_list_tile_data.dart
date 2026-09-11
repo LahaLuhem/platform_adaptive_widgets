@@ -1,4 +1,4 @@
-// Multiple data classes in one file; private base + per-platform records.
+// Multiple data classes in one file. Private base + per-platform records.
 // ignore_for_file: prefer-match-file-name
 
 /// @docImport 'package:cupertino_ui/cupertino_ui.dart';
@@ -29,7 +29,7 @@ const kDefaultListTileTitleAlignment = ListTileTitleAlignment.threeLine;
 /// `package:flutter/src/cupertino/list_tile.dart`. The Cupertino branch
 /// substitutes this when the widget's flat `leadingWidth` is `null` and the
 /// tile is the base ([CupertinoListTileData.isNotched] = `false`) variant.
-/// Re-validate on Flutter SDK bumps — the upstream constant is private.
+/// Re-validate on Flutter SDK bumps, the upstream constant is private.
 const kDefaultCupertinoListTileLeadingSize = 28.0;
 
 /// Default leading-to-title gap for the **base** Cupertino variant of
@@ -37,7 +37,7 @@ const kDefaultCupertinoListTileLeadingSize = 28.0;
 ///
 /// Mirrors Flutter's private `_kLeadingToTitle` in
 /// `package:flutter/src/cupertino/list_tile.dart`. Re-validate on Flutter
-/// SDK bumps — the upstream constant is private.
+/// SDK bumps, the upstream constant is private.
 const kDefaultCupertinoListTileLeadingToTitle = 16.0;
 
 /// Default leading-size for the **notched** Cupertino variant of
@@ -46,16 +46,16 @@ const kDefaultCupertinoListTileLeadingToTitle = 16.0;
 /// Mirrors Flutter's private `_kNotchedLeadingSize`. The Cupertino branch
 /// substitutes this when the widget's flat `leadingWidth` is `null` and
 /// [CupertinoListTileData.isNotched] is `true`. Notched defaults differ
-/// from the base variant — the previous package version used the base
+/// from the base variant, the previous package version used the base
 /// defaults for both, silently breaking notched's idiomatic visuals.
-/// Re-validate on Flutter SDK bumps — the upstream constant is private.
+/// Re-validate on Flutter SDK bumps, the upstream constant is private.
 const kDefaultCupertinoNotchedListTileLeadingSize = 30.0;
 
 /// Default leading-to-title gap for the **notched** Cupertino variant of
 /// [PlatformListTile] ([CupertinoListTile.notched]).
 ///
 /// Mirrors Flutter's private `_kNotchedLeadingToTitle`. Re-validate on
-/// Flutter SDK bumps — the upstream constant is private.
+/// Flutter SDK bumps, the upstream constant is private.
 const kDefaultCupertinoNotchedListTileLeadingToTitle = 12.0;
 
 /// Default value for [CupertinoListTileData.isNotched].
@@ -66,18 +66,18 @@ const kDefaultCupertinoListTileIsNotched = false;
 ///
 /// Inherited by [MaterialListTileData] and [CupertinoListTileData] so each
 /// per-platform record carries the shared-visual surface via `super.x`
-/// constructor forwarding. Library-private — never exported from the
+/// constructor forwarding. Library-private, never exported from the
 /// package.
 ///
 /// See `APPENDIX.md#field-classification` for the rule placing shared-visual
 /// fields on a private base. The fields in this base have name divergences
-/// across platforms — see `APPENDIX.md#cross-platform-field-mappings`.
+/// across platforms. See `APPENDIX.md#cross-platform-field-mappings`.
 abstract class _PlatformListTileData {
   /// Width of the leading widget slot.
   ///
   /// Maps to [ListTile.minLeadingWidth] on Android and to
   /// [CupertinoListTile.leadingSize] on iOS (Cupertino is non-null with
-  /// per-variant defaults — see [kDefaultCupertinoListTileLeadingSize] /
+  /// per-variant defaults. See [kDefaultCupertinoListTileLeadingSize] /
   /// [kDefaultCupertinoNotchedListTileLeadingSize]). See
   /// `APPENDIX.md#cross-platform-field-mappings`.
   final double? leadingWidth;
@@ -103,7 +103,7 @@ abstract class _PlatformListTileData {
 ///
 /// Pass this via `PlatformListTile.materialListTileData` when tuning
 /// Material rendering. Inherited shared-visual fields override the widget's
-/// flat defaults on the Material branch; the fields declared here have no
+/// flat defaults on the Material branch. The fields declared here have no
 /// Cupertino equivalent.
 ///
 /// Houses both Material-only visual fields (`mouseCursor`, `focusColor`,
@@ -112,7 +112,7 @@ abstract class _PlatformListTileData {
 /// functional fields (`statesController`, `focusNode`, `autofocus`,
 /// `onFocusChange`, `onLongPress`, `enableFeedback`, `selected`,
 /// `internalAddSemanticForOnTap`, `isThreeLine`) per the platform-only
-/// bucket in `APPENDIX.md#field-classification` — Cupertino's list tile
+/// bucket in `APPENDIX.md#field-classification`: Cupertino's list tile
 /// exposes none of these.
 final class MaterialListTileData extends _PlatformListTileData {
   /// Controller for managing the tile's interaction states. Functional,
@@ -123,11 +123,11 @@ final class MaterialListTileData extends _PlatformListTileData {
   final MouseCursor? mouseCursor;
 
   /// Whether the tile should autofocus when mounted. Functional,
-  /// Material-only — Cupertino's list tile does not participate in focus
+  /// Material-only. Cupertino's list tile does not participate in focus
   /// traversal. Defaults to [kDefaultListTileAutofocus].
   final bool autofocus;
 
-  /// Whether to play haptic feedback on tap. Functional, Material-only —
+  /// Whether to play haptic feedback on tap. Functional, Material-only,
   /// Cupertino's list tile has no equivalent toggle.
   final bool? enableFeedback;
 
@@ -139,10 +139,10 @@ final class MaterialListTileData extends _PlatformListTileData {
 
   /// Horizontal gap between the leading content and the title.
   ///
-  /// Material-only — see [CupertinoListTileData.leadingToTitle] for
+  /// Material-only. See [CupertinoListTileData.leadingToTitle] for
   /// Cupertino's similar-but-not-identical concept. They differ in
   /// geometry (leading-content-edge vs leading-edge) and default value
-  /// per-variant; kept separate per the "don't unify superficially similar
+  /// per-variant. Kept separate per the "don't unify superficially similar
   /// fields" rule in `APPENDIX.md#field-classification`.
   final double? horizontalTitleGap;
 
@@ -158,7 +158,7 @@ final class MaterialListTileData extends _PlatformListTileData {
   final bool internalAddSemanticForOnTap;
 
   /// Whether to display the tile in the three-line layout. Functional,
-  /// Material-only — Cupertino's list tile auto-sizes.
+  /// Material-only. Cupertino's list tile auto-sizes.
   final bool? isThreeLine;
 
   /// Text style for leading and trailing widgets.
@@ -175,10 +175,10 @@ final class MaterialListTileData extends _PlatformListTileData {
   final ValueChanged<bool>? onFocusChange;
 
   /// Callback fired when the tile is long-pressed. Functional,
-  /// Material-only — Cupertino's list tile has no long-press handling.
+  /// Material-only. Cupertino's list tile has no long-press handling.
   final VoidCallback? onLongPress;
 
-  /// Whether the tile is currently selected. Material-only — drives the
+  /// Whether the tile is currently selected. Material-only, drives the
   /// selected-state visuals. Defaults to [kDefaultListTileSelected].
   final bool selected;
 
@@ -252,19 +252,19 @@ final class MaterialListTileData extends _PlatformListTileData {
 ///
 /// Pass this via `PlatformListTile.cupertinoListTileData` when tuning
 /// Cupertino rendering. Inherited shared-visual fields override the widget's
-/// flat defaults on the Cupertino branch; the fields declared here have no
+/// flat defaults on the Cupertino branch. The fields declared here have no
 /// Material equivalent.
 ///
 /// [isNotched] selects between [CupertinoListTile] (base) and
-/// [CupertinoListTile.notched] — a Cupertino-specific constructor variant
+/// [CupertinoListTile.notched], a Cupertino-specific constructor variant
 /// with different default geometry. Kept on this record (rather than as a
 /// `.notched()` constructor on the widget) so the variant choice is
-/// scoped to the Cupertino branch — Material renders identically either way
+/// scoped to the Cupertino branch. Material renders identically either way
 /// and exposing a `.notched()` named constructor on the widget would
 /// falsely suggest cross-platform meaning.
 final class CupertinoListTileData extends _PlatformListTileData {
   /// Additional information widget displayed in the trailing area
-  /// (above/beside `trailing`). Cupertino-only — Material's `ListTile` has
+  /// (above/beside `trailing`). Cupertino-only. Material's `ListTile` has
   /// no equivalent slot.
   final Widget? additionalInfo;
 
@@ -274,17 +274,17 @@ final class CupertinoListTileData extends _PlatformListTileData {
 
   /// Horizontal gap between the leading edge and the title.
   ///
-  /// Cupertino-only — see [MaterialListTileData.horizontalTitleGap] for
+  /// Cupertino-only. See [MaterialListTileData.horizontalTitleGap] for
   /// Material's similar-but-not-identical concept. Defaults to
   /// [kDefaultCupertinoListTileLeadingToTitle] for the base variant or
   /// [kDefaultCupertinoNotchedListTileLeadingToTitle] for the notched
-  /// variant — picked at build time based on [isNotched]. Pass `null` to
+  /// variant, picked at build time based on [isNotched]. Pass `null` to
   /// accept the appropriate default.
   final double? leadingToTitle;
 
   /// Whether to render the notched Cupertino variant
   /// ([CupertinoListTile.notched]) instead of the base
-  /// ([CupertinoListTile]). Cupertino-only — Material renders identically
+  /// ([CupertinoListTile]). Cupertino-only. Material renders identically
   /// either way. Defaults to [kDefaultCupertinoListTileIsNotched].
   final bool isNotched;
 

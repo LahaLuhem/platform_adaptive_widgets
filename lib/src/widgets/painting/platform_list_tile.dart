@@ -33,7 +33,7 @@ import '/src/models/platform_widget_base.dart';
 class PlatformListTile extends PlatformWidgetKeyedBase {
   /// Primary title of the tile.
   ///
-  /// Required non-null — Cupertino's [CupertinoListTile.title] is a
+  /// Required non-null. Cupertino's [CupertinoListTile.title] is a
   /// required `Widget`. See `APPENDIX.md#cross-platform-field-mappings`.
   final Widget title;
 
@@ -49,7 +49,7 @@ class PlatformListTile extends PlatformWidgetKeyedBase {
   /// Optional callback fired when the tile is tapped.
   ///
   /// Nullable per the optional-callback rule in
-  /// `APPENDIX.md#callback-nullability` — list tiles can be display-only.
+  /// `APPENDIX.md#callback-nullability`: list tiles can be display-only.
   /// The broader `FutureOr<void>` return type matches Cupertino's
   /// [CupertinoListTile.onTap]; it is assignable to Material's stricter
   /// `void Function()?` (return values discard).
@@ -60,7 +60,7 @@ class PlatformListTile extends PlatformWidgetKeyedBase {
   /// Whether the tile is enabled and responds to taps.
   ///
   /// When `false`:
-  /// - Material: the tile receives `enabled: false` AND `onTap: null` —
+  /// - Material: the tile receives `enabled: false` AND `onTap: null`,
   ///   the disabled-state visuals (greyed text + icon) apply.
   /// - Cupertino: the tile receives `onTap: null`, suppressing the
   ///   short-tap flicker and long-press activation feedback that
@@ -74,8 +74,8 @@ class PlatformListTile extends PlatformWidgetKeyedBase {
   ///
   /// Maps to [ListTile.minLeadingWidth] on Android and to
   /// [CupertinoListTile.leadingSize] on iOS (Cupertino is non-null with
-  /// per-variant defaults — see [kDefaultCupertinoListTileLeadingSize] /
-  /// [kDefaultCupertinoNotchedListTileLeadingSize]). Shared visual —
+  /// per-variant defaults. See [kDefaultCupertinoListTileLeadingSize] /
+  /// [kDefaultCupertinoNotchedListTileLeadingSize]). Shared visual,
   /// overridable per platform via [materialListTileData] /
   /// [cupertinoListTileData]. See
   /// `APPENDIX.md#cross-platform-field-mappings`.

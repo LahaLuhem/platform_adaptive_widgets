@@ -1,4 +1,4 @@
-// Multiple data classes in one file; private base + per-platform records.
+// Multiple data classes in one file. Private base + per-platform records.
 // ignore_for_file: prefer-match-file-name
 
 /// @docImport 'package:cupertino_ui/cupertino_ui.dart';
@@ -17,7 +17,7 @@ const kDefaultSliderAutofocus = false;
 /// Default thumb colour for the Cupertino branch of [PlatformSlider].
 ///
 /// `CupertinoSlider.thumbColor` is non-nullable with an inline default of
-/// `CupertinoColors.white`; no public `CupertinoSlider.defaultThumbColor`
+/// `CupertinoColors.white`. No public `CupertinoSlider.defaultThumbColor`
 /// constant exists upstream, so the package owns this constant. The
 /// Cupertino branch substitutes it when the widget's flat
 /// `PlatformSlider.thumbColor` (typed `Color?`) is `null`.
@@ -27,7 +27,7 @@ const kDefaultCupertinoSliderThumbColor = CupertinoColors.white;
 ///
 /// Inherited by [MaterialSliderData] and [CupertinoSliderData] so each
 /// per-platform record carries the shared-visual surface via `super.x`
-/// constructor forwarding. Library-private — never exported from the
+/// constructor forwarding. Library-private, never exported from the
 /// package.
 ///
 /// See `APPENDIX.md#field-classification` for the rule placing shared-visual
@@ -52,18 +52,18 @@ abstract class _PlatformSliderData {
 ///
 /// Pass this via `PlatformSlider.materialSliderData` when tuning Material
 /// rendering. Inherited shared-visual fields override the widget's flat
-/// defaults on the Material branch; the fields declared here have no
+/// defaults on the Material branch. The fields declared here have no
 /// Cupertino equivalent.
 ///
 /// Houses both Material-only visual fields (`inactiveColor`,
 /// `secondaryActiveColor`, `overlayColor`, `mouseCursor`, `label`, `padding`)
 /// and Material-only functional fields (`secondaryTrackValue`,
 /// `semanticFormatterCallback`, `focusNode`, `autofocus`, `allowedInteraction`)
-/// per the platform-only bucket in `APPENDIX.md#field-classification` —
+/// per the platform-only bucket in `APPENDIX.md#field-classification`,
 /// Cupertino's slider exposes none of these.
 final class MaterialSliderData extends _PlatformSliderData {
   /// Value for the secondary track (e.g. buffered progress). Functional, but
-  /// Material-only — Cupertino's slider has no secondary track.
+  /// Material-only. Cupertino's slider has no secondary track.
   final double? secondaryTrackValue;
 
   /// Label displayed above the thumb while dragging.
@@ -83,11 +83,11 @@ final class MaterialSliderData extends _PlatformSliderData {
 
   /// Callback for formatting the slider's semantic value.
   ///
-  /// Functional, but Material-only — Cupertino's slider auto-generates
+  /// Functional, but Material-only. Cupertino's slider auto-generates
   /// accessibility semantics.
   final SemanticFormatterCallback? semanticFormatterCallback;
 
-  /// Focus node for the slider. Functional, Material-only — Cupertino's
+  /// Focus node for the slider. Functional, Material-only. Cupertino's
   /// slider does not participate in focus traversal.
   final FocusNode? focusNode;
 
@@ -103,7 +103,7 @@ final class MaterialSliderData extends _PlatformSliderData {
   final EdgeInsetsGeometry? padding;
 
   /// Controls when the value-indicator label (above the thumb) is visible.
-  /// Material-only — Cupertino's slider has no value-indicator. When `null`,
+  /// Material-only. Cupertino's slider has no value-indicator. When `null`,
   /// Material applies its theme-driven default.
   final ShowValueIndicator? showValueIndicator;
 

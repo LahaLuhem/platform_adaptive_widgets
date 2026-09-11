@@ -20,7 +20,7 @@ import '/src/models/platform_widget_base.dart';
 /// `multiSelectionEnabled` + a `Set<T>` selection; Cupertino's
 /// [CupertinoSlidingSegmentedControl] does not. Exposing multi-select on Material-only
 /// would mean the same widget in the same view behaves differently across platforms
-/// (Android multi, iOS single) — a cross-platform UX inconsistency that contradicts
+/// (Android multi, iOS single), a cross-platform UX inconsistency that contradicts
 /// the package's value proposition. Apps that need multi-select across both platforms
 /// should reach for a different widget shape (chips, checkbox lists,
 /// [PlatformRadioGroupBuilder] with toggle semantics, etc.). The package's
@@ -28,7 +28,7 @@ import '/src/models/platform_widget_base.dart';
 /// underlying `Set<T>` is collapsed to `set.firstOrNull` at the Material-branch
 /// boundary.
 ///
-/// No `isEnabled` flag — neither [SegmentedButton] nor
+/// No `isEnabled` flag, neither [SegmentedButton] nor
 /// [CupertinoSlidingSegmentedControl] ships a built-in disabled state. To disable
 /// interaction, wrap with [IgnorePointer] (or [Opacity] for a faded-out look).
 ///
@@ -46,20 +46,20 @@ class PlatformSegmentButton<T extends Object> extends PlatformWidgetKeyedBase {
   /// order. Must contain at least two entries (Cupertino asserts this at construction).
   final Iterable<T> choices;
 
-  /// Builds the widget for one segment — typically a [Text] or [Icon].
+  /// Builds the widget for one segment, typically a [Text] or [Icon].
   final Widget Function(T choice) segmentBuilder;
 
   /// Currently-selected choice. `null` means no selection.
   ///
   /// On Material, an empty selection requires
-  /// [MaterialSegmentButtonData.emptySelectionAllowed] to be `true` — otherwise
+  /// [MaterialSegmentButtonData.emptySelectionAllowed] to be `true`: otherwise
   /// [SegmentedButton] asserts at runtime.
   final T? selectedChoice;
 
   /// Callback fired when the user taps a segment.
   ///
   /// Required and non-null per the callback-nullability rule
-  /// (`APPENDIX.md#callback-nullability`) — [CupertinoSlidingSegmentedControl]
+  /// (`APPENDIX.md#callback-nullability`), [CupertinoSlidingSegmentedControl]
   /// requires its `onValueChanged` to be non-null at construction.
   ///
   /// The callback may receive `null` if a Material momentary-style tap clears the

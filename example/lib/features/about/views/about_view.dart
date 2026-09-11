@@ -10,14 +10,14 @@ import '/app/theme_scope.dart';
 import '/features/about/widgets/labeled_section.dart';
 import '/features/core/data/models/app_args.dart';
 
-/// The About tab — what the library is, the appearance control (dogfooding
+/// The About tab, what the library is, the appearance control (dogfooding
 /// [PlatformSegmentButton] for the theme mode), and a readout of how this build
 /// is wired (navigation mode + which platform surface is rendering).
 ///
 /// View-only: its only observable state is the app-wide theme mode, which lives
 /// in [ThemeScope], not on a view model.
 class AboutView extends StatelessWidget {
-  /// Host args — used to report the active navigation mode.
+  /// Host args, used to report the active navigation mode.
   final AppArgs args;
 
   const AboutView({required this.args, super.key});
@@ -51,7 +51,7 @@ class AboutView extends StatelessWidget {
                   style: TextStyle(fontSize: 20, fontWeight: .bold),
                 ),
                 const Text(
-                  'One widget tree. Material on Android, Cupertino on iOS — no app-code branching.',
+                  'One widget tree. Material on Android, Cupertino on iOS, no app-code branching.',
                   textAlign: .center,
                 ),
               ],
@@ -80,7 +80,7 @@ class AboutView extends StatelessWidget {
                     valueListenable: platformNotifier,
                     builder: (_, platformOverride, _) => PlatformSegmentButton(
                       choices: const [TargetPlatform.android, TargetPlatform.iOS],
-                      // null = follow the device; show the effective platform.
+                      // null = follow the device. Show the effective platform.
                       selectedChoice: platformOverride ?? defaultTargetPlatform,
                       segmentBuilder: (platform) => Text(platform.name),
                       onSelectionChanged: (platform) => platformNotifier.value = platform,

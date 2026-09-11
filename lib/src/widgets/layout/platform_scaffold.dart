@@ -9,7 +9,7 @@ import '/src/models/layout/platform_app_bar_data.dart';
 import '/src/models/layout/platform_scaffold_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive scaffold — Material `Scaffold` on Android,
+/// A platform-adaptive scaffold. Material `Scaffold` on Android,
 /// `CupertinoPageScaffold` on iOS.
 ///
 /// Shared content (`body`, `resizeToAvoidBottomInset`, `widgetKey`) is
@@ -68,7 +68,7 @@ class PlatformScaffold extends PlatformWidgetKeyedBase {
 
   @override
   Widget buildMaterial(BuildContext context) {
-    // Shared values resolved once — both bottomSheetScrimBuilder branches below pass the identical set.
+    // Shared values resolved once, both bottomSheetScrimBuilder branches below pass the identical set.
     final appBar = materialScaffoldData?.appBar ?? appBarData?.materialBuilder(context);
     final resolvedBackgroundColor = materialScaffoldData?.backgroundColor ?? backgroundColor;
     final persistentFooterAlignment =
@@ -94,7 +94,7 @@ class PlatformScaffold extends PlatformWidgetKeyedBase {
 
     // bottomSheetScrimBuilder is a non-null Scaffold param whose default is a
     // private SDK implementation we can't reference. When the caller doesn't
-    // supply one, omit the param so Scaffold applies its own default — rather
+    // supply one, omit the param so Scaffold applies its own default, rather
     // than substitute a hand-rolled replica that could drift from the SDK.
     return materialScaffoldData?.bottomSheetScrimBuilder == null
         ? Scaffold(

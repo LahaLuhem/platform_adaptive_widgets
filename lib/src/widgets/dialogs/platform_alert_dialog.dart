@@ -2,13 +2,13 @@
 
 part of 'platform_dialog.dart';
 
-/// Shows a centered alert dialog — Material [AlertDialog] on Android,
+/// Shows a centered alert dialog. Material [AlertDialog] on Android,
 /// [CupertinoAlertDialog] on iOS. The standard structure: optional [title]
 /// over optional [content], with a row of [actions] underneath (typically
 /// [PlatformDialogAction] instances).
 ///
 /// Content slots ([title], [content], [actions], [widgetKey]) are flat on the
-/// show function — set them once and they're used on both platforms. Material-
+/// show function. Set them once and they're used on both platforms. Material-
 /// or Cupertino-specific styling lives on [materialAlertDialogData] /
 /// [cupertinoAlertDialogData].
 ///
@@ -16,7 +16,7 @@ part of 'platform_dialog.dart';
 /// (`anchorPoint`, `barrierColor`, `barrierDismissible`, `barrierLabel`,
 /// `routeSettings`, `useRootNavigator`, `requestFocus`). The Material-side
 /// `Dialog`-wrapping params (alignment / shape / clipBehavior / etc.) don't
-/// apply — [AlertDialog] is its own [Dialog] under the hood, so no
+/// apply, [AlertDialog] is its own [Dialog] under the hood, so no
 /// [MaterialDialogData] knob is needed.
 ///
 /// Example:
@@ -56,7 +56,7 @@ Future<T?> showPlatformAlertDialog<T>({
 }) => switch (defaultTargetPlatform) {
   .android => _showMaterialDialog(
     context: context,
-    // AlertDialog is itself a Dialog under the hood — no wrapping needed.
+    // AlertDialog is itself a Dialog under the hood, no wrapping needed.
     builder: (_) => AlertDialog(
       key: widgetKey,
       title: title,
@@ -137,10 +137,10 @@ Future<T?> showPlatformAlertDialog<T>({
 /// so the flag is Cupertino-only at render time.
 ///
 /// **Callback signature.** [onPressed] receives the *dialog's* [BuildContext]
-/// (not the surrounding screen's) — call `Navigator.maybeOf(context)?.pop(value)`
+/// (not the surrounding screen's). Call `Navigator.maybeOf(context)?.pop(value)`
 /// from inside the callback to dismiss the dialog with a return value.
 ///
-/// Renamed from `PlatformAlertDialogActionButton` in v2 — shorter, mirrors
+/// Renamed from `PlatformAlertDialogActionButton` in v2, shorter, mirrors
 /// iOS's `CupertinoDialogAction` naming.
 class PlatformDialogAction extends PlatformWidgetKeyedBuilderBase {
   /// Callback fired when the action is pressed. Receives the dialog's context.

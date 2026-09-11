@@ -5,7 +5,7 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 ///
 /// Gives every catalog section a consistent, labelled surface so it reads as a
 /// self-explanatory gallery rather than a wall of bare controls. An outlined
-/// frame — a border, no fill — keeps it fully cross-platform and avoids hiding a
+/// frame, a border, no fill, keeps it fully cross-platform and avoids hiding a
 /// Material child's background and ink behind a coloured box.
 class DemoCard extends StatelessWidget {
   /// The widget's name.

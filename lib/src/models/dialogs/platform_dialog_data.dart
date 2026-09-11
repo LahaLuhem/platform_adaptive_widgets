@@ -1,4 +1,4 @@
-// Two data classes in one file — both Material-only dialog config, split by
+// Two data classes in one file, both Material-only dialog config, split by
 // dialog shape (centered vs fullscreen). Cupertino has no `…DialogData`
 // counterpart: `showCupertinoDialog` has no params beyond the shared
 // show-function flat args, so there's no platform-only Cupertino surface.
@@ -37,12 +37,12 @@ const kDefaultMaterialDialogSemanticsRole = SemanticsRole.dialog;
 ///
 /// Pass this via `showPlatformDialog`'s `materialDialogData` parameter when
 /// tuning the Material branch. The fields declared here have no Cupertino
-/// equivalent — `showCupertinoDialog` shares only the function-level args
+/// equivalent, `showCupertinoDialog` shares only the function-level args
 /// (`anchorPoint`, `barrierColor`, `barrierDismissible`, …) which live as
 /// flat parameters on the show function.
 ///
 /// **For fullscreen dialogs**, use `showPlatformFullscreenDialog` with
-/// [MaterialFullscreenDialogData] — that surface only exposes the
+/// [MaterialFullscreenDialogData], that surface only exposes the
 /// `Dialog.fullscreen()` params (background, animation, semantics), without
 /// the centered-Dialog-only knobs ([alignment], [shape], [clipBehavior],
 /// [constraints], [elevation], [insetPadding], [shadowColor],
@@ -128,7 +128,7 @@ final class MaterialDialogData {
 /// [MaterialDialogData.shape], [MaterialDialogData.clipBehavior],
 /// [MaterialDialogData.constraints], [MaterialDialogData.elevation],
 /// [MaterialDialogData.insetPadding], [MaterialDialogData.shadowColor],
-/// [MaterialDialogData.surfaceTintColor]) — those have no effect on
+/// [MaterialDialogData.surfaceTintColor]). Those have no effect on
 /// `Dialog.fullscreen()` and were silently dropped in the v1 single-flag
 /// design.
 final class MaterialFullscreenDialogData {

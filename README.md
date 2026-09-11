@@ -6,12 +6,12 @@
 [![GitHub issues](https://img.shields.io/github/issues/LahaLuhem/platform_adaptive_widgets.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/issues) [![GitHub closed issues](https://img.shields.io/github/issues-closed/LahaLuhem/platform_adaptive_widgets.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/issues?q=is%3Aissue+is%3Aclosed)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/LahaLuhem/platform_adaptive_widgets.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/pulls) [![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/LahaLuhem/platform_adaptive_widgets.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/pulls?q=is%3Apr+is%3Aclosed)
 
-One set of widgets that feels native on both phones — **Material** on Android, **Cupertino** on
-iOS — without a single `Platform.isIOS` check in your own code.
+One set of widgets that feels native on both phones, **Material** on Android, **Cupertino** on
+iOS, without a single `Platform.isIOS` check in your own code.
 
 You write `PlatformButton` once. Android users get a real Material button, iOS users get a real
 `CupertinoButton`, and neither group feels like they wandered into the other platform's app. When a
-platform genuinely needs special treatment, there's a typed knob for it — used only when you reach
+platform genuinely needs special treatment, there's a typed knob for it, used only when you reach
 for one.
 
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
@@ -60,7 +60,7 @@ Two things it goes out of its way to avoid:
   Anything platform-specific goes in optional `MaterialXxxData` / `CupertinoXxxData` records you can
   happily ignore until you actually want to tweak one side.
 - **Dead weight.** Release builds leave behind the platform you're not on: no Cupertino code tags
-  along on Android, no Material code on iOS. And that isn't wishful thinking — CI
+  along on Android, no Material code on iOS. And that isn't wishful thinking. CI
   [checks it on every PR](#compile-time-platform-pruning-verified).
 
 ```dart
@@ -80,28 +80,21 @@ PlatformButton(onPressed: _save, child: const Text('Save'));
 
 ## How it compares
 
-These packages all fill the same gap — Flutter ships Material *and* Cupertino but won't choose
-between them for you. They fall into two camps: **pure-Dart dispatch** (render Flutter's own
-Material/Cupertino widgets per platform) and **native bridging** (embed real platform UI through
-platform views + channels). This package is firmly pure-Dart.
+Flutter ships Material *and* Cupertino but won't pick between them for you, and the packages
+that fill that gap fall into two camps. **Pure-Dart dispatch** renders Flutter's own
+Material/Cupertino widgets per platform. **Native bridging** embeds real platform UI through
+platform views and method channels. This package is firmly pure-Dart.
 
-> Landscape as of June 2026 — pub.dev moves fast; check each package for its current state.
+The trade is architectural rather than better-or-worse. Bridging gets you pixel-authentic
+native chrome that Flutter's Cupertino widgets can't reproduce, and pays for it with
+platform-view compositing, channel round-trips, an OS-version gate, native setup, and a
+dependency that can't be tree-shaken. This package takes the other side: Flutter's Cupertino
+rather than real UIKit, no channels, no native setup, and the unused platform pruned out of
+your binary.
 
-| Package | How it adapts | Status & notes |
-|---|---|---|
-| **`platform_adaptive_widgets`** (this) | Pure-Dart `PlatformXxx` dispatch on `defaultTargetPlatform`; `*Data` per-platform overrides; release builds AOT-prune the unused platform (CI-verified) | Active · Android + iOS |
-| [`flutter_platform_widgets`](https://pub.dev/packages/flutter_platform_widgets) | Same pure-Dart `PlatformXxx` idea — the spiritual predecessor | **Discontinued** — retired when Flutter split Material/Cupertino into separate packages, the very split this package is built on |
-| [`adaptive_platform_ui`](https://pub.dev/packages/adaptive_platform_ui) | Renders **real UIKit** via `UiKitView` + platform channels for iOS 26 *Liquid Glass*; pure-Dart Cupertino as the ≤ iOS 18 fallback | Pre-1.0 · needs native iOS setup · some native components flagged experimental |
-| Flutter SDK `.adaptive` constructors | First-party: `Switch.adaptive`, `Slider.adaptive`, `showAdaptiveDialog`, … | Stable, but only a handful of widgets — no app / scaffold / navigation level |
-
-The real fork is **`adaptive_platform_ui`**, and it's a difference in philosophy rather than
-better-or-worse. It reaches through to native UIKit, so you get pixel-authentic iOS 26 Liquid Glass
-that Flutter's Cupertino widgets can't reproduce today — at the cost of platform-view compositing,
-method-channel round-trips, an iOS-version gate, required native setup, and a native dependency that
-can't be tree-shaken. `platform_adaptive_widgets` takes the opposite trade: it renders Flutter's
-Cupertino (not real UIKit) and stays pure Dart — no channels, no native setup, and the unused
-platform pruned out of your binary. Want the latest *native* iOS chrome? Go native. Want a light,
-no-bridge, prunable adaptive layer across a broad widget set? That's this.
+Want the latest *native* iOS chrome? Go native. Want a light, no-bridge, prunable adaptive
+layer across a broad widget set? That's this. For who's active in either camp right now,
+search [pub.dev](https://pub.dev/packages?q=platform+adaptive).
 
 ---
 
@@ -142,7 +135,7 @@ class MyApp extends StatelessWidget {
 Run that on an Android phone, and it's Material from top to bottom. Run the exact same code on an
 iPhone and it's Cupertino. That's the whole trick.
 
-> **Heads up:** this one's for **Android and iOS**. Web and desktop are out of scope on purpose —
+> **Heads up:** this one's for **Android and iOS**. Web and desktop are out of scope on purpose,
 > [`APPENDIX.md`](./APPENDIX.md#android-ios-only) has the reasoning.
 
 ---
@@ -176,7 +169,7 @@ It comes with two entry points, depending on how you like to route:
 ## Widget catalog
 
 Here's everything in the box. Each widget renders the native counterpart listed, and the `*Data`
-column shows what you can pass to tune each side — see
+column shows what you can pass to tune each side. See
 [Customizing per platform](#customizing-per-platform) for how those work.
 
 ### Dialogs
@@ -189,21 +182,21 @@ column shows what you can pass to tune each side — see
 | `showPlatformDialog<T>()`                               | `showDialog` + `Dialog`                  | `showCupertinoDialog` + `CupertinoPopupSurface`                                                                    | `MaterialDialogData`                                      |
 | `showPlatformFullscreenDialog<T>()`                     | `showDialog` + `Dialog.fullscreen`       | `showCupertinoDialog` + `CupertinoPopupSurface` (no native iOS fullscreen-dialog concept)                          | `MaterialFullscreenDialogData`                            |
 | `showPlatformAlertDialog<T>()` + `PlatformDialogAction` | `AlertDialog` + `TextButton`             | `CupertinoAlertDialog` + `CupertinoDialogAction`                                                                   | `MaterialAlertDialogData`, `CupertinoAlertDialogData`     |
-| `showPlatformRawDialog<T>()`                            | `showDialog` (no surface wrap)           | `showCupertinoDialog` (no surface wrap)                                                                            | — (caller owns the surface)                               |
+| `showPlatformRawDialog<T>()`                            | `showDialog` (no surface wrap)           | `showCupertinoDialog` (no surface wrap)                                                                            | N/A (caller owns the surface)                               |
 | `showPlatformModalBottomSheet<T>()`                     | `showModalBottomSheet`                   | `showCupertinoModalPopup` + `CupertinoPopupSurface`                                                                | `MaterialModalBottomSheetData`, `CupertinoModalPopupData` |
 | `showPlatformRawModalBottomSheet<T>()`                  | `showModalBottomSheet` (native Material) | `showCupertinoModalPopup` (no surface wrap)                                                                        | `MaterialModalBottomSheetData`, `CupertinoModalPopupData` |
-| `showPlatformToast()`                                   | `SnackBar` via `ScaffoldMessenger`       | Custom HUD-style banner overlay (built in the package — iOS has no native toast)                                   | `MaterialToastData`, `CupertinoToastData`                 |
+| `showPlatformToast()`                                   | `SnackBar` via `ScaffoldMessenger`       | Custom HUD-style banner overlay (built in the package, iOS has no native toast)                                   | `MaterialToastData`, `CupertinoToastData`                 |
 | `showPlatformAcknowledge()`                             | `AlertDialog` + single OK action         | `CupertinoAlertDialog` + single OK action                                                                          | `MaterialAlertDialogData`, `CupertinoAlertDialogData`     |
 
 ### Interaction
 
 | Widget                         | Material                                                                                                                                                                   | Cupertino                                                                                                                                                      | Data Classes                                                 |
 |--------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
-| `PlatformButton`               | `TextButton`, `ElevatedButton`, `OutlinedButton`, `FilledButton`, `FilledButton.tonal` (via `MaterialButtonVariant`) — `.icon` factories selected by `PlatformButton.icon` | `CupertinoButton`, `CupertinoButton.filled`, `CupertinoButton.tinted` (via `CupertinoButtonVariant`) — `PlatformButton.icon` wraps the icon + label in a `Row` | `MaterialButtonData`, `CupertinoButtonData`                  |
+| `PlatformButton`               | `TextButton`, `ElevatedButton`, `OutlinedButton`, `FilledButton`, `FilledButton.tonal` (via `MaterialButtonVariant`), `.icon` factories selected by `PlatformButton.icon` | `CupertinoButton`, `CupertinoButton.filled`, `CupertinoButton.tinted` (via `CupertinoButtonVariant`), `PlatformButton.icon` wraps the icon + label in a `Row` | `MaterialButtonData`, `CupertinoButtonData`                  |
 | `PlatformCheckbox`             | `Checkbox` (`.tristate` constructor → `tristate: true`)                                                                                                                    | `CupertinoCheckbox`                                                                                                                                            | `MaterialCheckboxData`, `CupertinoCheckboxData`              |
 | `PlatformExpansionTile`        | `ExpansionTile`                                                                                                                                                            | `CupertinoExpansionTile`                                                                                                                                       | `MaterialExpansionTileData`, `CupertinoExpansionTileData`    |
 | `PlatformRadio<T>`             | `Radio`                                                                                                                                                                    | `CupertinoRadio`                                                                                                                                               | `MaterialRadioData`, `CupertinoRadioData`                    |
-| `PlatformRadioGroupBuilder<T>` | `RadioGroup` + `Wrap` (convenience layout)                                                                                                                                 | same                                                                                                                                                           | — (flat params; no data classes)                             |
+| `PlatformRadioGroupBuilder<T>` | `RadioGroup` + `Wrap` (convenience layout)                                                                                                                                 | same                                                                                                                                                           | N/A (flat params, no data classes)                             |
 | `PlatformScrollbar`            | `Scrollbar`                                                                                                                                                                | `CupertinoScrollbar`                                                                                                                                           | `MaterialScrollbarData`, `CupertinoScrollbarData`            |
 | `PlatformSearchBar`            | `SearchBar`                                                                                                                                                                | `CupertinoSearchTextField`                                                                                                                                     | `MaterialSearchBarData`, `CupertinoSearchBarData`            |
 | `PlatformSegmentButton<T>`     | `SegmentedButton` + `ButtonSegment`                                                                                                                                        | `CupertinoSlidingSegmentedControl`                                                                                                                             | `MaterialSegmentButtonData`, `CupertinoSegmentButtonData<T>` |
@@ -228,7 +221,7 @@ column shows what you can pass to tune each side — see
 | `PlatformProgressIndicator` | `CircularProgressIndicator` | `CupertinoActivityIndicator`                      | `MaterialProgressIndicatorData`, `CupertinoProgressIndicatorData` |
 
 <details>
-<summary><b>Utilities</b> — generic platform widgets, theme access, value selectors, extensions, and models</summary>
+<summary><b>Utilities</b>: generic platform widgets, theme access, value selectors, extensions, and models</summary>
 
 #### Generic Platform Widgets
 
@@ -239,7 +232,7 @@ column shows what you can pass to tune each side — see
 
 #### Platform Theme
 
-`PlatformTheme.of(context)` — provides unified access to theme properties across platforms:
+`PlatformTheme.of(context)`: provides unified access to theme properties across platforms:
 
 | Property                  | Material                                        | Cupertino                                            |
 |---------------------------|-------------------------------------------------|------------------------------------------------------|
@@ -254,7 +247,7 @@ column shows what you can pass to tune each side — see
 The value selectors are top-level functions (no `BuildContext`); `platformIcon`
 is a `BuildContext` extension. The selectors evaluate the unused-platform arm
 too, so its code is **not** tree-shaken from release builds (empirically
-≈342 KB for one Cupertino widget) — prefer an inline `switch
+≈342 KB for one Cupertino widget). Prefer an inline `switch
 (defaultTargetPlatform)` when an arm builds a platform-specific widget:
 
 | Helper                                            | Description                                                  |
@@ -285,11 +278,11 @@ too, so its code is **not** tree-shaken from release builds (empirically
 
 ## Customizing per platform
 
-The mental model is short. Whatever both platforms share — your callbacks, values, controllers, plus
-the odd visual that genuinely means the same thing on each side (a tint color, say) — lives right on
+The mental model is short. Whatever both platforms share, your callbacks, values, controllers, plus
+the odd visual that genuinely means the same thing on each side (a tint color, say), lives right on
 the widget, so there's one source of truth and nothing to keep in sync. Whatever is truly
 platform-specific lives in optional typed records: hand a `MaterialXxxData` to the Android branch, a
-`CupertinoXxxData` to the iOS one. For most widgets, most of the time, you'll touch neither — they're
+`CupertinoXxxData` to the iOS one. For most widgets, most of the time, you'll touch neither, they're
 there for the moments you want one platform to behave a little differently.
 
 ```dart
@@ -323,7 +316,7 @@ All platform widgets extend one of these base classes, which use compile-time `d
 
 This is the part people tend not to believe at first: the platform you're not on actually disappears
 from your release build. Under AOT, `defaultTargetPlatform` is a compile-time constant, so on Android
-the Cupertino branches are simply dead code that the compiler tree-shakes away — and the same in
+the Cupertino branches are simply dead code that the compiler tree-shakes away, and the same in
 reverse on iOS.
 
 Since "trust me" is a weak engineering argument, two CI checks keep it honest on every PR:
@@ -379,15 +372,15 @@ each level. The arrangement is opt-in per contributor:
   ```
 
 - **If you don't use one**, skip the step entirely. The canonical files under `.ai/`
-  are committed; nothing in the build, lint, or test pipeline depends on the symlinks
+  are committed. Nothing in the build, lint, or test pipeline depends on the symlinks
   existing.
 - **If you want different agent guidance for your own workflow**, drop a real
   `AGENTS.md` or `CLAUDE.md` at the repo root. A real file beats the symlink
-  convention — your agent reads the root file you put there instead of the canonical
+  convention, your agent reads the root file you put there instead of the canonical
   one under `.ai/`. The committed `.ai/` copies remain the project default for
   everyone else.
 
-The `CODESTYLE.md` files are not symlinked — they sit directly at the repo root and at
+The `CODESTYLE.md` files are not symlinked, they sit directly at the repo root and at
 `example/`, since style serves humans and agents alike and is not AI-specific. See
 [`APPENDIX.md`](./APPENDIX.md#ai-files-symlinked) for the rationale
 behind the `.ai/` arrangement.

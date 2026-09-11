@@ -1,4 +1,4 @@
-// Only `MaterialTimePickerData` lives here — the Cupertino time picker reuses
+// Only `MaterialTimePickerData` lives here, the Cupertino time picker reuses
 // the same `CupertinoDatePicker` widget as the date picker (only the `mode`
 // differs), so the Cupertino-side data class lives next door in
 // `platform_date_picker_data.dart` and is shared.
@@ -22,10 +22,10 @@ const kDefaultMaterialTimePickerEmptyInitialInput = false;
 /// Material-only configuration for `showPlatformTimePicker`.
 ///
 /// Pass this via `showPlatformTimePicker`'s `materialTimePickerData` parameter.
-/// The fields declared here have no Cupertino equivalent — Material's
+/// The fields declared here have no Cupertino equivalent. Material's
 /// `showTimePicker` has a richer dial-or-input UX while iOS uses a spinning
 /// wheel. The Cupertino side reuses `CupertinoDatePickerData` (next door in
-/// `platform_date_picker_data.dart`) — the same picker widget renders both
+/// `platform_date_picker_data.dart`), the same picker widget renders both
 /// date and time on iOS, distinguished only by `mode`.
 final class MaterialTimePickerData {
   /// Semantic label for the modal barrier.

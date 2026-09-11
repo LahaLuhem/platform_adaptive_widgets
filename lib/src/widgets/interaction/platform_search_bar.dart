@@ -16,7 +16,7 @@ import '/src/models/platform_widget_base.dart';
 /// `APPENDIX.md#cross-platform-field-mappings` for the type-divergent
 /// shared visuals that consequently live per-platform rather than as a
 /// shared private base (notably `backgroundColor`, `padding`, `textStyle`,
-/// `hintStyle` — Material exposes them as [WidgetStateProperty] while
+/// `hintStyle`: Material exposes them as [WidgetStateProperty] while
 /// Cupertino exposes them as direct values).
 ///
 /// Example:
@@ -33,10 +33,10 @@ class PlatformSearchBar extends PlatformWidgetKeyedBase {
 
   /// Hint / placeholder text displayed when the search bar is empty. Maps to
   /// [SearchBar.hintText] on Android and [CupertinoSearchTextField.placeholder]
-  /// on iOS — see `APPENDIX.md#cross-platform-field-mappings`.
+  /// on iOS. See `APPENDIX.md#cross-platform-field-mappings`.
   final String? hintText;
 
-  /// Leading widget — typically a search-glyph icon.
+  /// Leading widget, typically a search-glyph icon.
   ///
   /// Maps to [SearchBar.leading] on Android (typed `Widget?`, no default) and
   /// [CupertinoSearchTextField.prefixIcon] on iOS (typed non-null `Widget`,
@@ -48,13 +48,13 @@ class PlatformSearchBar extends PlatformWidgetKeyedBase {
   /// Callback fired when the search text changes.
   ///
   /// Required and non-null per the callback-nullability rule
-  /// (`APPENDIX.md#callback-nullability`) — a search bar without change
+  /// (`APPENDIX.md#callback-nullability`), a search bar without change
   /// observation is just a text field with a glyph. To disable the search
   /// bar, set [isEnabled] to `false`.
   final ValueChanged<String> onChanged;
 
   /// Callback fired when the user submits (presses the keyboard's action
-  /// key). Optional — most controllers consume [onChanged] live and treat
+  /// key). Optional, most controllers consume [onChanged] live and treat
   /// submit as a no-op.
   final ValueChanged<String>? onSubmitted;
 
@@ -69,7 +69,7 @@ class PlatformSearchBar extends PlatformWidgetKeyedBase {
 
   /// Whether the search bar should autofocus on mount. Defaults to `false`.
   /// Maps to [SearchBar.autoFocus] on Android and
-  /// [CupertinoSearchTextField.autofocus] (lower-`f`) on iOS — see
+  /// [CupertinoSearchTextField.autofocus] (lower-`f`) on iOS. See
   /// `APPENDIX.md#cross-platform-field-mappings`.
   final bool autoFocus;
 
@@ -78,7 +78,7 @@ class PlatformSearchBar extends PlatformWidgetKeyedBase {
 
   /// Whether the search bar is enabled and responds to input. Defaults to
   /// `true`. Passed straight to each platform's `enabled` (Material defaults
-  /// to `true`; Cupertino's `enabled` is nullable and `null`-means-enabled —
+  /// to `true`; Cupertino's `enabled` is nullable and `null`-means-enabled,
   /// the package collapses both to the same boolean).
   final bool isEnabled;
 

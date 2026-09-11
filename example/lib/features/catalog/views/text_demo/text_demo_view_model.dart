@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
-/// State for the text & search demos — the field controllers the views bind to,
+/// State for the text & search demos, the field controllers the views bind to,
 /// the live search query, and the text-field playground's editable shared and
 /// per-platform properties. The query and playground props are flat fields
 /// mutated via `notifyListeners()` (see `CODESTYLE.md`'s reactivity note on

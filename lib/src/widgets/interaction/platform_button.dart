@@ -1,7 +1,7 @@
 // The two ctors initialise library-private content-slot fields via the
 // initializer list (`_child = child`, etc.). Using `this._child` initializing
 // formals would expose the underscore on the public parameter signature, which
-// Dart forbids on exported APIs — the param-to-private-field assignment is the
+// Dart forbids on exported APIs, the param-to-private-field assignment is the
 // only way to keep the slot fields private while accepting public params.
 // ignore_for_file: prefer_initializing_formals
 
@@ -15,15 +15,15 @@ import '/src/models/platform_widget_base.dart';
 
 /// A platform-adaptive button that renders one of Material's button variants
 /// on Android ([TextButton], [ElevatedButton], [OutlinedButton],
-/// [FilledButton], or [FilledButton.tonal] — selected by
+/// [FilledButton], or [FilledButton.tonal], selected by
 /// [materialButtonVariant]) and one of Cupertino's button variants on iOS
-/// ([CupertinoButton], [CupertinoButton.filled], or [CupertinoButton.tinted] —
+/// ([CupertinoButton], [CupertinoButton.filled], or [CupertinoButton.tinted],
 /// selected by [cupertinoButtonVariant]).
 ///
 /// Two constructor shapes:
-/// - [PlatformButton.new] — arbitrary `child` slot (text, icon-only, custom
+/// - [PlatformButton.new], arbitrary `child` slot (text, icon-only, custom
 ///   widget).
-/// - [PlatformButton.icon] — icon + label slots; on Material maps to each
+/// - [PlatformButton.icon], icon + label slots. On Material maps to each
 ///   variant's `.icon` factory ([TextButton.icon] … [FilledButton.tonalIcon]),
 ///   on Cupertino the package wraps the icon and label in a [Row] with
 ///   `spacing: kDefaultButtonIconLabelGap` (Cupertino has no native
@@ -55,7 +55,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   ///
   /// Required and non-null per the callback-nullability rule
   /// (`APPENDIX.md#callback-nullability`). To disable the button, set
-  /// [isEnabled] to `false` — both branches receive `null` for their
+  /// [isEnabled] to `false`: both branches receive `null` for their
   /// `onPressed` (the platform-native "disabled" state) while this field
   /// stays non-null.
   final VoidCallback onPressed;
@@ -97,7 +97,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   /// Fields set on this record drive the Cupertino branch only.
   final CupertinoButtonData? cupertinoButtonData;
 
-  // ---- Content slots (set by one of two constructors; library-private) ----
+  // ---- Content slots (set by one of two constructors, library-private) ----
 
   /// Set when constructed via [PlatformButton.new]; `null` when constructed
   /// via [PlatformButton.icon]. Mutually exclusive with [_icon] / [_label] by
@@ -117,7 +117,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   /// when omitted from the `.icon` constructor).
   final IconAlignment? _iconAlignment;
 
-  /// Whether this widget was constructed via [PlatformButton.icon] — i.e. its
+  /// Whether this widget was constructed via [PlatformButton.icon], i.e. its
   /// rendered content is an icon + label pair rather than a free-form child.
   /// `true` iff [_icon] is non-null (the three `_icon`/`_label`/`_iconAlignment`
   /// fields are set / null as a unit by the two constructors).
@@ -226,8 +226,8 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         clipBehavior: clipBehavior,
         statesController: statesController,
         // No bang: ElevatedButton's `required super.child` inherits parent's
-        // `Widget?` — passing the nullable field directly is what upstream
-        // expects. (Same for outlined / filled / tonal below; only TextButton
+        // `Widget?`: passing the nullable field directly is what upstream
+        // expects. (Same for outlined / filled / tonal below, only TextButton
         // narrows to non-null `Widget` via `required Widget super.child`.)
         child: _child,
       ),

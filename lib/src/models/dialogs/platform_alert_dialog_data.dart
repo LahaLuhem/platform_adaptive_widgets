@@ -1,5 +1,5 @@
-// Per-platform records for showPlatformAlertDialog (no shared private base —
-// the title/content/actions content slots are flat on the show function; the
+// Per-platform records for showPlatformAlertDialog (no shared private base,
+// the title/content/actions content slots are flat on the show function. The
 // Material and Cupertino visual surfaces don't overlap in type).
 // ignore_for_file: prefer-match-file-name
 
@@ -27,11 +27,11 @@ const kDefaultCupertinoAlertDialogInsetAnimationCurve = Curves.decelerate;
 /// Pass this via `showPlatformAlertDialog`'s `materialAlertDialogData`
 /// parameter when tuning the Material [AlertDialog] specifically. Common
 /// content (title, content, actions, widgetKey) lives flat on the show
-/// function — set those for the cross-platform case.
+/// function. Set those for the cross-platform case.
 ///
 /// Distinct from `MaterialDialogData` (used by `showPlatformDialog` to style
 /// the wrapping [Dialog] widget). [AlertDialog] is its own Dialog under the
-/// hood, so the package never wraps it — alert-dialog calls bypass the
+/// hood, so the package never wraps it, alert-dialog calls bypass the
 /// `MaterialDialogData` surface entirely.
 final class MaterialAlertDialogData {
   /// Optional icon displayed above the title.
@@ -143,7 +143,7 @@ final class MaterialAlertDialogData {
 /// Common content (title, content, actions, widgetKey) lives flat on the
 /// show function.
 final class CupertinoAlertDialogData {
-  /// Scroll controller for the content. Typically unnecessary — Cupertino
+  /// Scroll controller for the content. Typically unnecessary. Cupertino
   /// auto-wraps oversized content in a scroll view.
   final ScrollController? scrollController;
 

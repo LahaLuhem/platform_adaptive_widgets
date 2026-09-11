@@ -1,4 +1,4 @@
-// Multiple data classes in one file; private base + per-platform records.
+// Multiple data classes in one file. Private base + per-platform records.
 // ignore_for_file: prefer-match-file-name
 
 /// @docImport 'package:cupertino_ui/cupertino_ui.dart';
@@ -13,8 +13,8 @@ import 'package:material_ui/material_ui.dart' show MaterialTapTargetSize;
 ///
 /// Inherited by [MaterialSwitchData] and [CupertinoSwitchData] so each
 /// per-platform record carries the shared-visual surface via `super.x`
-/// constructor forwarding. Library-private — never exported from the
-/// package; callers never reference this type directly.
+/// constructor forwarding. Library-private, never exported from the
+/// package. Callers never reference this type directly.
 ///
 /// See `APPENDIX.md#field-classification` for the rule placing
 /// shared-visual fields on a private base.
@@ -97,11 +97,11 @@ abstract class _PlatformSwitchData {
 ///
 /// Pass this via `PlatformSwitch.materialSwitchData` when tuning Material
 /// rendering. Inherited shared-visual fields override the widget's flat
-/// defaults on the Material branch; the fields declared here have no
+/// defaults on the Material branch. The fields declared here have no
 /// Cupertino equivalent.
 final class MaterialSwitchData extends _PlatformSwitchData {
   /// Thumb color as a [WidgetStateProperty]. Distinct from the inherited
-  /// `activeThumbColor` — this is the full state-property surface that
+  /// `activeThumbColor`: this is the full state-property surface that
   /// Material exposes for the thumb across every widget state.
   final WidgetStateProperty<Color?>? thumbColor;
 
@@ -152,7 +152,7 @@ final class MaterialSwitchData extends _PlatformSwitchData {
 ///
 /// Pass this via `PlatformSwitch.cupertinoSwitchData` when tuning Cupertino
 /// rendering. Inherited shared-visual fields override the widget's flat
-/// defaults on the Cupertino branch; the fields declared here have no
+/// defaults on the Cupertino branch. The fields declared here have no
 /// Material equivalent.
 final class CupertinoSwitchData extends _PlatformSwitchData {
   /// Whether to apply the Cupertino theme to the switch.

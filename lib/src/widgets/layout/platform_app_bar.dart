@@ -8,13 +8,13 @@ import 'package:material_ui/material_ui.dart' show AppBar;
 
 import '/src/models/layout/platform_app_bar_data.dart';
 
-/// A platform-adaptive app bar — Material `AppBar` on Android,
+/// A platform-adaptive app bar. Material `AppBar` on Android,
 /// `CupertinoNavigationBar` on iOS.
 ///
 /// Shared content (`title`, `leading`, `bottom`, `automaticallyImplyLeading`,
 /// `widgetKey`) is functional and lives flat on this widget, single source of
 /// truth. The only per-platform-overridable property is [backgroundColor]
-/// (shared-visual — iOS nav bars are often translucent, Android opaque). Pass
+/// (shared-visual, iOS nav bars are often translucent, Android opaque). Pass
 /// [materialAppBarData] / [cupertinoNavigationBarData] for the rest of each
 /// platform's surface.
 ///
@@ -129,7 +129,7 @@ class PlatformAppBar implements PlatformAppBarData {
 
   @override
   ObstructingPreferredSizeWidget cupertinoBuilder(BuildContext context) {
-    // Shared values resolved once — both the standard/large variants and the
+    // Shared values resolved once, both the standard/large variants and the
     // heroTag null/non-null sub-branches below pass the identical set.
     final resolvedBackgroundColor = cupertinoNavigationBarData?.backgroundColor ?? backgroundColor;
     final automaticallyImplyMiddle =
@@ -151,7 +151,7 @@ class PlatformAppBar implements PlatformAppBarData {
     // The .large variant renders iOS's expanded, left-aligned large title:
     // `title` becomes the `largeTitle` and `automaticallyImplyMiddle` drives the
     // ctor's `automaticallyImplyTitle`. Everything else matches the standard
-    // bar. iOS-only — there is no static large-title AppBar on Material.
+    // bar. iOS-only. There is no static large-title AppBar on Material.
     if (cupertinoNavigationBarData?.large ?? CupertinoNavigationBarData.kLarge) {
       return heroTag == null
           // No heroTag: omit the param so CupertinoNavigationBar applies its own

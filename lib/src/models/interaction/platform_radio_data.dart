@@ -1,4 +1,4 @@
-// Multiple data classes in one file; private base + per-platform records.
+// Multiple data classes in one file. Private base + per-platform records.
 // ignore_for_file: prefer-match-file-name
 
 /// @docImport 'package:cupertino_ui/cupertino_ui.dart';
@@ -16,7 +16,7 @@ const kDefaultCupertinoRadioUseCheckmarkStyle = false;
 ///
 /// Inherited by [MaterialRadioData] and [CupertinoRadioData] so each
 /// per-platform record carries the shared-visual surface via `super.x`
-/// constructor forwarding. Library-private — never exported from the
+/// constructor forwarding. Library-private, never exported from the
 /// package.
 ///
 /// Not generic on the radio's value type: the shared-visual fields are all
@@ -51,10 +51,10 @@ abstract class _PlatformRadioData {
 ///
 /// Pass this via `PlatformRadio.materialRadioData` when tuning Material
 /// rendering. Inherited shared-visual fields override the widget's flat
-/// defaults on the Material branch; the fields declared here have no
+/// defaults on the Material branch. The fields declared here have no
 /// Cupertino equivalent.
 ///
-/// Not generic on the radio's value type — these are all visual / interaction
+/// Not generic on the radio's value type. These are all visual / interaction
 /// fields independent of `T`. Pass directly: `MaterialRadioData(visualDensity:
 /// .compact)`, without spelling the type parameter.
 final class MaterialRadioData extends _PlatformRadioData {
@@ -103,13 +103,13 @@ final class MaterialRadioData extends _PlatformRadioData {
 ///
 /// Pass this via `PlatformRadio.cupertinoRadioData` when tuning Cupertino
 /// rendering. Inherited shared-visual fields override the widget's flat
-/// defaults on the Cupertino branch; the fields declared here have no
+/// defaults on the Cupertino branch. The fields declared here have no
 /// Material equivalent.
 ///
-/// Not generic on the radio's value type — these are all visual fields
+/// Not generic on the radio's value type. These are all visual fields
 /// independent of `T`.
 final class CupertinoRadioData extends _PlatformRadioData {
-  /// Colour applied when the radio is **not** selected. Cupertino-only —
+  /// Colour applied when the radio is **not** selected. Cupertino-only,
   /// Material's `Radio` derives the inactive look from theme.
   final Color? inactiveColor;
 

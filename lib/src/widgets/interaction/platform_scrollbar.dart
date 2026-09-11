@@ -10,7 +10,7 @@ import '/src/models/platform_widget_base.dart';
 ///
 /// Wraps a [child] scroll view and attaches to its [ScrollController]. All
 /// functional inputs and shared visual defaults are flat parameters on the
-/// widget; per-platform tuning is opt-in via [materialScrollbarData] and
+/// widget. Per-platform tuning is opt-in via [materialScrollbarData] and
 /// [cupertinoScrollbarData]. See `APPENDIX.md#field-classification`.
 ///
 /// Example:
@@ -30,7 +30,7 @@ class PlatformScrollbar extends PlatformWidgetKeyedBuilderBase {
 
   /// Whether the scrollbar thumb should be visible.
   ///
-  /// Behavioral toggle — when `true`, the thumb is always visible; when
+  /// Behavioral toggle, when `true`, the thumb is always visible. When
   /// `false` or `null`, the platform's default auto-hide behavior applies.
   final bool? thumbVisibility;
 

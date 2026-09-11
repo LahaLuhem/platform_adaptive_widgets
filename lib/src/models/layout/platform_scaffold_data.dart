@@ -16,13 +16,13 @@ const kDefaultResizeToAvoidBottomInset = true;
 
 /// Shared-visual base for the per-platform scaffold records.
 ///
-/// Holds only [backgroundColor] — the one scaffold property that exists on
+/// Holds only [backgroundColor], the one scaffold property that exists on
 /// both platforms and that a caller may reasonably want to differ per platform.
 /// Everything functional (`body`, `resizeToAvoidBottomInset`, `widgetKey`) is
 /// flat on `PlatformScaffold`, the single source of truth.
 ///
-/// Private — [MaterialScaffoldData] and [CupertinoScaffoldData] inherit
-/// [backgroundColor] via `super`-forwarding; never constructed or exported
+/// Private, [MaterialScaffoldData] and [CupertinoScaffoldData] inherit
+/// [backgroundColor] via `super`-forwarding. Never constructed or exported
 /// directly.
 base class _PlatformScaffoldData {
   /// Background color of the scaffold.
@@ -76,8 +76,8 @@ base class MaterialScaffoldData extends _PlatformScaffoldData {
 
   /// The bottom navigation bar (or bottom app bar) to display.
   ///
-  /// Material-only — `CupertinoPageScaffold` has no equivalent slot. For an
-  /// iOS tab bar, use `PlatformTabScaffold`; this slot is for a plain
+  /// Material-only, `CupertinoPageScaffold` has no equivalent slot. For an
+  /// iOS tab bar, use `PlatformTabScaffold`. This slot is for a plain
   /// `Scaffold`'s bottom bar (e.g. a `BottomAppBar` with a FAB notch).
   final Widget? bottomNavigationBar;
 

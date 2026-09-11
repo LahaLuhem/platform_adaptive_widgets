@@ -13,12 +13,12 @@ import '/src/models/platform_widget_base.dart';
 /// [materialExpansionTileData] and [cupertinoExpansionTileData]. See
 /// `APPENDIX.md#field-classification`.
 ///
-/// Single-child only — [CupertinoExpansionTile] has no multi-child slot. Callers
+/// Single-child only, [CupertinoExpansionTile] has no multi-child slot. Callers
 /// wanting Material's multi-child layout wrap with `Column` at the call site
 /// (`child: Column(children: [...])`). See `APPENDIX.md#cross-platform-field-mappings`
 /// for the `child` ↔ `children` mapping.
 ///
-/// No `isEnabled` flag — [CupertinoExpansionTile] has no built-in disabled state.
+/// No `isEnabled` flag, [CupertinoExpansionTile] has no built-in disabled state.
 /// Material's `enabled` lives on [MaterialExpansionTileData]; for Cupertino, wrap with
 /// [IgnorePointer] (or [Opacity] for a faded-out look).
 ///
@@ -32,13 +32,13 @@ import '/src/models/platform_widget_base.dart';
 class PlatformExpansionTile extends PlatformWidgetKeyedBase {
   /// Primary content of the tile header.
   ///
-  /// Required non-null — both [ExpansionTile.title] and [CupertinoExpansionTile.title]
+  /// Required non-null, both [ExpansionTile.title] and [CupertinoExpansionTile.title]
   /// require non-null upstream.
   final Widget title;
 
   /// Content shown when the tile is expanded.
   ///
-  /// Required non-null — [CupertinoExpansionTile.child] requires it. Material wraps it
+  /// Required non-null, [CupertinoExpansionTile.child] requires it. Material wraps it
   /// as `[child]` for its `children:` slot. See
   /// `APPENDIX.md#cross-platform-field-mappings`.
   final Widget child;

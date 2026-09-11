@@ -35,7 +35,7 @@ export 'src/widgets/dialogs/platform_dialog.dart';
 export 'src/widgets/dialogs/platform_menu_picker.dart';
 export 'src/widgets/dialogs/platform_modal_bottom_sheet.dart';
 export 'src/widgets/dialogs/platform_toast.dart';
-// platform_time_picker.dart is a `part of 'platform_date_picker.dart'` —
+// platform_time_picker.dart is a `part of 'platform_date_picker.dart'`,
 // exported transitively via the date_picker export above.
 export 'src/widgets/interaction/platform_button.dart';
 export 'src/widgets/interaction/platform_checkbox.dart';

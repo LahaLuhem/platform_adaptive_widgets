@@ -11,7 +11,7 @@ import 'package:material_ui/material_ui.dart' show ScaffoldMessenger, SnackBar;
 
 import '/src/models/dialogs/platform_toast_data.dart';
 
-/// Shows a transient, self-dismissing message — Material [SnackBar] via
+/// Shows a transient, self-dismissing message. Material [SnackBar] via
 /// [ScaffoldMessenger] on Android (anchored to the bottom of the screen),
 /// and a custom HUD-style banner overlay on iOS (slides in from the top,
 /// translucent dark background).
@@ -19,7 +19,7 @@ import '/src/models/dialogs/platform_toast_data.dart';
 /// **Why two distinct primitives?** [showPlatformToast] is for routine
 /// feedback that doesn't require the user to act ("Saved", "Copied to
 /// clipboard"). For messages that *must* be acknowledged before continuing
-/// (errors, confirmations), use `showPlatformAcknowledge` — that wraps a
+/// (errors, confirmations), use `showPlatformAcknowledge`: that wraps a
 /// proper alert dialog on both platforms.
 ///
 /// **iOS HUD overlay.** Cupertino ships no native toast / banner primitive;
@@ -28,7 +28,7 @@ import '/src/models/dialogs/platform_toast_data.dart';
 /// tap-to-dismiss). Tuning via [cupertinoToastData].
 ///
 /// Returns a `Future<void>` that resolves when the toast is gone. The
-/// Material branch's `SnackBarClosedReason` is collapsed to `void` — callers
+/// Material branch's `SnackBarClosedReason` is collapsed to `void`: callers
 /// who need the reason should use `ScaffoldMessenger` directly (see
 /// [PlatformToastClosedReason] in `platform_toast_data.dart` if you re-add a
 /// non-void return shape).
@@ -106,7 +106,7 @@ Future<void> _showCupertinoToast({
   return completer.future;
 }
 
-/// The HUD-style banner widget — stateful so it can drive the slide+fade
+/// The HUD-style banner widget, stateful so it can drive the slide+fade
 /// animation and the auto-dismiss timer.
 class _CupertinoToastOverlay extends StatefulWidget {
   final String message;
@@ -165,7 +165,7 @@ class _CupertinoToastOverlayState extends State<_CupertinoToastOverlay>
 
   @override
   Widget build(BuildContext context) {
-    // CupertinoDynamicColor.resolve accepts both dynamic and plain Color —
+    // CupertinoDynamicColor.resolve accepts both dynamic and plain Color,
     // returns the input unchanged if it isn't a dynamic colour.
     final resolvedBackground = CupertinoDynamicColor.resolve(widget.data.backgroundColor, context);
     final resolvedForeground = CupertinoDynamicColor.resolve(widget.data.foregroundColor, context);
@@ -190,8 +190,8 @@ class _CupertinoToastOverlayState extends State<_CupertinoToastOverlay>
                   behavior: HitTestBehavior.opaque,
                   child: ClipRRect(
                     borderRadius: widget.data.borderRadius,
-                    // BackdropFilter gives the iOS-native frosted-glass feel
-                    // — the toast's translucent background tints whatever's
+                    // BackdropFilter gives the iOS-native frosted-glass feel,
+                    // the toast's translucent background tints whatever's
                     // behind it after a gentle blur.
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),

@@ -45,18 +45,18 @@ final class TabDestination {
 ///
 /// A curated subclass of [MaterialScaffoldData].
 ///
-/// **`appBar` is exposed — a Material-only capability.** Material permits a
+/// **`appBar` is exposed, a Material-only capability.** Material permits a
 /// persistent top app bar above tab content (a `Scaffold` with *both* an
 /// `appBar` and a `bottomNavigationBar`), so a Material app can opt into one
 /// unified bar across tabs. iOS has **no equivalent**: its HIG structures each
 /// tab as an independent navigation stack with its own nav bar, and
-/// `CupertinoTabScaffold` has no top-bar slot — so there is deliberately no
+/// `CupertinoTabScaffold` has no top-bar slot, so there is deliberately no
 /// Cupertino counterpart. For the cross-platform-idiomatic shape (works on both
 /// platforms), give each tab its own [PlatformScaffold] with its own
 /// [PlatformAppBar] instead, and leave this `appBar` unset.
 ///
-/// **`bottomNavigationBar` is omitted** — the tab scaffold owns that slot (it
-/// builds the `NavigationBar`); exposing it would be a conflicting duplicate.
+/// **`bottomNavigationBar` is omitted**: the tab scaffold owns that slot (it
+/// builds the `NavigationBar`). Exposing it would be a conflicting duplicate.
 ///
 /// The tab inputs (selected index, destinations, callbacks, body builder) are
 /// functional and live flat on [PlatformTabScaffold].

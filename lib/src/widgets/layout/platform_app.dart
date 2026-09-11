@@ -9,11 +9,11 @@ import 'package:material_ui/material_ui.dart' show MaterialApp;
 import '/src/models/layout/platform_app_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive app — [MaterialApp] on Android, [CupertinoApp] on iOS.
+/// A platform-adaptive app, [MaterialApp] on Android, [CupertinoApp] on iOS.
 ///
 /// The two underlying apps share ~26 functional properties (`title`, `home`,
 /// `routes`, `locale`, `builder`, navigator config, …). Per the package's
-/// field-classification rule those are functional — they live flat on this
+/// field-classification rule those are functional, they live flat on this
 /// widget as the single source of truth, never duplicated into a per-platform
 /// record. The only per-platform surface is the theme, since Material's
 /// [ThemeData] and Cupertino's [CupertinoThemeData] are disjoint types: pass
@@ -21,7 +21,7 @@ import '/src/models/platform_widget_base.dart';
 ///
 /// Use the default constructor for navigator-based routing (`home`, `routes`,
 /// `onGenerateRoute`, …). Use [PlatformApp.router] for Flutter's declarative
-/// router API (`routerConfig`, `routerDelegate`, …) — the two constructors
+/// router API (`routerConfig`, `routerDelegate`, …), the two constructors
 /// expose disjoint routing surfaces, so the type system keeps you from mixing
 /// navigator and router config.
 ///
@@ -100,14 +100,14 @@ class PlatformApp extends PlatformWidgetKeyedBase {
   /// A callback to listen for `NavigationNotification`s bubbling up.
   final bool Function(NavigationNotification)? onNavigationNotification;
 
-  /// Global key for the navigator state. Navigator-routing only — `null` on
+  /// Global key for the navigator state. Navigator-routing only, `null` on
   /// [PlatformApp.router].
   final GlobalKey<NavigatorState>? navigatorKey;
 
   /// The home widget of the app. Navigator-routing only.
   final Widget? home;
 
-  /// Named routes for the app. Navigator-routing only; defaults to `{}`.
+  /// Named routes for the app. Navigator-routing only. Defaults to `{}`.
   final Map<String, WidgetBuilder> routes;
 
   /// The initial route name. Navigator-routing only.
@@ -124,10 +124,10 @@ class PlatformApp extends PlatformWidgetKeyedBase {
   /// Route factory for unknown routes. Navigator-routing only.
   final RouteFactory? onUnknownRoute;
 
-  /// Navigator observers. Navigator-routing only; defaults to `[]`.
+  /// Navigator observers. Navigator-routing only. Defaults to `[]`.
   final List<NavigatorObserver> navigatorObservers;
 
-  /// Provider for route information from the platform. Router-routing only —
+  /// Provider for route information from the platform. Router-routing only,
   /// `null` on the default constructor.
   final RouteInformationProvider? routeInformationProvider;
 
@@ -150,7 +150,7 @@ class PlatformApp extends PlatformWidgetKeyedBase {
   /// Cupertino-specific configuration (theme).
   final CupertinoAppData? cupertinoAppData;
 
-  /// Discriminates [PlatformApp.router] from the default constructor — selects
+  /// Discriminates [PlatformApp.router] from the default constructor, selects
   /// `MaterialApp.router` / `CupertinoApp.router` over their navigator forms.
   final bool _useRouter;
 

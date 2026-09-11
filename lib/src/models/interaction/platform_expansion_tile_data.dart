@@ -1,5 +1,5 @@
-// Per-platform records for PlatformExpansionTile (no shared private base — the
-// Material and Cupertino visual surfaces don't overlap; the shared functional fields
+// Per-platform records for PlatformExpansionTile (no shared private base, the
+// Material and Cupertino visual surfaces don't overlap. The shared functional fields
 // title / child / controller are flat on the widget).
 // ignore_for_file: prefer-match-file-name
 
@@ -35,7 +35,7 @@ const kDefaultCupertinoExpansionTileTransitionMode = ExpansionTileTransitionMode
 /// Pass this via `PlatformExpansionTile.materialExpansionTileData` when tuning Material
 /// rendering. The fields declared here have no Cupertino equivalent.
 final class MaterialExpansionTileData {
-  /// Callback fired when the expansion state changes. Functional, Material-only —
+  /// Callback fired when the expansion state changes. Functional, Material-only,
   /// Cupertino's [CupertinoExpansionTile] surfaces no equivalent callback (use the
   /// shared [ExpansibleController] for programmatic observation).
   final ValueChanged<bool>? onExpansionChanged;
@@ -64,11 +64,11 @@ final class MaterialExpansionTileData {
   /// Padding around the tile header.
   final EdgeInsetsGeometry? tilePadding;
 
-  /// Cross-axis alignment of the expanded child. Nullable — when `null`, Material
+  /// Cross-axis alignment of the expanded child. Nullable, when `null`, Material
   /// applies its theme-driven default.
   final CrossAxisAlignment? expandedCrossAxisAlignment;
 
-  /// Alignment of the expanded child. Nullable — when `null`, Material applies its
+  /// Alignment of the expanded child. Nullable, when `null`, Material applies its
   /// theme-driven default.
   final AlignmentGeometry? expandedAlignment;
 
@@ -114,11 +114,11 @@ final class MaterialExpansionTileData {
   /// Minimum height of the tile.
   final double? minTileHeight;
 
-  /// Whether to enable haptic feedback on tap. Nullable — when `null`, Material applies
+  /// Whether to enable haptic feedback on tap. Nullable, when `null`, Material applies
   /// its own default (`true`).
   final bool? enableFeedback;
 
-  /// Whether the tile is enabled. Functional, Material-only — Cupertino has no
+  /// Whether the tile is enabled. Functional, Material-only. Cupertino has no
   /// equivalent disable affordance (wrap with [IgnorePointer] to disable a Cupertino
   /// tile). Defaults to [kDefaultExpansionTileEnabled].
   final bool enabled;

@@ -26,7 +26,7 @@ class _Surfaces extends StatelessWidget {
       // PlatformWidgetBase virtual dispatch.
       PlatformButton(onPressed: () {}, child: const Text('platform button')),
 
-      // showPlatformDialog — top-level switch dispatch.
+      // showPlatformDialog, top-level switch dispatch.
       TextButton(
         onPressed: () => showPlatformDialog<void>(
           context: context,
@@ -36,7 +36,7 @@ class _Surfaces extends StatelessWidget {
         child: const Text('dialog'),
       ),
 
-      // showPlatformAlertDialog — top-level switch dispatch.
+      // showPlatformAlertDialog, top-level switch dispatch.
       TextButton(
         onPressed: () => showPlatformAlertDialog<void>(
           context: context,
@@ -46,13 +46,13 @@ class _Surfaces extends StatelessWidget {
         child: const Text('alert'),
       ),
 
-      // showPlatformToast — single inline switch.
+      // showPlatformToast, single inline switch.
       TextButton(
         onPressed: () => showPlatformToast(context: context, message: 'hi'),
         child: const Text('toast'),
       ),
 
-      // showPlatformDatePicker — top-level switch dispatch.
+      // showPlatformDatePicker, top-level switch dispatch.
       TextButton(
         onPressed: () => showPlatformDatePicker(
           context: context,
@@ -63,7 +63,7 @@ class _Surfaces extends StatelessWidget {
         child: const Text('date'),
       ),
 
-      // showPlatformTimePicker — top-level switch dispatch.
+      // showPlatformTimePicker, top-level switch dispatch.
       TextButton(
         onPressed: () => showPlatformTimePicker(
           context: context,
@@ -72,7 +72,7 @@ class _Surfaces extends StatelessWidget {
         child: const Text('time'),
       ),
 
-      // showPlatformModalBottomSheet — single inline switch.
+      // showPlatformModalBottomSheet, single inline switch.
       TextButton(
         onPressed: () => showPlatformModalBottomSheet<void>(
           context: context,
@@ -81,11 +81,11 @@ class _Surfaces extends StatelessWidget {
         child: const Text('sheet'),
       ),
 
-      // context.platformIcon — extension that uses platformValue internally
-      // (cheap-value usage; safe because IconData doesn't drag platform code).
+      // context.platformIcon, extension that uses platformValue internally
+      // (cheap-value usage, safe because IconData doesn't drag platform code).
       Icon(context.platformIcon(material: Icons.home, cupertino: CupertinoIcons.home)),
 
-      // isAndroid / isIOS — const-folded getters.
+      // isAndroid / isIOS, const-folded getters.
       if (isAndroid) const Text('android') else const Text('ios'),
     ],
   );
