@@ -26,24 +26,31 @@ jobs:
         id: meta
         uses: dependabot/fetch-metadata@v3
 
-      # CI wiring and the demo app's deps, since neither reaches anyone installing
-      # the package. Root pub moves downstream version ranges, so it stays manual,
-      # as does every major. Ecosystem arrives underscored, update-type is a max.
+      # Nothing in here reaches anyone installing the package.
       - name: Decide eligibility
         id: gate
         env:
+          # Comes back as github_actions, not github-actions like in dependabot.yml.
           ECOSYSTEM: ${{ steps.meta.outputs.package-ecosystem }}
+          # For a grouped PR, this is the biggest bump in the group.
           UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
           DIRECTORY: ${{ steps.meta.outputs.directory }}
         run: |
           eligible=false
-          case "$UPDATE_TYPE" in
-            version-update:semver-patch | version-update:semver-minor)
-              case "$ECOSYSTEM" in
-                github_actions)
+          case "$ECOSYSTEM" in
+            # Majors too: a green run exercises the bumped step for real.
+            github_actions)
+              case "$UPDATE_TYPE" in
+                # A SHA-to-SHA bump has no semver signal, so it won't match.
+                version-update:semver-*)
                   eligible=true
                   ;;
-                gradle | pub)
+              esac
+              ;;
+            gradle | pub)
+              case "$UPDATE_TYPE" in
+                version-update:semver-patch | version-update:semver-minor)
+                  # Root pub moves downstream ranges, so only the demo app is safe.
                   case "$DIRECTORY" in
                     /example | /example/*)
                       eligible=true
