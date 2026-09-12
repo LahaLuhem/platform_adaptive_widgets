@@ -2,6 +2,7 @@ import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart' show Icons, ThemeMode;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
@@ -122,6 +123,26 @@ class AboutView extends StatelessWidget {
                 ],
               ),
             ),
+            if (args.isUsingGoRouter) ...[
+              const Gap(24),
+              LabeledSection(
+                title: 'Error screen',
+                child: Column(
+                  crossAxisAlignment: .start,
+                  spacing: 8,
+                  children: [
+                    PlatformButton(
+                      // Deliberately unmatched: no AppRoute case, so errorBuilder takes over.
+                      onPressed: () => context.go('/no-such-route'),
+                      child: const Text('Open a broken link'),
+                    ),
+                    const Text(
+                      'Locations go_router cannot match render the adaptive not-found screen.',
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
       ),
