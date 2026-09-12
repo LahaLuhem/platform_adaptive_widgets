@@ -121,12 +121,12 @@ make the read-site speak plain English. The bare-noun form (`acceptAny`,
 |----------------------|---------------------------------------------------------------------------|
 | `acceptAny`          | `shouldAcceptAny`                                                         |
 | `includeBogusTarget` | `shouldIncludeBogusTarget`                                                |
-| `isRunning`          | (removed, view-local; [Async-action buttons](#async-action-buttons))     |
+| `isRunning`          | (removed, view-local, [Async-action buttons](#async-action-buttons))     |
 
 **`is` prefix is allowed for true state-of-being predicates** that are not user
 toggles, `AppArgs.isUsingGoRouter` (the navigation mode the host chose) reads
 as a fact, not a preference, so `is` stays. The `should` form is for what the user
-*wants*; the `is` form is for what the world *is*.
+*wants*. The `is` form is for what the world *is*.
 
 This applies to the field, its notifier, and its listenable getter together, they
 refer to the same concept, so the modal-prefix stays consistent across the trio.

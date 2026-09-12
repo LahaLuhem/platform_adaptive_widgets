@@ -13,35 +13,30 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart'
     show ScaffoldMessengerState, ThemeData, ThemeMode, kThemeAnimationDuration;
 
-/// Default value for `showPerformanceOverlay` on [PlatformApp] /
-/// [PlatformApp.router].
+/// Default value for `showPerformanceOverlay` on [PlatformApp] / [PlatformApp.router].
 const kDefaultShowPerformanceOverlay = false;
 
-/// Default value for `checkerboardRasterCacheImages` on [PlatformApp] /
-/// [PlatformApp.router].
+/// Default value for `checkerboardRasterCacheImages` on [PlatformApp] / [PlatformApp.router].
 const kDefaultCheckerboardRasterCacheImages = false;
 
-/// Default value for `checkerboardOffscreenLayers` on [PlatformApp] /
-/// [PlatformApp.router].
+/// Default value for `checkerboardOffscreenLayers` on [PlatformApp] / [PlatformApp.router].
 const kDefaultCheckerboardOffscreenLayers = false;
 
-/// Default value for `showSemanticsDebugger` on [PlatformApp] /
-/// [PlatformApp.router].
+/// Default value for `showSemanticsDebugger` on [PlatformApp] / [PlatformApp.router].
 const kDefaultShowSemanticsDebugger = false;
 
-/// Default value for `debugShowCheckedModeBanner` on [PlatformApp] /
-/// [PlatformApp.router].
+/// Default value for `debugShowCheckedModeBanner` on [PlatformApp] / [PlatformApp.router].
 const kDefaultDebugShowCheckedModeBanner = true;
 
 /// Default value for `supportedLocales` on [PlatformApp] / [PlatformApp.router].
 const kDefaultSupportedLocales = [Locale('en', 'US')];
 
-/// Default Material theme animation duration. Read by [MaterialAppData]'s
-/// field default and substituted in [PlatformApp]'s Material build branch.
+/// Default Material theme animation duration. Read by [MaterialAppData]'s field default and substituted
+/// in [PlatformApp]'s Material build branch.
 const kMaterialDefaultThemeAnimationDuration = kThemeAnimationDuration;
 
-/// Default Material theme animation curve. Read by [MaterialAppData]'s field
-/// default and substituted in [PlatformApp]'s Material build branch.
+/// Default Material theme animation curve. Read by [MaterialAppData]'s field default and substituted
+/// in [PlatformApp]'s Material build branch.
 const kMaterialDefaultThemeAnimationCurve = Curves.linear;
 
 /// Default value for [MaterialAppData.debugShowMaterialGrid].
@@ -49,68 +44,53 @@ const kDebugShowMaterialGrid = false;
 
 /// Material-only configuration for [PlatformApp] / [PlatformApp.router].
 ///
-/// The cross-platform app surface (`title`, `home`, `routes`, `locale`,
-/// `builder`, …) is functional and lives flat on the [PlatformApp] widget. This
-/// holds only what's Material-specific: the theme surface (Material's
-/// [ThemeData], distinct from Cupertino's [CupertinoThemeData]) plus
+/// The cross-platform app surface (`title`, `home`, `routes`, `locale`, `builder`, …) is functional
+/// and lives flat on the [PlatformApp] widget. This holds only what's Material-specific: the theme
+/// surface (Material's [ThemeData], distinct from Cupertino's [CupertinoThemeData]) plus
 /// [scaffoldMessengerKey] (no Cupertino equivalent).
-final class MaterialAppData {
+final class const MaterialAppData({
   /// Global key for the [ScaffoldMessengerState].
-  final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey;
+  final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey,
 
   /// The theme data for the app in light mode.
-  final ThemeData? theme;
+  final ThemeData? theme,
 
   /// The theme data for the app in dark mode.
-  final ThemeData? darkTheme;
+  final ThemeData? darkTheme,
 
   /// The theme data for high contrast light mode.
-  final ThemeData? highContrastTheme;
+  final ThemeData? highContrastTheme,
 
   /// The theme data for high contrast dark mode.
-  final ThemeData? highContrastDarkTheme;
+  final ThemeData? highContrastDarkTheme,
 
   /// The theme mode to use (light, dark, or system).
-  final ThemeMode? themeMode;
+  final ThemeMode? themeMode,
 
-  /// Duration for theme transitions. Defaults to
-  /// [kMaterialDefaultThemeAnimationDuration].
-  final Duration themeAnimationDuration;
+  /// Duration for theme transitions. Defaults to [kMaterialDefaultThemeAnimationDuration].
+  final Duration themeAnimationDuration = kMaterialDefaultThemeAnimationDuration,
 
-  /// Animation curve for theme transitions. Defaults to
-  /// [kMaterialDefaultThemeAnimationCurve].
-  final Curve themeAnimationCurve;
+  /// Animation curve for theme transitions. Defaults to [kMaterialDefaultThemeAnimationCurve].
+  final Curve themeAnimationCurve = kMaterialDefaultThemeAnimationCurve,
 
-  /// Whether to show the Material design grid overlay. Defaults to
-  /// [kDebugShowMaterialGrid].
-  final bool debugShowMaterialGrid;
+  /// Whether to show the Material design grid overlay. Defaults to [kDebugShowMaterialGrid].
+  final bool debugShowMaterialGrid = kDebugShowMaterialGrid,
 
   /// Animation style for theme transitions.
-  final AnimationStyle? themeAnimationStyle;
-
+  final AnimationStyle? themeAnimationStyle,
+}) {
   /// Creates Material-only configuration for [PlatformApp].
-  const new({
-    this.scaffoldMessengerKey,
-    this.theme,
-    this.darkTheme,
-    this.highContrastTheme,
-    this.highContrastDarkTheme,
-    this.themeMode,
-    this.themeAnimationDuration = kMaterialDefaultThemeAnimationDuration,
-    this.themeAnimationCurve = kMaterialDefaultThemeAnimationCurve,
-    this.debugShowMaterialGrid = kDebugShowMaterialGrid,
-    this.themeAnimationStyle,
-  });
+  this;
 }
 
 /// Cupertino-only configuration for [PlatformApp] / [PlatformApp.router].
 ///
-/// Holds only the Cupertino [CupertinoThemeData]; the cross-platform app
-/// surface is functional and lives flat on the [PlatformApp] widget.
-final class CupertinoAppData {
+/// Holds only the Cupertino [CupertinoThemeData]. The cross-platform app surface is functional and
+/// lives flat on the [PlatformApp] widget.
+final class const CupertinoAppData({
   /// The theme data for the app.
-  final CupertinoThemeData? theme;
-
+  final CupertinoThemeData? theme,
+}) {
   /// Creates Cupertino-only configuration for [PlatformApp].
-  const new({this.theme});
+  this;
 }

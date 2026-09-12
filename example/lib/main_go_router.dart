@@ -13,9 +13,8 @@ import 'features/core/data/constants/const_theme.dart';
 
 void main() => runApp(const _ExampleGoRouterApp());
 
-/// go_router entry point: `PlatformApp.router` driven by [AppRouter]. Same
-/// theming, [ThemeScope] and [PlatformScope] wiring as the Navigator entry
-/// point, only the navigation backend differs.
+/// go_router entry point: `PlatformApp.router` driven by [AppRouter]. Same theming, [ThemeScope] and
+/// [PlatformScope] wiring as the Navigator entry point, only the navigation backend differs.
 class _ExampleGoRouterApp extends StatefulWidget {
   const _ExampleGoRouterApp();
 
@@ -64,8 +63,8 @@ class _ExampleGoRouterAppState extends State<_ExampleGoRouterApp> {
     },
   );
 
-  /// Cupertino has no `themeMode`. Map it to an explicit brightness, or `null`
-  /// to follow the device (the `system` case).
+  /// Cupertino has no `themeMode`. Map it to an explicit brightness, or `null` to follow the device
+  /// (the `system` case).
   Brightness? _cupertinoBrightnessFor(ThemeMode themeMode) => switch (themeMode) {
     ThemeMode.system => null,
     ThemeMode.light => Brightness.light,

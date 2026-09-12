@@ -15,21 +15,19 @@ import 'package:material_ui/material_ui.dart' show Checkbox;
 import '/src/models/interaction/platform_checkbox_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive checkbox that renders Material [Checkbox] on Android
-/// and [CupertinoCheckbox] on iOS.
+/// A platform-adaptive checkbox that renders Material [Checkbox] on Android and [CupertinoCheckbox]
+/// on iOS.
 ///
-/// The default constructor is the common two-state case: [value] is non-null
-/// `bool` and `onChanged` hands back a non-null `bool`. For the indeterminate
-/// (third) state, supported natively on both platforms. Use
-/// [PlatformCheckbox.tristate], whose [value] and `onChanged` are nullable so
-/// taps can cycle `false → true → null`.
+/// The default constructor is the common two-state case: [value] is non-null `bool` and `onChanged`
+/// hands back a non-null `bool`. For the indeterminate (third) state, supported natively on both
+/// platforms. Use [PlatformCheckbox.tristate], whose [value] and `onChanged` are nullable so taps
+/// can cycle `false → true → null`.
 ///
-/// All functional inputs (value, callback, state-gating, behavioral tuning)
-/// and shared visual defaults live as flat constructor parameters.
-/// Per-platform visual tuning is opt-in via [materialCheckboxData] and
-/// [cupertinoCheckboxData]. See `APPENDIX.md#field-classification` for the
-/// classification rule and `APPENDIX.md#checkbox-tristate-split` for why the
-/// two states share one class with two constructors.
+/// All functional inputs (value, callback, state-gating, behavioral tuning) and shared visual defaults
+/// live as flat constructor parameters. Per-platform visual tuning is opt-in via [materialCheckboxData]
+/// and [cupertinoCheckboxData]. See `APPENDIX.md#field-classification` for the classification rule
+/// and `APPENDIX.md#checkbox-tristate-split` for why the two states share one class with two
+/// constructors.
 ///
 /// Example:
 /// ```dart
@@ -41,9 +39,9 @@ import '/src/models/platform_widget_base.dart';
 class PlatformCheckbox extends PlatformWidgetKeyedBase {
   /// Current value of the checkbox.
   ///
-  /// For the default (two-state) constructor this is always `true` (checked)
-  /// or `false` (unchecked), that constructor rejects `null`. For
-  /// [PlatformCheckbox.tristate] it may also be `null` (indeterminate).
+  /// For the default (two-state) constructor this is always `true` (checked) or `false` (unchecked),
+  /// that constructor rejects `null`. For [PlatformCheckbox.tristate] it may also be `null`
+  /// (indeterminate).
   final bool? value;
 
   // Exactly one of the two callbacks is non-null, selected by the constructor.
@@ -57,9 +55,8 @@ class PlatformCheckbox extends PlatformWidgetKeyedBase {
   /// Whether the checkbox is enabled and responds to input.
   ///
   /// When `false`, the underlying platform widget receives `null` for its own `onChanged` parameter,
-  /// producing the platform's standard disabled-checkbox rendering.
-  /// The `onChanged` callback is still required and non-null at construction, the disable gate is read here.
-  /// See `APPENDIX.md#callback-nullability`.
+  /// producing the platform's standard disabled-checkbox rendering. The `onChanged` callback is still
+  /// required and non-null at construction, the disable gate is read here. See `APPENDIX.md#callback-nullability`.
   final bool isEnabled;
 
   /// Focus node for the checkbox.
@@ -68,8 +65,7 @@ class PlatformCheckbox extends PlatformWidgetKeyedBase {
   /// Whether the checkbox should autofocus.
   final bool autofocus;
 
-  /// Semantic label for accessibility. Read by screen readers. Same value
-  /// is used on both platforms.
+  /// Semantic label for accessibility. Read by screen readers. Same value is used on both platforms.
   final String? semanticLabel;
 
   /// Mouse cursor when hovering over the checkbox.
@@ -95,23 +91,21 @@ class PlatformCheckbox extends PlatformWidgetKeyedBase {
 
   /// Material-only visual overrides. Optional.
   ///
-  /// Fields set on this record override the widget's flat shared-visual
-  /// defaults on the Material branch; Material-only fields (e.g.
-  /// `hoverColor`, `splashRadius`, `isError`) are read only from here.
+  /// Fields set on this record override the widget's flat shared-visual defaults on the Material
+  /// branch. Material-only fields (e.g. `hoverColor`, `splashRadius`, `isError`) are read only from
+  /// here.
   final MaterialCheckboxData? materialCheckboxData;
 
   /// Cupertino-only visual overrides. Optional.
   ///
-  /// Fields set on this record override the widget's flat shared-visual
-  /// defaults on the Cupertino branch; Cupertino-only fields (e.g.
-  /// `tapTargetSize`) are read only from here.
+  /// Fields set on this record override the widget's flat shared-visual defaults on the Cupertino
+  /// branch. Cupertino-only fields (e.g. `tapTargetSize`) are read only from here.
   final CupertinoCheckboxData? cupertinoCheckboxData;
 
   /// Creates a platform-adaptive two-state checkbox.
   ///
-  /// [value] and `onChanged` are required and non-null. Disable the checkbox
-  /// via [isEnabled], not by passing a null callback. For the indeterminate
-  /// state, use [PlatformCheckbox.tristate].
+  /// [value] and `onChanged` are required and non-null. Disable the checkbox via [isEnabled], not by
+  /// passing a null callback. For the indeterminate state, use [PlatformCheckbox.tristate].
   const new({
     required bool this.value,
     required ValueChanged<bool> this._onChanged,
@@ -134,11 +128,10 @@ class PlatformCheckbox extends PlatformWidgetKeyedBase {
 
   /// Creates a platform-adaptive tristate checkbox.
   ///
-  /// [value] may be `true`, `false`, or `null` (indeterminate); `onChanged`
-  /// receives the same `bool?`. The callback itself is required and non-null,
-  /// disable via [isEnabled], not a null callback. For the common two-state
-  /// case, prefer the default [PlatformCheckbox] constructor, whose [value]
-  /// and `onChanged` are non-null `bool`.
+  /// [value] may be `true`, `false`, or `null` (indeterminate); `onChanged` receives the same `bool?`.
+  /// The callback itself is required and non-null, disable via [isEnabled], not a null callback. For
+  /// the common two-state case, prefer the default [PlatformCheckbox] constructor, whose [value] and
+  /// `onChanged` are non-null `bool`.
   const new tristate({
     required this.value,
     required ValueChanged<bool?> onChanged,
@@ -160,14 +153,13 @@ class PlatformCheckbox extends PlatformWidgetKeyedBase {
   }) : _onChangedTristate = onChanged,
        _onChanged = null;
 
-  /// Whether this instance was built via [PlatformCheckbox.tristate] and so
-  /// drives the underlying widget in tristate mode.
+  /// Whether this instance was built via [PlatformCheckbox.tristate] and so drives the underlying
+  /// widget in tristate mode.
   bool get _isTristate => _onChangedTristate != null;
 
-  /// The two-state callback adapted to the `ValueChanged<bool?>?` the
-  /// underlying widgets expect. Only reached in two-state mode (the
-  /// `_onChangedTristate ?? …` fallback), where `_onChanged` is non-null and
-  /// `tristate: false` guarantees the value is never null.
+  /// The two-state callback adapted to the `ValueChanged<bool?>?` the underlying widgets expect. Only
+  /// reached in two-state mode (the `_onChangedTristate ?? …` fallback), where `_onChanged` is non-null
+  /// and `tristate: false` guarantees the value is never null.
   ValueChanged<bool?> get _adaptedOnChanged =>
       (newValue) => _onChanged!(newValue!);
 

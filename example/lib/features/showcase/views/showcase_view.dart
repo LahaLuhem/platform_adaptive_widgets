@@ -5,10 +5,9 @@ import 'package:pmvvm/pmvvm.dart';
 import '/features/showcase/widgets/nuance_card.dart';
 import 'showcase_view_model.dart';
 
-/// The "Under the hood" tab, not a sample screen, but a guided tour of the
-/// deliberate, easy-to-get-wrong details the library handles for you. Each card
-/// names a decision, says what a naive `Platform.isIOS ? … : …` wrapper gets
-/// wrong, and (where it can) proves it live.
+/// The "Under the hood" tab, not a sample screen, but a guided tour of the deliberate, easy-to-get-wrong
+/// details the library handles for you. Each card names a decision, says what a naive `Platform.isIOS
+/// ? … : …` wrapper gets wrong, and (where it can) proves it live.
 class ShowcaseView extends StatelessWidget {
   const ShowcaseView({super.key});
 

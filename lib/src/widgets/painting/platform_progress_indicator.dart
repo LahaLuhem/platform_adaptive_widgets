@@ -5,46 +5,39 @@ import 'package:material_ui/material_ui.dart' show CircularProgressIndicator;
 import '/src/models/painting/platform_progress_indicator_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive progress indicator that renders Material
-/// [CircularProgressIndicator] on Android and [CupertinoActivityIndicator]
-/// on iOS.
+/// A platform-adaptive progress indicator that renders Material [CircularProgressIndicator] on Android
+/// and [CupertinoActivityIndicator] on iOS.
 ///
-/// Display-only widget, no callbacks, no value/onChanged at the widget
-/// level. Material's value-based progress and animation control live on
-/// [MaterialProgressIndicatorData]; Cupertino's animating toggle and radius
-/// live on [CupertinoProgressIndicatorData]. The only field shared at the
-/// widget level is [color]. See `APPENDIX.md#field-classification`.
+/// Display-only widget, no callbacks, no value/onChanged at the widget level. Material's value-based
+/// progress and animation control live on [MaterialProgressIndicatorData]. Cupertino's animating
+/// toggle and radius live on [CupertinoProgressIndicatorData]. The only field shared at the widget
+/// level is [color]. See `APPENDIX.md#field-classification`.
 ///
 /// Example:
 /// ```dart
 /// PlatformProgressIndicator(color: Colors.blue)
 /// ```
-class PlatformProgressIndicator extends PlatformWidgetKeyedBase {
-  /// Color of the progress indicator. Shared visual, overridable per
-  /// platform via [materialProgressIndicatorData] / [cupertinoProgressIndicatorData].
-  final Color? color;
+class const PlatformProgressIndicator({
+  /// Color of the progress indicator. Shared visual, overridable per platform via [materialProgressIndicatorData]
+  /// / [cupertinoProgressIndicatorData].
+  final Color? color,
 
   /// Material-only configuration. Optional.
   ///
-  /// Houses both Material-only visual fields (`backgroundColor`,
-  /// `strokeWidth`, etc.) and Material-only functional fields (`value`,
-  /// `controller`, `semanticsLabel`, `semanticsValue`), the latter because
+  /// Houses both Material-only visual fields (`backgroundColor`, `strokeWidth`, etc.) and Material-only
+  /// functional fields (`value`, `controller`, `semanticsLabel`, `semanticsValue`), the latter because
   /// they have no equivalent on Cupertino's activity indicator.
-  final MaterialProgressIndicatorData? materialProgressIndicatorData;
+  final MaterialProgressIndicatorData? materialProgressIndicatorData,
 
   /// Cupertino-only configuration. Optional.
   ///
   /// Houses Cupertino-only fields (`animating`, `radius`).
-  final CupertinoProgressIndicatorData? cupertinoProgressIndicatorData;
-
+  final CupertinoProgressIndicatorData? cupertinoProgressIndicatorData,
+  super.widgetKey,
+  super.key,
+}) extends PlatformWidgetKeyedBase {
   /// Creates a platform-adaptive progress indicator.
-  const new({
-    this.color,
-    this.materialProgressIndicatorData,
-    this.cupertinoProgressIndicatorData,
-    super.widgetKey,
-    super.key,
-  });
+  this;
 
   @override
   Widget buildMaterial(BuildContext context) => CircularProgressIndicator(

@@ -3,12 +3,12 @@ import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// Provides access to platform-specific theme colors.
-final class PlatformTheme {
+final class const PlatformTheme.of(
   /// The build context to use for retrieving theme data.
-  final BuildContext context;
-
+  final BuildContext context,
+) {
   /// Creates a [PlatformTheme] with the given [context].
-  const new of(this.context);
+  this;
 
   /// The background color of the app bar.
   Color get barBackgroundColor => switch (defaultTargetPlatform) {

@@ -6,15 +6,13 @@ import 'package:material_ui/material_ui.dart' show Switch;
 import '/src/models/interaction/platform_switch_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive switch that renders Material [Switch] on Android
-/// and [CupertinoSwitch] on iOS.
+/// A platform-adaptive switch that renders Material [Switch] on Android and [CupertinoSwitch] on iOS.
 ///
-/// All functional inputs (value, callbacks, state-gating, behavioral tuning)
-/// and shared visual defaults live as flat constructor parameters. Per-platform
-/// visual tuning is opt-in via [materialSwitchData] and [cupertinoSwitchData].
-/// See `APPENDIX.md#field-classification` for the classification rule and
-/// `APPENDIX.md#cross-platform-field-mappings` for fields whose underlying
-/// parameter name diverges from the package's unified name.
+/// All functional inputs (value, callbacks, state-gating, behavioral tuning) and shared visual defaults
+/// live as flat constructor parameters. Per-platform visual tuning is opt-in via [materialSwitchData]
+/// and [cupertinoSwitchData]. See `APPENDIX.md#field-classification` for the classification rule and
+/// `APPENDIX.md#cross-platform-field-mappings` for fields whose underlying parameter name diverges
+/// from the package's unified name.
 ///
 /// Example:
 /// ```dart
@@ -23,132 +21,103 @@ import '/src/models/platform_widget_base.dart';
 ///   onChanged: (v) => setState(() => _isOn = v),
 /// )
 /// ```
-class PlatformSwitch extends PlatformWidgetKeyedBase {
+class const PlatformSwitch({
   /// Current value of the switch.
-  final bool value;
+  required final bool value,
 
   /// Callback fired when the user changes the switch value.
   ///
-  /// Required and non-null. To disable the switch, set [isEnabled] to
-  /// `false`: do **not** pass `null` here. See
-  /// `APPENDIX.md#callback-nullability`.
-  final ValueChanged<bool> onChanged;
+  /// Required and non-null. To disable the switch, set [isEnabled] to `false`: do **not** pass `null`
+  /// here. See `APPENDIX.md#callback-nullability`.
+  required final ValueChanged<bool> onChanged,
 
   /// Whether the switch is enabled and responds to input.
   ///
-  /// When `false`, the underlying platform widget receives `null` for its
-  /// own `onChanged` parameter, producing the platform's standard
-  /// disabled-switch rendering. [onChanged] is still required and non-null
-  /// at construction, the disable gate is read here, not encoded by a
-  /// null callback.
-  final bool isEnabled;
+  /// When `false`, the underlying platform widget receives `null` for its own `onChanged` parameter,
+  /// producing the platform's standard disabled-switch rendering. [onChanged] is still required and
+  /// non-null at construction, the disable gate is read here, not encoded by a null callback.
+  final bool isEnabled = true,
 
   /// Drag start behavior for the switch.
-  final DragStartBehavior dragStartBehavior;
+  final DragStartBehavior dragStartBehavior = .start,
 
   /// Focus node for the switch.
-  final FocusNode? focusNode;
+  final FocusNode? focusNode,
 
   /// Callback when the focus state changes.
-  final ValueChanged<bool>? onFocusChange;
+  final ValueChanged<bool>? onFocusChange,
 
   /// Whether the switch should autofocus.
-  final bool autofocus;
+  final bool autofocus = false,
 
   /// Color of the thumb when the switch is active.
   ///
-  /// Maps to [CupertinoSwitch.thumbColor] on iOS (Cupertino's `thumbColor`
-  /// represents the active-state thumb color). See
-  /// `APPENDIX.md#cross-platform-field-mappings`.
-  final Color? activeThumbColor;
+  /// Maps to [CupertinoSwitch.thumbColor] on iOS (Cupertino's `thumbColor` represents the active-state
+  /// thumb color). See `APPENDIX.md#cross-platform-field-mappings`.
+  final Color? activeThumbColor,
 
   /// Color of the track when the switch is active.
-  final Color? activeTrackColor;
+  final Color? activeTrackColor,
 
   /// Color of the thumb when the switch is inactive.
-  final Color? inactiveThumbColor;
+  final Color? inactiveThumbColor,
 
   /// Color of the track when the switch is inactive.
-  final Color? inactiveTrackColor;
+  final Color? inactiveTrackColor,
 
   /// Color of the switch when focused.
-  final Color? focusColor;
+  final Color? focusColor,
 
   /// Image displayed on the thumb when the switch is active.
-  final ImageProvider? activeThumbImage;
+  final ImageProvider? activeThumbImage,
 
-  /// Error listener for the active thumb image. Tightly coupled to
-  /// [activeThumbImage], classified as shared visual rather than functional.
-  final ImageErrorListener? onActiveThumbImageError;
+  /// Error listener for the active thumb image. Tightly coupled to [activeThumbImage], classified as
+  /// shared visual rather than functional.
+  final ImageErrorListener? onActiveThumbImageError,
 
   /// Image displayed on the thumb when the switch is inactive.
-  final ImageProvider? inactiveThumbImage;
+  final ImageProvider? inactiveThumbImage,
 
-  /// Error listener for the inactive thumb image. Tightly coupled to
-  /// [inactiveThumbImage], classified as shared visual rather than functional.
-  final ImageErrorListener? onInactiveThumbImageError;
+  /// Error listener for the inactive thumb image. Tightly coupled to [inactiveThumbImage], classified
+  /// as shared visual rather than functional.
+  final ImageErrorListener? onInactiveThumbImageError,
 
   /// Track outline color as a [WidgetStateProperty].
-  final WidgetStateProperty<Color?>? trackOutlineColor;
+  final WidgetStateProperty<Color?>? trackOutlineColor,
 
   /// Track outline width as a [WidgetStateProperty].
-  final WidgetStateProperty<double?>? trackOutlineWidth;
+  final WidgetStateProperty<double?>? trackOutlineWidth,
 
   /// Thumb icon as a [WidgetStateProperty].
-  final WidgetStateProperty<Icon?>? thumbIcon;
+  final WidgetStateProperty<Icon?>? thumbIcon,
 
   /// Mouse cursor as a [WidgetStateProperty].
   ///
-  /// On Android the value is resolved to a single [MouseCursor] before being
-  /// passed to [Switch.mouseCursor]. On iOS the value is forwarded to
-  /// [CupertinoSwitch.mouseCursor] as-is. See
+  /// On Android the value is resolved to a single [MouseCursor] before being passed to [Switch.mouseCursor].
+  /// On iOS the value is forwarded to [CupertinoSwitch.mouseCursor] as-is. See
   /// `APPENDIX.md#cross-platform-field-mappings`.
-  final WidgetStateProperty<MouseCursor>? mouseCursor;
+  final WidgetStateProperty<MouseCursor>? mouseCursor,
 
   /// Material-only visual overrides. Optional.
   ///
-  /// Fields set on this record override the widget's flat shared-visual
-  /// defaults on the Material branch; Material-only fields (e.g. `thumbColor`
-  /// state-property, `splashRadius`) are read only from here.
-  final MaterialSwitchData? materialSwitchData;
+  /// Fields set on this record override the widget's flat shared-visual defaults on the Material
+  /// branch. Material-only fields (e.g. `thumbColor` state-property, `splashRadius`) are read only
+  /// from here.
+  final MaterialSwitchData? materialSwitchData,
 
   /// Cupertino-only visual overrides. Optional.
   ///
-  /// Fields set on this record override the widget's flat shared-visual
-  /// defaults on the Cupertino branch; Cupertino-only fields (e.g.
-  /// `applyTheme`, `onLabelColor`) are read only from here.
-  final CupertinoSwitchData? cupertinoSwitchData;
-
+  /// Fields set on this record override the widget's flat shared-visual defaults on the Cupertino
+  /// branch. Cupertino-only fields (e.g. `applyTheme`, `onLabelColor`) are read only from here.
+  final CupertinoSwitchData? cupertinoSwitchData,
+  super.widgetKey,
+  super.key,
+}) extends PlatformWidgetKeyedBase {
   /// Creates a platform-adaptive switch.
   ///
-  /// [value] and [onChanged] are required and non-null. Disable the switch
-  /// via [isEnabled], not by passing a null callback.
-  const new({
-    required this.value,
-    required this.onChanged,
-    this.isEnabled = true,
-    this.dragStartBehavior = .start,
-    this.focusNode,
-    this.onFocusChange,
-    this.autofocus = false,
-    this.activeThumbColor,
-    this.activeTrackColor,
-    this.inactiveThumbColor,
-    this.inactiveTrackColor,
-    this.focusColor,
-    this.activeThumbImage,
-    this.onActiveThumbImageError,
-    this.inactiveThumbImage,
-    this.onInactiveThumbImageError,
-    this.trackOutlineColor,
-    this.trackOutlineWidth,
-    this.thumbIcon,
-    this.mouseCursor,
-    this.materialSwitchData,
-    this.cupertinoSwitchData,
-    super.widgetKey,
-    super.key,
-  });
+  /// [value] and [onChanged] are required and non-null. Disable the switch via [isEnabled], not by
+  /// passing a null callback.
+  this;
 
   @override
   Widget buildMaterial(BuildContext context) => Switch(

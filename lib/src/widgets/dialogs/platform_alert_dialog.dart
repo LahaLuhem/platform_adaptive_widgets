@@ -2,22 +2,18 @@
 
 part of 'platform_dialog.dart';
 
-/// Shows a centered alert dialog. Material [AlertDialog] on Android,
-/// [CupertinoAlertDialog] on iOS. The standard structure: optional [title]
-/// over optional [content], with a row of [actions] underneath (typically
-/// [PlatformDialogAction] instances).
+/// Shows a centered alert dialog. Material [AlertDialog] on Android, [CupertinoAlertDialog] on iOS.
+/// The standard structure: optional [title] over optional [content], with a row of [actions] underneath
+/// (typically [PlatformDialogAction] instances).
 ///
-/// Content slots ([title], [content], [actions], [widgetKey]) are flat on the
-/// show function. Set them once and they're used on both platforms. Material-
-/// or Cupertino-specific styling lives on [materialAlertDialogData] /
-/// [cupertinoAlertDialogData].
+/// Content slots ([title], [content], [actions], [widgetKey]) are flat on the show function. Set them
+/// once and they're used on both platforms. Material- or Cupertino-specific styling lives on
+/// [materialAlertDialogData] / [cupertinoAlertDialogData].
 ///
-/// Uses the same shared show-function flat args as [showPlatformDialog]
-/// (`anchorPoint`, `barrierColor`, `barrierDismissible`, `barrierLabel`,
-/// `routeSettings`, `useRootNavigator`, `requestFocus`). The Material-side
-/// `Dialog`-wrapping params (alignment / shape / clipBehavior / etc.) don't
-/// apply, [AlertDialog] is its own [Dialog] under the hood, so no
-/// [MaterialDialogData] knob is needed.
+/// Uses the same shared show-function flat args as [showPlatformDialog] (`anchorPoint`, `barrierColor`,
+/// `barrierDismissible`, `barrierLabel`, `routeSettings`, `useRootNavigator`, `requestFocus`). The
+/// Material-side `Dialog`-wrapping params (alignment / shape / clipBehavior / etc.) don't apply,
+/// [AlertDialog] is its own [Dialog] under the hood, so no [MaterialDialogData] knob is needed.
 ///
 /// Example:
 /// ```dart
@@ -126,43 +122,38 @@ Future<T?> showPlatformAlertDialog<T>({
   _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
 };
 
-/// A platform-adaptive action button for use inside [showPlatformAlertDialog]'s
-/// `actions` list. Renders [TextButton] on Android, [CupertinoDialogAction] on
-/// iOS.
+/// A platform-adaptive action button for use inside [showPlatformAlertDialog]'s `actions` list.
+/// Renders [TextButton] on Android, [CupertinoDialogAction] on iOS.
 ///
-/// **Styling.** [isDestructiveAction] renders the button in red text on
-/// Cupertino and with red foreground on Material (overrides via
-/// [ButtonTheme]'s `colorScheme.error`). [isDefaultAction] renders bold text
-/// on Cupertino; Material doesn't have a "default action" concept upstream,
-/// so the flag is Cupertino-only at render time.
+/// **Styling.** [isDestructiveAction] renders the button in red text on Cupertino and with red
+/// foreground on Material (overrides via [ButtonTheme]'s `colorScheme.error`). [isDefaultAction]
+/// renders bold text on Cupertino. Material doesn't have a "default action" concept upstream, so the
+/// flag is Cupertino-only at render time.
 ///
-/// **Callback signature.** [onPressed] receives the *dialog's* [BuildContext]
-/// (not the surrounding screen's). Call `Navigator.maybeOf(context)?.pop(value)`
-/// from inside the callback to dismiss the dialog with a return value.
+/// **Callback signature.** [onPressed] receives the *dialog's* [BuildContext] (not the surrounding
+/// screen's). Call `Navigator.maybeOf(context)?.pop(value)` from inside the callback to dismiss the
+/// dialog with a return value.
 ///
-/// Renamed from `PlatformAlertDialogActionButton` in v2, shorter, mirrors
-/// iOS's `CupertinoDialogAction` naming.
-class PlatformDialogAction extends PlatformWidgetKeyedBuilderBase {
+/// Renamed from `PlatformAlertDialogActionButton` in v2, shorter, mirrors iOS's `CupertinoDialogAction`
+/// naming.
+class const PlatformDialogAction({
+  required super.child,
+
   /// Callback fired when the action is pressed. Receives the dialog's context.
-  final ValueChanged<BuildContext>? onPressed;
+  final ValueChanged<BuildContext>? onPressed,
 
-  /// Whether this action represents a destructive operation (delete, etc.).
-  /// Renders in red text on Cupertino, red foreground on Material.
-  final bool isDestructiveAction;
+  /// Whether this action represents a destructive operation (delete, etc.). Renders in red text on
+  /// Cupertino, red foreground on Material.
+  final bool isDestructiveAction = false,
 
-  /// Whether this is the dialog's default action. Renders bold on Cupertino;
-  /// Material doesn't surface a "default action" concept upstream.
-  final bool isDefaultAction;
-
+  /// Whether this is the dialog's default action. Renders bold on Cupertino. Material doesn't surface
+  /// a "default action" concept upstream.
+  final bool isDefaultAction = false,
+  super.widgetKey,
+  super.key,
+}) extends PlatformWidgetKeyedBuilderBase {
   /// Creates a platform-adaptive dialog action.
-  const new({
-    required super.child,
-    this.onPressed,
-    this.isDestructiveAction = false,
-    this.isDefaultAction = false,
-    super.widgetKey,
-    super.key,
-  });
+  this;
 
   @override
   Widget buildMaterial(BuildContext context) => TextButton(

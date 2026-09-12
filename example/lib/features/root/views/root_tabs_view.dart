@@ -7,8 +7,8 @@ import '/features/core/data/models/app_args.dart';
 import '/features/root/data/enums/root_tab.dart';
 import '/features/showcase/views/showcase_view.dart';
 
-/// Managed-mode tab shell (the `main.dart` entry point): [PlatformTabScaffold]
-/// owns the selected-tab state and caches each tab's `view`.
+/// Managed-mode tab shell (the `main.dart` entry point): [PlatformTabScaffold] owns the selected-tab
+/// state and caches each tab's `view`.
 class RootTabsView extends StatelessWidget {
   const RootTabsView({super.key});
 

@@ -9,18 +9,15 @@ import '/src/models/layout/platform_app_bar_data.dart';
 import '/src/models/layout/platform_scaffold_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive scaffold. Material `Scaffold` on Android,
-/// `CupertinoPageScaffold` on iOS.
+/// A platform-adaptive scaffold. Material `Scaffold` on Android, `CupertinoPageScaffold` on iOS.
 ///
-/// Shared content (`body`, `resizeToAvoidBottomInset`, `widgetKey`) is
-/// functional and lives flat on this widget, single source of truth.
-/// [backgroundColor] is shared-visual (per-platform override via
-/// [MaterialScaffoldData.backgroundColor] / [CupertinoScaffoldData.backgroundColor]).
-/// The rest of each platform's surface lives on [materialScaffoldData] /
-/// [cupertinoScaffoldData].
+/// Shared content (`body`, `resizeToAvoidBottomInset`, `widgetKey`) is functional and lives flat on
+/// this widget, single source of truth. [backgroundColor] is shared-visual (per-platform override
+/// via [MaterialScaffoldData.backgroundColor] / [CupertinoScaffoldData.backgroundColor]). The rest
+/// of each platform's surface lives on [materialScaffoldData] / [cupertinoScaffoldData].
 ///
-/// [appBarData] is the cross-platform app bar (typically a [PlatformAppBar]);
-/// it's wrapped to the right platform widget for each branch.
+/// [appBarData] is the cross-platform app bar (typically a [PlatformAppBar]). It's wrapped to the
+/// right platform widget for each branch.
 ///
 /// Example:
 /// ```dart
@@ -29,42 +26,34 @@ import '/src/models/platform_widget_base.dart';
 ///   body: const Center(child: Text('Hello World')),
 /// )
 /// ```
-class PlatformScaffold extends PlatformWidgetKeyedBase {
-  /// Background color of the scaffold.
-  final Color? backgroundColor;
-
-  /// Whether the scaffold should resize to avoid the bottom inset.
-  final bool resizeToAvoidBottomInset;
-
+class const PlatformScaffold({
   /// The main content of the scaffold.
-  final Widget body;
+  required final Widget body,
+
+  /// Material-specific scaffold data.
+  final MaterialScaffoldData? materialScaffoldData,
+
+  /// Cupertino-specific scaffold data.
+  final CupertinoScaffoldData? cupertinoScaffoldData,
 
   /// Platform-shared app bar data.
   ///
   /// Has a premade implementation of [PlatformAppBar].
-  final PlatformAppBarData? appBarData;
+  final PlatformAppBarData? appBarData,
 
-  /// Material-specific scaffold data.
-  final MaterialScaffoldData? materialScaffoldData;
+  /// Background color of the scaffold.
+  final Color? backgroundColor,
 
-  /// Cupertino-specific scaffold data.
-  final CupertinoScaffoldData? cupertinoScaffoldData;
-
+  /// Whether the scaffold should resize to avoid the bottom inset.
+  final bool resizeToAvoidBottomInset = kDefaultResizeToAvoidBottomInset,
+  super.widgetKey,
+  super.key,
+}) extends PlatformWidgetKeyedBase {
   /// Creates a platform-adaptive scaffold.
   ///
-  /// The scaffold renders as a Material `Scaffold` on Android and a
-  /// `CupertinoPageScaffold` on iOS. [appBarData] has a premade implementation
-  /// of [PlatformAppBar].
-  const new({
-    required this.body,
-    this.materialScaffoldData,
-    this.cupertinoScaffoldData,
-    this.appBarData,
-    this.backgroundColor,
-    this.resizeToAvoidBottomInset = kDefaultResizeToAvoidBottomInset,
-    super.widgetKey,
-    super.key,
-  });
+  /// The scaffold renders as a Material `Scaffold` on Android and a `CupertinoPageScaffold` on iOS.
+  /// [appBarData] has a premade implementation of [PlatformAppBar].
+  this;
 
   @override
   Widget buildMaterial(BuildContext context) {

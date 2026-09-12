@@ -13,8 +13,8 @@ import '/features/catalog/widgets/property_editor/property_editor.dart';
 import '/features/catalog/widgets/property_editor/string_knob.dart';
 import 'text_demo_view_model.dart';
 
-/// The Text & search section of the Catalog accordion, a live
-/// `PlatformTextField` playground plus a `PlatformSearchBar` demo.
+/// The Text & search section of the Catalog accordion, a live `PlatformTextField` playground plus a
+/// `PlatformSearchBar` demo.
 class TextDemoView extends StatelessWidget {
   const TextDemoView({super.key});
 

@@ -3,9 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// The top-level tabs of the demo, shared by both shells (the managed
-/// `RootTabsView` and the go_router-driven `RootTabsRouterView`) so the tab
-/// bar's labels and icons are defined once.
+/// The top-level tabs of the demo, shared by both shells (the managed `RootTabsView` and the
+/// go_router-driven `RootTabsRouterView`) so the tab bar's labels and icons are defined once.
 enum RootTab {
   /// Browse the widget catalog by category.
   catalog(label: 'Catalog'),

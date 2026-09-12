@@ -10,12 +10,12 @@ import '/app/theme_scope.dart';
 import '/features/about/widgets/labeled_section.dart';
 import '/features/core/data/models/app_args.dart';
 
-/// The About tab, what the library is, the appearance control (dogfooding
-/// [PlatformSegmentButton] for the theme mode), and a readout of how this build
-/// is wired (navigation mode + which platform surface is rendering).
+/// The About tab, what the library is, the appearance control (dogfooding [PlatformSegmentButton]
+/// for the theme mode), and a readout of how this build is wired (navigation mode + which platform
+/// surface is rendering).
 ///
-/// View-only: its only observable state is the app-wide theme mode, which lives
-/// in [ThemeScope], not on a view model.
+/// View-only: its only observable state is the app-wide theme mode, which lives in [ThemeScope], not
+/// on a view model.
 class AboutView extends StatelessWidget {
   /// Host args, used to report the active navigation mode.
   final AppArgs args;

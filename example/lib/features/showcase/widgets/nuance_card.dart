@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// One entry in the Under-the-hood tour: a [title], an explanatory [body], an
-/// optional [code] snippet, and an optional live [demo]. Outlined (a border, no
-/// fill) to stay fully cross-platform, no Material surface.
+/// One entry in the Under-the-hood tour: a [title], an explanatory [body], an optional [code] snippet,
+/// and an optional live [demo]. Outlined (a border, no fill) to stay fully cross-platform, no Material
+/// surface.
 class NuanceCard extends StatelessWidget {
   /// The decision this card is about.
   final String title;

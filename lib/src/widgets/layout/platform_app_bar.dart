@@ -8,23 +8,18 @@ import 'package:material_ui/material_ui.dart' show AppBar;
 
 import '/src/models/layout/platform_app_bar_data.dart';
 
-/// A platform-adaptive app bar. Material `AppBar` on Android,
-/// `CupertinoNavigationBar` on iOS.
+/// A platform-adaptive app bar. Material `AppBar` on Android, `CupertinoNavigationBar` on iOS.
 ///
-/// Shared content (`title`, `leading`, `bottom`, `automaticallyImplyLeading`,
-/// `widgetKey`) is functional and lives flat on this widget, single source of
-/// truth. The only per-platform-overridable property is [backgroundColor]
-/// (shared-visual, iOS nav bars are often translucent, Android opaque). Pass
-/// [materialAppBarData] / [cupertinoNavigationBarData] for the rest of each
-/// platform's surface.
+/// Shared content (`title`, `leading`, `bottom`, `automaticallyImplyLeading`, `widgetKey`) is functional
+/// and lives flat on this widget, single source of truth. The only per-platform-overridable property
+/// is [backgroundColor] (shared-visual, iOS nav bars are often translucent, Android opaque). Pass
+/// [materialAppBarData] / [cupertinoNavigationBarData] for the rest of each platform's surface.
 ///
-/// Unlike the rest of the package, `PlatformAppBar` `implements`
-/// [PlatformAppBarData] rather than extending `PlatformWidgetBase`: a scaffold's
-/// app-bar slot requires a `PreferredSizeWidget` (Material) /
-/// `ObstructingPreferredSizeWidget` (Cupertino), neither of which a plain
-/// `StatelessWidget` satisfies. So instead of a `build` method it exposes
-/// [materialBuilder] / [cupertinoBuilder]; [PlatformScaffold] calls the matching
-/// one for the target platform.
+/// Unlike the rest of the package, `PlatformAppBar` `implements` [PlatformAppBarData] rather than
+/// extending `PlatformWidgetBase`: a scaffold's app-bar slot requires a `PreferredSizeWidget` (Material)
+/// / `ObstructingPreferredSizeWidget` (Cupertino), neither of which a plain `StatelessWidget` satisfies.
+/// So instead of a `build` method it exposes [materialBuilder] / [cupertinoBuilder]. [PlatformScaffold]
+/// calls the matching one for the target platform.
 ///
 /// Example:
 /// ```dart
@@ -36,49 +31,40 @@ import '/src/models/layout/platform_app_bar_data.dart';
 ///   ),
 /// )
 /// ```
-class PlatformAppBar implements PlatformAppBarData {
+class const PlatformAppBar({
   /// Optional key for the app bar widget.
-  final Key? widgetKey;
+  final Key? widgetKey,
+
+  /// Material-specific app bar data.
+  final MaterialAppBarData? materialAppBarData,
+
+  /// Cupertino-specific navigation bar data.
+  final CupertinoNavigationBarData? cupertinoNavigationBarData,
+
+  /// The primary title of the app bar.
+  final Widget? title,
+
+  /// Background color of the app bar. Per-platform override via [MaterialAppBarData.backgroundColor]
+  /// / [CupertinoNavigationBarData.backgroundColor].
+  final Color? backgroundColor,
 
   /// Widget to display before the title.
   ///
   /// Typically used for navigation or menu icons.
-  final Widget? leading;
-
-  /// The primary title of the app bar.
-  final Widget? title;
-
-  /// Widget to display below the app bar.
-  ///
-  /// Typically used for tabs or other supplementary content.
-  final PreferredSizeWidget? bottom;
-
-  /// Background color of the app bar. Per-platform override via
-  /// [MaterialAppBarData.backgroundColor] / [CupertinoNavigationBarData.backgroundColor].
-  final Color? backgroundColor;
+  final Widget? leading,
 
   /// Whether to automatically imply a leading widget.
   ///
   /// If true, a back button is automatically added when appropriate.
-  final bool automaticallyImplyLeading;
+  final bool automaticallyImplyLeading = true,
 
-  /// Material-specific app bar data.
-  final MaterialAppBarData? materialAppBarData;
-
-  /// Cupertino-specific navigation bar data.
-  final CupertinoNavigationBarData? cupertinoNavigationBarData;
-
+  /// Widget to display below the app bar.
+  ///
+  /// Typically used for tabs or other supplementary content.
+  final PreferredSizeWidget? bottom,
+}) implements PlatformAppBarData {
   /// Creates a platform-adaptive app bar.
-  const new({
-    this.widgetKey,
-    this.materialAppBarData,
-    this.cupertinoNavigationBarData,
-    this.title,
-    this.backgroundColor,
-    this.leading,
-    this.automaticallyImplyLeading = true,
-    this.bottom,
-  });
+  this;
 
   @override
   PreferredSizeWidget materialBuilder(BuildContext context) => AppBar(

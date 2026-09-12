@@ -121,7 +121,7 @@ whether per-platform override is possible.
   examples: Material's `ButtonStyle`, `MaterialTapTargetSize`,
   `splashRadius`; Cupertino's `applyTheme`, `onLabelColor`,
   `crossAxisAlignment`, `CupertinoButtonSize`. Functional examples:
-  `MaterialProgressIndicatorData.value` (Material has progress; Cupertino's
+  `MaterialProgressIndicatorData.value` (Material has progress, Cupertino's
   activity indicator is always indeterminate);
   `CupertinoProgressIndicatorData.animating` (toggle for Cupertino's
   spinner, no Material equivalent). When a concept has no equivalent on the
@@ -264,7 +264,7 @@ two-state mode where `tristate: false` never yields null. `_isTristate` is
 constructor. The costs are minor and accepted:
 - One extra null pointer-slot per instance (the unused callback field). Not a
   heap allocation, `null` doesn't allocate, and object layout is per-class,
-  so it isn't elided; ~8 bytes on an immutable widget.
+  so it isn't elided, ~8 bytes on an immutable widget.
 - `value` is one `bool?` field, so `widget.value` reads back as `bool?` even on
   the two-state path (the default constructor still rejects `null` at the call
   site via the narrowing formal).
@@ -303,7 +303,7 @@ constructor. The costs are minor and accepted:
  , e.g. `MaterialProgressIndicatorData.value`: are the exception: they
   have no other home since the concept doesn't exist on the other side.)
 - Direct passthrough to `Switch` / `CupertinoSwitch` constructor signatures.
-  The widget still owns its public API; per-platform records do not leak the
+  The widget still owns its public API. Per-platform records do not leak the
   underlying widget's full surface.
 
 ### Enforcement: the data ↔ widget parity guard
@@ -355,15 +355,15 @@ Each row maps a single package field to its native counterparts.
 |--------|---------------|------------------|-------------------|-------|
 | `PlatformSwitch` | `activeThumbColor` | `Switch.activeThumbColor` | `CupertinoSwitch.thumbColor` | Cupertino's `thumbColor` represents the active-state thumb color (no inactive equivalent on Cupertino's single-thumb design). The package's `active` prefix disambiguates. |
 | `PlatformSwitch` | `mouseCursor` | `Switch.mouseCursor` (`MouseCursor?`) | `CupertinoSwitch.mouseCursor` (`WidgetStateProperty<MouseCursor>?`) | Package unifies as `WidgetStateProperty<MouseCursor>?`. Material branch resolves to a single `MouseCursor` via `.resolve({.selected, .hovered, .focused, .disabled})` at build time. |
-| `PlatformSlider` | `thumbColor` | `Slider.thumbColor` (`Color?`) | `CupertinoSlider.thumbColor` (`Color`, non-null, default `CupertinoColors.white`) | Package exposes `Color?`. Material branch passes through (theme fallback intact when null); Cupertino branch falls back to `kDefaultCupertinoSliderThumbColor = CupertinoColors.white` when null. |
+| `PlatformSlider` | `thumbColor` | `Slider.thumbColor` (`Color?`) | `CupertinoSlider.thumbColor` (`Color`, non-null, default `CupertinoColors.white`) | Package exposes `Color?`. Material branch passes through (theme fallback intact when null). Cupertino branch falls back to `kDefaultCupertinoSliderThumbColor = CupertinoColors.white` when null. |
 | `PlatformListTile` | `title` | `ListTile.title` (`Widget?`) | `CupertinoListTile.title` (`Widget`, required non-null) | Package requires `Widget title` non-null to satisfy Cupertino's stricter contract. The previous package crashed at runtime when both `title` and `materialListTileData?.title` were null on iOS. |
-| `PlatformListTile` | `leadingWidth` | `ListTile.minLeadingWidth` (`double?`) | `CupertinoListTile.leadingSize` (`double`, non-null, default `28.0` for base / `30.0` for notched) | Package exposes `double?`. Material passes through; Cupertino branch substitutes `kDefaultCupertinoListTileLeadingSize` for the base variant or `kDefaultCupertinoNotchedListTileLeadingSize` for the notched variant when null. |
+| `PlatformListTile` | `leadingWidth` | `ListTile.minLeadingWidth` (`double?`) | `CupertinoListTile.leadingSize` (`double`, non-null, default `28.0` for base / `30.0` for notched) | Package exposes `double?`. Material passes through. Cupertino branch substitutes `kDefaultCupertinoListTileLeadingSize` for the base variant or `kDefaultCupertinoNotchedListTileLeadingSize` for the notched variant when null. |
 | `PlatformListTile` | `color` | `ListTile.tileColor` (`Color?`) | `CupertinoListTile.backgroundColor` (`Color?`) | Same `Color?` nullability on both, differ only by parameter name. Package's `color` chosen for brevity. |
 | `PlatformListTile` | `padding` | `ListTile.contentPadding` (`EdgeInsetsGeometry?`) | `CupertinoListTile.padding` (`EdgeInsetsGeometry?`) | Same `EdgeInsetsGeometry?` nullability on both, differ only by parameter name. |
-| `PlatformRadio` | `fillColor` | `Radio.fillColor` (`WidgetStateProperty<Color?>?`) | `CupertinoRadio.fillColor` (`Color?`) | Package exposes the richer `WidgetStateProperty<Color?>?`. Material passes through; Cupertino branch resolves to a single `Color?` via `.resolve({.selected, if (!isEnabled) .disabled})`: radios primarily render the fill colour when selected. The build-time-known `isEnabled` flag drives the disabled-state branch. |
+| `PlatformRadio` | `fillColor` | `Radio.fillColor` (`WidgetStateProperty<Color?>?`) | `CupertinoRadio.fillColor` (`Color?`) | Package exposes the richer `WidgetStateProperty<Color?>?`. Material passes through. Cupertino branch resolves to a single `Color?` via `.resolve({.selected, if (!isEnabled) .disabled})`: radios primarily render the fill colour when selected. The build-time-known `isEnabled` flag drives the disabled-state branch. |
 | `PlatformExpansionTile` | `child` | `ExpansionTile.children` (`List<Widget>`, default `<Widget>[]`) | `CupertinoExpansionTile.child` (`Widget`, required non-null) | Package exposes a single `Widget child` (required non-null) since Cupertino requires it. Material branch wraps as `[child]`. Callers wanting multiple Material children wrap with `Column` at the call site. |
 | `PlatformSearchBar` | `hintText` | `SearchBar.hintText` (`String?`) | `CupertinoSearchTextField.placeholder` (`String?`) | Same `String?` nullability on both, differ only by parameter name. Package's `hintText` chosen to mirror Material's term and the package's own `PlatformTextField.hintText`. |
-| `PlatformSearchBar` | `leading` | `SearchBar.leading` (`Widget?`) | `CupertinoSearchTextField.prefixIcon` (`Widget`, non-null, default `Icon(CupertinoIcons.search)`) | Package exposes `Widget?`. Material passes through; Cupertino branch substitutes `kDefaultCupertinoSearchBarLeading` when null. |
+| `PlatformSearchBar` | `leading` | `SearchBar.leading` (`Widget?`) | `CupertinoSearchTextField.prefixIcon` (`Widget`, non-null, default `Icon(CupertinoIcons.search)`) | Package exposes `Widget?`. Material passes through. Cupertino branch substitutes `kDefaultCupertinoSearchBarLeading` when null. |
 | `PlatformSearchBar` | `autoFocus` | `SearchBar.autoFocus` (`bool`, default `false`) | `CupertinoSearchTextField.autofocus` (`bool`, default `false`). Note lower-`f` | Same `bool` default `false` on both, differ only by `F`/`f` case. Package picks Material's `autoFocus` (camelCase) as the canonical spelling. |
 | `PlatformSearchBar` | `isEnabled` | `SearchBar.enabled` (`bool`, default `true`) | `CupertinoSearchTextField.enabled` (`bool?`, `null` means enabled) | Package collapses both to a single non-null `bool` named `isEnabled` per the package convention (see `#callback-nullability`). Cupertino's tri-state is reduced to the same boolean. |
 | `PlatformTextField` | `hintText` | `TextField.decoration.hintText` (`String?` inside `InputDecoration`) | `CupertinoTextField.placeholder` (`String?`, top-level) | Material has no top-level placeholder, it lives inside the [InputDecoration] blob. The package surfaces a flat `hintText: String?` on the widget, merged into Material's decoration via `decoration.copyWith(hintText: …)` at build time (data-class `decoration.hintText` wins when set, flat fills the gap), and passed directly to Cupertino's top-level `placeholder` (with `cupertinoTextFieldData.placeholder` override when set). |
@@ -390,7 +390,7 @@ When the two underlying parameters diverge:
 - **Names match, types / nullability differ.** Prefer the looser type so
   neither platform's full surface is lost: Material `Color?` + Cupertino
   `Color` → package exposes `Color?` and the Cupertino branch supplies a
-  default when null; Material `MouseCursor?` + Cupertino
+  default when null. Material `MouseCursor?` + Cupertino
   `WidgetStateProperty<MouseCursor>?` → package exposes the richer
   `WidgetStateProperty<MouseCursor>?` and the Material branch resolves at
   build time.

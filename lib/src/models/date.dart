@@ -4,18 +4,18 @@ import '/src/extensions/date_time_extensions.dart';
 
 /// A gregorian calendar date
 @immutable
-final class Date implements Comparable<Date> {
+final class const Date({
   /// The year of this date.
-  final int year;
+  required final int year,
 
   /// The month of this date. January is 1.
-  final int month;
+  final int month = 1,
 
   /// The day of this date. First day is 1.
-  final int day;
-
+  final int day = 1,
+}) implements Comparable<Date> {
   /// Creates a [Date] with the given [year], [month], and [day].
-  const new({required this.year, this.month = 1, this.day = 1});
+  this;
 
   /// The current date
   static Date now({bool utc = false}) {

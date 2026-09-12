@@ -1,5 +1,4 @@
-/// Page-routes in the app. Reference routes by `AppRoute.<name>.name`, never by
-/// string literal.
+/// Page-routes in the app. Reference routes by `AppRoute.<name>.name`, never by string literal.
 enum AppRoute {
   /// The Catalog tab (top-level branch).
   catalog(routeAddress: '/catalog'),

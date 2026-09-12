@@ -3,9 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// A group of related widgets shown as one expandable section in the Catalog
-/// tab. Drives the accordion: the section header ([label] + [icon]) and the
-/// iteration order.
+/// A group of related widgets shown as one expandable section in the Catalog tab. Drives the accordion:
+/// the section header ([label] + [icon]) and the iteration order.
 enum WidgetCategory {
   /// Filled, tonal, outlined, text, icon and disabled buttons.
   buttons(label: 'Buttons'),

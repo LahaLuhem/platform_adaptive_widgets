@@ -1,13 +1,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// A labelled enum control for a property editor, backed by a
-/// [PlatformMenuPicker] so the knob renders platform-adaptively. Each option's
-/// label is the value's `name`.
+/// A labelled enum control for a property editor, backed by a [PlatformMenuPicker] so the knob renders
+/// platform-adaptively. Each option's label is the value's `name`.
 ///
-/// `PlatformMenuPicker`'s Cupertino small-item rendering asserts at least three
-/// items, so use this knob only for enums with three or more values. Reach for
-/// a segmented control or a boolean toggle for smaller enums.
+/// `PlatformMenuPicker`'s Cupertino small-item rendering asserts at least three items, so use this
+/// knob only for enums with three or more values. Reach for a segmented control or a boolean toggle
+/// for smaller enums.
 class EnumKnob<T extends Enum> extends StatelessWidget {
   /// The property name shown as the picker's label.
   final String label;

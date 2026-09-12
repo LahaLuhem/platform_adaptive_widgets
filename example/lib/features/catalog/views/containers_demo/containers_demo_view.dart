@@ -14,8 +14,8 @@ import '/features/catalog/widgets/property_editor/property_editor.dart';
 import '/features/catalog/widgets/property_editor/segment_knob.dart';
 import 'containers_demo_view_model.dart';
 
-/// The Lists & containers section of the Catalog accordion, list tile,
-/// scrollbar, progress-indicator and expansion-tile playgrounds.
+/// The Lists & containers section of the Catalog accordion, list tile, scrollbar, progress-indicator
+/// and expansion-tile playgrounds.
 class ContainersDemoView extends StatelessWidget {
   const ContainersDemoView({super.key});
 

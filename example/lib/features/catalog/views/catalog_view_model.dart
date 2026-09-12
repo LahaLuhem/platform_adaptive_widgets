@@ -3,12 +3,10 @@ import 'package:pmvvm/pmvvm.dart';
 
 import '/features/catalog/data/enums/widget_category.dart';
 
-/// Owns one [ExpansibleController] per [WidgetCategory] so the Catalog accordion
-/// can expand or collapse every section at once, letting the reader flip
-/// between an everything-open flat scroll and a compact, scannable list. Each
-/// section starts expanded (via the controller, the only cross-platform way,
-/// `initiallyExpanded` is Material-only) so the widgets are immediately
-/// hands-on.
+/// Owns one [ExpansibleController] per [WidgetCategory] so the Catalog accordion can expand or collapse
+/// every section at once, letting the reader flip between an everything-open flat scroll and a compact,
+/// scannable list. Each section starts expanded (via the controller, the only cross-platform way,
+/// `initiallyExpanded` is Material-only) so the widgets are immediately hands-on.
 final class CatalogViewModel extends ViewModel {
   final _sectionControllers = {
     for (final category in WidgetCategory.values) category: ExpansibleController()..expand(),

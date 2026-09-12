@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// A labelled boolean control for a property editor, backed by a
-/// [PlatformSwitch] so the knob itself renders platform-adaptively.
+/// A labelled boolean control for a property editor, backed by a [PlatformSwitch] so the knob itself
+/// renders platform-adaptively.
 class BoolKnob extends StatelessWidget {
   /// The property name shown beside the switch.
   final String label;

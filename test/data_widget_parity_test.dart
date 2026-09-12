@@ -38,18 +38,16 @@ import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:checks/checks.dart';
 import 'package:test/test.dart';
 
-/// Private `_PlatformXxxData` bases that intentionally have NO flat mirror on
-/// their widget. Their base exists only to share a single field declaration
-/// (`backgroundColor`) across the two per-platform records. The widget reads it
-/// straight off the record, so there is no widget-flat field to keep in parity.
-/// See APPENDIX.md#field-classification (scaffold / app-bar carve-out).
+/// Private `_PlatformXxxData` bases that intentionally have NO flat mirror on their widget. Their
+/// base exists only to share a single field declaration (`backgroundColor`) across the two per-platform
+/// records. The widget reads it straight off the record, so there is no widget-flat field to keep in
+/// parity. See APPENDIX.md#field-classification (scaffold / app-bar carve-out).
 const _basesWithoutFlatMirror = {'_PlatformAppBarData', '_PlatformScaffoldData'};
 
-/// The canonical widgets the guard MUST discover. A floor, not a ceiling: a new
-/// canonical widget auto-enrolls in the checks below and need not be added here.
-/// This set only guards against discovery silently finding nothing (e.g. after
-/// an analyzer AST change or a lib/src/models layout move), which would let the
-/// parity checks pass vacuously.
+/// The canonical widgets the guard MUST discover. A floor, not a ceiling: a new canonical widget
+/// auto-enrolls in the checks below and need not be added here. This set only guards against discovery
+/// silently finding nothing (e.g. after an analyzer AST change or a lib/src/models layout move),
+/// which would let the parity checks pass vacuously.
 const _knownCanonicalWidgets = {
   'PlatformCheckbox',
   'PlatformRadio',
@@ -207,8 +205,8 @@ Set<String> _instanceFieldNames(ClassDeclaration node) => node.body.members
     .map((variable) => variable.name.lexeme)
     .toSet();
 
-/// Field names merged via `<accessorPrefix>...?.field ?? field` inside the
-/// [methodName] method of [node].
+/// Field names merged via `<accessorPrefix>...?.field ?? field` inside the [methodName] method of
+/// [node].
 Set<String> _mergedFields(ClassDeclaration node, String methodName, String accessorPrefix) {
   final visitor = _MergeVisitor(accessorPrefix);
   final methods = node.body.members.whereType<MethodDeclaration>().where(
@@ -221,10 +219,7 @@ Set<String> _mergedFields(ClassDeclaration node, String methodName, String acces
   return visitor.merged;
 }
 
-class _MergeVisitor extends RecursiveAstVisitor<void> {
-  new(this._accessorPrefix);
-
-  final String _accessorPrefix;
+class _MergeVisitor(final String _accessorPrefix) extends RecursiveAstVisitor<void> {
   final Set<String> merged = {};
 
   @override
@@ -243,25 +238,16 @@ class _MergeVisitor extends RecursiveAstVisitor<void> {
   }
 }
 
-class _Base {
-  new({required this.name, required this.widgetName, required this.fields, required this.location});
+class _Base({
+  required final String name,
+  required final String widgetName,
+  required final Set<String> fields,
+  required final String location,
+});
 
-  final String name;
-  final String widgetName;
-  final Set<String> fields;
-  final String location;
-}
-
-class _Widget {
-  new({
-    required this.filePath,
-    required this.fieldNames,
-    required this.materialMerged,
-    required this.cupertinoMerged,
-  });
-
-  final String filePath;
-  final Set<String> fieldNames;
-  final Set<String> materialMerged;
-  final Set<String> cupertinoMerged;
-}
+class _Widget({
+  required final String filePath,
+  required final Set<String> fieldNames,
+  required final Set<String> materialMerged,
+  required final Set<String> cupertinoMerged,
+});

@@ -7,78 +7,65 @@ import '/src/models/layout/platform_scaffold_data.dart';
 import '/src/models/layout/platform_tab_scaffold_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive tab scaffold. Material `Scaffold` + `NavigationBar` on
-/// Android, `CupertinoTabScaffold` + `CupertinoTabBar` on iOS.
+/// A platform-adaptive tab scaffold. Material `Scaffold` + `NavigationBar` on Android, `CupertinoTabScaffold`
+/// + `CupertinoTabBar` on iOS.
 ///
 /// Works in one of two modes, distinguished by whether [tabBodyBuilder] is set:
 ///
-/// - **Managed**: give each [TabDestination] a `view` and omit
-///   [tabBodyBuilder]. The scaffold owns selection: tapping a tab switches
-///   content itself. On iOS each tab gets its own `CupertinoTabView` navigator
-///   (native deep-nav semantics), the Material side replicates the keep-alive
-///   caching via [_TabSwitchingView].
-/// - **Controlled**: provide [tabBodyBuilder] plus [selectedIndex] and
-///   [onTabDestinationTap]. An external emitter owns selection, most commonly
-///   `go_router`'s `StatefulShellRoute`, where `selectedIndex` is
-///   `navigationShell.currentIndex`, `onTabDestinationTap` is `goBranch`, and
+/// - **Managed**: give each [TabDestination] a `view` and omit [tabBodyBuilder]. The scaffold owns
+///   selection: tapping a tab switches content itself. On iOS each tab gets its own `CupertinoTabView`
+///   navigator (native deep-nav semantics), the Material side replicates the keep-alive caching via
+///   [_TabSwitchingView].
+/// - **Controlled**: provide [tabBodyBuilder] plus [selectedIndex] and [onTabDestinationTap]. An
+///   external emitter owns selection, most commonly `go_router`'s `StatefulShellRoute`, where
+///   `selectedIndex` is `navigationShell.currentIndex`, `onTabDestinationTap` is `goBranch`, and
 ///   `tabBodyBuilder` returns the shell's branch navigators.
 ///
-/// Exactly one mode must be used, a constructor `assert` enforces "either
-/// `tabBodyBuilder`, or a `view` on every destination".
+/// Exactly one mode must be used, a constructor `assert` enforces "either `tabBodyBuilder`, or a
+/// `view` on every destination".
 ///
-/// **App bars.** By default each tab supplies its own app bar, give each tab a
-/// `PlatformScaffold` (managed) or return one from [tabBodyBuilder] (controlled);
-/// this matches both platforms' tab conventions. Material *additionally* allows
-/// a single persistent top app bar across tabs via [MaterialTabScaffoldData.appBar],
-/// a Material-only option with no iOS counterpart (iOS HIG disallows a top bar
-/// over tabs).
+/// **App bars.** By default each tab supplies its own app bar, give each tab a `PlatformScaffold`
+/// (managed) or return one from [tabBodyBuilder] (controlled). This matches both platforms' tab
+/// conventions. Material *additionally* allows a single persistent top app bar across tabs via
+/// [MaterialTabScaffoldData.appBar], a Material-only option with no iOS counterpart (iOS HIG disallows
+/// a top bar over tabs).
 ///
-/// On iOS the underlying `CupertinoTabScaffold` is controller-driven. In
-/// controlled mode this widget owns one persistent [CupertinoTabController] and
-/// syncs `controller.index` to [selectedIndex] when the external index changes,
-/// it does **not** recreate the controller each build, so an external emitter
-/// like `go_router` drives it without leaking controllers or rebuild churn.
-class PlatformTabScaffold extends PlatformWidgetKeyedBase {
+/// On iOS the underlying `CupertinoTabScaffold` is controller-driven. In controlled mode this widget
+/// owns one persistent [CupertinoTabController] and syncs `controller.index` to [selectedIndex] when
+/// the external index changes, it does **not** recreate the controller each build, so an external
+/// emitter like `go_router` drives it without leaking controllers or rebuild churn.
+class const PlatformTabScaffold({
+  /// The destinations to display in the tab bar.
+  required final List<TabDestination> tabDestinations,
+
   /// The selected tab index.
   ///
-  /// In managed mode this is the initial tab. In controlled mode it's the
-  /// current tab, driven by the external emitter.
-  final int selectedIndex;
-
-  /// The background color of the scaffold.
-  final Color? backgroundColor;
-
-  /// Whether the scaffold should resize to avoid the bottom inset.
-  final bool resizeToAvoidBottomInset;
-
-  /// A restoration ID to save and restore the state of the scaffold.
-  final String? restorationId;
-
-  /// The destinations to display in the tab bar.
-  final List<TabDestination> tabDestinations;
+  /// In managed mode this is the initial tab. In controlled mode it's the current tab, driven by the
+  /// external emitter.
+  final int selectedIndex = 0,
 
   /// Called when a tab destination is tapped.
-  final ValueChanged<int>? onTabDestinationTap;
+  final ValueChanged<int>? onTabDestinationTap,
 
   /// Builds the body for each tab, presence selects controlled mode.
-  final IndexedWidgetBuilder? tabBodyBuilder;
+  final IndexedWidgetBuilder? tabBodyBuilder,
+
+  /// The background color of the scaffold.
+  final Color? backgroundColor,
+
+  /// Whether the scaffold should resize to avoid the bottom inset.
+  final bool resizeToAvoidBottomInset = kDefaultResizeToAvoidBottomInset,
+
+  /// A restoration ID to save and restore the state of the scaffold.
+  final String? restorationId,
 
   /// Material-specific data for the tab scaffold.
-  final MaterialTabScaffoldData? materialTabScaffoldData;
-
+  final MaterialTabScaffoldData? materialTabScaffoldData,
+  super.widgetKey,
+  super.key,
+}) extends PlatformWidgetKeyedBase {
   /// Creates a platform-adaptive tab scaffold.
-  const new({
-    required this.tabDestinations,
-    this.selectedIndex = 0,
-    this.onTabDestinationTap,
-    this.tabBodyBuilder,
-    this.backgroundColor,
-    this.resizeToAvoidBottomInset = kDefaultResizeToAvoidBottomInset,
-    this.restorationId,
-    this.materialTabScaffoldData,
-    super.widgetKey,
-    super.key,
-  });
+  this;
 
   @override
   Widget buildMaterial(BuildContext context) {
@@ -113,10 +100,9 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
     );
   }
 
-  /// Asserts exactly one mode is in use: a [tabBodyBuilder] (controlled) XOR a
-  /// `view` on every destination (managed). A constructor `assert` can't run
-  /// this, the `.every` closure isn't a constant expression, so it's checked
-  /// per build (debug-only).
+  /// Asserts exactly one mode is in use: a [tabBodyBuilder] (controlled) XOR a `view` on every
+  /// destination (managed). A constructor `assert` can't run this, the `.every` closure isn't a
+  /// constant expression, so it's checked per build (debug-only).
   void _debugAssertSingleMode() {
     assert(
       (tabBodyBuilder != null) ^ tabDestinations.every((destination) => destination.view != null),
@@ -126,35 +112,24 @@ class PlatformTabScaffold extends PlatformWidgetKeyedBase {
   }
 }
 
-/// iOS implementation. Owns a persistent [CupertinoTabController] so an external
-/// emitter (controlled mode) can drive selection by [selectedIndex] without the
-/// controller being recreated each build. See [PlatformTabScaffold].
-class _CupertinoTabScaffold extends StatefulWidget {
-  final Key? widgetKey;
-  final int selectedIndex;
-  final bool resizeToAvoidBottomInset;
-  final Color? backgroundColor;
-  final String? restorationId;
-  final List<TabDestination> tabDestinations;
-  final ValueChanged<int>? onTabDestinationTap;
-  final IndexedWidgetBuilder? tabBodyBuilder;
-
-  const new({
-    required this.selectedIndex,
-    required this.resizeToAvoidBottomInset,
-    required this.tabDestinations,
-    this.widgetKey,
-    this.backgroundColor,
-    this.restorationId,
-    this.onTabDestinationTap,
-    this.tabBodyBuilder,
-  });
-
+/// iOS implementation. Owns a persistent [CupertinoTabController] so an external emitter (controlled
+/// mode) can drive selection by [selectedIndex] without the controller being recreated each build.
+/// See [PlatformTabScaffold].
+class const _CupertinoTabScaffold({
+  required final int selectedIndex,
+  required final bool resizeToAvoidBottomInset,
+  required final List<TabDestination> tabDestinations,
+  final Key? widgetKey,
+  final Color? backgroundColor,
+  final String? restorationId,
+  final ValueChanged<int>? onTabDestinationTap,
+  final IndexedWidgetBuilder? tabBodyBuilder,
+}) extends StatefulWidget {
   @override
   State<_CupertinoTabScaffold> createState() => _CupertinoTabScaffoldState();
 }
 
-class _CupertinoTabScaffoldState extends State<_CupertinoTabScaffold> {
+class _CupertinoTabScaffoldState() extends State<_CupertinoTabScaffold> {
   late final CupertinoTabController _controller;
 
   @override
@@ -212,40 +187,28 @@ class _CupertinoTabScaffoldState extends State<_CupertinoTabScaffold> {
   );
 }
 
-/// Android implementation. In managed mode it owns a [ValueNotifier] for the
-/// selected index. In controlled mode it renders [PlatformTabScaffold.selectedIndex]
-/// directly. [_TabSwitchingView] gives the keep-alive tab caching that
-/// `CupertinoTabScaffold` provides natively but Material's `Scaffold` does not.
-class _MaterialTabScaffold extends StatefulWidget {
-  final int selectedIndex;
-  final Color? backgroundColor;
-  final bool resizeToAvoidBottomInset;
-  final String? restorationId;
-  final List<TabDestination> tabDestinations;
-  final ValueChanged<int>? onTabDestinationTap;
-  final IndexedWidgetBuilder? tabBodyBuilder;
-  final MaterialTabScaffoldData? materialTabScaffoldData;
-  final Key? widgetKey;
-
-  const new({
-    required this.selectedIndex,
-    required this.resizeToAvoidBottomInset,
-    required this.tabDestinations,
-    this.backgroundColor,
-    this.restorationId,
-    this.onTabDestinationTap,
-    this.tabBodyBuilder,
-    this.materialTabScaffoldData,
-    this.widgetKey,
-  });
-
+/// Android implementation. In managed mode it owns a [ValueNotifier] for the selected index. In
+/// controlled mode it renders [PlatformTabScaffold.selectedIndex] directly. [_TabSwitchingView] gives
+/// the keep-alive tab caching that `CupertinoTabScaffold` provides natively but Material's `Scaffold`
+/// does not.
+class const _MaterialTabScaffold({
+  required final int selectedIndex,
+  required final bool resizeToAvoidBottomInset,
+  required final List<TabDestination> tabDestinations,
+  final Color? backgroundColor,
+  final String? restorationId,
+  final ValueChanged<int>? onTabDestinationTap,
+  final IndexedWidgetBuilder? tabBodyBuilder,
+  final MaterialTabScaffoldData? materialTabScaffoldData,
+  final Key? widgetKey,
+}) extends StatefulWidget {
   @override
   State<_MaterialTabScaffold> createState() => _MaterialTabScaffoldState();
 }
 
-class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> {
-  /// Owns the selected index in managed mode; `null` in controlled mode (the
-  /// external [PlatformTabScaffold.selectedIndex] drives selection instead).
+class _MaterialTabScaffoldState() extends State<_MaterialTabScaffold> {
+  /// Owns the selected index in managed mode; `null` in controlled mode (the external
+  /// [PlatformTabScaffold.selectedIndex] drives selection instead).
   ValueNotifier<int>? _selectedIndexNotifier;
 
   @override
@@ -343,21 +306,20 @@ class _MaterialTabScaffoldState extends State<_MaterialTabScaffold> {
 
 /// Ripped from Cupertino's `_TabSwitchingView`.
 ///
-/// A widget laying out multiple tabs with only one active tab being built
-/// at a time and on stage. Off stage tabs' animations are stopped.
-class _TabSwitchingView extends StatefulWidget {
-  const new({required this.currentTabIndex, required this.tabCount, required this.tabBuilder})
-    : assert(tabCount > 0, 'Tab count must be greater than 0');
-
-  final int currentTabIndex;
-  final int tabCount;
-  final IndexedWidgetBuilder tabBuilder;
+/// A widget laying out multiple tabs with only one active tab being built at a time and on stage.
+/// Off stage tabs' animations are stopped.
+class const _TabSwitchingView({
+  required final int currentTabIndex,
+  required final int tabCount,
+  required final IndexedWidgetBuilder tabBuilder,
+}) extends StatefulWidget {
+  this : assert(tabCount > 0, 'Tab count must be greater than 0');
 
   @override
   _TabSwitchingViewState createState() => _TabSwitchingViewState();
 }
 
-class _TabSwitchingViewState extends State<_TabSwitchingView> {
+class _TabSwitchingViewState() extends State<_TabSwitchingView> {
   final shouldBuildTab = <bool>[];
   final tabFocusNodes = <FocusScopeNode>[];
 
@@ -456,13 +418,11 @@ class _TabSwitchingViewState extends State<_TabSwitchingView> {
   );
 }
 
-class _MaterialNavigationBar extends StatelessWidget {
-  final int selectedIndex;
-  final List<TabDestination> tabDestinations;
-  final ValueChanged<int>? onTabDestinationTap;
-
-  const new({required this.selectedIndex, required this.tabDestinations, this.onTabDestinationTap});
-
+class const _MaterialNavigationBar({
+  required final int selectedIndex,
+  required final List<TabDestination> tabDestinations,
+  final ValueChanged<int>? onTabDestinationTap,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => NavigationBar(
     selectedIndex: selectedIndex,

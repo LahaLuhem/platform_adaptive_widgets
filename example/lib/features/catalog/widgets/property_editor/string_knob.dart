@@ -1,10 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// A labelled string control for a property editor, backed by a
-/// [PlatformTextField]. It seeds its field from the initial [value] and reports
-/// edits via [onChanged]; it owns the editing controller because it is the sole
-/// editor of the value, so it ignores later [value] changes (no external sync).
+/// A labelled string control for a property editor, backed by a [PlatformTextField]. It seeds its
+/// field from the initial [value] and reports edits via [onChanged]. It owns the editing controller
+/// because it is the sole editor of the value, so it ignores later [value] changes (no external sync).
 class StringKnob extends StatefulWidget {
   /// The property name shown above the field.
   final String label;

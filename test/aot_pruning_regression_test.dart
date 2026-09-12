@@ -92,9 +92,9 @@ void main() {
   });
 }
 
-/// The `lib/src/` Dart files both checks lint: every `.dart` except the file
-/// that *defines* the dispatch helpers (their own definitions aren't calls).
-/// Lazy, nothing is read until the returned iterable is iterated.
+/// The `lib/src/` Dart files both checks lint: every `.dart` except the file that *defines* the
+/// dispatch helpers (their own definitions aren't calls). Lazy, nothing is read until the returned
+/// iterable is iterated.
 Iterable<File> _lintableFiles() =>
     Directory('lib/src')
         .listSync(recursive: true)
@@ -107,11 +107,8 @@ bool _isHelperHome(File file) {
   return segments.isNotEmpty && segments.last == _helperHomeBasename;
 }
 
-class _HelperCallVisitor extends RecursiveAstVisitor<void> {
-  new(this._filePath, this._lineInfo);
-
-  final String _filePath;
-  final LineInfo _lineInfo;
+class _HelperCallVisitor(final String _filePath, final LineInfo _lineInfo)
+    extends RecursiveAstVisitor<void> {
   final List<String> offenders = [];
 
   @override
@@ -124,11 +121,8 @@ class _HelperCallVisitor extends RecursiveAstVisitor<void> {
   }
 }
 
-class _DispatchHelperVisitor extends RecursiveAstVisitor<void> {
-  new(this._filePath, this._lineInfo);
-
-  final String _filePath;
-  final LineInfo _lineInfo;
+class _DispatchHelperVisitor(final String _filePath, final LineInfo _lineInfo)
+    extends RecursiveAstVisitor<void> {
   final List<String> offenders = [];
 
   @override

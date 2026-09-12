@@ -11,18 +11,15 @@ import '/src/models/platform_widget_base.dart';
 
 /// A platform-adaptive app, [MaterialApp] on Android, [CupertinoApp] on iOS.
 ///
-/// The two underlying apps share ~26 functional properties (`title`, `home`,
-/// `routes`, `locale`, `builder`, navigator config, …). Per the package's
-/// field-classification rule those are functional, they live flat on this
-/// widget as the single source of truth, never duplicated into a per-platform
-/// record. The only per-platform surface is the theme, since Material's
-/// [ThemeData] and Cupertino's [CupertinoThemeData] are disjoint types: pass
-/// [materialAppData] / [cupertinoAppData] for those.
+/// The two underlying apps share ~26 functional properties (`title`, `home`, `routes`, `locale`,
+/// `builder`, navigator config, …). Per the package's field-classification rule those are functional,
+/// they live flat on this widget as the single source of truth, never duplicated into a per-platform
+/// record. The only per-platform surface is the theme, since Material's [ThemeData] and Cupertino's
+/// [CupertinoThemeData] are disjoint types: pass [materialAppData] / [cupertinoAppData] for those.
 ///
-/// Use the default constructor for navigator-based routing (`home`, `routes`,
-/// `onGenerateRoute`, …). Use [PlatformApp.router] for Flutter's declarative
-/// router API (`routerConfig`, `routerDelegate`, …), the two constructors
-/// expose disjoint routing surfaces, so the type system keeps you from mixing
+/// Use the default constructor for navigator-based routing (`home`, `routes`, `onGenerateRoute`, …).
+/// Use [PlatformApp.router] for Flutter's declarative router API (`routerConfig`, `routerDelegate`,
+/// …), the two constructors expose disjoint routing surfaces, so the type system keeps you from mixing
 /// navigator and router config.
 ///
 /// Example:
@@ -58,28 +55,22 @@ class PlatformApp extends PlatformWidgetKeyedBase {
   /// A callback used to resolve the locale when the app is starting.
   final LocaleResolutionCallback? localeResolutionCallback;
 
-  /// The list of locales this app has been localized for. Defaults to
-  /// [kDefaultSupportedLocales].
+  /// The list of locales this app has been localized for. Defaults to [kDefaultSupportedLocales].
   final Iterable<Locale> supportedLocales;
 
-  /// Whether to show the performance overlay. Defaults to
-  /// [kDefaultShowPerformanceOverlay].
+  /// Whether to show the performance overlay. Defaults to [kDefaultShowPerformanceOverlay].
   final bool showPerformanceOverlay;
 
-  /// Whether to checkerboard raster cache images. Defaults to
-  /// [kDefaultCheckerboardRasterCacheImages].
+  /// Whether to checkerboard raster cache images. Defaults to [kDefaultCheckerboardRasterCacheImages].
   final bool checkerboardRasterCacheImages;
 
-  /// Whether to checkerboard layers rendered to offscreen bitmaps. Defaults to
-  /// [kDefaultCheckerboardOffscreenLayers].
+  /// Whether to checkerboard layers rendered to offscreen bitmaps. Defaults to [kDefaultCheckerboardOffscreenLayers].
   final bool checkerboardOffscreenLayers;
 
-  /// Whether to show the semantics debugger. Defaults to
-  /// [kDefaultShowSemanticsDebugger].
+  /// Whether to show the semantics debugger. Defaults to [kDefaultShowSemanticsDebugger].
   final bool showSemanticsDebugger;
 
-  /// Whether to show the "DEBUG" banner. Defaults to
-  /// [kDefaultDebugShowCheckedModeBanner].
+  /// Whether to show the "DEBUG" banner. Defaults to [kDefaultDebugShowCheckedModeBanner].
   final bool debugShowCheckedModeBanner;
 
   /// The default map of keyboard shortcuts.
@@ -100,8 +91,7 @@ class PlatformApp extends PlatformWidgetKeyedBase {
   /// A callback to listen for `NavigationNotification`s bubbling up.
   final bool Function(NavigationNotification)? onNavigationNotification;
 
-  /// Global key for the navigator state. Navigator-routing only, `null` on
-  /// [PlatformApp.router].
+  /// Global key for the navigator state. Navigator-routing only, `null` on [PlatformApp.router].
   final GlobalKey<NavigatorState>? navigatorKey;
 
   /// The home widget of the app. Navigator-routing only.
@@ -127,12 +117,11 @@ class PlatformApp extends PlatformWidgetKeyedBase {
   /// Navigator observers. Navigator-routing only. Defaults to `[]`.
   final List<NavigatorObserver> navigatorObservers;
 
-  /// Provider for route information from the platform. Router-routing only,
-  /// `null` on the default constructor.
+  /// Provider for route information from the platform. Router-routing only, `null` on the default
+  /// constructor.
   final RouteInformationProvider? routeInformationProvider;
 
-  /// Parser converting route information to a route configuration.
-  /// Router-routing only.
+  /// Parser converting route information to a route configuration. Router-routing only.
   final RouteInformationParser<Object>? routeInformationParser;
 
   /// Delegate building the navigation stack. Router-routing only.
@@ -150,8 +139,8 @@ class PlatformApp extends PlatformWidgetKeyedBase {
   /// Cupertino-specific configuration (theme).
   final CupertinoAppData? cupertinoAppData;
 
-  /// Discriminates [PlatformApp.router] from the default constructor, selects
-  /// `MaterialApp.router` / `CupertinoApp.router` over their navigator forms.
+  /// Discriminates [PlatformApp.router] from the default constructor, selects `MaterialApp.router`
+  /// / `CupertinoApp.router` over their navigator forms.
   final bool _useRouter;
 
   /// Creates a platform-adaptive app using navigator-based routing.

@@ -5,13 +5,12 @@ import 'package:material_ui/material_ui.dart' show Scrollbar;
 import '/src/models/interaction/platform_scrollbar_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive scrollbar that renders Material [Scrollbar] on
-/// Android and [CupertinoScrollbar] on iOS.
+/// A platform-adaptive scrollbar that renders Material [Scrollbar] on Android and [CupertinoScrollbar]
+/// on iOS.
 ///
-/// Wraps a [child] scroll view and attaches to its [ScrollController]. All
-/// functional inputs and shared visual defaults are flat parameters on the
-/// widget. Per-platform tuning is opt-in via [materialScrollbarData] and
-/// [cupertinoScrollbarData]. See `APPENDIX.md#field-classification`.
+/// Wraps a [child] scroll view and attaches to its [ScrollController]. All functional inputs and
+/// shared visual defaults are flat parameters on the widget. Per-platform tuning is opt-in via
+/// [materialScrollbarData] and [cupertinoScrollbarData]. See `APPENDIX.md#field-classification`.
 ///
 /// Example:
 /// ```dart
@@ -24,60 +23,49 @@ import '/src/models/platform_widget_base.dart';
 ///   ),
 /// )
 /// ```
-class PlatformScrollbar extends PlatformWidgetKeyedBuilderBase {
+class const PlatformScrollbar({
+  required super.child,
+
   /// Scroll controller the scrollbar listens to.
-  final ScrollController? controller;
+  final ScrollController? controller,
 
   /// Whether the scrollbar thumb should be visible.
   ///
-  /// Behavioral toggle, when `true`, the thumb is always visible. When
-  /// `false` or `null`, the platform's default auto-hide behavior applies.
-  final bool? thumbVisibility;
+  /// Behavioral toggle, when `true`, the thumb is always visible. When `false` or `null`, the platform's
+  /// default auto-hide behavior applies.
+  final bool? thumbVisibility,
 
   /// Predicate for determining which scroll notifications to respond to.
   ///
-  /// When `null`, each underlying platform widget applies its own default
-  /// predicate.
-  final ScrollNotificationPredicate? notificationPredicate;
+  /// When `null`, each underlying platform widget applies its own default predicate.
+  final ScrollNotificationPredicate? notificationPredicate,
 
   /// The thickness of the scrollbar.
-  final double? thickness;
+  final double? thickness,
 
   /// The radius of the scrollbar corners.
-  final Radius? radius;
+  final Radius? radius,
 
   /// The orientation of the scrollbar.
-  final ScrollbarOrientation? scrollbarOrientation;
+  final ScrollbarOrientation? scrollbarOrientation,
 
   /// Material-only configuration. Optional.
   ///
-  /// Fields set on this record override the widget's flat shared-visual
-  /// defaults on the Material branch; Material-only fields
-  /// (`trackVisibility`, `interactive`) are read only from here.
-  final MaterialScrollbarData? materialScrollbarData;
+  /// Fields set on this record override the widget's flat shared-visual defaults on the Material
+  /// branch. Material-only fields (`trackVisibility`, `interactive`) are read only from here.
+  final MaterialScrollbarData? materialScrollbarData,
 
   /// Cupertino-only configuration. Optional.
   ///
-  /// Fields set on this record override the widget's flat shared-visual
-  /// defaults on the Cupertino branch; Cupertino-only fields
-  /// (`thicknessWhileDragging`, `radiusWhileDragging`, `mainAxisMargin`)
+  /// Fields set on this record override the widget's flat shared-visual defaults on the Cupertino
+  /// branch. Cupertino-only fields (`thicknessWhileDragging`, `radiusWhileDragging`, `mainAxisMargin`)
   /// are read only from here.
-  final CupertinoScrollbarData? cupertinoScrollbarData;
-
+  final CupertinoScrollbarData? cupertinoScrollbarData,
+  super.widgetKey,
+  super.key,
+}) extends PlatformWidgetKeyedBuilderBase {
   /// Creates a platform-adaptive scrollbar.
-  const new({
-    required super.child,
-    this.controller,
-    this.thumbVisibility,
-    this.notificationPredicate,
-    this.thickness,
-    this.radius,
-    this.scrollbarOrientation,
-    this.materialScrollbarData,
-    this.cupertinoScrollbarData,
-    super.widgetKey,
-    super.key,
-  });
+  this;
 
   @override
   Widget buildMaterial(BuildContext context) => Scrollbar(

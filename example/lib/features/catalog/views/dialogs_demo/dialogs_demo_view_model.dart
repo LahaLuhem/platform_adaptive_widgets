@@ -3,11 +3,10 @@ import 'package:material_ui/material_ui.dart' show TimeOfDay;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
-/// Triggers for the dialog / sheet / picker showcase. The alert dialog and raw
-/// dialog are configure-then-trigger playgrounds, knobs set their args (held as
-/// flat fields, mutated via `notifyListeners()`. See `CODESTYLE.md`'s reactivity
-/// note on playground view-models), and the button fires the dialog. The date /
-/// time buttons display the last-picked value.
+/// Triggers for the dialog / sheet / picker showcase. The alert dialog and raw dialog are
+/// configure-then-trigger playgrounds, knobs set their args (held as flat fields, mutated via
+/// `notifyListeners()`. See `CODESTYLE.md`'s reactivity note on playground view-models), and the
+/// button fires the dialog. The date / time buttons display the last-picked value.
 final class DialogsDemoViewModel extends ViewModel {
   var _alertTitle = 'Alert';
   var _alertMessage = 'Actions adapt their layout and styling to the platform.';

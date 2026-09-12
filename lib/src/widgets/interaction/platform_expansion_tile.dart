@@ -5,22 +5,20 @@ import 'package:material_ui/material_ui.dart' show ExpansionTile;
 import '/src/models/interaction/platform_expansion_tile_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive expansion tile that renders Material [ExpansionTile] on
-/// Android and [CupertinoExpansionTile] on iOS.
+/// A platform-adaptive expansion tile that renders Material [ExpansionTile] on Android and
+/// [CupertinoExpansionTile] on iOS.
 ///
-/// All functional inputs (title content, child content, expansion controller) live as
-/// flat constructor parameters. Per-platform visual + behavioural tuning is opt-in via
-/// [materialExpansionTileData] and [cupertinoExpansionTileData]. See
-/// `APPENDIX.md#field-classification`.
+/// All functional inputs (title content, child content, expansion controller) live as flat constructor
+/// parameters. Per-platform visual + behavioural tuning is opt-in via [materialExpansionTileData]
+/// and [cupertinoExpansionTileData]. See `APPENDIX.md#field-classification`.
 ///
-/// Single-child only, [CupertinoExpansionTile] has no multi-child slot. Callers
-/// wanting Material's multi-child layout wrap with `Column` at the call site
-/// (`child: Column(children: [...])`). See `APPENDIX.md#cross-platform-field-mappings`
-/// for the `child` ↔ `children` mapping.
+/// Single-child only, [CupertinoExpansionTile] has no multi-child slot. Callers wanting Material's
+/// multi-child layout wrap with `Column` at the call site (`child: Column(children: [...])`). See
+/// `APPENDIX.md#cross-platform-field-mappings` for the `child` ↔ `children` mapping.
 ///
-/// No `isEnabled` flag, [CupertinoExpansionTile] has no built-in disabled state.
-/// Material's `enabled` lives on [MaterialExpansionTileData]; for Cupertino, wrap with
-/// [IgnorePointer] (or [Opacity] for a faded-out look).
+/// No `isEnabled` flag, [CupertinoExpansionTile] has no built-in disabled state. Material's `enabled`
+/// lives on [MaterialExpansionTileData]. For Cupertino, wrap with [IgnorePointer] (or [Opacity] for
+/// a faded-out look).
 ///
 /// Example:
 /// ```dart
@@ -29,40 +27,33 @@ import '/src/models/platform_widget_base.dart';
 ///   child: const Text('Settings content'),
 /// )
 /// ```
-class PlatformExpansionTile extends PlatformWidgetKeyedBase {
+class const PlatformExpansionTile({
   /// Primary content of the tile header.
   ///
-  /// Required non-null, both [ExpansionTile.title] and [CupertinoExpansionTile.title]
-  /// require non-null upstream.
-  final Widget title;
+  /// Required non-null, both [ExpansionTile.title] and [CupertinoExpansionTile.title] require non-null
+  /// upstream.
+  required final Widget title,
 
   /// Content shown when the tile is expanded.
   ///
-  /// Required non-null, [CupertinoExpansionTile.child] requires it. Material wraps it
-  /// as `[child]` for its `children:` slot. See
-  /// `APPENDIX.md#cross-platform-field-mappings`.
-  final Widget child;
+  /// Required non-null, [CupertinoExpansionTile.child] requires it. Material wraps it as `[child]`
+  /// for its `children:` slot. See `APPENDIX.md#cross-platform-field-mappings`.
+  required final Widget child,
 
-  /// Optional controller for programmatic expand / collapse + state observation.
-  /// Same [ExpansibleController] type on both platforms.
-  final ExpansibleController? controller;
+  /// Optional controller for programmatic expand / collapse + state observation. Same [ExpansibleController]
+  /// type on both platforms.
+  final ExpansibleController? controller,
 
   /// Material-only visual + functional overrides. Optional.
-  final MaterialExpansionTileData? materialExpansionTileData;
+  final MaterialExpansionTileData? materialExpansionTileData,
 
   /// Cupertino-only visual + functional overrides. Optional.
-  final CupertinoExpansionTileData? cupertinoExpansionTileData;
-
+  final CupertinoExpansionTileData? cupertinoExpansionTileData,
+  super.widgetKey,
+  super.key,
+}) extends PlatformWidgetKeyedBase {
   /// Creates a platform-adaptive expansion tile.
-  const new({
-    required this.title,
-    required this.child,
-    this.controller,
-    this.materialExpansionTileData,
-    this.cupertinoExpansionTileData,
-    super.widgetKey,
-    super.key,
-  });
+  this;
 
   @override
   Widget buildMaterial(BuildContext context) => ExpansionTile(

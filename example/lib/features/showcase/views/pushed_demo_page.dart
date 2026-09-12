@@ -2,13 +2,12 @@ import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// A throwaway destination for the "native page transitions" and "large titles"
-/// proofs in the Under-the-hood tab.
+/// A throwaway destination for the "native page transitions" and "large titles" proofs in the
+/// Under-the-hood tab.
 ///
-/// Pushed via `pushPlatformRoute`, so it arrives with a `CupertinoPageRoute`
-/// (swipe-back) on iOS or a `MaterialPageRoute` on Android. With [large], its
-/// nav bar opts into the iOS large, collapse-on-scroll title, a no-op styling
-/// difference on Android, where there is no such bar.
+/// Pushed via `pushPlatformRoute`, so it arrives with a `CupertinoPageRoute` (swipe-back) on iOS or
+/// a `MaterialPageRoute` on Android. With [large], its nav bar opts into the iOS large, collapse-on-scroll
+/// title, a no-op styling difference on Android, where there is no such bar.
 class PushedDemoPage extends StatelessWidget {
   /// Whether the nav bar uses the iOS large-title variant.
   final bool large;

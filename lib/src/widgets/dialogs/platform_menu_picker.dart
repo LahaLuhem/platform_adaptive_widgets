@@ -16,9 +16,8 @@ import 'package:material_ui/material_ui.dart' show DropdownMenu, DropdownMenuEnt
 import '/src/models/dialogs/platform_menu_picker_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// Threshold above which Cupertino switches from
-/// [CupertinoMenuAnchor]/[CupertinoMenuItem] (good for ≤5 short items) to a
-/// modal-popup [CupertinoPicker] wheel (better for medium-to-long lists). Per
+/// Threshold above which Cupertino switches from [CupertinoMenuAnchor]/[CupertinoMenuItem] (good for
+/// ≤5 short items) to a modal-popup [CupertinoPicker] wheel (better for medium-to-long lists). Per
 /// Apple's HIG picker best-practices: <https://developer.apple.com/design/human-interface-guidelines/pickers#Best-practices>.
 const kCupertinoMenuPickerSmallItemCountThreshold = 5;
 
@@ -28,17 +27,15 @@ const _kCupertinoPickerModalHeight = 216.0;
 /// Standard item extent for the iOS modal-popup wheel.
 const _kCupertinoPickerModalItemExtent = 32.0;
 
-/// A platform-adaptive picker widget that renders Material [DropdownMenu] on
-/// Android and one of two Cupertino styles on iOS depending on item count:
-/// - ≤[kCupertinoMenuPickerSmallItemCountThreshold] items →
-///   [CupertinoMenuAnchor] + [CupertinoMenuItem] (each entry can carry an
-///   icon).
-/// - More items → a modal-popup [CupertinoPicker] wheel (text-only, no
-///   per-item icons. See [MenuPickerItem]'s class-level note).
+/// A platform-adaptive picker widget that renders Material [DropdownMenu] on Android and one of two
+/// Cupertino styles on iOS depending on item count:
+/// - ≤[kCupertinoMenuPickerSmallItemCountThreshold] items → [CupertinoMenuAnchor] + [CupertinoMenuItem]
+///   (each entry can carry an icon).
+/// - More items → a modal-popup [CupertinoPicker] wheel (text-only, no per-item icons. See
+///   [MenuPickerItem]'s class-level note).
 ///
-/// Per-platform tuning is opt-in via [materialMenuPickerData] /
-/// [cupertinoMenuPickerData]. Both data classes provide an `.iconButton`
-/// named ctor for the compact icon-button rendering, the widget's
+/// Per-platform tuning is opt-in via [materialMenuPickerData] / [cupertinoMenuPickerData]. Both data
+/// classes provide an `.iconButton` named ctor for the compact icon-button rendering, the widget's
 /// [leadingIcon] becomes the button's content; `labelText` is ignored.
 ///
 /// Example:
@@ -51,60 +48,54 @@ const _kCupertinoPickerModalItemExtent = 32.0;
 ///   menuPickerItemTransformer: (v) => MenuPickerItem(label: v),
 /// )
 /// ```
-class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
-  /// Items shown in the picker. Must be non-empty. For the Cupertino
-  /// small-item variant, three is the practical minimum (HIG guideline).
-  final List<T> items;
+class const PlatformMenuPicker<T extends Object>({
+  /// Items shown in the picker. Must be non-empty. For the Cupertino small-item variant, three is
+  /// the practical minimum (HIG guideline).
+  required final List<T> items,
 
   /// Currently-selected value. `null` means no selection.
-  final T? currentValue;
+  final T? currentValue,
 
   /// Whether the picker is enabled and tappable.
-  final bool isEnabled;
+  final bool isEnabled = true,
 
-  /// Icon shown before the picker's label (or as the icon-button's content in
-  /// the `.iconButton` data-class variants).
-  final Widget? leadingIcon;
+  /// Icon shown before the picker's label (or as the icon-button's content in the `.iconButton`
+  /// data-class variants).
+  final Widget? leadingIcon,
 
-  /// Label text shown above the picker (Material) or as the field title
-  /// (Cupertino standard variant). Ignored by the `.iconButton` variants.
-  final String? labelText;
+  /// Label text shown above the picker (Material) or as the field title (Cupertino standard variant).
+  /// Ignored by the `.iconButton` variants.
+  final String? labelText,
 
   /// Callback fired when the user picks an item.
-  final ValueChanged<T>? onSelected;
-
-  /// Transforms each item value into a [MenuPickerItem] describing how it
-  /// renders. Defaults to `MenuPickerItem(label: choice.toString())`.
-  final MenuPickerItem Function(T choice) menuPickerItemTransformer;
+  final ValueChanged<T>? onSelected,
+  MenuPickerItem Function(T choice)? menuPickerItemTransformer,
 
   /// Material-only configuration. Optional.
-  final MaterialMenuPickerData? materialMenuPickerData;
+  final MaterialMenuPickerData? materialMenuPickerData,
 
   /// Cupertino-only configuration. Optional.
-  final CupertinoMenuPickerData? cupertinoMenuPickerData;
+  final CupertinoMenuPickerData? cupertinoMenuPickerData,
+  super.widgetKey,
+  super.key,
+}) extends PlatformWidgetKeyedBase {
+  /// Transforms each item value into a [MenuPickerItem] describing how it renders. Defaults to
+  /// `MenuPickerItem(label: choice.toString())`.
+  // Defaulting needs the ctor param, and a named param can't be private, so a
+  // getter isn't available here. Const construction still works.
+  // ignore: avoid_field_initializers_in_const_classes
+  final MenuPickerItem Function(T choice) menuPickerItemTransformer =
+      menuPickerItemTransformer ?? _defaultMenuPickerItemTransformer;
 
   /// Default transformer, calls `toString()` on the choice.
   static MenuPickerItem _defaultMenuPickerItemTransformer<T extends Object>(T choice) =>
       MenuPickerItem(label: choice.toString());
 
   /// Creates a platform-adaptive menu picker.
-  const new({
-    required this.items,
-    this.currentValue,
-    this.isEnabled = true,
-    this.leadingIcon,
-    this.labelText,
-    this.onSelected,
-    MenuPickerItem Function(T choice)? menuPickerItemTransformer,
-    this.materialMenuPickerData,
-    this.cupertinoMenuPickerData,
-    super.widgetKey,
-    super.key,
-  }) : menuPickerItemTransformer = menuPickerItemTransformer ?? _defaultMenuPickerItemTransformer;
+  this;
 
-  /// Transformed-item list for this build, computed once and shared across
-  /// the Material and Cupertino branches (avoids the v1 issue of invoking the
-  /// transformer 3+ times per build).
+  /// Transformed-item list for this build, computed once and shared across the Material and Cupertino
+  /// branches (avoids the v1 issue of invoking the transformer 3+ times per build).
   List<MenuPickerItem> _transformedItems() => [
     for (final item in items) menuPickerItemTransformer(item),
   ];
@@ -173,40 +164,28 @@ class PlatformMenuPicker<T extends Object> extends PlatformWidgetKeyedBase {
   }
 }
 
-/// Cupertino rendering for ≤[kCupertinoMenuPickerSmallItemCountThreshold]
-/// items, a [CupertinoMenuAnchor] whose menu shows one [CupertinoMenuItem]
-/// per choice (each can carry an icon).
-final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget {
-  final List<T> items;
-  final List<MenuPickerItem> transformed;
-  final T? currentValue;
-  final bool isEnabled;
-  final bool useIconButton;
-  final Widget? leadingIcon;
-  final String? labelText;
-  final Color? backgroundColor;
-  final ValueChanged<T>? onSelected;
-
-  /// Per Apple's HIG, this menu style is intended for **at least 3 items**
-  /// (the 'Balance menu length with ease of use' section of
-  /// <https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons>).
-  /// Below that, prefer a different UI element (segmented control,
-  /// inline radio group, etc.).
-  const new({
-    required this.items,
-    required this.transformed,
-    required this.currentValue,
-    required this.isEnabled,
-    required this.useIconButton,
-    required this.leadingIcon,
-    required this.labelText,
-    required this.backgroundColor,
-    required this.onSelected,
-  }) : assert(
-         items.length >= 3,
-         'Cupertino small-item picker is intended for at least 3 items. '
-         'Consider a different UI element for fewer choices.',
-       );
+/// Cupertino rendering for ≤[kCupertinoMenuPickerSmallItemCountThreshold] items, a [CupertinoMenuAnchor]
+/// whose menu shows one [CupertinoMenuItem] per choice (each can carry an icon).
+final class const _SmallItemCupertinoPicker<T extends Object>({
+  required final List<T> items,
+  required final List<MenuPickerItem> transformed,
+  required final T? currentValue,
+  required final bool isEnabled,
+  required final bool useIconButton,
+  required final Widget? leadingIcon,
+  required final String? labelText,
+  required final Color? backgroundColor,
+  required final ValueChanged<T>? onSelected,
+}) extends StatelessWidget {
+  /// Per Apple's HIG, this menu style is intended for **at least 3 items** (the 'Balance menu length
+  /// with ease of use' section of <https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons>).
+  /// Below that, prefer a different UI element (segmented control, inline radio group, etc.).
+  this
+    : assert(
+        items.length >= 3,
+        'Cupertino small-item picker is intended for at least 3 items. '
+        'Consider a different UI element for fewer choices.',
+      );
 
   @override
   Widget build(BuildContext context) => CupertinoMenuAnchor(
@@ -233,33 +212,20 @@ final class _SmallItemCupertinoPicker<T extends Object> extends StatelessWidget 
   );
 }
 
-/// Cupertino rendering for >[kCupertinoMenuPickerSmallItemCountThreshold]
-/// items, a tappable field that opens a modal-popup [CupertinoPicker] wheel.
-/// Per-item icons aren't supported in this mode (HIG / [CupertinoPicker]
-/// constraint).
-final class _LargeItemCupertinoPicker<T extends Object> extends StatelessWidget {
-  final List<T> items;
-  final List<MenuPickerItem> transformed;
-  final T? currentValue;
-  final bool isEnabled;
-  final bool useIconButton;
-  final Widget? leadingIcon;
-  final String? labelText;
-  final Color? backgroundColor;
-  final ValueChanged<T>? onSelected;
-
-  const new({
-    required this.items,
-    required this.transformed,
-    required this.currentValue,
-    required this.isEnabled,
-    required this.useIconButton,
-    required this.leadingIcon,
-    required this.labelText,
-    required this.backgroundColor,
-    required this.onSelected,
-  });
-
+/// Cupertino rendering for >[kCupertinoMenuPickerSmallItemCountThreshold] items, a tappable field
+/// that opens a modal-popup [CupertinoPicker] wheel. Per-item icons aren't supported in this mode
+/// (HIG / [CupertinoPicker] constraint).
+final class const _LargeItemCupertinoPicker<T extends Object>({
+  required final List<T> items,
+  required final List<MenuPickerItem> transformed,
+  required final T? currentValue,
+  required final bool isEnabled,
+  required final bool useIconButton,
+  required final Widget? leadingIcon,
+  required final String? labelText,
+  required final Color? backgroundColor,
+  required final ValueChanged<T>? onSelected,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => _CupertinoPickerField(
     currentValue: currentValue,
@@ -302,35 +268,21 @@ final class _LargeItemCupertinoPicker<T extends Object> extends StatelessWidget 
   }
 }
 
-/// The clickable field rendered in the Cupertino branch, either a
-/// [CupertinoButton] (icon-button variant) or a [CupertinoListTile] (standard
-/// variant) showing the current selection.
-final class _CupertinoPickerField<T extends Object> extends StatelessWidget {
-  final T? currentValue;
-  final List<MenuPickerItem> transformed;
-  final List<T> items;
-  final bool isEnabled;
-  final bool useIconButton;
-  final String? labelText;
-
+/// The clickable field rendered in the Cupertino branch, either a [CupertinoButton] (icon-button
+/// variant) or a [CupertinoListTile] (standard variant) showing the current selection.
+final class const _CupertinoPickerField<T extends Object>({
+  required final T? currentValue,
+  required final List<MenuPickerItem> transformed,
+  required final List<T> items,
+  required final bool isEnabled,
+  required final bool useIconButton,
+  final String? labelText,
   // Cupertino accepts only FutureOr<void> for some callback positions.
   // ignore: avoid_futureor_void
-  final FutureOr<void> Function()? onTap;
-  final Color? backgroundColor;
-  final Widget? leadingIcon;
-
-  const new({
-    required this.currentValue,
-    required this.transformed,
-    required this.items,
-    required this.isEnabled,
-    required this.useIconButton,
-    this.labelText,
-    this.onTap,
-    this.backgroundColor,
-    this.leadingIcon,
-  });
-
+  final FutureOr<void> Function()? onTap,
+  final Color? backgroundColor,
+  final Widget? leadingIcon,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Look up the currently-selected item's transformed label for the

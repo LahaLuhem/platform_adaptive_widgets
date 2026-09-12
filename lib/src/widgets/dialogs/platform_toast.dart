@@ -11,27 +11,22 @@ import 'package:material_ui/material_ui.dart' show ScaffoldMessenger, SnackBar;
 
 import '/src/models/dialogs/platform_toast_data.dart';
 
-/// Shows a transient, self-dismissing message. Material [SnackBar] via
-/// [ScaffoldMessenger] on Android (anchored to the bottom of the screen),
-/// and a custom HUD-style banner overlay on iOS (slides in from the top,
-/// translucent dark background).
+/// Shows a transient, self-dismissing message. Material [SnackBar] via [ScaffoldMessenger] on Android
+/// (anchored to the bottom of the screen), and a custom HUD-style banner overlay on iOS (slides in
+/// from the top, translucent dark background).
 ///
-/// **Why two distinct primitives?** [showPlatformToast] is for routine
-/// feedback that doesn't require the user to act ("Saved", "Copied to
-/// clipboard"). For messages that *must* be acknowledged before continuing
-/// (errors, confirmations), use `showPlatformAcknowledge`: that wraps a
-/// proper alert dialog on both platforms.
+/// **Why two distinct primitives?** [showPlatformToast] is for routine feedback that doesn't require
+/// the user to act ("Saved", "Copied to clipboard"). For messages that *must* be acknowledged before
+/// continuing (errors, confirmations), use `showPlatformAcknowledge`: that wraps a proper alert dialog
+/// on both platforms.
 ///
-/// **iOS HUD overlay.** Cupertino ships no native toast / banner primitive;
-/// the package implements one here that follows iOS visual conventions
-/// (translucent rounded banner under the status bar, safe-area aware,
-/// tap-to-dismiss). Tuning via [cupertinoToastData].
+/// **iOS HUD overlay.** Cupertino ships no native toast / banner primitive. The package implements
+/// one here that follows iOS visual conventions (translucent rounded banner under the status bar,
+/// safe-area aware, tap-to-dismiss). Tuning via [cupertinoToastData].
 ///
-/// Returns a `Future<void>` that resolves when the toast is gone. The
-/// Material branch's `SnackBarClosedReason` is collapsed to `void`: callers
-/// who need the reason should use `ScaffoldMessenger` directly (see
-/// [PlatformToastClosedReason] in `platform_toast_data.dart` if you re-add a
-/// non-void return shape).
+/// Returns a `Future<void>` that resolves when the toast is gone. The Material branch's `SnackBarClosedReason`
+/// is collapsed to `void`: callers who need the reason should use `ScaffoldMessenger` directly (see
+/// [PlatformToastClosedReason] in `platform_toast_data.dart` if you re-add a non-void return shape).
 Future<void> showPlatformToast({
   required BuildContext context,
   required String message,
@@ -74,8 +69,8 @@ Future<void> showPlatformToast({
   _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
 };
 
-/// Inserts the HUD overlay into the nearest [Overlay] and returns a future
-/// that completes when the overlay is dismissed (by timer or by tap).
+/// Inserts the HUD overlay into the nearest [Overlay] and returns a future that completes when the
+/// overlay is dismissed (by timer or by tap).
 Future<void> _showCupertinoToast({
   required BuildContext context,
   required String message,
@@ -106,26 +101,20 @@ Future<void> _showCupertinoToast({
   return completer.future;
 }
 
-/// The HUD-style banner widget, stateful so it can drive the slide+fade
-/// animation and the auto-dismiss timer.
-class _CupertinoToastOverlay extends StatefulWidget {
-  final String message;
-  final Duration duration;
-  final CupertinoToastData data;
-  final VoidCallback onDismiss;
-
-  const new({
-    required this.message,
-    required this.duration,
-    required this.data,
-    required this.onDismiss,
-  });
-
+/// The HUD-style banner widget, stateful so it can drive the slide+fade animation and the auto-dismiss
+/// timer.
+class const _CupertinoToastOverlay({
+  required final String message,
+  required final Duration duration,
+  required final CupertinoToastData data,
+  required final VoidCallback onDismiss,
+}) extends StatefulWidget {
   @override
   State<_CupertinoToastOverlay> createState() => _CupertinoToastOverlayState();
 }
 
-class _CupertinoToastOverlayState extends State<_CupertinoToastOverlay>
+class _CupertinoToastOverlayState()
+    extends State<_CupertinoToastOverlay>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<Offset> _slideAnimation;
@@ -145,8 +134,8 @@ class _CupertinoToastOverlayState extends State<_CupertinoToastOverlay>
     _dismissTimer = Timer(widget.duration, _startDismiss);
   }
 
-  /// Plays the reverse animation, then calls [_CupertinoToastOverlay.onDismiss]
-  /// to remove the overlay entry from the host overlay.
+  /// Plays the reverse animation, then calls [_CupertinoToastOverlay.onDismiss] to remove the overlay
+  /// entry from the host overlay.
   Future<void> _startDismiss() async {
     _dismissTimer?.cancel();
     if (!mounted) return;

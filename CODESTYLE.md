@@ -110,7 +110,7 @@ style.
   | `ctx`       | `context` (Flutter's `BuildContext` arg stays `context` by convention) |
   | `evt`       | `event` |
 
-  This rule binds *every* identifier, fields, locals, parameters, pattern bindings (`switch (x) { final cb => … }` is **out**; spell it). The only carve-outs are the genre conventions: single-letter loop counters (`i`, `j`), `e` in `catch (e)`, `(a, b)` in symmetric comparator pairs, `x`/`y` for coordinates.
+  This rule binds *every* identifier, fields, locals, parameters, pattern bindings (`switch (x) { final cb => … }` is **out**, spell it). The only carve-outs are the genre conventions: single-letter loop counters (`i`, `j`), `e` in `catch (e)`, `(a, b)` in symmetric comparator pairs, `x`/`y` for coordinates.
 - **Local-variable names carry a concise type-suffix.** Dart is strongly typed, but a
   reader without IDE inlay-hints can't see the inferred type, the *name* has to do
   that work. Suffix a local with what it *is* so the next reader doesn't have to scroll
@@ -211,13 +211,16 @@ style.
 ## Formatting
 
 - **Wrap text-file content at 100 columns.** `formatter.page_width: 100` in
-  `analysis_options.yaml` is authoritative for Dart code; Markdown and **dartdoc
-  comments** should follow the same cap manually. `dart format` does *not* reflow
-  doc-comment prose, so a `///`-block hand-wrapped at 70 / 80 columns is invisible
-  to the formatter and stays narrow forever unless someone refactors it. Default to
-  ~95 columns of content (the leading `/// ` counts toward the 100-col limit) so a
-  single trailing word doesn't push the line over. Reflow opportunistically when
-  touching a doc block. Don't churn unrelated files just to widen them.
+  `analysis_options.yaml` is authoritative for Dart code. Markdown and **dartdoc
+  comments** follow the same cap by hand, since `dart format` does *not* reflow
+  comment prose.
+- **Don't squash prose to fit the cap.** For docs and comments the 100 is a guide,
+  not a hard stop: let the line run to the end of the word that crosses it, then
+  break. Re-wrapping a paragraph so every line lands just under 100 churns the diff
+  and reads worse than one slightly-long line. A `///` block hand-wrapped at 70
+  columns is the opposite problem and is invisible to the formatter, so widen those
+  opportunistically when you're already editing the block. Don't churn unrelated
+  files just to re-wrap them.
 - **Blank lines separate logical chunks within a method.** Group guard checks, setup,
   the main action, and finalisation with one blank line between groups. Lets readers
   scan past chunks they don't need without re-parsing them line-by-line.

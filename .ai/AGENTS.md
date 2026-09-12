@@ -11,7 +11,7 @@ iOS, so app code never needs explicit `Platform.isAndroid` / `Platform.isIOS` br
 
 Public API in v1.x is stable: `PlatformXxx` widgets + per-platform `MaterialXxxData` /
 `CupertinoXxxData` tuning records + cross-platform `PlatformXxxData` unified params. See
-README for the full widget catalogue; APPENDIX for design rationale.
+README for the full widget catalogue. APPENDIX for design rationale.
 
 ## Stack
 - **Flutter ≥ 3.38**, **Dart ≥ 3.10** (both pinned in `pubspec.yaml`). Dart 3.10 is the

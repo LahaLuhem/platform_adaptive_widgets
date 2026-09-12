@@ -1,17 +1,16 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// A live-preview-and-controls panel for fiddling one library widget's
-/// properties at runtime, the example's scoped take on a property editor.
+/// A live-preview-and-controls panel for fiddling one library widget's properties at runtime, the
+/// example's scoped take on a property editor.
 ///
-/// [preview] is the widget under edit (rebuilt by the enclosing `MVVM.builder`
-/// `Consumer` on `notifyListeners()`). [knobs] are the cross-platform controls,
-/// always shown. [materialKnobs] / [cupertinoKnobs] are platform-only controls,
-/// only the set matching the *currently rendered* platform shows (it follows
-/// `defaultTargetPlatform`, which the About tab's platform override mirrors),
-/// since the preview only renders one platform at a time. Flip the override to
-/// see the other side. When platform knobs are present the groups are labelled
-/// ("Shared" + "Material" / "Cupertino"), otherwise the bare [knobs] render.
+/// [preview] is the widget under edit (rebuilt by the enclosing `MVVM.builder` `Consumer` on
+/// `notifyListeners()`). [knobs] are the cross-platform controls, always shown. [materialKnobs] /
+/// [cupertinoKnobs] are platform-only controls, only the set matching the *currently rendered* platform
+/// shows (it follows `defaultTargetPlatform`, which the About tab's platform override mirrors), since
+/// the preview only renders one platform at a time. Flip the override to see the other side. When
+/// platform knobs are present the groups are labelled ("Shared" + "Material" / "Cupertino"), otherwise
+/// the bare [knobs] render.
 class PropertyEditor extends StatelessWidget {
   /// The live widget under edit, shown above the controls.
   final Widget preview;

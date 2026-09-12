@@ -6,16 +6,15 @@ import 'package:flutter/widgets.dart';
 
 /// Abstract base class for platform-adaptive widgets.
 ///
-/// Subclasses override [buildMaterial] and [buildCupertino] to provide
-/// platform-specific implementations. The [build] method automatically
-/// delegates to the correct builder based on [defaultTargetPlatform].
+/// Subclasses override [buildMaterial] and [buildCupertino] to provide platform-specific implementations.
+/// The [build] method automatically delegates to the correct builder based on [defaultTargetPlatform].
 ///
-/// On Android, [buildMaterial] is called. On iOS, [buildCupertino] is called.
-/// Other platforms throw an [UnsupportedError].
+/// On Android, [buildMaterial] is called. On iOS, [buildCupertino] is called. Other platforms throw
+/// an [UnsupportedError].
 @protected
-abstract class PlatformWidgetBase extends StatelessWidget {
+abstract class const PlatformWidgetBase({super.key}) extends StatelessWidget {
   /// Creates a platform-adaptive widget.
-  const new({super.key});
+  this;
 
   @override
   @protected
@@ -37,30 +36,34 @@ abstract class PlatformWidgetBase extends StatelessWidget {
   Widget buildCupertino(BuildContext context);
 }
 
-/// A [PlatformWidgetBase] that accepts a separate [widgetKey] for the
-/// underlying platform widget, distinct from the outer widget's [key].
-abstract class PlatformWidgetKeyedBase extends PlatformWidgetBase {
+/// A [PlatformWidgetBase] that accepts a separate [widgetKey] for the underlying platform widget,
+/// distinct from the outer widget's [key].
+abstract class const PlatformWidgetKeyedBase({
   /// Optional key applied to the inner platform-specific widget.
-  final Key? widgetKey;
-
+  final Key? widgetKey,
+  super.key,
+}) extends PlatformWidgetBase {
   /// Creates a keyed platform-adaptive widget.
-  const new({this.widgetKey, super.key});
+  this;
 }
 
 /// A [PlatformWidgetBase] that wraps a required [child] widget.
-abstract class PlatformWidgetBuilderBase extends PlatformWidgetBase {
+abstract class const PlatformWidgetBuilderBase({
   /// The child widget to wrap with platform-specific behavior.
-  final Widget child;
-
+  required final Widget child,
+  super.key,
+}) extends PlatformWidgetBase {
   /// Creates a platform-adaptive builder widget with a required [child].
-  const new({required this.child, super.key});
+  this;
 }
 
 /// A [PlatformWidgetBase] that combines both a [widgetKey] and a required [child].
-abstract class PlatformWidgetKeyedBuilderBase extends PlatformWidgetKeyedBase {
+abstract class const PlatformWidgetKeyedBuilderBase({
   /// The child widget to wrap with platform-specific behavior.
-  final Widget child;
-
+  required final Widget child,
+  super.widgetKey,
+  super.key,
+}) extends PlatformWidgetKeyedBase {
   /// Creates a keyed platform-adaptive builder widget with a required [child].
-  const new({required this.child, super.widgetKey, super.key});
+  this;
 }
