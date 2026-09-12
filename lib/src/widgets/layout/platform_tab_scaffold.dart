@@ -35,7 +35,7 @@ import '/src/models/platform_widget_base.dart';
 /// the external index changes, it does **not** recreate the controller each build, so an external
 /// emitter like `go_router` drives it without leaking controllers or rebuild churn.
 class const PlatformTabScaffold({
-  /// The destinations to display in the tab bar.
+  /// The destinations to display in the tab bar. Two or more: Material's bar refuses fewer.
   required final List<TabDestination> tabDestinations,
 
   /// The selected tab index.
@@ -69,7 +69,7 @@ class const PlatformTabScaffold({
 
   @override
   Widget buildMaterial(BuildContext context) {
-    _debugAssertSingleMode();
+    _debugAssertUsage();
 
     return _MaterialTabScaffold(
       widgetKey: widgetKey,
@@ -86,7 +86,7 @@ class const PlatformTabScaffold({
 
   @override
   Widget buildCupertino(BuildContext context) {
-    _debugAssertSingleMode();
+    _debugAssertUsage();
 
     return _CupertinoTabScaffold(
       widgetKey: widgetKey,
@@ -100,10 +100,16 @@ class const PlatformTabScaffold({
     );
   }
 
-  /// Asserts exactly one mode is in use: a [tabBodyBuilder] (controlled) XOR a `view` on every
-  /// destination (managed). A constructor `assert` can't run this, the `.every` closure isn't a
-  /// constant expression, so it's checked per build (debug-only).
-  void _debugAssertSingleMode() {
+  /// Debug-only checks, run per build: at least two destinations, and exactly one mode in use (a
+  /// [tabBodyBuilder] XOR a `view` on every destination). Neither `.length` nor the `.every` closure
+  /// is const-evaluable, so moving these to a constructor assert would cost every caller their
+  /// `const`.
+  void _debugAssertUsage() {
+    assert(
+      tabDestinations.length >= 2,
+      'Needs at least 2 tab destinations. The Material NavigationBar requires it, so a single tab '
+      'would render on iOS and crash on Android.',
+    );
     assert(
       (tabBodyBuilder != null) ^ tabDestinations.every((destination) => destination.view != null),
       'Provide either a tabBodyBuilder (controlled mode) or a view for every '

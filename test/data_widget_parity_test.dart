@@ -36,7 +36,7 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:checks/checks.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 /// Private `_PlatformXxxData` bases that intentionally have NO flat mirror on their widget. Their
 /// base exists only to share a single field declaration (`backgroundColor`) across the two per-platform
