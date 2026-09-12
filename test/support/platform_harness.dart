@@ -17,3 +17,17 @@ const iosOnly = TargetPlatformVariant({TargetPlatform.iOS});
 /// widget its theme, directionality and media query. Call it again to drive a rebuild.
 Future<void> pumpPlatformWidget(WidgetTester tester, Widget child) =>
     tester.pumpWidget(PlatformApp(home: child));
+
+/// Pumps [child] inside a [PlatformScaffold], which most widgets need because the Material branch
+/// looks for a Material ancestor. Use [pumpPlatformWidget] instead for a widget that is itself a
+/// scaffold.
+Future<void> pumpInPlatformScaffold(WidgetTester tester, Widget child) =>
+    pumpPlatformWidget(tester, PlatformScaffold(body: child));
+
+/// Pumps a bare [PlatformApp] and hands back a context beneath it, for guards that sit on a
+/// `showPlatformXxx` function rather than on a widget.
+Future<BuildContext> pumpForContext(WidgetTester tester) async {
+  await pumpPlatformWidget(tester, const SizedBox());
+
+  return tester.element(find.byType(SizedBox));
+}
