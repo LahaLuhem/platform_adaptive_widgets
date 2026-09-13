@@ -146,6 +146,9 @@ Future<T?> showPlatformDialog<T>({
 ///
 /// Content-builder selection, and the iOS dismissal caveat (the barrier isn't tap-to-dismiss by
 /// default, so content needs its own dismiss affordance), follows the same rules as [showPlatformDialog].
+///
+/// Example:
+/// {@example /example/lib/snippets/dialogs/platform_dialog.dart#fullscreen_dialog}
 Future<T?> showPlatformFullscreenDialog<T>({
   required BuildContext context,
   WidgetBuilder? builder,

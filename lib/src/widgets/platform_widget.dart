@@ -12,18 +12,7 @@ import '/src/models/platform_widget_base.dart';
 /// simpler cases where you're just adapting properties, consider using [PlatformWidgetBuilder].
 ///
 /// Example:
-/// ```dart
-/// PlatformWidget(
-///   materialBuilder: (_) => ElevatedButton(
-///     onPressed: () {},
-///     child: Text('Android Button'),
-///   ),
-///   cupertinoBuilder: (_) => CupertinoButton(
-///     onPressed: () {},
-///     child: Text('iOS Button'),
-///   ),
-/// )
-/// ```
+/// {@example /example/lib/snippets/platform_widget.dart#platform_widget}
 class const PlatformWidget({
   /// Builder function for the Material Design (Android) implementation.
   ///
@@ -60,13 +49,7 @@ class const PlatformWidget({
 /// existing widget.
 ///
 /// Example:
-/// ```dart
-/// PlatformWidgetBuilder(
-///   materialWidgetBuilder: (context, child) => Card(child: child),
-///   cupertinoWidgetBuilder: (context, child) => CupertinoListTile(title: child),
-///   child: Text('Content'),
-/// )
-/// ```
+/// {@example /example/lib/snippets/platform_widget.dart#platform_widget_builder}
 class const PlatformWidgetBuilder({
   /// Builder function for the Material Design (Android) implementation.
   ///
