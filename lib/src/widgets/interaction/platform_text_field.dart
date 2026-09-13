@@ -276,8 +276,8 @@ class const PlatformTextField({
 
   @override
   Widget buildMaterial(BuildContext context) {
-    // Merge widget-level flat slots into the Material decoration. Data-class values win
-    // when explicitly set. Flat widget values fill the gaps.
+    // Merge widget-level flat slots into the Material decoration. Data-class values win when explicitly
+    // set. Flat widget values fill the gaps.
     final baseDecoration = materialTextFieldData?.decoration ?? kDefaultMaterialTextFieldDecoration;
     final mergedDecoration = baseDecoration.copyWith(
       hintText: baseDecoration.hintText ?? hintText,
