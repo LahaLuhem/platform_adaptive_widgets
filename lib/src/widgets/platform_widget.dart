@@ -62,12 +62,8 @@ class const PlatformWidget({
 /// Example:
 /// ```dart
 /// PlatformWidgetBuilder(
-///   materialWidgetBuilder: (context, child) => Card(
-///     child: child,
-///   ),
-///   cupertinoWidgetBuilder: (context, child) => CupertinoListTile(
-///     child: child,
-///   ),
+///   materialWidgetBuilder: (context, child) => Card(child: child),
+///   cupertinoWidgetBuilder: (context, child) => CupertinoListTile(title: child),
 ///   child: Text('Content'),
 /// )
 /// ```
