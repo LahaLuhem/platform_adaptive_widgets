@@ -12,6 +12,8 @@ part of 'platform_date_picker.dart';
 ///
 /// Example:
 /// ```dart
+/// import 'package:material_ui/material_ui.dart' show TimeOfDay; // not flutter/material's
+///
 /// final picked = await showPlatformTimePicker(
 ///   context: context,
 ///   initialTime: TimeOfDay.now(),
