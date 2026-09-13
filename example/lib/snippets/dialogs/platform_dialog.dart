@@ -4,6 +4,38 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
+/// Host for [showPlatformDialog]'s doc example.
+class PlatformDialogSnippet extends StatelessWidget {
+  /// Creates the host.
+  const PlatformDialogSnippet({super.key});
+
+  @override
+  Widget build(BuildContext context) =>
+      PlatformButton(onPressed: () => _openPressed(context), child: const Text('Open'));
+
+  Future<void> _openPressed(BuildContext context) async {
+    // #region platform_dialog
+    final result = await showPlatformDialog<String>(
+      context: context,
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Pick one'),
+            PlatformButton(
+              onPressed: () => Navigator.maybeOf(context)?.pop('chosen'),
+              child: const Text('Confirm'),
+            ),
+          ],
+        ),
+      ),
+    );
+    // #endregion
+    debugPrint('$result'); // #hide
+  }
+}
+
 /// Host for [showPlatformFullscreenDialog]'s doc example.
 class FullscreenDialogSnippet extends StatelessWidget {
   /// Creates the host.

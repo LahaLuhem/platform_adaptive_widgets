@@ -11,14 +11,7 @@ part of 'platform_date_picker.dart';
 /// mode, etc.) are silently ignored.
 ///
 /// Example:
-/// ```dart
-/// import 'package:material_ui/material_ui.dart' show TimeOfDay; // not flutter/material's
-///
-/// final picked = await showPlatformTimePicker(
-///   context: context,
-///   initialTime: TimeOfDay.now(),
-/// );
-/// ```
+/// {@example /example/lib/snippets/dialogs/platform_time_picker.dart#platform_time_picker}
 Future<TimeOfDay?> showPlatformTimePicker({
   required BuildContext context,
   required TimeOfDay initialTime,

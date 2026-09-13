@@ -39,15 +39,7 @@ const _kCupertinoPickerModalItemExtent = 32.0;
 /// [leadingIcon] becomes the button's content; `labelText` is ignored.
 ///
 /// Example:
-/// ```dart
-/// PlatformMenuPicker<String>(
-///   items: const ['Day', 'Week', 'Month'],
-///   currentValue: _view,
-///   labelText: 'View',
-///   onSelected: (v) => setState(() => _view = v),
-///   menuPickerItemTransformer: (v) => MenuPickerItem(label: v),
-/// )
-/// ```
+/// {@example /example/lib/snippets/dialogs/platform_menu_picker.dart#platform_menu_picker}
 class const PlatformMenuPicker<T extends Object>({
   /// Items shown in the picker. Must be non-empty. For the Cupertino small-item variant, three is
   /// the practical minimum (HIG guideline).
