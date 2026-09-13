@@ -44,6 +44,7 @@ dependencies:
     sdk: flutter
   material_ui: ^1.2.0
   cupertino_ui: ^1.0.2
+  minted_chronology: ^1.0.2
 
 
 

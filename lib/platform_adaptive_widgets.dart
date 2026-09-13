@@ -1,7 +1,8 @@
+// Re-exported so callers need no direct minted_chronology dep, as with the old built-in `Date`.
+export 'package:minted_chronology/minted_chronology.dart' show Date, Month, Weekday;
+
 export 'src/extensions/context_extensions.dart';
-export 'src/extensions/date_time_extensions.dart';
 export 'src/extensions/time_of_day_extensions.dart';
-export 'src/models/date.dart';
 export 'src/models/dialogs/platform_alert_dialog_data.dart';
 export 'src/models/dialogs/platform_date_picker_data.dart';
 export 'src/models/dialogs/platform_dialog_data.dart';

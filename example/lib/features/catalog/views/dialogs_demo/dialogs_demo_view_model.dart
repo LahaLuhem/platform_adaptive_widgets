@@ -138,8 +138,8 @@ final class DialogsDemoViewModel extends ViewModel {
   Future<void> onShowDatePickerPressed() async {
     final picked = await showPlatformDatePicker(
       context: context,
-      firstDate: const Date(year: 1900),
-      lastDate: Date.now().add(const Duration(days: 365)),
+      firstDate: Date.of(1900).getOrThrow(),
+      lastDate: Date.now().tryAddDays(365)!,
     );
     _selectedDate = picked;
     notifyListeners();

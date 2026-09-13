@@ -323,8 +323,8 @@ style.
   runtime check at all. Reach for `assert` when the invariant can't be expressed
   in the constructor signature (cross-parameter conditions, value-range checks,
   Iterable-length constraints, etc.).
-- **Value types override `toString`.** Immutable data classes (`Date`,
-  `TabDestination`, the various `*Data` value records) implement
+- **Value types override `toString`.** Immutable data classes
+  (`TabDestination`, the various `*Data` value records) implement
   `toString()` returning `'ClassName(field1: value1, field2: value2)'`. The default
   `Instance of 'ClassName'` is hostile in logs, exception traces, and `print`
   debugging. Include every field with a meaningful string representation;
