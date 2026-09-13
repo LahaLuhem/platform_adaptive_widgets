@@ -128,6 +128,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.0"
+  minted:
+    dependency: transitive
+    description:
+      name: minted
+      sha256: "20844097d906a39726e0460326bbe1d199fce8de81c587a6991c1e8f5f45aa8f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0"
+  minted_chronology:
+    dependency: transitive
+    description:
+      name: minted_chronology
+      sha256: "97c5f73b6971e71be476a45440602e5d10581f85234707effbefabd760a0c8db"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   multi_value_listenable_builder_typed:
     dependency: "direct main"
     description:

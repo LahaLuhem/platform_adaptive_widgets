@@ -5,10 +5,9 @@ import 'package:cupertino_ui/cupertino_ui.dart'
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show TimeOfDay, showDatePicker, showTimePicker;
+import 'package:minted_chronology/minted_chronology.dart' show Date;
 
-import '/src/extensions/date_time_extensions.dart';
 import '/src/extensions/time_of_day_extensions.dart';
-import '/src/models/date.dart';
 import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_date_picker_data.dart';
 import '/src/models/dialogs/platform_time_picker_data.dart';
@@ -31,8 +30,8 @@ part 'platform_time_picker.dart';
 /// ```dart
 /// final picked = await showPlatformDatePicker(
 ///   context: context,
-///   firstDate: const Date(year: 2020),
-///   lastDate: Date.now().add(const Duration(days: 365)),
+///   firstDate: Date.of(2020).getOrThrow(),
+///   lastDate: Date.now().tryAddDays(365)!,
 ///   initialDate: Date.now(),
 /// );
 /// ```
@@ -91,7 +90,7 @@ Future<Date?> showPlatformDatePicker({
       switchToCalendarEntryModeIcon: materialDatePickerData?.switchToCalendarEntryModeIcon,
       calendarDelegate:
           materialDatePickerData?.calendarDelegate ?? kDefaultMaterialDatePickerCalendarDelegate,
-    ).then((dateTime) => dateTime?.toDate()),
+    ).then(_toDate),
     .iOS => _showCupertinoModePickerPopup(
       context: context,
       mode: CupertinoDatePickerMode.date,
@@ -106,10 +105,14 @@ Future<Date?> showPlatformDatePicker({
       requestFocus: requestFocus,
       builder: builder,
       cupertinoDatePickerData: cupertinoDatePickerData,
-    ).then((dateTime) => dateTime?.toDate()),
+    ).then(_toDate),
     _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
   };
 }
+
+// The picker clamps to [firstDate, lastDate], so the null arm is unreachable. Null beats throwing.
+Date? _toDate(DateTime? dateTime) =>
+    dateTime == null ? null : Date.fromDateTime(dateTime).getOrNull();
 
 /// Shared iOS modal-popup helper, the same [CupertinoDatePicker] + [showCupertinoModalPopup] scaffolding
 /// is used by both [showPlatformDatePicker] (mode `.date`) and [showPlatformTimePicker] (mode `.time`).
