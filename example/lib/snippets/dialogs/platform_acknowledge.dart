@@ -4,9 +4,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// Host for [showPlatformAcknowledge]'s doc example.
 class PlatformAcknowledgeSnippet extends StatelessWidget {
-  /// Creates the host.
   const PlatformAcknowledgeSnippet({super.key});
 
   @override

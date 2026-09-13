@@ -5,9 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show IconButton, Icons, Scaffold;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// Host for [PlatformAppBar]'s doc example.
 class PlatformAppBarSnippet extends StatelessWidget {
-  /// Creates the host.
   const PlatformAppBarSnippet({super.key});
 
   @override

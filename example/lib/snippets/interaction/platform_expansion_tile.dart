@@ -2,15 +2,14 @@
 // ignore_for_file: prefer-match-file-name
 
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart' show Colors;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformProgressIndicatorSnippet extends StatelessWidget {
-  const PlatformProgressIndicatorSnippet({super.key});
+class PlatformExpansionTileSnippet extends StatelessWidget {
+  const PlatformExpansionTileSnippet({super.key});
 
   @override
   Widget build(BuildContext context) =>
-      // #region platform_progress_indicator
-      const PlatformProgressIndicator(color: Colors.blue);
+      // #region platform_expansion_tile
+      const PlatformExpansionTile(title: Text('Settings'), child: Text('Settings content'));
   // #endregion
 }

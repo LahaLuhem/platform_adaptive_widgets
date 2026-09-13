@@ -42,6 +42,8 @@ const kDefaultMaterialDialogSemanticsRole = SemanticsRole.dialog;
 /// [elevation], [insetPadding], [shadowColor], [surfaceTintColor]) that would be silently dropped
 /// here.
 final class const MaterialDialogData({
+  // ---- showDialog (function-level) ----
+
   /// Animation style for the dialog's transition.
   final AnimationStyle? animationStyle,
 
@@ -50,6 +52,8 @@ final class const MaterialDialogData({
 
   /// Whether to wrap the dialog in a [SafeArea]. Defaults to [kDefaultMaterialDialogUseSafeArea].
   final bool useSafeArea = kDefaultMaterialDialogUseSafeArea,
+
+  // ---- Dialog (widget-level, shared with fullscreen variant) ----
 
   /// Background colour of the dialog surface.
   final Color? backgroundColor,
@@ -62,6 +66,8 @@ final class const MaterialDialogData({
 
   /// Semantics role for accessibility tooling.
   final SemanticsRole semanticsRole = kDefaultMaterialDialogSemanticsRole,
+
+  // ---- Dialog (widget-level, centered-only) ----
 
   /// Alignment of the dialog within the screen.
   final AlignmentGeometry? alignment,
@@ -87,12 +93,6 @@ final class const MaterialDialogData({
   /// Surface-tint colour of the dialog.
   final Color? surfaceTintColor,
 }) {
-  // ---- showDialog (function-level) ----
-
-  // ---- Dialog (widget-level, shared with fullscreen variant) ----
-
-  // ---- Dialog (widget-level, centered-only) ----
-
   /// Creates Material-only configuration for `showPlatformDialog`.
   this;
 }

@@ -5,9 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show TimeOfDay;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// Host for [showPlatformTimePicker]'s doc example.
 class PlatformTimePickerSnippet extends StatelessWidget {
-  /// Creates the host.
   const PlatformTimePickerSnippet({super.key});
 
   @override

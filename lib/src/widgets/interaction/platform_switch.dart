@@ -15,12 +15,7 @@ import '/src/models/platform_widget_base.dart';
 /// from the package's unified name.
 ///
 /// Example:
-/// ```dart
-/// PlatformSwitch(
-///   value: _isOn,
-///   onChanged: (v) => setState(() => _isOn = v),
-/// )
-/// ```
+/// {@example /example/lib/snippets/interaction/platform_switch.dart#platform_switch}
 class const PlatformSwitch({
   /// Current value of the switch.
   required final bool value,

@@ -4,9 +4,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// Host for [showPlatformAlertDialog]'s doc example.
 class PlatformAlertDialogSnippet extends StatelessWidget {
-  /// Creates the host.
   const PlatformAlertDialogSnippet({super.key});
 
   @override

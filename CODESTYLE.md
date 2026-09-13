@@ -785,6 +785,10 @@ they change. What follows is only this project's policy on each.
   some other statement. Inline guards like `if (cond) return;` need no blank line.
 - **`prefer-commenting-analyzer-ignores`**: every `// ignore:` needs a `//` explanation
   next to it. Dartdoc above the line does not count, the rule wants a plain comment.
+  **Keep the reason to one line**, saying why the lint is wrong here and nothing else. A
+  `// ignore:` binds to the next line only, so a diagnostic on an argument inside a
+  multi-line call needs one `// ignore_for_file:` rather than a directive per argument.
+  DCM flags a directive that suppresses nothing, so a misplaced one does not go unnoticed.
 - **`avoid-returning-widgets`**: allowed, but each occurrence needs an `// ignore:` with a
   reason. If the helper is reused or appears twice, make it a `StatelessWidget` instead.
   [`example/lib/features/about/widgets/labeled_section.dart`](./example/lib/features/about/widgets/labeled_section.dart)

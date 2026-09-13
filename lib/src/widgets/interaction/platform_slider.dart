@@ -14,12 +14,7 @@ import '/src/models/platform_widget_base.dart';
 /// from the package's unified type (notably [thumbColor]).
 ///
 /// Example:
-/// ```dart
-/// PlatformSlider(
-///   value: _value,
-///   onChanged: (v) => setState(() => _value = v),
-/// )
-/// ```
+/// {@example /example/lib/snippets/interaction/platform_slider.dart#platform_slider}
 class const PlatformSlider({
   /// Current value of the slider.
   required final double value,

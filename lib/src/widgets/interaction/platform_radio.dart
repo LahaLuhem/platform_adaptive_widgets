@@ -24,19 +24,7 @@ import '/src/models/platform_widget_base.dart';
 /// `APPENDIX.md#cross-platform-field-mappings` for [fillColor]'s type-divergence handling.
 ///
 /// Example:
-/// ```dart
-/// RadioGroup<AxisDirection>(
-///   groupValue: selected,
-///   onChanged: (v) => setState(() => selected = v),
-///   child: Row(children: [
-///     for (final dir in AxisDirection.values)
-///       Row(mainAxisSize: .min, children: [
-///         PlatformRadio(value: dir),
-///         Text(dir.name),
-///       ]),
-///   ]),
-/// )
-/// ```
+/// {@example /example/lib/snippets/interaction/platform_radio.dart#platform_radio}
 class const PlatformRadio<T extends Object>({
   /// The value this radio button represents within its ancestor `RadioGroup<T>`. The radio is selected
   /// when the ancestor's `groupValue` equals [value].
@@ -163,17 +151,7 @@ class const PlatformRadio<T extends Object>({
 /// directly.
 ///
 /// Example:
-/// ```dart
-/// PlatformRadioGroupBuilder<AxisDirection>(
-///   values: AxisDirection.values,
-///   groupValue: directionality,
-///   onChanged: viewModel.onDirectionalityChanged,
-///   itemBuilder: (_, dir) => Row(
-///     mainAxisSize: .min,
-///     children: [PlatformRadio(value: dir), Text(dir.name)],
-///   ),
-/// )
-/// ```
+/// {@example /example/lib/snippets/interaction/platform_radio.dart#platform_radio_group_builder}
 class const PlatformRadioGroupBuilder<T extends Object>({
   /// Values to render as radio options. One [itemBuilder] call per value, in iteration order.
   required final Iterable<T> values,

@@ -6,9 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show ThemeData;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// Host for [PlatformApp]'s doc example.
 class PlatformAppSnippet extends StatelessWidget {
-  /// Creates the host.
   const PlatformAppSnippet({
     required this.myLightTheme,
     required this.myDarkTheme,
@@ -16,13 +14,9 @@ class PlatformAppSnippet extends StatelessWidget {
     super.key,
   });
 
-  /// Stand-ins for whatever themes the app defines.
+  // Stand-ins for whatever themes the app defines.
   final ThemeData myLightTheme;
-
-  /// Dark counterpart of [myLightTheme].
   final ThemeData myDarkTheme;
-
-  /// Cupertino's theme is a disjoint type, so it is configured separately.
   final CupertinoThemeData myCupertinoTheme;
 
   @override
@@ -37,9 +31,8 @@ class PlatformAppSnippet extends StatelessWidget {
   // #endregion
 }
 
-/// Stands in for the app's first screen.
+// Stands in for the app's first screen.
 class MyHomePage extends StatelessWidget {
-  /// Creates the screen.
   const MyHomePage({super.key});
 
   @override
