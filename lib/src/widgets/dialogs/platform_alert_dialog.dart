@@ -16,24 +16,7 @@ part of 'platform_dialog.dart';
 /// [AlertDialog] is its own [Dialog] under the hood, so no [MaterialDialogData] knob is needed.
 ///
 /// Example:
-/// ```dart
-/// final confirmed = await showPlatformAlertDialog<bool>(
-///   context: context,
-///   title: const Text('Delete?'),
-///   content: const Text('This cannot be undone.'),
-///   actions: [
-///     PlatformDialogAction(
-///       onPressed: (context) => Navigator.maybeOf(context)?.pop(false),
-///       child: const Text('Cancel'),
-///     ),
-///     PlatformDialogAction(
-///       isDestructiveAction: true,
-///       onPressed: (context) => Navigator.maybeOf(context)?.pop(true),
-///       child: const Text('Delete'),
-///     ),
-///   ],
-/// );
-/// ```
+/// {@example /example/lib/snippets/dialogs/platform_alert_dialog.dart#platform_alert_dialog}
 Future<T?> showPlatformAlertDialog<T>({
   required BuildContext context,
   Widget? title,

@@ -27,14 +27,7 @@ part 'platform_time_picker.dart';
 /// data class is reused by [showPlatformTimePicker]. See [CupertinoDatePickerData]).
 ///
 /// Example:
-/// ```dart
-/// final picked = await showPlatformDatePicker(
-///   context: context,
-///   firstDate: Date.of(2020).getOrThrow(),
-///   lastDate: Date.now().tryAddDays(365)!,
-///   initialDate: Date.now(),
-/// );
-/// ```
+/// {@example /example/lib/snippets/dialogs/platform_date_picker.dart#platform_date_picker}
 Future<Date?> showPlatformDatePicker({
   required BuildContext context,
   required Date firstDate,

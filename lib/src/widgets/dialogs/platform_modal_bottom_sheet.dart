@@ -26,15 +26,7 @@ import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 /// - Combining `builder` with a platform-specific builder fires an assert.
 ///
 /// Example:
-/// ```dart
-/// await showPlatformModalBottomSheet(
-///   context: context,
-///   builder: (_) => Padding(
-///     padding: const EdgeInsets.all(16),
-///     child: ListView(children: [...]),
-///   ),
-/// );
-/// ```
+/// {@example /example/lib/snippets/dialogs/platform_modal_bottom_sheet.dart#platform_modal_bottom_sheet}
 Future<T?> showPlatformModalBottomSheet<T>({
   required BuildContext context,
   WidgetBuilder? builder,

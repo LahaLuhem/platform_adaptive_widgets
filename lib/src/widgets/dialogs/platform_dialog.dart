@@ -46,21 +46,7 @@ part 'platform_alert_dialog.dart';
 /// show-function flat args, no Cupertino data record exists.
 ///
 /// Example:
-/// ```dart
-/// final result = await showPlatformDialog<String>(
-///   context: context,
-///   builder: (context) => Padding(
-///     padding: const EdgeInsets.all(16),
-///     child: Column(mainAxisSize: MainAxisSize.min, children: [
-///       ...,
-///       TextButton(
-///         onPressed: () => Navigator.maybeOf(context)?.pop('chosen'),
-///         child: const Text('Confirm'),
-///       ),
-///     ]),
-///   ),
-/// );
-/// ```
+/// {@example /example/lib/snippets/dialogs/platform_dialog.dart#platform_dialog}
 Future<T?> showPlatformDialog<T>({
   required BuildContext context,
   WidgetBuilder? builder,

@@ -28,13 +28,7 @@ const kDefaultPlatformAcknowledgeOkLabel = 'OK';
 /// Returns a `Future<void>` that resolves once the user dismisses.
 ///
 /// Example:
-/// ```dart
-/// await showPlatformAcknowledge(
-///   context: context,
-///   title: 'Upload failed',
-///   message: 'Check your connection and try again.',
-/// );
-/// ```
+/// {@example /example/lib/snippets/dialogs/platform_acknowledge.dart#platform_acknowledge}
 Future<void> showPlatformAcknowledge({
   required BuildContext context,
   required String message,
