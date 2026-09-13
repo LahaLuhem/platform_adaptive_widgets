@@ -20,13 +20,7 @@ import '/src/models/platform_widget_base.dart';
 /// to `true`. Material renders identically regardless.
 ///
 /// Example:
-/// ```dart
-/// PlatformListTile(
-///   title: const Text('Settings'),
-///   leading: const Icon(Icons.settings),
-///   onTap: () => print('Tapped settings'),
-/// )
-/// ```
+/// {@example /example/lib/snippets/painting/platform_list_tile.dart#platform_list_tile}
 class const PlatformListTile({
   /// Primary title of the tile.
   ///

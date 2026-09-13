@@ -23,14 +23,7 @@ import '/src/models/platform_widget_base.dart';
 /// navigator and router config.
 ///
 /// Example:
-/// ```dart
-/// PlatformApp(
-///   title: 'My App',
-///   home: const MyHomePage(),
-///   materialAppData: MaterialAppData(theme: myLightTheme, darkTheme: myDarkTheme),
-///   cupertinoAppData: const CupertinoAppData(theme: myCupertinoTheme),
-/// )
-/// ```
+/// {@example /example/lib/snippets/layout/platform_app.dart#platform_app}
 class PlatformApp extends PlatformWidgetKeyedBase {
   /// A one-line description of the app for the OS.
   final String? title;

@@ -20,12 +20,7 @@ import '/src/models/platform_widget_base.dart';
 /// right platform widget for each branch.
 ///
 /// Example:
-/// ```dart
-/// PlatformScaffold(
-///   appBarData: const PlatformAppBar(title: Text('My App')),
-///   body: const Center(child: Text('Hello World')),
-/// )
-/// ```
+/// {@example /example/lib/snippets/layout/platform_scaffold.dart#platform_scaffold}
 class const PlatformScaffold({
   /// The main content of the scaffold.
   required final Widget body,

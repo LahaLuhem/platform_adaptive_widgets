@@ -22,15 +22,7 @@ import '/src/models/layout/platform_app_bar_data.dart';
 /// calls the matching one for the target platform.
 ///
 /// Example:
-/// ```dart
-/// PlatformAppBar(
-///   title: const Text('My App'),
-///   leading: IconButton(
-///     icon: const Icon(Icons.menu),
-///     onPressed: () => Scaffold.of(context).openDrawer(),
-///   ),
-/// )
-/// ```
+/// {@example /example/lib/snippets/layout/platform_app_bar.dart#platform_app_bar}
 class const PlatformAppBar({
   /// Optional key for the app bar widget.
   final Key? widgetKey,

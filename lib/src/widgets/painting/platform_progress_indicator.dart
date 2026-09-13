@@ -14,9 +14,7 @@ import '/src/models/platform_widget_base.dart';
 /// level is [color]. See `APPENDIX.md#field-classification`.
 ///
 /// Example:
-/// ```dart
-/// PlatformProgressIndicator(color: Colors.blue)
-/// ```
+/// {@example /example/lib/snippets/painting/platform_progress_indicator.dart#platform_progress_indicator}
 class const PlatformProgressIndicator({
   /// Color of the progress indicator. Shared visual, overridable per platform via [materialProgressIndicatorData]
   /// / [cupertinoProgressIndicatorData].
