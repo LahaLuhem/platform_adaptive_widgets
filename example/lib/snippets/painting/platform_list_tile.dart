@@ -5,12 +5,9 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// Host for [PlatformListTile]'s doc example.
 class PlatformListTileSnippet extends StatelessWidget {
-  /// Creates the host.
   const PlatformListTileSnippet({required this.onSettingsPressed, super.key});
 
-  /// Fired when the tile is tapped.
   final VoidCallback onSettingsPressed;
 
   @override

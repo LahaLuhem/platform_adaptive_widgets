@@ -29,14 +29,7 @@ import '/src/models/platform_widget_base.dart';
 /// faded-out look).
 ///
 /// Example:
-/// ```dart
-/// PlatformSegmentButton<String>(
-///   choices: const ['Day', 'Week', 'Month'],
-///   segmentBuilder: (choice) => Text(choice),
-///   selectedChoice: _selectedView,
-///   onSelectionChanged: (choice) => setState(() => _selectedView = choice),
-/// )
-/// ```
+/// {@example /example/lib/snippets/interaction/platform_segment_button.dart#platform_segment_button}
 class const PlatformSegmentButton<T extends Object>({
   /// Values to render as segments. One [segmentBuilder] call per choice, in iteration order. Must
   /// contain at least two entries (Cupertino asserts this at construction).

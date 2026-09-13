@@ -17,13 +17,7 @@ import '/src/models/platform_widget_base.dart';
 /// while Cupertino exposes them as direct values).
 ///
 /// Example:
-/// ```dart
-/// PlatformSearchBar(
-///   hintText: 'Search',
-///   controller: _controller,
-///   onChanged: (q) => _runSearch(q),
-/// )
-/// ```
+/// {@example /example/lib/snippets/interaction/platform_search_bar.dart#platform_search_bar}
 class const PlatformSearchBar({
   /// Callback fired when the search text changes.
   ///

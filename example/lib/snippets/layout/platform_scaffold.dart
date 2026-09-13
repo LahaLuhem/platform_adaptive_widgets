@@ -4,9 +4,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// Host for [PlatformScaffold]'s doc example.
 class PlatformScaffoldSnippet extends StatelessWidget {
-  /// Creates the host.
   const PlatformScaffoldSnippet({super.key});
 
   @override

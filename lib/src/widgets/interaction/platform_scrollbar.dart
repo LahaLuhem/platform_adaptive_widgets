@@ -13,16 +13,7 @@ import '/src/models/platform_widget_base.dart';
 /// [materialScrollbarData] and [cupertinoScrollbarData]. See `APPENDIX.md#field-classification`.
 ///
 /// Example:
-/// ```dart
-/// PlatformScrollbar(
-///   controller: _scrollController,
-///   thumbVisibility: true,
-///   child: SingleChildScrollView(
-///     controller: _scrollController,
-///     child: Text('Scrollable content'),
-///   ),
-/// )
-/// ```
+/// {@example /example/lib/snippets/interaction/platform_scrollbar.dart#platform_scrollbar}
 class const PlatformScrollbar({
   required super.child,
 

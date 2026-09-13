@@ -4,9 +4,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// Host for [showPlatformModalBottomSheet]'s doc example.
 class PlatformModalBottomSheetSnippet extends StatelessWidget {
-  /// Creates the host.
   const PlatformModalBottomSheetSnippet({super.key});
 
   @override

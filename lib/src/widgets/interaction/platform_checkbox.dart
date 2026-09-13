@@ -30,12 +30,7 @@ import '/src/models/platform_widget_base.dart';
 /// constructors.
 ///
 /// Example:
-/// ```dart
-/// PlatformCheckbox(
-///   value: _isChecked,
-///   onChanged: (v) => setState(() => _isChecked = v),
-/// )
-/// ```
+/// {@example /example/lib/snippets/interaction/platform_checkbox.dart#platform_checkbox}
 class PlatformCheckbox extends PlatformWidgetKeyedBase {
   /// Current value of the checkbox.
   ///

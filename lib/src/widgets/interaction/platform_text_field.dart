@@ -1,3 +1,6 @@
+// The decoration merge reads base's own slots so they beat the flat ones.
+// ignore_for_file: avoid-passing-self-as-argument
+
 import 'dart:ui' show BoxHeightStyle, BoxWidthStyle;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoTextField;
@@ -33,15 +36,10 @@ import '/src/models/platform_widget_base.dart';
 /// [cupertinoTextFieldData]. See `APPENDIX.md#field-classification` for the classification rule.
 ///
 /// Example:
-/// ```dart
-/// PlatformTextField(
-///   controller: _controller,
-///   hintText: 'Search',
-///   prefix: const Icon(Icons.search),
-///   onSubmitted: _runSearch,
-/// )
-/// ```
+/// {@example /example/lib/snippets/interaction/platform_text_field.dart#platform_text_field}
 class const PlatformTextField({
+  // ---- Common content slots (flat shared) ----------------------------------
+
   /// Placeholder / hint text shown when the field is empty. Maps to Material `decoration.hintText`
   /// and Cupertino `placeholder`. Overridden per-platform when [MaterialTextFieldData.decoration]'s
   /// `hintText` or [CupertinoTextFieldData.placeholder] are set.
@@ -56,6 +54,8 @@ class const PlatformTextField({
   /// and Cupertino `suffix`. Overridden per-platform when [MaterialTextFieldData.decoration]'s
   /// `suffixIcon` or [CupertinoTextFieldData.suffix] are set.
   final Widget? suffix,
+
+  // ---- Controllers / focus / state -----------------------------------------
 
   /// Group ID for undo-history grouping with other editors.
   final Object groupId = EditableText,
@@ -78,6 +78,8 @@ class const PlatformTextField({
 
   /// Whether the field should autofocus on mount. Defaults to `false`.
   final bool autofocus = false,
+
+  // ---- Keyboard / IME -------------------------------------------------------
 
   /// Keyboard type.
   final TextInputType? keyboardType,
@@ -109,6 +111,8 @@ class const PlatformTextField({
 
   /// Keyboard appearance (light or dark).
   final Brightness? keyboardAppearance,
+
+  // ---- Text rendering -------------------------------------------------------
 
   /// Text style for the input text.
   final TextStyle? style,
@@ -149,6 +153,8 @@ class const PlatformTextField({
   /// Input formatters applied to the text.
   final List<TextInputFormatter>? inputFormatters,
 
+  // ---- Cursor ---------------------------------------------------------------
+
   /// Whether to show the cursor. When `null`, derived from focus state.
   final bool? showCursor,
 
@@ -167,6 +173,8 @@ class const PlatformTextField({
   /// Colour of the cursor.
   final Color? cursorColor,
 
+  // ---- Selection ------------------------------------------------------------
+
   /// Selection-region height style.
   final BoxHeightStyle? selectionHeightStyle,
 
@@ -181,6 +189,8 @@ class const PlatformTextField({
 
   /// Custom text-selection controls.
   final TextSelectionControls? selectionControls,
+
+  // ---- Callbacks ------------------------------------------------------------
 
   /// Callback fired when the text changes. Optional, text fields are frequently controller-driven
   /// (read `controller.text` on submit), so nullable per Flutter's own [TextField.onChanged] shape.
@@ -206,6 +216,8 @@ class const PlatformTextField({
   /// callers can write a single [TapRegionUpCallback] that works on both platforms.
   final TapRegionUpCallback? onTapUpOutside,
 
+  // ---- Scrolling / layout ---------------------------------------------------
+
   /// Scroll controller for the field's internal scroll view.
   final ScrollController? scrollController,
 
@@ -220,6 +232,8 @@ class const PlatformTextField({
 
   /// Clip behaviour applied to the field's render box.
   final Clip clipBehavior = .hardEdge,
+
+  // ---- Autofill / context ---------------------------------------------------
 
   /// Autofill hints for the OS-level autofill service.
   final Iterable<String>? autofillHints,
@@ -239,6 +253,8 @@ class const PlatformTextField({
   /// Magnifier configuration.
   final TextMagnifierConfiguration? magnifierConfiguration,
 
+  // ---- Per-platform records -------------------------------------------------
+
   /// Material-only visual + functional overrides. Optional.
   ///
   /// Fields set on this record drive the Material branch only. Setting `decoration.hintText` /
@@ -255,26 +271,6 @@ class const PlatformTextField({
   super.widgetKey,
   super.key,
 }) extends PlatformWidgetKeyedBase {
-  // ---- Common content slots (flat shared) ----------------------------------
-
-  // ---- Controllers / focus / state -----------------------------------------
-
-  // ---- Keyboard / IME -------------------------------------------------------
-
-  // ---- Text rendering -------------------------------------------------------
-
-  // ---- Cursor ---------------------------------------------------------------
-
-  // ---- Selection ------------------------------------------------------------
-
-  // ---- Callbacks ------------------------------------------------------------
-
-  // ---- Scrolling / layout ---------------------------------------------------
-
-  // ---- Autofill / context ---------------------------------------------------
-
-  // ---- Per-platform records -------------------------------------------------
-
   /// Creates a platform-adaptive text field.
   this;
 

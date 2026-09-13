@@ -31,20 +31,10 @@ import '/src/models/platform_widget_base.dart';
 /// classification rule.
 ///
 /// Example:
-/// ```dart
-/// PlatformButton(
-///   onPressed: () => Navigator.maybeOf(context)?.pop(),
-///   child: const Text('Dismiss'),
-/// )
+/// {@example /example/lib/snippets/interaction/platform_button.dart#platform_button}
 ///
-/// PlatformButton.icon(
-///   onPressed: _onAdd,
-///   icon: const Icon(Icons.add),
-///   label: const Text('Add'),
-///   materialButtonVariant: .filled,
-///   cupertinoButtonVariant: .filled,
-/// )
-/// ```
+/// The icon variant:
+/// {@example /example/lib/snippets/interaction/platform_button.dart#platform_button_icon}
 class PlatformButton extends PlatformWidgetKeyedBase {
   /// Callback fired when the button is pressed.
   ///

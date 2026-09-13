@@ -4,9 +4,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// Host for [showPlatformDialog]'s doc example.
 class PlatformDialogSnippet extends StatelessWidget {
-  /// Creates the host.
   const PlatformDialogSnippet({super.key});
 
   @override
@@ -36,9 +34,7 @@ class PlatformDialogSnippet extends StatelessWidget {
   }
 }
 
-/// Host for [showPlatformFullscreenDialog]'s doc example.
 class FullscreenDialogSnippet extends StatelessWidget {
-  /// Creates the host.
   const FullscreenDialogSnippet({super.key});
 
   @override

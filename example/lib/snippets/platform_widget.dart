@@ -6,12 +6,9 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Card, ElevatedButton;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// Host for [PlatformWidget]'s doc example.
 class PlatformWidgetSnippet extends StatelessWidget {
-  /// Creates the host.
   const PlatformWidgetSnippet({required this.onSavePressed, super.key});
 
-  /// Wired into both branches, so the example shows one callback serving both.
   final VoidCallback onSavePressed;
 
   @override
@@ -26,9 +23,7 @@ class PlatformWidgetSnippet extends StatelessWidget {
   // #endregion
 }
 
-/// Host for [PlatformWidgetBuilder]'s doc example.
 class PlatformWidgetBuilderSnippet extends StatelessWidget {
-  /// Creates the host.
   const PlatformWidgetBuilderSnippet({super.key});
 
   @override

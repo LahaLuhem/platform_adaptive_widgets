@@ -4,9 +4,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// Host for [PlatformMenuPicker]'s doc example.
 class PlatformMenuPickerSnippet extends StatefulWidget {
-  /// Creates the host.
   const PlatformMenuPickerSnippet({super.key});
 
   @override

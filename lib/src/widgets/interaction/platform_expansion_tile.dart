@@ -21,12 +21,7 @@ import '/src/models/platform_widget_base.dart';
 /// a faded-out look).
 ///
 /// Example:
-/// ```dart
-/// PlatformExpansionTile(
-///   title: const Text('Settings'),
-///   child: const Text('Settings content'),
-/// )
-/// ```
+/// {@example /example/lib/snippets/interaction/platform_expansion_tile.dart#platform_expansion_tile}
 class const PlatformExpansionTile({
   /// Primary content of the tile header.
   ///
