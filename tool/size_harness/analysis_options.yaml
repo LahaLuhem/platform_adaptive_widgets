@@ -4,5 +4,9 @@
 #
 # The harness is a one-file demo. Default Dart lints are enough.
 
+analyzer:
+  exclude:
+    - build/**
+    - android/**
 formatter:
   page_width: 100

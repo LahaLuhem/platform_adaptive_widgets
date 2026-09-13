@@ -56,9 +56,9 @@ class _Surfaces extends StatelessWidget {
       TextButton(
         onPressed: () => showPlatformDatePicker(
           context: context,
-          firstDate: const Date(year: 2020),
-          lastDate: const Date(year: 2030),
-          initialDate: const Date(year: 2024),
+          firstDate: Date.of(2020).getOrThrow(),
+          lastDate: Date.of(2030).getOrThrow(),
+          initialDate: Date.of(2024).getOrThrow(),
         ),
         child: const Text('date'),
       ),
