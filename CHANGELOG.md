@@ -1,4 +1,4 @@
-## [Unreleased]
+## [2.2.0] - 2026-09-13
 ### Added
 - \[#24\] Put a compiler behind the API-doc examples
 
@@ -162,7 +162,7 @@
 - Platform scrollbar
 - Platform text-field
 
-[Unreleased]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.1.2...HEAD
+[2.2.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.1.2...2.2.0
 [2.1.2]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.0.0...2.1.0
