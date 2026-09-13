@@ -30,8 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-flutter
-      - run: dart pub global activate dependency_validator
-      - run: dart pub global run dependency_validator
+      - run: dart run dependency_validator
 
   test:
     name: Tests (AOT pruning guard)
