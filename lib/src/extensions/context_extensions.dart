@@ -3,23 +3,17 @@ import 'package:flutter/widgets.dart';
 
 import '../models/platform_adaptive_icons.dart';
 
-/// Platform-adaptive **icon** helpers on [BuildContext].
-///
-/// Value selection (`platformValue`, `platformValueNullable`, `platformLazyValue`, `platformLazyNullable`)
-/// lives in top-level functions in `platform_value.dart`: those never needed a [BuildContext], so
-/// they are not extension methods.
+/// Icon helpers hung off [BuildContext]. The value selectors in `platform_value.dart` are top-level
+/// functions instead, since they never needed a context.
 // Purely for name-spacing collisions
 // ignore: prefer-match-file-name
 extension PlatformAdaptiveContextExtensions on BuildContext {
-  /// Render either a Material or Cupertino icon based on the platform
+  /// The right icon set for the platform.
   PlatformAdaptiveIcons get platformAdaptiveIcons => PlatformAdaptiveIcons(this);
 
-  /// Returns the platform-appropriate [IconData], [material] on Android, [cupertino] on iOS.
-  ///
-  /// Dispatches with an inline `switch (defaultTargetPlatform)`, which const-folds and prunes the
-  /// unused arm at AOT. [IconData] carries no platform-specific code, so there is no size cost and
-  /// the [BuildContext] receiver is currently unused, kept for `context.platformIcon(...)` call-site
-  /// ergonomics and forward-compatibility with theme-aware icons.
+  /// [material] on Android, [cupertino] on iOS. Inlines its switch, so AOT prunes the losing arm, and
+  /// [IconData] drags no platform code along anyway. The receiver goes unused today and is here for
+  /// the call-site reads and for icons that may want the theme later.
   IconData platformIcon({required IconData material, required IconData cupertino}) =>
       switch (defaultTargetPlatform) {
         .android => material,

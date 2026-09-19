@@ -1,5 +1,5 @@
 // Regression guard for the AOT-pruning contract documented in
-// APPENDIX.md#aot-pruning-rules. Two static checks over `lib/src/`:
+// APPENDIX.md#aot-pruning-rules. 2 static checks over `lib/src/`:
 //
 //   1. No call to the closure-arg dispatch helpers (`platformValue`,
 //      `platformLazyValue`, `platformValueNullable`, `platformLazyNullable`)
@@ -92,9 +92,9 @@ void main() {
   });
 }
 
-/// The `lib/src/` Dart files both checks lint: every `.dart` except the file that *defines* the
-/// dispatch helpers (their own definitions aren't calls). Lazy, nothing is read until the returned
-/// iterable is iterated.
+/// The `lib/src/` Dart files both checks lint: every `.dart` except the file that *defines* the dispatch
+/// helpers (their own definitions aren't calls). Lazy, nothing is read until the returned iterable is
+/// iterated.
 Iterable<File> _lintableFiles() =>
     Directory('lib/src')
         .listSync(recursive: true)

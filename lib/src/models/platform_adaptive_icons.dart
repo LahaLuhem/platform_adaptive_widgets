@@ -1,10 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-/// A class that provides adaptive icons based on the current platform.
-final class const PlatformAdaptiveIcons(
-  /// The build context.
-  final BuildContext context,
-) {
+/// Hands back the right icon for the platform in play.
+final class const PlatformAdaptiveIcons(final BuildContext context) {
   /// Creates a new instance of [PlatformAdaptiveIcons].
   this;
 }

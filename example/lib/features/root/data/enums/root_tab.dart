@@ -3,8 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// The top-level tabs of the demo, shared by both shells (the managed `RootTabsView` and the
-/// go_router-driven `RootTabsRouterView`) so the tab bar's labels and icons are defined once.
+/// The demo's top-level tabs. Both shells read this, so labels and icons are written once.
 enum RootTab {
   /// Browse the widget catalog by category.
   catalog(label: 'Catalog'),
@@ -15,15 +14,15 @@ enum RootTab {
   /// Library info and the appearance (theme-mode) control.
   about(label: 'About');
 
-  /// The tab bar label.
+  /// Shown under the icon.
   final String label;
 
   const RootTab({required this.label});
 
-  /// The icon shown when this tab is selected.
+  /// While selected.
   Icon activeIcon(BuildContext context) => Icon(_iconData(context, isActive: true));
 
-  /// The icon shown when this tab is not selected.
+  /// The rest of the time.
   Icon inactiveIcon(BuildContext context) => Icon(_iconData(context, isActive: false));
 
   IconData _iconData(BuildContext context, {required bool isActive}) => switch (this) {

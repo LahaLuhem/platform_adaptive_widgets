@@ -10,15 +10,15 @@ const _viewlessTab = TabDestination(inactiveIcon: SizedBox());
 void main() {
   feature('PlatformTabScaffold tab-count guard', () {
     scenarioOutlineWidgets<int>(
-      'refuses fewer than two destinations',
-      examples: {'no tabs': 0, 'one tab': 1},
+      'refuses fewer than 2 destinations',
+      examples: {'no tabs': 0, '1 tab': 1},
       outline: (tester, tabCount) async {
         await pumpPlatformWidget(
           tester,
           PlatformTabScaffold(tabDestinations: List.filled(tabCount, _tab)),
         );
 
-        // Material's NavigationBar is the half that needs two. Without this guard a single tab
+        // Material's NavigationBar is the half that needs 2. Without this guard a single tab
         // renders fine on iOS and only blows up when someone runs it on Android.
         check(tester.takeException())
             .isA<AssertionError>()
@@ -27,7 +27,7 @@ void main() {
       },
     );
 
-    scenarioWidgets('builds with two destinations', (tester) async {
+    scenarioWidgets('builds with 2 destinations', (tester) async {
       await pumpPlatformWidget(tester, PlatformTabScaffold(tabDestinations: List.filled(2, _tab)));
 
       check(tester.takeException()).isNull();

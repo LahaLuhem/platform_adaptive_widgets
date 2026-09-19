@@ -1,19 +1,15 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// A titled, described frame around a single live widget demo.
-///
-/// Gives every catalog section a consistent, labelled surface so it reads as a self-explanatory
-/// gallery rather than a wall of bare controls. An outlined frame, a border, no fill, keeps it fully
-/// cross-platform and avoids hiding a Material child's background and ink behind a coloured box.
+/// A labelled frame around one live demo, so the catalog reads as a gallery rather than a wall of bare
+/// controls. Outlined rather than filled, which keeps it cross-platform and stops a coloured box hiding
+/// a Material child's own background and ink.
 class DemoCard extends StatelessWidget {
-  /// The widget's name.
   final String title;
 
-  /// A one-line "what it is" shown under the title.
+  /// One line, under the title.
   final String? description;
 
-  /// The live, interactive widget being demonstrated.
   final Widget child;
 
   const DemoCard({required this.title, required this.child, this.description, super.key});

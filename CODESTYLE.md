@@ -19,7 +19,7 @@ heading text, so renames don't break callers.
 - [Constants & magic numbers](#constants-magic-numbers)
 - [Class structure](#class-structure)
 - [Platform-adaptive widget patterns](#platform-adaptive-widget-patterns)
-    * [Subclass `PlatformWidgetBase`, override the two builders](#subclass-platformwidgetbase-override-the-two-builders)
+    * [Subclass `PlatformWidgetBase`, override the 2 builders](#subclass-platformwidgetbase-override-the-2-builders)
     * [Field classification: functional vs visual](#field-classification-functional-vs-visual)
 - [Idioms](#idioms)
     * [Static dot shorthands (Dart 3.10+)](#static-dot-shorthands-dart-310)
@@ -31,6 +31,7 @@ heading text, so renames don't break callers.
     * [`dart:async` `wait` extensions over static `Future.wait(...)`](#dartasync-wait-extensions-over-static-futurewait)
     * [`List.unmodifiable(…)` over `UnmodifiableListView(…)`](#listunmodifiable-over-unmodifiablelistview)
     * [`part` / `part of` only when structurally needed](#part-part-of-only-when-structurally-needed)
+- [Prose & voice](#prose)
 - [Comments & dartdoc](#comments-dartdoc)
 - [DCM rules (applied by hand)](#dcm-rules-applied-by-hand)
 - [Documentation conventions (Markdown)](#documentation-conventions-markdown)
@@ -198,7 +199,7 @@ style.
   override this, the rule targets *type ambiguity*, not all short names.
 
 - **Widget files mirror class names.** `PlatformButton` lives in
-  `platform_button.dart`; `PlatformAlertDialogData` lives in
+  `platform_button.dart`, `PlatformAlertDialogData` in
   `platform_alert_dialog_data.dart`. The model file always sits at
   `lib/src/models/<category>/<widget>_data.dart` and the widget file at
   `lib/src/widgets/<category>/<widget>.dart`: the linter enforces `file_names`, but
@@ -250,11 +251,11 @@ style.
   `build*`-method substitution
   (`materialFooData?.bar ?? kDefaultFooBar`). When the value appears only as one
   constructor's parameter default, no second reader, no cross-file substitution,
-  leave it as a literal at the constructor and skip the constant. Two reasons:
+  leave it as a literal at the constructor and skip the constant. 2 reasons:
   1. **API pollution.** Top-level `kDefaultXxx` constants (and public
      `static const` defaults on data classes) appear in auto-complete and in
      the rendered dartdoc. Each one a downstream user has to skim past.
-  2. **No drift risk.** Constants exist partly to keep two readers from
+  2. **No drift risk.** Constants exist partly to keep 2 readers from
      diverging on the same value. With only one reader, there's nothing to
      diverge from.
 
@@ -296,7 +297,7 @@ style.
   unsupported-platform case is a runtime condition.
 - **Enforce constructor invariants with `assert(condition, message)` in the
   initializer list, not by silently accepting params and ignoring them downstream.**
-  When two parameters are mutually exclusive (only one of `child` / `icon`+`label`
+  When 2 parameters are mutually exclusive (only one of `child` / `icon`+`label`
   should be set), or one parameter is only meaningful when another flag is set
   (`emptySelectionAllowed: true` requires the `selected` set type to accept empty
   state, etc.), say so loudly at construction time:
@@ -318,7 +319,7 @@ style.
   invalid combination runs in debug mode, with a message pointing at the fix.
 
   **Prefer compile-time exclusivity when feasible.** If the invariant can be
-  encoded by splitting into two constructors (`PlatformButton(...)` vs
+  encoded by splitting into 2 constructors (`PlatformButton(...)` vs
   `PlatformButton.icon(...)`), do that, the type system enforces it without any
   runtime check at all. Reach for `assert` when the invariant can't be expressed
   in the constructor signature (cross-parameter conditions, value-range checks,
@@ -327,7 +328,7 @@ style.
   (`TabDestination`, the various `*Data` value records) implement
   `toString()` returning `'ClassName(field1: value1, field2: value2)'`. The default
   `Instance of 'ClassName'` is hostile in logs, exception traces, and `print`
-  debugging. Include every field with a meaningful string representation;
+  debugging. Include every field with a meaningful string representation, as an
   expression-bodied one-liner placed after the constructors, before any static helpers.
   Opaque fields (controllers, listenables, builder callbacks, anything whose
   `.toString()` is just `Closure: …` or `Instance of …`) are omitted: they add noise
@@ -345,9 +346,9 @@ These rules are specific to this package. They encode the load-bearing dispatch
 invariant and the data-class composition shape.
 
 <a id="paw-subclass-base"></a>
-### Subclass `PlatformWidgetBase`, override the two builders
+### Subclass `PlatformWidgetBase`, override the 2 builders
 
-Every `PlatformXxx` widget in `lib/src/widgets/` subclasses one of the four base
+Every `PlatformXxx` widget in `lib/src/widgets/` subclasses one of the 4 base
 classes in [`lib/src/models/platform_widget_base.dart`](./lib/src/models/platform_widget_base.dart):
 
 | Base                            | Use when                                                       |
@@ -408,7 +409,7 @@ class PlatformSwitch extends StatelessWidget {
 <a id="paw-field-classification"></a>
 ### Field classification: functional vs visual
 
-Every widget parameter falls into one of three buckets:
+Every widget parameter falls into one of 3 buckets:
 
 - **Functional** (identity, control, callbacks, state-gating, input data,
   behavioral tuning), declared as **flat `const` params on the widget itself**.
@@ -422,7 +423,7 @@ Every widget parameter falls into one of three buckets:
 
 Field-ordering inside the `_PlatformXxxData` base and the per-platform records:
 keep the same field order across the trio for the shared-visual fields, so
-readers diffing the three see only real differences. Platform-only visual
+readers diffing the 3 see only real differences. Platform-only visual
 fields come after the inherited block.
 
 For the full rule (which fields land where, carve-outs, field-mapping
@@ -471,7 +472,7 @@ the leading type name in *all* of these positions, not just the obvious enum cas
   `= .horizontal` without also writing `const Axis kDefaultDirection`, which adds
   more noise than it removes).
 
-Skip when it hurts readability, `.new(…)` for unnamed constructors typically does;
+Skip when it hurts readability. `.new(…)` for unnamed constructors typically does, as do
 cases where the surrounding context type isn't obvious without re-reading.
 
 After dropping a fully-qualified prefix, the type name often disappears from the file
@@ -563,7 +564,7 @@ enum CupertinoButtonVariant { normal, filled, tinted }
 .tinted => CupertinoButton.tinted(disabledColor: disabledColor ?? kDefaultCupertinoFilledTintedButtonDisabledColor, ...)
 ```
 
-**Why.** Three real wins:
+**Why.** 3 real wins:
 - **Locality.** The default lives on the variant it describes. Adding a new
   variant requires picking a default, the const constructor parameter forces
   the choice at compile time. Top-level constants are easy to add then forget
@@ -705,7 +706,7 @@ an `Iterable` directly. Materialise only when (a) the result is iterated more th
 a lazy chain re-runs end to end on every pass, including any I/O such as `parseFile`,
 or (b) an API genuinely requires a `List`. When you do materialise a result that
 won't be mutated, use `.toList(growable: false)` to say so. In the parity guard `bases`
-is `.toList(growable: false)` (three readers, never mutated) while each test's
+is `.toList(growable: false)` (3 readers, never mutated) while each test's
 `offenders` stays a lazy `Iterable` (read once, by `check`).
 
 <a id="dartasync-wait-extensions-over-static-futurewait"></a>
@@ -738,12 +739,66 @@ across files within the library.
 
 ---
 
+<a id="prose"></a>
+## Prose & voice
+
+**Read <https://noslopgrenade.com/> before writing any prose here.** Open it, don't cite it from
+memory. It is short and it carries the examples and the intent behind every line below.
+
+Covers every surface a person reads: dartdoc, comments, READMEs, APPENDIX entries, commit messages,
+PR and issue bodies.
+
+- Keep it trimmed and compacted to reduce noise. Brief, concise, succinct. No over-explaining.
+- Comment at the call site, rather than a preamble wall-of-text.
+- No need to document what can easily be gleaned from the sites. Also reduces drift risk.
+- Use the Markdown features that improve readability: subsection layout, tables, (un)ordered lists,
+  show-hide sections.
+- Prefer not using technical buzz-words, use ELI18 level instead.
+- No AI-tell-tale signs like em-dashes, `;` and others.
+- Numbers as numerals, not words: `1`, `2`, `1st`, `2nd`. "one" stays where it means single or
+  sole, and "first" where it means earliest rather than a position.
+- Keep the tone informal and light. Give it a natural flow.
+
+---
+
 <a id="comments-dartdoc"></a>
 ## Comments & dartdoc
 
 Public symbols carry `///` dartdoc that explains *why*, not *what*, types already
 carry the *what*. See
 [hard rule 4 in `.ai/AGENTS.md`](./.ai/AGENTS.md#hard-rules) for the contract.
+
+**Aim for 1 or 2 lines.** A guideline, not a cap: an explanation that earns its length keeps it,
+and a decision a reader would otherwise question is worth the sentence. What doesn't earn it is
+restating the signature, or rationale that belongs in [`APPENDIX.md`](./APPENDIX.md) behind a
+one-line pointer. Surplus lines are noise the next reader pays for and they bury the comment that
+mattered, so trim the neighbours whenever you edit a file.
+
+### A field doc has to earn its place
+
+`public_member_api_docs` does **not** cover primary-constructor field parameters, so
+most `PlatformXxx` and `*Data` fields need no doc at all. Give one only when it says
+something the name and type don't: a cross-platform mapping, a default the code can't
+show, a gotcha. Otherwise leave the field bare. Classic-syntax classes (real `final`
+fields, e.g. `PlatformButton`, `PlatformApp`) *are* covered by the lint, so there the
+same judgement applies to the length instead: 1 short line, not 3.
+
+**Why.** Restating the field name is the single biggest source of noise, and on
+pub.dev a bare field still renders with its name and type.
+
+**Where the lint does bite:** top-level `kDefault*` consts, classes, extensions, enums,
+public getters and methods, and the primary constructor itself (which is what the
+`this;` body exists to hang a doc on). Those keep a one-liner.
+
+### Wrap dartdoc past 100, not before it
+
+Fill a `///` line until a word takes it to or past column 100, keep that word on the
+line, then wrap. Lines therefore end up slightly over 100 rather than short of it.
+`dart format` never rewraps comments, and `lines_longer_than_80_chars` is `ignore`d in
+`analysis_options.yaml`, so nothing fights this.
+
+Never break inside a backtick span, since the code then straddles 2 lines in source
+even though Markdown still renders it.
 
 ### `@docImport` for dartdoc-only references
 
@@ -809,6 +864,19 @@ they change. What follows is only this project's policy on each.
 <a id="documentation-conventions-markdown"></a>
 ## Documentation conventions (Markdown)
 
+- **Never restate what another file already states.** Point at it instead. A version
+  constraint, a lint list, a dependency set, a file tree, a test count: all of these
+  live in `pubspec.yaml`, `analysis_options.yaml` or the repo itself, and a prose copy
+  is both redundant and quietly wrong the moment the real one moves. Write "the floor is
+  whatever `pubspec.yaml`'s `environment:` says", not the numbers.
+
+  **Why.** This isn't hypothetical. `.ai/AGENTS.md` claimed a Dart 3.10 / Flutter 3.38
+  floor and `APPENDIX.md` claimed `sdk: >=3.12.0`, long after `pubspec.yaml` had moved
+  past both. Nothing failed, because nothing checks prose. That's what makes it worse
+  than a stale comment: it reads as authoritative and rots silently.
+
+  **Doesn't apply** to a fact the other file doesn't carry. "Dot shorthands need Dart
+  3.10+" is language history, not a copy of our constraint, so it stays.
 - **APPENDIX.md is the source of truth for rationale.** Hard rules, pitfalls, and
   workflow stay in `.ai/AGENTS.md` and `.ai/CLAUDE.md`. The "why we do it this way"
   essays live in [`APPENDIX.md`](./APPENDIX.md).

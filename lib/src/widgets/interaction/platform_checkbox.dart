@@ -1,13 +1,3 @@
-// PlatformCheckbox's two private callback fields multiplex its default and
-// .tristate constructors, exactly one is non-null per instance (see the field
-// comment). The default ctor binds its callback as a `this._onChanged`
-// initializing formal, which Dart surfaces to callers as `onChanged` (the field
-// name minus the underscore). The .tristate ctor can't reuse that: its public
-// parameter must also be `onChanged`, but its field `_onChangedTristate` would
-// surface as `onChangedTristate`, so it assigns in the initializer list instead
-// (which prefer_initializing_formals leaves alone, since converting it would
-// change the public parameter name). See APPENDIX.md#checkbox-tristate-split.
-
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoCheckbox;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Checkbox;
@@ -15,92 +5,68 @@ import 'package:material_ui/material_ui.dart' show Checkbox;
 import '/src/models/interaction/platform_checkbox_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive checkbox that renders Material [Checkbox] on Android and [CupertinoCheckbox]
-/// on iOS.
+/// Material [Checkbox] on Android, [CupertinoCheckbox] on iOS.
 ///
-/// The default constructor is the common two-state case: [value] is non-null `bool` and `onChanged`
-/// hands back a non-null `bool`. For the indeterminate (third) state, supported natively on both
-/// platforms. Use [PlatformCheckbox.tristate], whose [value] and `onChanged` are nullable so taps
-/// can cycle `false → true → null`.
+/// The default constructor covers the ordinary ticked-or-not case, with a non-null `bool` going in and
+/// coming back. Both platforms also do an indeterminate third state, and that's [PlatformCheckbox.tristate],
+/// where [value] and `onChanged` turn nullable so a tap cycles `false → true → null`.
 ///
-/// All functional inputs (value, callback, state-gating, behavioral tuning) and shared visual defaults
-/// live as flat constructor parameters. Per-platform visual tuning is opt-in via [materialCheckboxData]
-/// and [cupertinoCheckboxData]. See `APPENDIX.md#field-classification` for the classification rule
-/// and `APPENDIX.md#checkbox-tristate-split` for why the two states share one class with two
-/// constructors.
+/// Per-platform tuning lives in [materialCheckboxData] / [cupertinoCheckboxData]. See `APPENDIX.md#field-classification`,
+/// and `APPENDIX.md#checkbox-tristate-split` for why one class carries both constructors.
 ///
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_checkbox.dart#platform_checkbox}
 class PlatformCheckbox extends PlatformWidgetKeyedBase {
-  /// Current value of the checkbox.
-  ///
-  /// For the default (two-state) constructor this is always `true` (checked) or `false` (unchecked),
-  /// that constructor rejects `null`. For [PlatformCheckbox.tristate] it may also be `null`
-  /// (indeterminate).
+  /// Never `null` from the default constructor, which rejects it. Only [PlatformCheckbox.tristate] allows
+  /// it, for the indeterminate state.
   final bool? value;
 
-  // Exactly one of the two callbacks is non-null, selected by the constructor.
-  // `_onChangedTristate != null` is the tristate discriminator (see [_isTristate]).
-  // They are private because their nullability is an implementation detail of the two-vs-tristate multiplexing.
-  // The public contract is the required, non-null `onChanged` parameter on each constructor.
-  // See `APPENDIX.md#checkbox-tristate-split`.
+  // Exactly one is non-null, picked by the constructor, and which one is the tristate discriminator.
+  // See APPENDIX.md#checkbox-tristate-split.
   final ValueChanged<bool>? _onChanged;
   final ValueChanged<bool?>? _onChangedTristate;
 
-  /// Whether the checkbox is enabled and responds to input.
-  ///
-  /// When `false`, the underlying platform widget receives `null` for its own `onChanged` parameter,
-  /// producing the platform's standard disabled-checkbox rendering. The `onChanged` callback is still
-  /// required and non-null at construction, the disable gate is read here. See `APPENDIX.md#callback-nullability`.
+  /// The way to disable a checkbox. `onChanged` stays required and non-null either way, and this gate
+  /// is what passes the underlying widget a `null` callback for its standard disabled look. See `APPENDIX.md#callback-nullability`.
   final bool isEnabled;
 
   /// Focus node for the checkbox.
   final FocusNode? focusNode;
 
-  /// Whether the checkbox should autofocus.
+  /// Whether the checkbox grabs focus when mounted.
   final bool autofocus;
 
-  /// Semantic label for accessibility. Read by screen readers. Same value is used on both platforms.
+  /// What screen readers announce. Same on both platforms.
   final String? semanticLabel;
 
-  /// Mouse cursor when hovering over the checkbox.
+  /// Hover cursor.
   final MouseCursor? mouseCursor;
 
-  /// Color of the checkbox when active.
+  /// Colour while ticked.
   final Color? activeColor;
 
-  /// Fill color as a [WidgetStateProperty].
+  /// Fills the box behind the tick.
   final WidgetStateProperty<Color?>? fillColor;
 
-  /// Color of the check mark.
+  /// Colours the tick itself.
   final Color? checkColor;
 
-  /// Color of the checkbox when focused.
+  /// Colour while focused.
   final Color? focusColor;
 
-  /// Shape of the checkbox border.
+  /// Shape of the box.
   final OutlinedBorder? shape;
 
-  /// Border side of the checkbox.
+  /// Outlines the box.
   final BorderSide? side;
 
-  /// Material-only visual overrides. Optional.
-  ///
-  /// Fields set on this record override the widget's flat shared-visual defaults on the Material
-  /// branch. Material-only fields (e.g. `hoverColor`, `splashRadius`, `isError`) are read only from
-  /// here.
+  /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialCheckboxData? materialCheckboxData;
 
-  /// Cupertino-only visual overrides. Optional.
-  ///
-  /// Fields set on this record override the widget's flat shared-visual defaults on the Cupertino
-  /// branch. Cupertino-only fields (e.g. `tapTargetSize`) are read only from here.
+  /// Cupertino-branch overrides, plus the knobs Material has no answer for.
   final CupertinoCheckboxData? cupertinoCheckboxData;
 
-  /// Creates a platform-adaptive two-state checkbox.
-  ///
-  /// [value] and `onChanged` are required and non-null. Disable the checkbox via [isEnabled], not by
-  /// passing a null callback. For the indeterminate state, use [PlatformCheckbox.tristate].
+  /// Creates a 2-state checkbox. Disable it with [isEnabled] rather than a null callback.
   const new({
     required bool this.value,
     required ValueChanged<bool> this._onChanged,
@@ -121,12 +87,8 @@ class PlatformCheckbox extends PlatformWidgetKeyedBase {
     super.key,
   }) : _onChangedTristate = null;
 
-  /// Creates a platform-adaptive tristate checkbox.
-  ///
-  /// [value] may be `true`, `false`, or `null` (indeterminate); `onChanged` receives the same `bool?`.
-  /// The callback itself is required and non-null, disable via [isEnabled], not a null callback. For
-  /// the common two-state case, prefer the default [PlatformCheckbox] constructor, whose [value] and
-  /// `onChanged` are non-null `bool`.
+  /// Creates a checkbox that also does the indeterminate state, so [value] and `onChanged` both take
+  /// `bool?`. Prefer the default constructor when you don't need that third state.
   const new tristate({
     required this.value,
     required ValueChanged<bool?> onChanged,
@@ -148,13 +110,10 @@ class PlatformCheckbox extends PlatformWidgetKeyedBase {
   }) : _onChangedTristate = onChanged,
        _onChanged = null;
 
-  /// Whether this instance was built via [PlatformCheckbox.tristate] and so drives the underlying
-  /// widget in tristate mode.
   bool get _isTristate => _onChangedTristate != null;
 
-  /// The two-state callback adapted to the `ValueChanged<bool?>?` the underlying widgets expect. Only
-  /// reached in two-state mode (the `_onChangedTristate ?? …` fallback), where `_onChanged` is non-null
-  /// and `tristate: false` guarantees the value is never null.
+  /// Both `!` are safe: this is only reached in 2-state mode, where `_onChanged` is non-null and `tristate: false`
+  /// keeps the value from ever arriving null.
   ValueChanged<bool?> get _adaptedOnChanged =>
       (newValue) => _onChanged!(newValue!);
 

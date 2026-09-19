@@ -9,8 +9,8 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 import '/app/router/app_route.dart';
 
-/// The `errorBuilder` target for [AppRouter]. Not a route, so it has no [AppRoute] case: unmatched
-/// locations land here instead of the framework's red error page.
+/// The `errorBuilder` target for [AppRouter]. Not a route, so it has no [AppRoute] case: unmatched locations
+/// land here instead of the framework's red error page.
 class ErrorView extends StatelessWidget {
   /// What go_router tripped on, when it says.
   final GoException? error;

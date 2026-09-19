@@ -3,10 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
-/// State for the text & search demos, the field controllers the views bind to, the live search query,
-/// and the text-field playground's editable shared and per-platform properties. The query and playground
-/// props are flat fields mutated via `notifyListeners()` (see `CODESTYLE.md`'s reactivity note on
-/// playground view-models).
+/// State for the Text & search demos: the controllers the views bind to, the live query, and the text
+/// field playground's editable properties.
 final class TextDemoViewModel extends ViewModel {
   final searchController = TextEditingController();
   final textFieldController = TextEditingController();

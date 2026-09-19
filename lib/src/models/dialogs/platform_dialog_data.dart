@@ -1,4 +1,4 @@
-// Two data classes in one file, both Material-only dialog config, split by
+// 2 data classes in one file, both Material-only dialog config, split by
 // dialog shape (centered vs fullscreen). Cupertino has no `…DialogData`
 // counterpart: `showCupertinoDialog` has no params beyond the shared
 // show-function flat args, so there's no platform-only Cupertino surface.
@@ -29,104 +29,74 @@ const kDefaultMaterialDialogInsetAnimationCurve = Curves.decelerate;
 /// Matches upstream `Dialog`'s default.
 const kDefaultMaterialDialogSemanticsRole = SemanticsRole.dialog;
 
-/// Material-only configuration for `showPlatformDialog` (centered dialog).
+/// Material-side settings for `showPlatformDialog`, the centred one, passed as `materialDialogData`.
+/// None of it reaches iOS, where `showCupertinoDialog` only takes the function-level args that already
+/// sit flat on the show function.
 ///
-/// Pass this via `showPlatformDialog`'s `materialDialogData` parameter when tuning the Material
-/// branch. The fields declared here have no Cupertino equivalent, `showCupertinoDialog` shares only
-/// the function-level args (`anchorPoint`, `barrierColor`, `barrierDismissible`, …) which live as
-/// flat parameters on the show function.
-///
-/// **For fullscreen dialogs**, use `showPlatformFullscreenDialog` with [MaterialFullscreenDialogData],
-/// that surface only exposes the `Dialog.fullscreen()` params (background, animation, semantics),
-/// without the centered-Dialog-only knobs ([alignment], [shape], [clipBehavior], [constraints],
-/// [elevation], [insetPadding], [shadowColor], [surfaceTintColor]) that would be silently dropped
-/// here.
+/// Going fullscreen instead? That's `showPlatformFullscreenDialog` with [MaterialFullscreenDialogData],
+/// which leaves out everything below that only a centred dialog can honour.
 final class const MaterialDialogData({
   // ---- showDialog (function-level) ----
-
-  /// Animation style for the dialog's transition.
   final AnimationStyle? animationStyle,
 
-  /// Edge behaviour for focus traversal.
   final TraversalEdgeBehavior? traversalEdgeBehavior,
 
-  /// Whether to wrap the dialog in a [SafeArea]. Defaults to [kDefaultMaterialDialogUseSafeArea].
   final bool useSafeArea = kDefaultMaterialDialogUseSafeArea,
 
   // ---- Dialog (widget-level, shared with fullscreen variant) ----
-
-  /// Background colour of the dialog surface.
   final Color? backgroundColor,
 
-  /// Duration of the inset animation when the keyboard appears.
+  /// How the dialog slides up out of the keyboard's way.
   final Duration insetAnimationDuration = kDefaultMaterialDialogInsetAnimationDuration,
 
-  /// Curve of the inset animation when the keyboard appears.
   final Curve insetAnimationCurve = kDefaultMaterialDialogInsetAnimationCurve,
 
-  /// Semantics role for accessibility tooling.
   final SemanticsRole semanticsRole = kDefaultMaterialDialogSemanticsRole,
 
   // ---- Dialog (widget-level, centered-only) ----
-
-  /// Alignment of the dialog within the screen.
   final AlignmentGeometry? alignment,
 
-  /// Shape of the dialog border.
   final ShapeBorder? shape,
 
-  /// Clip behaviour applied to the dialog's content.
   final Clip? clipBehavior,
 
-  /// Size constraints on the dialog.
   final BoxConstraints? constraints,
 
-  /// Elevation of the dialog surface.
   final double? elevation,
 
-  /// Inset padding around the dialog (distance from screen edges).
+  /// How far the dialog keeps off the screen edges.
   final EdgeInsets? insetPadding,
 
-  /// Shadow colour of the dialog.
   final Color? shadowColor,
 
-  /// Surface-tint colour of the dialog.
   final Color? surfaceTintColor,
 }) {
-  /// Creates Material-only configuration for `showPlatformDialog`.
+  /// Creates Material-side settings for `showPlatformDialog`.
   this;
 }
 
-/// Material-only configuration for `showPlatformFullscreenDialog`.
+/// Material-side settings for `showPlatformFullscreenDialog`, passed as its `materialDialogData`.
 ///
-/// Pass this via `showPlatformFullscreenDialog`'s `materialDialogData` parameter. Mirrors
-/// [Dialog.fullscreen]'s param set, deliberately *omitting* the centered-only knobs
-/// ([MaterialDialogData.alignment], [MaterialDialogData.shape], [MaterialDialogData.clipBehavior],
-/// [MaterialDialogData.constraints], [MaterialDialogData.elevation], [MaterialDialogData.insetPadding],
-/// [MaterialDialogData.shadowColor], [MaterialDialogData.surfaceTintColor]). Those have no effect on
-/// `Dialog.fullscreen()` and were silently dropped in the v1 single-flag design.
+/// Matches what [Dialog.fullscreen] actually takes. The centred-only knobs on [MaterialDialogData] (alignment,
+/// shape, clip, constraints, elevation, inset padding, the 2 shadow colours) are left out on purpose,
+/// because a fullscreen dialog ignores them and the old single-flag design let them disappear without
+/// a word.
 final class const MaterialFullscreenDialogData({
-  /// Animation style for the dialog's transition.
   final AnimationStyle? animationStyle,
 
-  /// Edge behaviour for focus traversal.
   final TraversalEdgeBehavior? traversalEdgeBehavior,
 
-  /// Whether to wrap the dialog in a [SafeArea]. Defaults to [kDefaultMaterialDialogUseSafeArea].
   final bool useSafeArea = kDefaultMaterialDialogUseSafeArea,
 
-  /// Background colour of the fullscreen dialog surface.
   final Color? backgroundColor,
 
-  /// Duration of the inset animation when the keyboard appears.
+  /// How the dialog slides up out of the keyboard's way.
   final Duration insetAnimationDuration = kDefaultMaterialDialogInsetAnimationDuration,
 
-  /// Curve of the inset animation when the keyboard appears.
   final Curve insetAnimationCurve = kDefaultMaterialDialogInsetAnimationCurve,
 
-  /// Semantics role for accessibility tooling.
   final SemanticsRole semanticsRole = kDefaultMaterialDialogSemanticsRole,
 }) {
-  /// Creates Material-only configuration for `showPlatformFullscreenDialog`.
+  /// Creates Material-side settings for `showPlatformFullscreenDialog`.
   this;
 }

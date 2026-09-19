@@ -23,19 +23,17 @@ const kDefaultSegmentButtonDirection = Axis.horizontal;
 /// Default value for [CupertinoSegmentButtonData.disabledChildren].
 const kDefaultCupertinoSegmentButtonDisabledChildren = <Never>{};
 
-/// Default thumb colour for the Cupertino branch of [PlatformSegmentButton].
+/// Thumb colour for the Cupertino branch of [PlatformSegmentButton].
 ///
-/// Mirrors Flutter's private `_kThumbColor` in `package:flutter/src/cupertino/sliding_segmented_control.dart`.
-/// Re-validate on Flutter SDK bumps, the upstream constant is private.
+/// Mirrors Flutter's private `_kThumbColor`. Recheck on SDK bumps, nothing warns us when it moves.
 const kDefaultCupertinoSegmentButtonThumbColor = CupertinoDynamicColor.withBrightness(
   color: Color(0xFFFFFFFF),
   darkColor: Color(0xFF636366),
 );
 
-/// Default padding for the Cupertino branch of [PlatformSegmentButton].
+/// Padding for the Cupertino branch of [PlatformSegmentButton].
 ///
-/// Mirrors Flutter's private `_kHorizontalItemPadding` in `package:flutter/src/cupertino/sliding_segmented_control.dart`.
-/// Re-validate on Flutter SDK bumps, the upstream constant is private.
+/// Mirrors Flutter's private `_kHorizontalItemPadding`. Recheck on SDK bumps.
 const kDefaultCupertinoSegmentButtonPadding = EdgeInsets.symmetric(vertical: 2, horizontal: 3);
 
 /// Default value for [CupertinoSegmentButtonData.backgroundColor].
@@ -47,76 +45,59 @@ const kDefaultCupertinoSegmentButtonProportionalWidth = false;
 /// Default value for [CupertinoSegmentButtonData.isMomentary].
 const kDefaultCupertinoSegmentButtonIsMomentary = false;
 
-/// Material-only configuration for [PlatformSegmentButton].
+/// Material-side settings for [PlatformSegmentButton], passed as `materialSegmentButtonData`. Everything
+/// declared here has no Cupertino counterpart at all.
 ///
-/// Pass this via `PlatformSegmentButton.materialSegmentButtonData` when tuning Material rendering.
-/// The fields declared here have no Cupertino equivalent.
-///
-/// Not generic on the segment value type, none of these fields reference `T`. Pass directly:
-/// `MaterialSegmentButtonData(direction: .vertical)`, without spelling the type parameter.
-///
-/// **No multi-select**: see [PlatformSegmentButton]'s class dartdoc for why [SegmentedButton.multiSelectionEnabled]
-/// / `Set<T>` selection state are intentionally not surfaced.
+/// Not generic, even though the widget is. None of these depend on the segment value type, so write
+/// `MaterialSegmentButtonData(direction: .vertical)` and leave the type parameter out. Multi-select
+/// is deliberately missing, and [PlatformSegmentButton]'s own dartdoc says why.
 final class const MaterialSegmentButtonData({
-  /// Button style applied to each segment.
+  /// Applied to every segment.
   final ButtonStyle? style,
 
-  /// Icon displayed on the selected segment.
+  /// Shown on the selected segment.
   final Widget? selectedIcon,
 
-  /// Insets applied when the segmented button is laid out in an expanded (full-width) configuration.
+  /// Only read when the button lays out full-width.
   final EdgeInsets? expandedInsets,
 
-  /// Whether tapping the currently-selected segment is allowed to clear the selection. Functional,
-  /// Material-only. Cupertino has no equivalent "empty selection" affordance (use
-  /// [CupertinoSegmentButtonData.isMomentary] for tap-resets-after). Defaults to
-  /// [kDefaultSegmentButtonEmptySelectionAllowed].
+  /// Lets a tap on the selected segment clear the selection. Cupertino has nothing like it, though [CupertinoSegmentButtonData.isMomentary]
+  /// covers the tap-then-reset case.
   final bool emptySelectionAllowed = kDefaultSegmentButtonEmptySelectionAllowed,
 
-  /// Whether to show a check-mark glyph on the selected segment. Functional, Material-only. Defaults
-  /// to [kDefaultSegmentButtonShowSelectedIcon].
+  /// Draws a tick on the selected segment.
   final bool showSelectedIcon = kDefaultSegmentButtonShowSelectedIcon,
 
-  /// Layout direction. Material-only. Cupertino's sliding segmented control is always horizontal.
-  /// Defaults to [kDefaultSegmentButtonDirection].
+  /// Cupertino's sliding control is always horizontal, so this is Material's alone.
   final Axis direction = kDefaultSegmentButtonDirection,
 }) {
-  /// Creates Material-only configuration for [PlatformSegmentButton].
+  /// Creates Material-side settings for [PlatformSegmentButton].
   this;
 }
 
-/// Cupertino-only configuration for [PlatformSegmentButton].
+/// Cupertino-side settings for [PlatformSegmentButton], passed as `cupertinoSegmentButtonData`. Everything
+/// declared here has no Material counterpart at all.
 ///
-/// Pass this via `PlatformSegmentButton.cupertinoSegmentButtonData` when tuning Cupertino rendering.
-/// The fields declared here have no Material equivalent.
-///
-/// Generic on the segment value type because [disabledChildren] is a `Set<T>`. Type inference handles
-/// most call sites (`CupertinoSegmentButtonData(thumbColor: …)` infers `T` from the surrounding
-/// `PlatformSegmentButton<T>`'s slot).
+/// Generic only because [disabledChildren] is a `Set<T>`. Most call sites infer `T` from the surrounding
+/// `PlatformSegmentButton<T>` and never spell it.
 final class const CupertinoSegmentButtonData<T extends Object>({
-  /// Subset of segment values that should be disabled (un-tappable). Functional, Cupertino-only.
-  /// Material's [SegmentedButton] has no per-segment-disabled list (per-segment `enabled` lives on
-  /// [ButtonSegment], which the package doesn't currently surface). Defaults to
-  /// [kDefaultCupertinoSegmentButtonDisabledChildren].
+  /// Which segments can't be tapped. Material has no per-segment switch, since upstream puts `enabled`
+  /// on [ButtonSegment] and this package doesn't surface that yet.
   final Set<T> disabledChildren = kDefaultCupertinoSegmentButtonDisabledChildren,
 
-  /// Colour of the sliding thumb behind the selected segment. Defaults to [kDefaultCupertinoSegmentButtonThumbColor].
+  /// The sliding thumb behind the selected segment.
   final Color thumbColor = kDefaultCupertinoSegmentButtonThumbColor,
 
-  /// Padding around the segmented control. Defaults to [kDefaultCupertinoSegmentButtonPadding].
   final EdgeInsetsGeometry padding = kDefaultCupertinoSegmentButtonPadding,
 
-  /// Background colour of the segmented control. Defaults to [kDefaultCupertinoSegmentButtonBackgroundColor].
   final Color backgroundColor = kDefaultCupertinoSegmentButtonBackgroundColor,
 
-  /// Whether segments size proportionally to their content. Functional, Cupertino-only. Defaults to
-  /// [kDefaultCupertinoSegmentButtonProportionalWidth].
+  /// Sizes each segment to its own content instead of splitting the width evenly.
   final bool proportionalWidth = kDefaultCupertinoSegmentButtonProportionalWidth,
 
-  /// Whether the selection resets after each tap (momentary behaviour). Functional, Cupertino-only.
-  /// Defaults to [kDefaultCupertinoSegmentButtonIsMomentary].
+  /// Clears the selection again right after each tap.
   final bool isMomentary = kDefaultCupertinoSegmentButtonIsMomentary,
 }) {
-  /// Creates Cupertino-only configuration for [PlatformSegmentButton].
+  /// Creates Cupertino-side settings for [PlatformSegmentButton].
   this;
 }

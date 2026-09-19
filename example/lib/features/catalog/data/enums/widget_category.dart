@@ -3,8 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// A group of related widgets shown as one expandable section in the Catalog tab. Drives the accordion:
-/// the section header ([label] + [icon]) and the iteration order.
+/// One expandable section of the Catalog tab. Declaration order is display order.
 enum WidgetCategory {
   /// Filled, tonal, outlined, text, icon and disabled buttons.
   buttons(label: 'Buttons'),
@@ -21,12 +20,12 @@ enum WidgetCategory {
   /// Dialogs, alerts, toast, bottom sheet, date & time pickers.
   dialogs(label: 'Dialogs & pickers');
 
-  /// Accordion section header label.
+  /// Shown on the section header.
   final String label;
 
   const WidgetCategory({required this.label});
 
-  /// The category's header icon, adapted per platform.
+  /// Adapted per platform.
   Icon icon(BuildContext context) => Icon(_iconData(context));
 
   IconData _iconData(BuildContext context) => switch (this) {

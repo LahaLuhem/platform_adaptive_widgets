@@ -47,14 +47,14 @@ for one.
 ## Why you'd want it
 
 Flutter ships both Material and Cupertino widgets, but it leaves the choosing to you. So apps tend to
-drift one of two ways: all-Material everywhere (which looks a little off on iOS), or a slowly growing
+drift one of 2 ways: all-Material everywhere (which looks a little off on iOS), or a slowly growing
 tangle of `if (Platform.isIOS)` branches you'll be maintaining for years.
 
 This package makes that call for you, one widget at a time. Each `PlatformXxx` checks the platform and
 builds the right native widget underneath, so your tree stays readable and the branching lives in one
 tested place instead of sprinkled across the codebase.
 
-Two things it goes out of its way to avoid:
+2 things it goes out of its way to avoid:
 
 - **Lock-in.** The shared parts (your callbacks, values, controllers) sit right on the widget.
   Anything platform-specific goes in optional `MaterialXxxData` / `CupertinoXxxData` records you can
@@ -81,7 +81,7 @@ PlatformButton(onPressed: _save, child: const Text('Save'));
 ## How it compares
 
 Flutter ships Material *and* Cupertino but won't pick between them for you, and the packages
-that fill that gap fall into two camps. **Pure-Dart dispatch** renders Flutter's own
+that fill that gap fall into 2 camps. **Pure-Dart dispatch** renders Flutter's own
 Material/Cupertino widgets per platform. **Native bridging** embeds real platform UI through
 platform views and method channels. This package is firmly pure-Dart.
 
@@ -160,7 +160,7 @@ cd example
 flutter run
 ```
 
-It comes with two entry points, depending on how you like to route:
+It comes with 2 entry points, depending on how you like to route:
 [`lib/main.dart`](./example/lib/main.dart) for plain navigator routing, and
 [`lib/main_go_router.dart`](./example/lib/main_go_router.dart) for the declarative router.
 
@@ -244,7 +244,7 @@ column shows what you can pass to tune each side. See
 
 #### Platform value selectors
 
-The value selectors are top-level functions (no `BuildContext`); `platformIcon`
+The value selectors are top-level functions (no `BuildContext`), where `platformIcon`
 is a `BuildContext` extension. The selectors evaluate the unused-platform arm
 too, so its code is **not** tree-shaken from release builds (empirically
 ≈342 KB for one Cupertino widget). Prefer an inline `switch
@@ -318,7 +318,7 @@ from your release build. Under AOT, `defaultTargetPlatform` is a compile-time co
 the Cupertino branches are simply dead code that the compiler tree-shakes away, and the same in
 reverse on iOS.
 
-Since "trust me" is a weak engineering argument, two CI checks keep it honest on every PR:
+Since "trust me" is a weak engineering argument, 2 CI checks keep it honest on every PR:
 
 - a **static AST guard**
   ([`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart)) that fails the
@@ -359,7 +359,7 @@ The canonical text for `AGENTS.md` and `CLAUDE.md` lives under `.ai/`. The repo 
 holds **gitignored symlinks** (`AGENTS.md → .ai/AGENTS.md`,
 `CLAUDE.md → .ai/CLAUDE.md`, `example/AGENTS.md → example/.ai/AGENTS.md`) so coding
 agents that auto-discover root-level guidance files (Claude Code, Codex, Cursor,
-Copilot, …) find them without polluting the file tree with two extra Markdown files at
+Copilot, …) find them without polluting the file tree with 2 extra Markdown files at
 each level. The arrangement is opt-in per contributor:
 
 - **If you use a coding agent**, set the symlinks up once from the repo root:

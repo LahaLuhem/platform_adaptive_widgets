@@ -8,63 +8,40 @@ import 'package:material_ui/material_ui.dart' show ButtonSegment, SegmentedButto
 import '/src/models/interaction/platform_segment_button_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive segmented button that renders Material [SegmentedButton] on Android and
-/// [CupertinoSlidingSegmentedControl] on iOS.
+/// Material [SegmentedButton] on Android, [CupertinoSlidingSegmentedControl] on iOS.
 ///
-/// All functional inputs (choices, selection, callback) live as flat constructor parameters. Per-platform
-/// visual + behavioural tuning is opt-in via [materialSegmentButtonData] and [cupertinoSegmentButtonData].
-/// See `APPENDIX.md#field-classification`.
+/// Per-platform tuning lives in [materialSegmentButtonData] / [cupertinoSegmentButtonData]. See `APPENDIX.md#field-classification`.
 ///
-/// **Single-selection only.** Material's [SegmentedButton] supports multi-select via `multiSelectionEnabled`
-/// + a `Set<T>` selection. Cupertino's [CupertinoSlidingSegmentedControl] does not. Exposing multi-select
-/// on Material-only would mean the same widget in the same view behaves differently across platforms
-/// (Android multi, iOS single), a cross-platform UX inconsistency that contradicts the package's
-/// value proposition. Apps that need multi-select across both platforms should reach for a different
-/// widget shape (chips, checkbox lists, [PlatformRadioGroupBuilder] with toggle semantics, etc.).
-/// The package's [onSelectionChanged] signature is `ValueChanged<T?>` accordingly. Material's underlying
-/// `Set<T>` is collapsed to `set.firstOrNull` at the Material-branch boundary.
+/// One selection at a time, deliberately. Material can do multi-select, iOS can't, and shipping that
+/// would mean the same widget behaving differently on the 2 platforms, which is the opposite of what
+/// this package is for. Hence [onSelectionChanged] taking a single `T?`, with Material's `Set<T>` collapsed
+/// on the way through. If you need multi-select everywhere, something else fits better: chips, a list
+/// of checkboxes, or [PlatformRadioGroupBuilder] with toggle semantics.
 ///
-/// No `isEnabled` flag, neither [SegmentedButton] nor [CupertinoSlidingSegmentedControl] ships a
-/// built-in disabled state. To disable interaction, wrap with [IgnorePointer] (or [Opacity] for a
-/// faded-out look).
+/// No `isEnabled` either, since neither underlying widget has a disabled state. Wrap it in an [IgnorePointer],
+/// with an [Opacity] if you want it to look the part too.
 ///
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_segment_button.dart#platform_segment_button}
 class const PlatformSegmentButton<T extends Object>({
-  /// Values to render as segments. One [segmentBuilder] call per choice, in iteration order. Must
-  /// contain at least two entries (Cupertino asserts this at construction).
+  /// One [segmentBuilder] call per choice, in iteration order. Needs at least 2, which iOS asserts.
   required final Iterable<T> choices,
 
-  /// Builds the widget for one segment, typically a [Text] or [Icon].
+  /// Usually a [Text] or an [Icon].
   required final Widget Function(T choice) segmentBuilder,
 
-  /// Currently-selected choice. `null` means no selection.
-  ///
-  /// On Material, an empty selection requires [MaterialSegmentButtonData.emptySelectionAllowed] to
-  /// be `true`: otherwise [SegmentedButton] asserts at runtime.
+  /// `null` for nothing selected, which on Material needs [MaterialSegmentButtonData.emptySelectionAllowed]
+  /// or [SegmentedButton] trips an assert.
   required final T? selectedChoice,
 
-  /// Callback fired when the user taps a segment.
-  ///
-  /// Required and non-null per the callback-nullability rule (`APPENDIX.md#callback-nullability`),
-  /// [CupertinoSlidingSegmentedControl] requires its `onValueChanged` to be non-null at construction.
-  ///
-  /// The callback may receive `null` if a Material momentary-style tap clears the selection (only
-  /// possible when [MaterialSegmentButtonData.emptySelectionAllowed] is `true`).
+  /// Stays required and non-null, since iOS won't construct without it. It can still hand you `null`
+  /// when a Material tap clears the selection. See `APPENDIX.md#callback-nullability`.
   required final ValueChanged<T?> onSelectionChanged,
 
-  /// Material-only visual + functional overrides. Optional.
-  ///
-  /// Fields set on this record drive the Material branch only. Material-only fields (`style`,
-  /// `selectedIcon`, `expandedInsets`, `emptySelectionAllowed`, `showSelectedIcon`, `direction`) are
-  /// read only from here.
+  /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialSegmentButtonData? materialSegmentButtonData,
 
-  /// Cupertino-only visual + functional overrides. Optional.
-  ///
-  /// Fields set on this record drive the Cupertino branch only. Cupertino-only fields (`disabledChildren`,
-  /// `thumbColor`, `padding`, `backgroundColor`, `proportionalWidth`, `isMomentary`) are read only
-  /// from here.
+  /// Cupertino-branch overrides, plus the knobs Material has no answer for.
   final CupertinoSegmentButtonData<T>? cupertinoSegmentButtonData,
   super.widgetKey,
   super.key,

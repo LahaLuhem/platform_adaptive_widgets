@@ -1,8 +1,5 @@
-// The two ctors initialise library-private content-slot fields via the
-// initializer list (`_child = child`, etc.). Using `this._child` initializing
-// formals would expose the underscore on the public parameter signature, which
-// Dart forbids on exported APIs, the param-to-private-field assignment is the
-// only way to keep the slot fields private while accepting public params.
+// `this._child` would leak the underscore into the public parameter name, so the slot fields are
+// assigned in the initializer list instead.
 // ignore_for_file: prefer_initializing_formals
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoButton;
@@ -13,22 +10,14 @@ import 'package:material_ui/material_ui.dart'
 import '/src/models/interaction/platform_button_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive button that renders one of Material's button variants on Android ([TextButton],
-/// [ElevatedButton], [OutlinedButton], [FilledButton], or [FilledButton.tonal], selected by
-/// [materialButtonVariant]) and one of Cupertino's button variants on iOS ([CupertinoButton],
-/// [CupertinoButton.filled], or [CupertinoButton.tinted], selected by [cupertinoButtonVariant]).
+/// One of Material's buttons on Android and one of Cupertino's on iOS, picked by [materialButtonVariant]
+/// and [cupertinoButtonVariant].
 ///
-/// Two constructor shapes:
-/// - [PlatformButton.new], arbitrary `child` slot (text, icon-only, custom widget).
-/// - [PlatformButton.icon], icon + label slots. On Material maps to each variant's `.icon` factory
-///   ([TextButton.icon] … [FilledButton.tonalIcon]), on Cupertino the package wraps the icon and
-///   label in a [Row] with `spacing: kDefaultButtonIconLabelGap` (Cupertino has no native icon-button
-///   factory).
+/// 2 shapes to build one. [PlatformButton.new] takes a free-form `child`. [PlatformButton.icon] takes
+/// an icon and a label, which Material renders through each variant's `.icon` factory and Cupertino,
+/// having none, renders as a [Row] spaced by [kDefaultButtonIconLabelGap].
 ///
-/// All shared functional inputs ([onPressed], [onLongPress], [isEnabled], [focusNode], [autofocus],
-/// [onFocusChange]) live as flat constructor parameters. Per-platform tuning is opt-in via
-/// [materialButtonData] and [cupertinoButtonData]. See `APPENDIX.md#field-classification` for the
-/// classification rule.
+/// Per-platform tuning lives in [materialButtonData] / [cupertinoButtonData]. See `APPENDIX.md#field-classification`.
 ///
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_button.dart#platform_button}
@@ -36,71 +25,48 @@ import '/src/models/platform_widget_base.dart';
 /// The icon variant:
 /// {@example /example/lib/snippets/interaction/platform_button.dart#platform_button_icon}
 class PlatformButton extends PlatformWidgetKeyedBase {
-  /// Callback fired when the button is pressed.
-  ///
-  /// Required and non-null per the callback-nullability rule (`APPENDIX.md#callback-nullability`).
-  /// To disable the button, set [isEnabled] to `false`: both branches receive `null` for their
-  /// `onPressed` (the platform-native "disabled" state) while this field stays non-null.
+  /// Stays required and non-null even for a disabled button. That's [isEnabled]'s job, not a null callback's.
+  /// See `APPENDIX.md#callback-nullability`.
   final VoidCallback onPressed;
 
-  /// Optional long-press callback. Nullable per `APPENDIX.md#callback-nullability`.
+  /// Optional long-press callback.
   final VoidCallback? onLongPress;
 
-  /// Whether the button is enabled and responds to input. Defaults to `true`. When `false`, both
-  /// branches receive `null` for `onPressed` / `onLongPress`.
+  /// The way to disable a button, passing both branches a `null` callback for their standard disabled
+  /// look.
   final bool isEnabled;
 
   /// Focus node for the button.
   final FocusNode? focusNode;
 
-  /// Whether the button should autofocus on mount. Defaults to `false`.
+  /// Whether the button grabs focus when mounted.
   final bool autofocus;
 
-  /// Callback fired when the focus state changes. Optional.
+  /// Fires on focus gained and lost.
   final ValueChanged<bool>? onFocusChange;
 
-  /// Selects which Material button class to render on Android. Defaults to [MaterialButtonVariant.elevated].
-  /// See [MaterialButtonVariant] for the per-variant mapping.
+  /// Which Material button class Android renders.
   final MaterialButtonVariant materialButtonVariant;
 
-  /// Selects which Cupertino button constructor to invoke on iOS. Defaults to [CupertinoButtonVariant.normal].
-  /// See [CupertinoButtonVariant] for the per-variant mapping.
+  /// Which Cupertino button constructor iOS calls.
   final CupertinoButtonVariant cupertinoButtonVariant;
 
-  /// Material-only visual + functional overrides. Optional.
-  ///
-  /// Fields set on this record drive the Material branch only.
+  /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialButtonData? materialButtonData;
 
-  /// Cupertino-only visual + functional overrides. Optional.
-  ///
-  /// Fields set on this record drive the Cupertino branch only.
+  /// Cupertino-branch overrides, plus the knobs Material has no answer for.
   final CupertinoButtonData? cupertinoButtonData;
 
-  // ---- Content slots (set by one of two constructors, library-private) ----
-
-  /// Set when constructed via [PlatformButton.new]; `null` when constructed via [PlatformButton.icon].
-  /// Mutually exclusive with [_icon] / [_label] by construction.
+  // Content slots. `_child` and the `_icon`/`_label`/`_iconAlignment` trio are mutually exclusive,
+  // one set or the other, decided by which constructor ran.
   final Widget? _child;
-
-  /// Set when constructed via [PlatformButton.icon]; `null` otherwise. Non-null iff [_hasIconChild]
-  /// is `true`.
   final Widget? _icon;
-
-  /// Set when constructed via [PlatformButton.icon]; `null` otherwise. Non-null iff [_hasIconChild]
-  /// is `true`.
   final Widget? _label;
-
-  /// Set when constructed via [PlatformButton.icon]; `null` otherwise. Non-null iff [_hasIconChild]
-  /// is `true` (defaults to [IconAlignment.start] when omitted from the `.icon` constructor).
   final IconAlignment? _iconAlignment;
 
-  /// Whether this widget was constructed via [PlatformButton.icon], i.e. its rendered content is an
-  /// icon + label pair rather than a free-form child. `true` iff [_icon] is non-null (the three
-  /// `_icon`/`_label`/`_iconAlignment` fields are set / null as a unit by the two constructors).
   bool get _hasIconChild => _icon != null;
 
-  /// Creates a text-only / arbitrary-`child` platform-adaptive button.
+  /// Creates a button around a free-form [child].
   const new({
     required this.onPressed,
     required Widget child,
@@ -120,15 +86,9 @@ class PlatformButton extends PlatformWidgetKeyedBase {
        _label = null,
        _iconAlignment = null;
 
-  /// Creates an icon + label platform-adaptive button.
-  ///
-  /// On Material, maps to the selected variant's `.icon` factory ([TextButton.icon] / [ElevatedButton.icon]
-  /// / [OutlinedButton.icon] / [FilledButton.icon] / [FilledButton.tonalIcon]).
-  ///
-  /// On Cupertino, the icon and label are wrapped in a [Row] of `mainAxisSize: .min` with `spacing:
-  /// kDefaultButtonIconLabelGap`. [iconAlignment] controls the order: `.start` renders the icon before
-  /// the label; `.end` renders the label before the icon. Cupertino has no native icon-button factory,
-  /// so this is the package's bridge.
+  /// Creates a button holding an icon next to a label, which Material renders through the variant's
+  /// `.icon` factory and Cupertino, having none, renders as a [Row]. [iconAlignment] sets the order,
+  /// `.start` putting the icon first and `.end` the label.
   const new icon({
     required this.onPressed,
     required Widget icon,
@@ -200,10 +160,8 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         autofocus: autofocus,
         clipBehavior: clipBehavior,
         statesController: statesController,
-        // No bang: ElevatedButton's `required super.child` inherits parent's
-        // `Widget?`: passing the nullable field directly is what upstream
-        // expects. (Same for outlined / filled / tonal below, only TextButton
-        // narrows to non-null `Widget` via `required Widget super.child`.)
+        // No bang, since this one's `required super.child` is still nullable upstream. Same for
+        // outlined, filled and tonal. Only TextButton narrows it to non-null.
         child: _child,
       ),
       (.elevated, true) => ElevatedButton.icon(

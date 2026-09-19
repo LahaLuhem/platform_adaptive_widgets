@@ -30,18 +30,12 @@
 import 'dart:convert';
 import 'dart:io';
 
-/// Budget for total Cupertino-pathed bytes in the size-harness Android build.
+/// Budget for Cupertino-pathed bytes in the harness's Android build.
 ///
-/// Baseline (2026-06-08, current SDK): ~107 KB, all six `showPlatformXxx`, PlatformButton,
-/// `context.platformIcon`, and the `isAndroid`/`isIOS` getters exercised. Dominated by SDK-internal
-/// Cupertino (text-selection toolbars etc.) that can't be driven to zero from outside the SDK.
-///
-/// Threshold sits ~33 KB above baseline, deliberately *below* the empirically measured cost of the
-/// dominant regression, so that regression trips it. A leaked `CupertinoDatePicker` adds ~61 KB
-/// cupertino-pathed (`tool/size_harness` experiment, 2026-06-08), pushing the build to ~166 KB, well
-/// over this 140 KB budget. The prior 200 KB budget (~93 KB headroom) sat *above* that 61 KB leak
-/// and would have missed a single-widget pruning regression. The ~33 KB margin still absorbs SDK
-/// drift (the baseline fell ~11 KB since the last reading) roughly threefold.
+/// The harness measured ~107 KB on 2026-06-08, nearly all of it SDK-internal Cupertino nothing outside
+/// the SDK can prune. This sits ~33 KB above that, which is the point: one leaked `CupertinoDatePicker`
+/// costs ~61 KB and so trips it, where the old 200 KB budget had enough headroom to swallow that
+/// silently. The remaining margin covers SDK drift about threefold.
 const int _maxCupertinoBytes = 140 * 1024;
 
 /// Number of top offenders to print on failure.
@@ -90,8 +84,7 @@ Future<void> main(List<String> args) async {
   exit(1);
 }
 
-/// Lazily flattens the `--analyze-size` JSON tree to every leaf symbol whose full `/`-joined path
-/// contains "cupertino" (case-insensitive). A leaf is a node with a numeric `value` and no children.
+/// Every leaf in the `--analyze-size` tree whose path mentions cupertino, case-insensitively. Lazy.
 Iterable<_Symbol> _cupertinoSymbols(
   Map<String, dynamic> node, [
   List<String> ancestors = const [],

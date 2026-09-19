@@ -5,9 +5,9 @@ import 'package:pmvvm/pmvvm.dart';
 import '/features/showcase/widgets/nuance_card.dart';
 import 'showcase_view_model.dart';
 
-/// The "Under the hood" tab, not a sample screen, but a guided tour of the deliberate, easy-to-get-wrong
-/// details the library handles for you. Each card names a decision, says what a naive `Platform.isIOS
-/// ? … : …` wrapper gets wrong, and (where it can) proves it live.
+/// A tour of the easy-to-get-wrong details the library handles, rather than a sample screen. Each card
+/// names a decision, says what a naive `Platform.isIOS ? … : …` gets wrong, and proves it live where
+/// it can.
 class ShowcaseView extends StatelessWidget {
   const ShowcaseView({super.key});
 
@@ -63,7 +63,7 @@ class ShowcaseView extends StatelessWidget {
                 title: 'Disable, never un-wire',
                 body:
                     'PlatformSwitch and friends keep onChanged non-null and gate input with '
-                    'isEnabled. A null callback would conflate disabled with not-yet-wired; '
+                    'isEnabled. A null callback would conflate disabled with not-yet-wired. '
                     'isEnabled says exactly what is meant. Toggle the first switch to disable '
                     'the second.',
                 demo: Column(
@@ -127,7 +127,7 @@ class ShowcaseView extends StatelessWidget {
               NuanceCard(
                 title: 'Large titles, where they belong',
                 body:
-                    'iOS has a large navigation title that collapses on scroll; Material has '
+                    'iOS has a large navigation title that collapses on scroll. Material has '
                     'no static equivalent. CupertinoNavigationBarData.large opts in, the same '
                     'PlatformAppBar is just a standard bar on Android.',
                 code: 'cupertinoNavigationBarData: CupertinoNavigationBarData(large: true)',
@@ -157,9 +157,9 @@ class ShowcaseView extends StatelessWidget {
               const NuanceCard(
                 title: 'heroTag collisions, handled',
                 body:
-                    'Two CupertinoNavigationBars on screen during a transition, a tab '
+                    '2 CupertinoNavigationBars on screen during a transition, a tab '
                     'scaffold and a pushed page, share a default hero tag and crash the '
-                    'animation; so do two FABs. The library exposes heroTag so each can have '
+                    'animation. So do 2 FABs. The library exposes heroTag so each can have '
                     'its own.',
                 code: "CupertinoNavigationBarData(heroTag: 'profile')",
               ),

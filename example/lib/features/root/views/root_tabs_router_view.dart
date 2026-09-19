@@ -4,15 +4,13 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 import '/features/root/data/enums/root_tab.dart';
 
-/// Controlled-mode tab shell (the `main_go_router.dart` entry point): tab selection is owned by
-/// go_router's [StatefulNavigationShell]. The scaffold reflects [StatefulNavigationShell.currentIndex]
-/// and routes taps through [StatefulNavigationShell.goBranch]. The branch navigators arrive as
-/// [children] and are shown via `tabBodyBuilder`.
+/// The `main_go_router.dart` tab shell, where go_router owns selection and the scaffold just reflects
+/// it. Taps go back out through [StatefulNavigationShell.goBranch].
 class RootTabsRouterView extends StatelessWidget {
   /// go_router's shell, the source of truth for the selected tab.
   final StatefulNavigationShell navigationShell;
 
-  /// The branch navigators, one per tab, indexed by tab position.
+  /// One per tab, in tab order.
   final List<Widget> children;
 
   const RootTabsRouterView({required this.navigationShell, required this.children, super.key});

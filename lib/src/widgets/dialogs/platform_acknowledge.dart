@@ -8,24 +8,17 @@ import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_alert_dialog_data.dart';
 import 'platform_dialog.dart';
 
-/// Default value for [showPlatformAcknowledge]'s `okLabel`: the text on the single confirmation
-/// action. Override for localisation.
+/// Default value for [showPlatformAcknowledge]'s `okLabel`. Override it to localise.
 const kDefaultPlatformAcknowledgeOkLabel = 'OK';
 
-/// Shows a must-acknowledge alert with a single confirmation action. Material [AlertDialog] on Android,
-/// [CupertinoAlertDialog] on iOS. The user must tap the OK button (or otherwise dismiss) before
-/// continuing.
+/// Shows an alert with one OK button, [AlertDialog] on Android and [CupertinoAlertDialog] on iOS. The
+/// returned future completes once it's dismissed.
 ///
-/// **When to use.** Errors, irreversible confirmations, or any message where the app shouldn't proceed
-/// until the user has seen and acknowledged the content. For routine feedback that should fade on
-/// its own, use `showPlatformToast`: that follows each platform's transient-feedback idiom (Material
-/// `SnackBar`, iOS HUD banner).
+/// For anything the app shouldn't continue past until it's been seen: errors, irreversible confirmations.
+/// Routine feedback that can fade on its own wants `showPlatformToast` instead, which follows each platform's
+/// own idiom for that.
 ///
-/// Built on top of [showPlatformAlertDialog]. The per-platform alert-dialog data classes
-/// ([materialAlertDialogData], [cupertinoAlertDialogData]) and the shared show-function flat args
-/// are accepted as-is.
-///
-/// Returns a `Future<void>` that resolves once the user dismisses.
+/// A thin wrapper over [showPlatformAlertDialog], so the same data classes and flat args apply.
 ///
 /// Example:
 /// {@example /example/lib/snippets/dialogs/platform_acknowledge.dart#platform_acknowledge}

@@ -1,45 +1,34 @@
 import 'package:flutter/foundation.dart';
 
-/// Selects [material] on Android and [cupertino] on iOS, both evaluated eagerly at the call site.
-///
-/// Eager: both arms are constructed *before* dispatch, so the unused arm is also built at runtime
-/// and immediately discarded. The most expensive form at runtime. Irrelevant for cheap values.
+/// [material] on Android, [cupertino] on iOS. Both arms are built before the pick happens, so the loser
+/// is built and thrown away. Fine for cheap values, which is what these are for.
 ///
 /// {@template platform_adaptive_widgets.pruning_size_cost}
-/// **Binary-size cost, empirically verified.** Every argument-taking selector here receives both the
-/// Material and the Cupertino value, so both are present at the call site before the internal `switch
-/// (defaultTargetPlatform)` runs. The AOT compiler const-folds that switch to one branch in release
-/// builds, but the unused argument's expression, and any platform-specific class it constructs or
-/// closes over, stays lexically reachable and is **not** tree-shaken.
+/// **Costs binary size, measured.** Passing both values means both are reachable at the call site
+/// before the internal switch runs. AOT folds the switch away, but the losing argument's expression,
+/// and every platform class it touches, stays lexically reachable and survives tree-shaking.
 ///
-/// Measured with `tool/size_harness` on an `android-arm64` release build: dispatching a `CupertinoDatePicker`
-/// through any selector here left its symbols in the binary ≈48.7 KB versus ≈1.8 KB when dispatched
-/// with an inline `switch (defaultTargetPlatform)` (~27× larger), and ≈342 KB heavier in total once
-/// transitive dependencies are counted. Cupertino-pathed bytes overall rose ≈28.7 KB → ≈88.2 KB
-/// (+207%).
+/// It is not a small effect. `tool/size_harness` puts a `CupertinoDatePicker` dispatched this way at
+/// roughly 27 times the symbol weight of the same thing behind an inline `switch (defaultTargetPlatform)`.
+/// Run the harness for current figures, and see `APPENDIX.md#aot-pruning-rules`.
 ///
-/// **Prefer an inline `switch (defaultTargetPlatform)` (or `isAndroid ? … : …`) whenever an arm builds
-/// a platform-specific widget.** These selectors are for cheap values, colors, enums, `IconData`,
-/// primitives, that carry no platform-specific code to prune.
+/// **So inline the switch, or `isAndroid ? … : …`, any time an arm builds a platform widget.** Save
+/// these for colours, enums, `IconData` and other values that drag no code behind them.
 /// {@endtemplate}
 T platformValue<T extends Object>({required T material, required T cupertino}) =>
     _valueProvider(material: material, cupertino: cupertino);
 
-/// Nullable [platformValue]: selects [material] on Android and [cupertino] on iOS, either of which
-/// may be `null`.
+/// [platformValue] where either side may be `null`.
 ///
 /// {@macro platform_adaptive_widgets.pruning_size_cost}
 T? platformValueNullable<T extends Object>({T? material, T? cupertino}) =>
     _valueProviderNullable(material: material, cupertino: cupertino);
 
-/// Selects [material] on Android and [cupertino] on iOS, invoking **only** the getter for the current
-/// platform.
+/// [material] on Android, [cupertino] on iOS, calling only the getter that wins.
 ///
-/// Lazy: skips the *runtime build* of the discarded arm - its sole advantage over [platformValue],
-/// worth it when an arm is expensive to construct. It does **not** reduce binary size: in
-/// `tool/size_harness` the lazy and eager forms shipped byte-identical Cupertino symbols (49,913 B
-/// each, 0% smaller than eager), because a closure passed as an argument keeps its body reachable
-/// exactly as an eager value does.
+/// Skips *building* the losing arm, which is worth it when that's expensive. It saves no binary size
+/// at all, though. The harness shipped identical Cupertino symbols either way, since a closure keeps
+/// its body just as reachable as a value does.
 ///
 /// {@macro platform_adaptive_widgets.pruning_size_cost}
 T platformLazyValue<T extends Object>({
@@ -47,9 +36,7 @@ T platformLazyValue<T extends Object>({
   required ValueGetter<T> cupertino,
 }) => _valueProvider(material: material, cupertino: cupertino).call();
 
-/// Nullable [platformLazyValue]: invokes only the current platform's getter, or returns `null` when
-/// that getter is `null`. Saves the discarded arm's runtime build but not binary size. See
-/// [platformLazyValue].
+/// [platformLazyValue] where either getter may be `null`, in which case you get `null` back.
 ///
 /// {@macro platform_adaptive_widgets.pruning_size_cost}
 T? platformLazyNullable<T extends Object>({ValueGetter<T>? material, ValueGetter<T>? cupertino}) =>

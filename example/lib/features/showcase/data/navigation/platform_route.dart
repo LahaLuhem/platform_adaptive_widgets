@@ -3,12 +3,11 @@ import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show MaterialPageRoute;
 
-/// Pushes [builder]'s screen with the platform's native page transition, Cupertino's swipe-back route
-/// on iOS, the Material route on Android.
+/// Pushes [builder]'s screen on the platform's own route, so iOS gets swipe-back and Android gets the
+/// Material transition.
 ///
-/// The library adapts *widgets*, not routes, so the Navigator entry point supplies this thin
-/// platform-adaptive push. (The go_router entry point gets the same effect for free from
-/// `PlatformApp.router`'s per-platform routing.)
+/// Lives here because the library adapts widgets, not routes. The go_router entry point needs none of
+/// this, getting the same from `PlatformApp.router`.
 Future<T?> pushPlatformRoute<T>(BuildContext context, WidgetBuilder builder) {
   final route = switch (defaultTargetPlatform) {
     .iOS => CupertinoPageRoute<T>(builder: builder),

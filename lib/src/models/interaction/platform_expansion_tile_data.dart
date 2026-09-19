@@ -30,118 +30,85 @@ const kDefaultExpansionTileInternalAddSemanticForOnTap = false;
 /// Default value for [CupertinoExpansionTileData.transitionMode].
 const kDefaultCupertinoExpansionTileTransitionMode = ExpansionTileTransitionMode.fade;
 
-/// Material-only configuration for [PlatformExpansionTile].
-///
-/// Pass this via `PlatformExpansionTile.materialExpansionTileData` when tuning Material rendering.
-/// The fields declared here have no Cupertino equivalent.
+/// Material-side settings for [PlatformExpansionTile], passed as `materialExpansionTileData`. Everything
+/// declared here has no Cupertino counterpart at all.
 final class const MaterialExpansionTileData({
-  /// Callback fired when the expansion state changes. Functional, Material-only, Cupertino's
-  /// [CupertinoExpansionTile] surfaces no equivalent callback (use the shared [ExpansibleController]
-  /// for programmatic observation).
+  /// [CupertinoExpansionTile] fires nothing like it. Watch the shared [ExpansibleController] instead.
   final ValueChanged<bool>? onExpansionChanged,
 
-  /// Leading widget before the title.
   final Widget? leading,
 
-  /// Subtitle widget below the title.
   final Widget? subtitle,
 
-  /// Trailing widget (typically an expand/collapse icon).
+  /// Usually the expand/collapse chevron.
   final Widget? trailing,
 
-  /// Whether to show the trailing icon. Defaults to [kDefaultExpansionTileShowTrailingIcon].
   final bool showTrailingIcon = kDefaultExpansionTileShowTrailingIcon,
 
-  /// Whether the tile starts in the expanded state. Defaults to [kDefaultExpansionTileInitiallyExpanded].
   final bool initiallyExpanded = kDefaultExpansionTileInitiallyExpanded,
 
-  /// Whether the children are kept in the widget tree when collapsed. Defaults to
-  /// [kDefaultExpansionTileMaintainState].
+  /// Keeps the children in the tree while collapsed, so they hold their state.
   final bool maintainState = kDefaultExpansionTileMaintainState,
 
-  /// Padding around the tile header.
+  /// Around the header, where [childrenPadding] wraps the expanded part.
   final EdgeInsetsGeometry? tilePadding,
 
-  /// Cross-axis alignment of the expanded child. Nullable, when `null`, Material applies its theme-driven
-  /// default.
   final CrossAxisAlignment? expandedCrossAxisAlignment,
 
-  /// Alignment of the expanded child. Nullable, when `null`, Material applies its theme-driven default.
   final AlignmentGeometry? expandedAlignment,
 
-  /// Padding around the expanded child.
   final EdgeInsetsGeometry? childrenPadding,
 
-  /// Background color when expanded.
   final Color? backgroundColor,
 
-  /// Background color when collapsed.
   final Color? collapsedBackgroundColor,
 
-  /// Text color when expanded.
   final Color? textColor,
 
-  /// Text color when collapsed.
   final Color? collapsedTextColor,
 
-  /// Icon color when expanded.
   final Color? iconColor,
 
-  /// Icon color when collapsed.
   final Color? collapsedIconColor,
 
-  /// Shape of the tile when expanded.
   final ShapeBorder? shape,
 
-  /// Shape of the tile when collapsed.
   final ShapeBorder? collapsedShape,
 
-  /// Clip behavior for the tile content.
   final Clip? clipBehavior,
 
-  /// Position of the expand/collapse control.
+  /// Which end the expand/collapse control sits at.
   final ListTileControlAffinity? controlAffinity,
 
-  /// Splash color for the tile.
   final Color? splashColor,
 
-  /// Visual density of the tile.
   final VisualDensity? visualDensity,
 
-  /// Minimum height of the tile.
   final double? minTileHeight,
 
-  /// Whether to enable haptic feedback on tap. Nullable, when `null`, Material applies its own default
-  /// (`true`).
+  /// Haptic feedback on tap. Material's own default is `true`.
   final bool? enableFeedback,
 
-  /// Whether the tile is enabled. Functional, Material-only. Cupertino has no equivalent disable
-  /// affordance (wrap with [IgnorePointer] to disable a Cupertino tile). Defaults to
-  /// [kDefaultExpansionTileEnabled].
+  /// Cupertino has no off switch, so wrap that one in an [IgnorePointer] instead.
   final bool enabled = kDefaultExpansionTileEnabled,
 
-  /// Animation style for the expansion transition.
   final AnimationStyle? expansionAnimationStyle,
 
-  /// Whether to add semantics for the on-tap action internally. Defaults to
-  /// [kDefaultExpansionTileInternalAddSemanticForOnTap].
+  /// Adds semantic annotations for tap events.
   final bool internalAddSemanticForOnTap = kDefaultExpansionTileInternalAddSemanticForOnTap,
 
-  /// Controller for the tile's interaction states. Functional, Material-only.
   final WidgetStatesController? statesController,
 }) {
-  /// Creates Material-only configuration for [PlatformExpansionTile].
+  /// Creates Material-side settings for [PlatformExpansionTile].
   this;
 }
 
-/// Cupertino-only configuration for [PlatformExpansionTile].
-///
-/// Pass this via `PlatformExpansionTile.cupertinoExpansionTileData` when tuning Cupertino rendering.
-/// The field declared here has no Material equivalent.
+/// Cupertino-side settings for [PlatformExpansionTile], passed as `cupertinoExpansionTileData`. The
+/// one field here has no Material counterpart.
 final class const CupertinoExpansionTileData({
-  /// Transition mode used when expanding or collapsing. Defaults to [kDefaultCupertinoExpansionTileTransitionMode].
+  /// How the tile animates open and shut.
   final ExpansionTileTransitionMode transitionMode = kDefaultCupertinoExpansionTileTransitionMode,
 }) {
-  /// Creates Cupertino-only configuration for [PlatformExpansionTile].
+  /// Creates Cupertino-side settings for [PlatformExpansionTile].
   this;
 }

@@ -1,12 +1,8 @@
-/// Cross-cutting args threaded from the entry point into the feature tree.
-///
-/// The only thing a feature needs to know about the host is which navigation mode is running, so
-/// router-only affordances (sub-route pushes) can branch without compile-time forking. `main.dart`
-/// passes the default (`isUsingGoRouter: false`); `main_go_router.dart` passes `true`.
+/// What the entry point tells the feature tree about itself, which is only ever the navigation mode.
+/// That lets router-only affordances branch at runtime instead of forking the code.
 final class AppArgs {
-  /// Whether the app is running through `go_router` (vs the Navigator entry point).
+  /// `false` from `main.dart`, `true` from `main_go_router.dart`.
   final bool isUsingGoRouter;
 
-  /// Creates [AppArgs].
   const AppArgs({this.isUsingGoRouter = false});
 }

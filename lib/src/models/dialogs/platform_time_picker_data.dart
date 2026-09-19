@@ -19,54 +19,43 @@ const kDefaultMaterialTimePickerInitialEntryMode = TimePickerEntryMode.dial;
 /// default.
 const kDefaultMaterialTimePickerEmptyInitialInput = false;
 
-/// Material-only configuration for `showPlatformTimePicker`.
+/// Material-side settings for `showPlatformTimePicker`, passed as `materialTimePickerData`. None of
+/// it reaches iOS, which spins a wheel where Material offers a dial or typed input.
 ///
-/// Pass this via `showPlatformTimePicker`'s `materialTimePickerData` parameter. The fields declared
-/// here have no Cupertino equivalent. Material's `showTimePicker` has a richer dial-or-input UX while
-/// iOS uses a spinning wheel. The Cupertino side reuses `CupertinoDatePickerData` (next door in
-/// `platform_date_picker_data.dart`), the same picker widget renders both date and time on iOS,
-/// distinguished only by `mode`.
+/// There's no Cupertino twin of this class. iOS draws its time picker with the same widget as its date
+/// picker, so that side shares `CupertinoDatePickerData` next door.
 final class const MaterialTimePickerData({
-  /// Semantic label for the modal barrier.
   final String? barrierLabel,
 
-  /// Initial entry mode (dial vs typed input). Defaults to [kDefaultMaterialTimePickerInitialEntryMode].
+  /// Dial or typed input.
   final TimePickerEntryMode initialEntryMode = kDefaultMaterialTimePickerInitialEntryMode,
 
-  /// Text for the cancel button.
   final String? cancelText,
 
-  /// Text for the confirm button.
   final String? confirmText,
 
-  /// Help text shown at the top of the picker.
+  /// Sits along the top of the picker.
   final String? helpText,
 
-  /// Error text shown when the typed time can't be parsed.
+  /// Shown when the typed time won't parse.
   final String? errorInvalidText,
 
-  /// Label text for the hour input field.
   final String? hourLabelText,
 
-  /// Label text for the minute input field.
   final String? minuteLabelText,
 
-  /// Callback fired when the user toggles between dial and input modes.
+  /// Fires when the user flips between dial and typed input.
   final ValueChanged<TimePickerEntryMode>? onEntryModeChanged,
 
-  /// Preferred orientation of the picker dialog.
   final Orientation? orientation,
 
-  /// Icon used on the "switch to input mode" button.
   final Icon? switchToInputEntryModeIcon,
 
-  /// Icon used on the "switch to timer (dial) mode" button.
   final Icon? switchToTimerEntryModeIcon,
 
-  /// Whether the input fields should start empty (vs. pre-filled with the initial time). Defaults to
-  /// [kDefaultMaterialTimePickerEmptyInitialInput].
+  /// Starts the input fields blank instead of pre-filled with the initial time.
   final bool emptyInitialInput = kDefaultMaterialTimePickerEmptyInitialInput,
 }) {
-  /// Creates Material-only configuration for `showPlatformTimePicker`.
+  /// Creates Material-side settings for `showPlatformTimePicker`.
   this;
 }

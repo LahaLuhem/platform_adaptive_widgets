@@ -5,52 +5,35 @@ import 'package:material_ui/material_ui.dart' show Scrollbar;
 import '/src/models/interaction/platform_scrollbar_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive scrollbar that renders Material [Scrollbar] on Android and [CupertinoScrollbar]
-/// on iOS.
+/// Material [Scrollbar] on Android, [CupertinoScrollbar] on iOS.
 ///
-/// Wraps a [child] scroll view and attaches to its [ScrollController]. All functional inputs and
-/// shared visual defaults are flat parameters on the widget. Per-platform tuning is opt-in via
-/// [materialScrollbarData] and [cupertinoScrollbarData]. See `APPENDIX.md#field-classification`.
+/// Wraps a [child] scroll view and rides its [ScrollController]. Per-platform tuning lives in [materialScrollbarData]
+/// / [cupertinoScrollbarData]. See `APPENDIX.md#field-classification`.
 ///
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_scrollbar.dart#platform_scrollbar}
 class const PlatformScrollbar({
   required super.child,
 
-  /// Scroll controller the scrollbar listens to.
   final ScrollController? controller,
 
-  /// Whether the scrollbar thumb should be visible.
-  ///
-  /// Behavioral toggle, when `true`, the thumb is always visible. When `false` or `null`, the platform's
-  /// default auto-hide behavior applies.
+  /// Pins the thumb on screen. Left out, it fades away like the platform normally does.
   final bool? thumbVisibility,
 
-  /// Predicate for determining which scroll notifications to respond to.
-  ///
-  /// When `null`, each underlying platform widget applies its own default predicate.
+  /// Which scroll notifications the bar reacts to. Left out, each platform brings its own rule.
   final ScrollNotificationPredicate? notificationPredicate,
 
-  /// The thickness of the scrollbar.
   final double? thickness,
 
-  /// The radius of the scrollbar corners.
+  /// Rounds the thumb's ends.
   final Radius? radius,
 
-  /// The orientation of the scrollbar.
   final ScrollbarOrientation? scrollbarOrientation,
 
-  /// Material-only configuration. Optional.
-  ///
-  /// Fields set on this record override the widget's flat shared-visual defaults on the Material
-  /// branch. Material-only fields (`trackVisibility`, `interactive`) are read only from here.
+  /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialScrollbarData? materialScrollbarData,
 
-  /// Cupertino-only configuration. Optional.
-  ///
-  /// Fields set on this record override the widget's flat shared-visual defaults on the Cupertino
-  /// branch. Cupertino-only fields (`thicknessWhileDragging`, `radiusWhileDragging`, `mainAxisMargin`)
-  /// are read only from here.
+  /// Cupertino-branch overrides, plus the knobs Material has no answer for.
   final CupertinoScrollbarData? cupertinoScrollbarData,
   super.widgetKey,
   super.key,

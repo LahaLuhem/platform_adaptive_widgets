@@ -9,73 +9,43 @@ library;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show MaterialTapTargetSize;
 
-/// Internal abstract base holding shared-visual fields for [PlatformSwitch].
-///
-/// Inherited by [MaterialSwitchData] and [CupertinoSwitchData] so each per-platform record carries
-/// the shared-visual surface via `super.x` constructor forwarding. Library-private, never exported
-/// from the package. Callers never reference this type directly.
-///
-/// See `APPENDIX.md#field-classification` for the rule placing shared-visual fields on a private
-/// base.
+/// Shared-visual fields for [PlatformSwitch], forwarded into both records via `super.x`. Private, never
+/// exported. See `APPENDIX.md#field-classification`.
 abstract class const _PlatformSwitchData({
-  /// Color of the thumb when the switch is active.
-  ///
-  /// Maps to [CupertinoSwitch.thumbColor] on iOS (Cupertino's `thumbColor` represents the active-state
-  /// thumb color). See `APPENDIX.md#cross-platform-field-mappings`.
+  /// iOS calls this [CupertinoSwitch.thumbColor], which despite the plain name only covers the switched-on
+  /// thumb. See `APPENDIX.md#cross-platform-field-mappings`.
   final Color? activeThumbColor,
 
-  /// Color of the track when the switch is active.
   final Color? activeTrackColor,
 
-  /// Color of the thumb when the switch is inactive.
   final Color? inactiveThumbColor,
 
-  /// Color of the track when the switch is inactive.
   final Color? inactiveTrackColor,
 
-  /// Color of the switch when focused.
   final Color? focusColor,
 
-  /// Image displayed on the thumb when the switch is active.
   final ImageProvider? activeThumbImage,
 
-  /// Error listener for the active thumb image.
-  ///
-  /// Tightly coupled to [activeThumbImage]. Classified as shared visual rather than functional per
-  /// the carve-out in `APPENDIX.md#field-classification`.
   final ImageErrorListener? onActiveThumbImageError,
 
-  /// Image displayed on the thumb when the switch is inactive.
   final ImageProvider? inactiveThumbImage,
 
-  /// Error listener for the inactive thumb image.
-  ///
-  /// Tightly coupled to [inactiveThumbImage]. Classified as shared visual rather than functional per
-  /// the carve-out in `APPENDIX.md#field-classification`.
   final ImageErrorListener? onInactiveThumbImageError,
 
-  /// Track outline color as a [WidgetStateProperty].
   final WidgetStateProperty<Color?>? trackOutlineColor,
 
-  /// Track outline width as a [WidgetStateProperty].
   final WidgetStateProperty<double?>? trackOutlineWidth,
 
-  /// Thumb icon as a [WidgetStateProperty].
   final WidgetStateProperty<Icon?>? thumbIcon,
 
-  /// Mouse cursor as a [WidgetStateProperty].
-  ///
-  /// On Android the value is resolved to a single [MouseCursor] via `.resolve({.selected, .hovered,
-  /// .focused, .disabled})` before being passed to [Switch.mouseCursor]. On iOS the value is forwarded
-  /// to [CupertinoSwitch.mouseCursor] as-is. See `APPENDIX.md#cross-platform-field-mappings`.
+  /// iOS takes the property as-is. Android wants one [MouseCursor], so it gets `.resolve({.selected, .hovered, .focused, .disabled})`
+  /// first. See `APPENDIX.md#cross-platform-field-mappings`.
   final WidgetStateProperty<MouseCursor>? mouseCursor,
 });
 
-/// Material-only visual overrides for [PlatformSwitch].
-///
-/// Pass this via `PlatformSwitch.materialSwitchData` when tuning Material rendering. Inherited
-/// shared-visual fields override the widget's flat defaults on the Material branch. The fields declared
-/// here have no Cupertino equivalent.
+/// Material-side settings for [PlatformSwitch], passed as `materialSwitchData`. The inherited shared-visual
+/// fields override the widget's flat ones on this branch, and everything declared here has no Cupertino
+/// counterpart at all.
 final class const MaterialSwitchData({
   super.activeThumbColor,
   super.activeTrackColor,
@@ -91,37 +61,28 @@ final class const MaterialSwitchData({
   super.thumbIcon,
   super.mouseCursor,
 
-  /// Thumb color as a [WidgetStateProperty]. Distinct from the inherited `activeThumbColor`: this is
-  /// the full state-property surface that Material exposes for the thumb across every widget state.
+  /// The thumb across every state, where the inherited `activeThumbColor` only covers the on state.
   final WidgetStateProperty<Color?>? thumbColor,
 
-  /// Track color as a [WidgetStateProperty].
   final WidgetStateProperty<Color?>? trackColor,
 
-  /// Overlay color as a [WidgetStateProperty].
   final WidgetStateProperty<Color?>? overlayColor,
 
-  /// Material tap target size.
   final MaterialTapTargetSize? materialTapTargetSize,
 
-  /// Color when hovering over the switch.
   final Color? hoverColor,
 
-  /// Splash radius of the switch.
   final double? splashRadius,
 
-  /// Padding around the switch. No Cupertino equivalent.
   final EdgeInsetsGeometry? padding,
 }) extends _PlatformSwitchData {
-  /// Creates Material-only visual overrides for [PlatformSwitch].
+  /// Creates Material-side settings for [PlatformSwitch].
   this;
 }
 
-/// Cupertino-only visual overrides for [PlatformSwitch].
-///
-/// Pass this via `PlatformSwitch.cupertinoSwitchData` when tuning Cupertino rendering. Inherited
-/// shared-visual fields override the widget's flat defaults on the Cupertino branch. The fields
-/// declared here have no Material equivalent.
+/// Cupertino-side settings for [PlatformSwitch], passed as `cupertinoSwitchData`. The inherited shared-visual
+/// fields override the widget's flat ones on this branch, and everything declared here has no Material
+/// counterpart at all.
 final class const CupertinoSwitchData({
   super.activeThumbColor,
   super.activeTrackColor,
@@ -137,15 +98,14 @@ final class const CupertinoSwitchData({
   super.thumbIcon,
   super.mouseCursor,
 
-  /// Whether to apply the Cupertino theme to the switch.
+  /// Takes colours from the ambient [CupertinoTheme] rather than the switch's own defaults.
   final bool? applyTheme,
 
-  /// Color of the "on" label.
+  /// Colours the "on" accessibility label, which iOS only draws when the on/off labels setting is on.
   final Color? onLabelColor,
 
-  /// Color of the "off" label.
   final Color? offLabelColor,
 }) extends _PlatformSwitchData {
-  /// Creates Cupertino-only visual overrides for [PlatformSwitch].
+  /// Creates Cupertino-side settings for [PlatformSwitch].
   this;
 }

@@ -5,31 +5,20 @@ import 'package:material_ui/material_ui.dart' show CircularProgressIndicator;
 import '/src/models/painting/platform_progress_indicator_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive progress indicator that renders Material [CircularProgressIndicator] on Android
-/// and [CupertinoActivityIndicator] on iOS.
+/// Material [CircularProgressIndicator] on Android, [CupertinoActivityIndicator] on iOS.
 ///
-/// Display-only widget, no callbacks, no value/onChanged at the widget level. Material's value-based
-/// progress and animation control live on [MaterialProgressIndicatorData]. Cupertino's animating
-/// toggle and radius live on [CupertinoProgressIndicatorData]. The only field shared at the widget
-/// level is [color]. See `APPENDIX.md#field-classification`.
+/// Nothing to interact with, so [color] is the only thing flat on the widget. Determinate progress and
+/// animation control are Material's alone and live on [MaterialProgressIndicatorData]. See `APPENDIX.md#field-classification`.
 ///
 /// Example:
 /// {@example /example/lib/snippets/painting/platform_progress_indicator.dart#platform_progress_indicator}
 class const PlatformProgressIndicator({
-  /// Color of the progress indicator. Shared visual, overridable per platform via [materialProgressIndicatorData]
-  /// / [cupertinoProgressIndicatorData].
   final Color? color,
 
-  /// Material-only configuration. Optional.
-  ///
-  /// Houses both Material-only visual fields (`backgroundColor`, `strokeWidth`, etc.) and Material-only
-  /// functional fields (`value`, `controller`, `semanticsLabel`, `semanticsValue`), the latter because
-  /// they have no equivalent on Cupertino's activity indicator.
+  /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialProgressIndicatorData? materialProgressIndicatorData,
 
-  /// Cupertino-only configuration. Optional.
-  ///
-  /// Houses Cupertino-only fields (`animating`, `radius`).
+  /// Cupertino-branch overrides, plus the knobs Material has no answer for.
   final CupertinoProgressIndicatorData? cupertinoProgressIndicatorData,
   super.widgetKey,
   super.key,

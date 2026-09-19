@@ -1,5 +1,5 @@
 Example-app code style.
-Library-package style lives in [`../CODESTYLE.md`](../CODESTYLE.md);
+Library-package style lives in [`../CODESTYLE.md`](../CODESTYLE.md),
 project facts and scope live in [`.ai/AGENTS.md`](./.ai/AGENTS.md).
 
 Each heading below carries an explicit `<a id="…">` anchor. Link by anchor, not by
@@ -172,8 +172,8 @@ onChanged: (value) => viewModel.onAcceptAnyToggled(value: value),
 The current example uses positional-bool callbacks in a few places
 (`onCheckboxChanged(bool? value)`, `onSwitchChanged(bool value)`) with an
 `// ignore: avoid_positional_boolean_parameters` directive because the widget's
-callback signature is positional. New VM methods should prefer the named-arg form;
-keep the positional form only when it directly matches a third-party widget's
+callback signature is positional. New VM methods should prefer the named-arg form.
+Keep the positional form only when it directly matches a third-party widget's
 tear-off signature.
 
 ---
@@ -238,7 +238,7 @@ it with extra children, padding wrappers, or string tricks.
   cases where some pairs are currently flush. Lean toward making the rhythm
   consistent.
 - **`spacing:` over trailing whitespace in label strings.** A `Text('Label:  ')`
-  with magic trailing spaces is a hack;
+  with magic trailing spaces is a hack.
   `Row(spacing: 8, children: [Text('Label:'), …])` is the intended primitive.
 - **`Gap` stays for `ListView` children** (no `spacing` parameter available) and for
   genuinely non-uniform sequences (e.g. a `Column` that interleaves `Divider`s where
@@ -287,7 +287,7 @@ drifting in.
   Horizontal margin: `16` for screen-edge inset.
 
 When in doubt, prefer the smaller 8-grid neighbour over the larger sub-8 value. `8`
-over `4` for breathing room; `16` over `12` for section separation.
+over `4` for breathing room, `16` over `12` for section separation.
 
 ---
 
@@ -335,7 +335,7 @@ The router-flavoured entry point lives in
   branches, and `StatefulShellRoute.indexedStack` wiring.
 - [`app_route.dart`](./lib/app/router/app_route.dart), the enum / typed route
   registry. **Always reference routes by `AppRoute.<name>.name`**, never by string
-  literal. Adding a new screen is a two-line change (add the enum case + add the
+  literal. Adding a new screen is a 2-line change (add the enum case + add the
   route to `app_router.dart`), and the enum is the grep-handle for "where do we go
   here from".
 - **`StatefulNavigationShell` owns tab selection** when running through go_router.
@@ -345,5 +345,5 @@ The router-flavoured entry point lives in
   contract.
 - **Features that demonstrate router-only flows** (sub-routes, deep links) gate
   their UI on `AppArgs.isUsingGoRouter`. The router-less `main.dart` passes
-  `isUsingGoRouter: false`; `main_go_router.dart` passes `true`. The pattern keeps
+  `isUsingGoRouter: false`, `main_go_router.dart` passes `true`. The pattern keeps
   both entry points runnable without compile-time forking.

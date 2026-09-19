@@ -98,7 +98,7 @@ triggers an automated publish).
 For single-file, single-concern fixes inside `lib/src/`: just do it.
 
 The release flow, `CHANGELOG.md`, `version:` in `pubspec.yaml`, and the matching git
-tag, is **not** in the routine-edit list. All three move together only when the user
+tag, is **not** in the routine-edit list. All 3 move together only when the user
 explicitly says "cut a release". See *Forbidden / confirm-first actions* below.
 
 ## Commit / PR etiquette
@@ -126,7 +126,7 @@ explicitly says "cut a release". See *Forbidden / confirm-first actions* below.
   no manual confirmation step on the pub.dev side.
 - **Never** edit `CHANGELOG.md`, the `version:` field in `pubspec.yaml`, or
   `example/pubspec.lock` without an explicit user instruction to cut a release,
-  the three are pipeline-owned and move in lockstep. Routine CHANGELOG appends are
+  the 3 are pipeline-owned and move in lockstep. Routine CHANGELOG appends are
   handled by the `changelog.yml` bot on PR merge. When the user authorises a
   release, run [`scripts/release.sh`](scripts/release.sh), full mechanics in
   [`scripts/README.md`](../scripts/README.md).

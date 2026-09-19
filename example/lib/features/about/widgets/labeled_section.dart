@@ -1,12 +1,9 @@
 import 'package:flutter/widgets.dart';
 
-/// A section label above its [child], the consistent titled block used by the Showcase and About
-/// screens to group a screen into self-explanatory sections.
+/// A heading above its [child]. Used by the Showcase and About screens to break a page into sections.
 class LabeledSection extends StatelessWidget {
-  /// The section heading.
   final String title;
 
-  /// The section's content.
   final Widget child;
 
   const LabeledSection({required this.title, required this.child, super.key});

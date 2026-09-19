@@ -13,43 +13,40 @@ import 'package:cupertino_ui/cupertino_ui.dart'
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-/// Default leading widget for the Cupertino branch of [PlatformSearchBar].
+/// Leading widget the Cupertino branch falls back to.
 ///
-/// `CupertinoSearchTextField.prefixIcon` is non-nullable with an inline default of `Icon(CupertinoIcons.search)`.
-/// No public `CupertinoSearchTextField.defaultPrefixIcon` constant exists upstream, so the package
-/// owns this constant. The Cupertino branch substitutes it when the widget's flat `PlatformSearchBar.leading`
-/// is `null`.
+/// `CupertinoSearchTextField.prefixIcon` can't be null and hard-codes this, without exposing a constant
+/// for it, so we keep our own copy.
 const kDefaultCupertinoSearchBarLeading = Icon(CupertinoIcons.search);
 
-/// Default value for [MaterialSearchBarData.scrollPadding]. Matches Material's upstream
-/// `SearchBar.scrollPadding` default.
+/// Default value for [MaterialSearchBarData.scrollPadding]. Matches Material's upstream `SearchBar.scrollPadding`
+/// default.
 const kDefaultSearchBarScrollPadding = EdgeInsets.all(20);
 
 /// Default value for [MaterialSearchBarData.readOnly]. Matches upstream.
 const kDefaultSearchBarReadOnly = false;
 
-/// Default value for [CupertinoSearchBarData.padding]. Matches upstream `CupertinoSearchTextField.padding`
-/// (`EdgeInsetsDirectional.fromSTEB(5.5, 8, 5.5, 8)`: simplified here since start == end makes the
-/// directional form redundant).
+/// Default value for [CupertinoSearchBarData.padding]. Matches upstream, written the short way since
+/// start and end match.
 const kDefaultCupertinoSearchBarPadding = EdgeInsets.symmetric(horizontal: 5.5, vertical: 8);
 
-/// Default value for [CupertinoSearchBarData.itemColor]. Matches upstream `CupertinoSearchTextField.itemColor`
-/// (the prefix/suffix glyph colour).
+/// Default value for [CupertinoSearchBarData.itemColor], the prefix and suffix glyph colour. Matches
+/// upstream.
 const kDefaultCupertinoSearchBarItemColor = CupertinoColors.secondaryLabel;
 
 /// Default value for [CupertinoSearchBarData.itemSize]. Matches upstream.
 const kDefaultCupertinoSearchBarItemSize = 20.0;
 
-/// Default value for [CupertinoSearchBarData.prefixInsets]. Matches upstream `CupertinoSearchTextField.prefixInsets`
-/// (`EdgeInsetsDirectional.fromSTEB(6, 8, 0, 8)`: simplified to `.only` since end is zero).
+/// Default value for [CupertinoSearchBarData.prefixInsets]. Matches upstream, written with `.only` since
+/// end is zero.
 const kDefaultCupertinoSearchBarPrefixInsets = EdgeInsetsDirectional.only(
   start: 6,
   top: 8,
   bottom: 8,
 );
 
-/// Default value for [CupertinoSearchBarData.suffixInsets]. Matches upstream `CupertinoSearchTextField.suffixInsets`
-/// (`EdgeInsetsDirectional.fromSTEB(0, 8, 5, 8)`: simplified to `.only` since start is zero).
+/// Default value for [CupertinoSearchBarData.suffixInsets]. Matches upstream, written with `.only` since
+/// start is zero.
 const kDefaultCupertinoSearchBarSuffixInsets = EdgeInsetsDirectional.only(
   top: 8,
   end: 5,
@@ -77,152 +74,116 @@ const kDefaultCupertinoSearchBarCursorRadius = Radius.circular(2);
 /// Default value for [CupertinoSearchBarData.cursorOpacityAnimates]. Matches upstream.
 const kDefaultCupertinoSearchBarCursorOpacityAnimates = true;
 
-/// Material-only configuration for [PlatformSearchBar].
+/// Material-side settings for [PlatformSearchBar], passed as `materialSearchBarData`.
 ///
-/// Pass this via `PlatformSearchBar.materialSearchBarData` when tuning Material rendering. The fields
-/// declared here have no Cupertino equivalent (or have a Cupertino equivalent whose underlying type
-/// diverges enough that sharing would lose fidelity, e.g. Material's `WidgetStateProperty<Color?>?`
-/// vs Cupertino's `Color?` for `backgroundColor`). See `APPENDIX.md#cross-platform-field-mappings`.
+/// Nothing here is shared, because even where iOS has the same idea it has a different type. Material
+/// keys these off [WidgetState] and Cupertino takes a plain value, and flattening one into the other
+/// would throw away the hover, pressed and focused tints. See `APPENDIX.md#cross-platform-field-mappings`.
 final class const MaterialSearchBarData({
-  /// Trailing widgets (e.g. action icons).
+  /// Usually action icons, at the far end of the bar.
   final Iterable<Widget>? trailing,
 
-  /// Callback when tapping outside the search bar.
   final TapRegionCallback? onTapOutside,
 
-  /// Size constraints for the search bar.
   final BoxConstraints? constraints,
 
-  /// Elevation as a [WidgetStateProperty].
   final WidgetStateProperty<double?>? elevation,
 
-  /// Background colour as a [WidgetStateProperty]. Material's state-driven shape can't collapse to
-  /// Cupertino's plain `Color?` without losing hover/pressed/focused tints. Lives Material-only.
   final WidgetStateProperty<Color?>? backgroundColor,
 
-  /// Shadow colour as a [WidgetStateProperty].
   final WidgetStateProperty<Color?>? shadowColor,
 
-  /// Surface tint colour as a [WidgetStateProperty].
   final WidgetStateProperty<Color?>? surfaceTintColor,
 
-  /// Overlay colour as a [WidgetStateProperty].
   final WidgetStateProperty<Color?>? overlayColor,
 
-  /// Border side as a [WidgetStateProperty].
   final WidgetStateProperty<BorderSide?>? side,
 
-  /// Shape as a [WidgetStateProperty].
   final WidgetStateProperty<OutlinedBorder?>? shape,
 
-  /// Padding as a [WidgetStateProperty]. Cupertino's plain [CupertinoSearchBarData.padding] is the
-  /// divergent equivalent.
+  /// iOS's flat twin is [CupertinoSearchBarData.padding].
   final WidgetStateProperty<EdgeInsetsGeometry?>? padding,
 
-  /// Text style as a [WidgetStateProperty]. Cupertino's plain [CupertinoSearchBarData.style] is the
-  /// divergent equivalent.
+  /// iOS's flat twin is [CupertinoSearchBarData.style].
   final WidgetStateProperty<TextStyle?>? textStyle,
 
-  /// Hint text style as a [WidgetStateProperty]. Cupertino's plain [CupertinoSearchBarData.placeholderStyle]
-  /// is the divergent equivalent.
+  /// iOS's flat twin is [CupertinoSearchBarData.placeholderStyle].
   final WidgetStateProperty<TextStyle?>? hintStyle,
 
-  /// Text capitalisation for the search input.
   final TextCapitalization? textCapitalization,
 
-  /// Text input action for the search input.
   final TextInputAction? textInputAction,
 
-  /// Scroll padding for the search input. Defaults to [kDefaultSearchBarScrollPadding].
+  /// How much room to keep around the field when scrolling it into view.
   final EdgeInsets scrollPadding = kDefaultSearchBarScrollPadding,
 
-  /// Context menu builder for the search input. When `null`, Material falls through to its own default
-  /// context menu.
+  /// Left out, you get Material's own context menu.
   final EditableTextContextMenuBuilder? contextMenuBuilder,
 
-  /// Whether the search bar is read-only. Defaults to [kDefaultSearchBarReadOnly].
   final bool readOnly = kDefaultSearchBarReadOnly,
 }) {
-  /// Creates Material-only configuration for [PlatformSearchBar].
+  /// Creates Material-side settings for [PlatformSearchBar].
   this;
 }
 
-/// Cupertino-only configuration for [PlatformSearchBar].
-///
-/// Pass this via `PlatformSearchBar.cupertinoSearchBarData` when tuning Cupertino rendering. The
-/// fields declared here have no Material equivalent (or have a Material equivalent whose underlying
-/// type diverges enough that sharing would lose fidelity. See Material's `WidgetStateProperty<…>`
-/// variants of `backgroundColor`, `padding`, `textStyle`, `hintStyle`). See `APPENDIX.md#cross-platform-field-mappings`.
+/// Cupertino-side settings for [PlatformSearchBar], passed as `cupertinoSearchBarData`. The other half
+/// of the type split described on [MaterialSearchBarData], flat values where Material wants state properties.
 final class const CupertinoSearchBarData({
-  /// Text style for the search input. Material's divergent equivalent is [MaterialSearchBarData.textStyle]
-  /// (state-property).
+  /// Material's state-keyed twin is [MaterialSearchBarData.textStyle].
   final TextStyle? style,
 
-  /// Text style for the placeholder text. Material's divergent equivalent is [MaterialSearchBarData.hintStyle]
-  /// (state-property).
+  /// Material's state-keyed twin is [MaterialSearchBarData.hintStyle].
   final TextStyle? placeholderStyle,
 
-  /// Box decoration for the search bar.
   final BoxDecoration? decoration,
 
-  /// Background colour. Material's divergent equivalent is [MaterialSearchBarData.backgroundColor]
-  /// (state-property).
+  /// Material's state-keyed twin is [MaterialSearchBarData.backgroundColor].
   final Color? backgroundColor,
 
-  /// Border radius of the search bar.
   final BorderRadius? borderRadius,
 
-  /// Padding around the search bar content. Material's divergent equivalent is [MaterialSearchBarData.padding]
-  /// (state-property). Defaults to [kDefaultCupertinoSearchBarPadding].
+  /// Material's state-keyed twin is [MaterialSearchBarData.padding].
   final EdgeInsetsGeometry padding = kDefaultCupertinoSearchBarPadding,
 
-  /// Colour of prefix and suffix items. Defaults to [kDefaultCupertinoSearchBarItemColor].
+  /// Colours the prefix and suffix glyphs.
   final Color itemColor = kDefaultCupertinoSearchBarItemColor,
 
-  /// Size of prefix and suffix items. Defaults to [kDefaultCupertinoSearchBarItemSize].
+  /// Sizes the prefix and suffix glyphs.
   final double itemSize = kDefaultCupertinoSearchBarItemSize,
 
-  /// Insets for the prefix widget. Defaults to [kDefaultCupertinoSearchBarPrefixInsets].
   final EdgeInsetsGeometry prefixInsets = kDefaultCupertinoSearchBarPrefixInsets,
 
-  /// Insets for the suffix widget. Defaults to [kDefaultCupertinoSearchBarSuffixInsets].
   final EdgeInsetsGeometry suffixInsets = kDefaultCupertinoSearchBarSuffixInsets,
 
-  /// Icon displayed as the suffix. Defaults to [kDefaultCupertinoSearchBarSuffixIcon].
+  /// The clear button, by default. [suffixMode] decides when it's on screen.
   final Icon suffixIcon = kDefaultCupertinoSearchBarSuffixIcon,
 
-  /// When the suffix icon is visible. Defaults to [kDefaultCupertinoSearchBarSuffixMode].
   final OverlayVisibilityMode suffixMode = kDefaultCupertinoSearchBarSuffixMode,
 
-  /// Callback when the suffix icon is tapped.
   final VoidCallback? onSuffixTap,
 
-  /// Restoration ID for state restoration. Material's [SearchBar] has no equivalent (state restoration
-  /// lives on [SearchAnchor]).
+  /// Material's [SearchBar] has nothing like it, since restoration lives on [SearchAnchor] over there.
   final String? restorationId,
 
-  /// Whether to enable IME personalised learning. Defaults to [kDefaultCupertinoSearchBarEnableIMEPersonalizedLearning].
+  /// Lets the keyboard learn from what gets typed here.
   final bool enableIMEPersonalizedLearning =
       kDefaultCupertinoSearchBarEnableIMEPersonalizedLearning,
 
-  /// Whether to enable autocorrect. Defaults to [kDefaultCupertinoSearchBarAutocorrect].
   final bool autocorrect = kDefaultCupertinoSearchBarAutocorrect,
 
-  /// Width of the cursor. Defaults to [kDefaultCupertinoSearchBarCursorWidth].
   final double cursorWidth = kDefaultCupertinoSearchBarCursorWidth,
 
-  /// Height of the cursor. When `null`, Cupertino derives it from the text metrics.
+  /// Left out, Cupertino sizes it from the text.
   final double? cursorHeight,
 
-  /// Radius of the cursor. Defaults to [kDefaultCupertinoSearchBarCursorRadius].
   final Radius cursorRadius = kDefaultCupertinoSearchBarCursorRadius,
 
-  /// Whether the cursor opacity animates. Defaults to [kDefaultCupertinoSearchBarCursorOpacityAnimates].
+  /// Whether the cursor fades in and out rather than blinking.
   final bool cursorOpacityAnimates = kDefaultCupertinoSearchBarCursorOpacityAnimates,
 
-  /// Colour of the cursor. When `null`, Cupertino falls through to the ambient theme's primary colour.
+  /// Left out, you get the ambient theme's primary colour.
   final Color? cursorColor,
 }) {
-  /// Creates Cupertino-only configuration for [PlatformSearchBar].
+  /// Creates Cupertino-side settings for [PlatformSearchBar].
   this;
 }

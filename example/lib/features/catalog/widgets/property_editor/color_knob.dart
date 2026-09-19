@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-/// Curated default palette for [ColorKnob], recognisable hues plus black and white. Pass `swatches`
-/// to override.
+/// [ColorKnob]'s palette when none is passed: recognisable hues, plus black and white.
 const _defaultSwatches = <Color>[
   Color(0xFF000000), // black
   Color(0xFFF44336), // red
@@ -13,22 +12,17 @@ const _defaultSwatches = <Color>[
   Color(0xFFFFFFFF), // white
 ];
 
-/// A labelled colour control for a property editor, a tap-to-select grid of curated [swatches].
-/// Deliberately a swatch grid, not a full HSV picker, and pulls in no extra dependency.
+/// A tap-to-select grid of [swatches]. A grid rather than a full HSV picker, which would mean another
+/// dependency for a demo app.
 class ColorKnob extends StatelessWidget {
-  /// The property name shown above the swatches.
   final String label;
 
-  /// The current value.
   final Color value;
 
-  /// Fired when the user taps a swatch.
   final ValueChanged<Color> onChanged;
 
-  /// The selectable palette.
   final List<Color> swatches;
 
-  /// Creates a colour knob.
   const ColorKnob({
     required this.label,
     required this.value,
@@ -58,8 +52,8 @@ class ColorKnob extends StatelessWidget {
   );
 }
 
-/// A single colour square in [ColorKnob]. Ringed in a contrasting colour when selected, faintly
-/// outlined otherwise so light swatches stay visible.
+/// One square in [ColorKnob]. Ringed when selected, faintly outlined otherwise so pale swatches stay
+/// visible against the background.
 final class _Swatch extends StatelessWidget {
   final Color color;
   final bool isSelected;

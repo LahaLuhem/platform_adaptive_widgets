@@ -11,262 +11,184 @@ import 'package:material_ui/material_ui.dart';
 import '/src/models/interaction/platform_text_field_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive text field that renders Material [TextField] on Android and [CupertinoTextField]
-/// on iOS.
+/// Material [TextField] on Android, [CupertinoTextField] on iOS.
 ///
-/// All shared functional inputs (controller, focus, keyboard, text-behavior, cursor, scrolling,
-/// autofill, IME, selection, context menu, …) live as flat constructor parameters. The three most-common
-/// content slots, [hintText], [prefix], and [suffix], are also flat on the widget, since forcing
-/// every caller through a per-platform data record for these is exactly the kind of boilerplate this
-/// package exists to remove.
+/// [hintText], [prefix] and [suffix] sit flat on the widget rather than behind a data record, since
+/// those 3 come up constantly and routing them through per-platform records is the boilerplate this
+/// package is meant to spare you. They land on Material's `decoration.hintText` / `prefixIcon` / `suffixIcon`
+/// and Cupertino's `placeholder` / `prefix` / `suffix`.
 ///
-/// **Slot mapping.**
-/// - [hintText] → Material `decoration.hintText` + Cupertino `placeholder`.
-/// - [prefix] → Material `decoration.prefixIcon` + Cupertino `prefix` (always visible by default,
-///   matches Cupertino's `prefixMode = always`).
-/// - [suffix] → Material `decoration.suffixIcon` + Cupertino `suffix` (always visible by default).
-///
-/// **Override precedence.** If you also pass [MaterialTextFieldData.decoration] with `hintText` /
-/// `prefixIcon` / `suffixIcon` set, those win for the Material branch. If you pass
-/// [CupertinoTextFieldData.placeholder] / `prefix` / `suffix`, those win for the Cupertino branch.
-/// The flat widget-level values are the cross-platform default. Data-class values are per-platform
-/// overrides. See `APPENDIX.md#cross-platform-field-mappings`.
-///
-/// Per-platform tuning beyond the common slots is opt-in via [materialTextFieldData] and
-/// [cupertinoTextFieldData]. See `APPENDIX.md#field-classification` for the classification rule.
+/// Set the same slot on [materialTextFieldData] or [cupertinoTextFieldData] and that wins for its own
+/// branch. So the flat value is the cross-platform default and the record is the per-platform override.
+/// See `APPENDIX.md#cross-platform-field-mappings` and `APPENDIX.md#field-classification`.
 ///
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_text_field.dart#platform_text_field}
 class const PlatformTextField({
   // ---- Common content slots (flat shared) ----------------------------------
-
-  /// Placeholder / hint text shown when the field is empty. Maps to Material `decoration.hintText`
-  /// and Cupertino `placeholder`. Overridden per-platform when [MaterialTextFieldData.decoration]'s
-  /// `hintText` or [CupertinoTextFieldData.placeholder] are set.
+  /// Shown while the field is empty. iOS calls it the placeholder.
   final String? hintText,
 
-  /// Widget rendered before the text input (typically an icon). Maps to Material `decoration.prefixIcon`
-  /// and Cupertino `prefix`. Overridden per-platform when [MaterialTextFieldData.decoration]'s
-  /// `prefixIcon` or [CupertinoTextFieldData.prefix] are set.
+  /// Sits before the input, usually an icon. iOS keeps it visible at all times by default.
   final Widget? prefix,
 
-  /// Widget rendered after the text input (typically an icon). Maps to Material `decoration.suffixIcon`
-  /// and Cupertino `suffix`. Overridden per-platform when [MaterialTextFieldData.decoration]'s
-  /// `suffixIcon` or [CupertinoTextFieldData.suffix] are set.
+  /// Sits after the input, usually an icon. iOS keeps it visible at all times by default.
   final Widget? suffix,
 
   // ---- Controllers / focus / state -----------------------------------------
-
-  /// Group ID for undo-history grouping with other editors.
+  /// Groups this field's undo history with other editors sharing the same id.
   final Object groupId = EditableText,
 
-  /// Text-editing controller.
   final TextEditingController? controller,
 
-  /// Focus node.
   final FocusNode? focusNode,
 
-  /// Undo-history controller.
   final UndoHistoryController? undoController,
 
-  /// Whether the field is enabled and responds to input. Defaults to `true`. Maps to Material `enabled:
-  /// bool?` and Cupertino `enabled: bool` directly, see `APPENDIX.md#cross-platform-field-mappings`.
+  /// One boolean for both, though Material's own `enabled` is nullable. See `APPENDIX.md#cross-platform-field-mappings`.
   final bool isEnabled = true,
 
-  /// Whether the field is read-only.
+  /// Still selectable and focusable, just not editable, unlike [isEnabled].
   final bool readOnly = false,
 
-  /// Whether the field should autofocus on mount. Defaults to `false`.
   final bool autofocus = false,
 
   // ---- Keyboard / IME -------------------------------------------------------
-
-  /// Keyboard type.
   final TextInputType? keyboardType,
 
-  /// Action button on the keyboard's bottom-right.
+  /// The action key in the keyboard's corner.
   final TextInputAction? textInputAction,
 
-  /// Capitalisation behaviour applied as the user types.
   final TextCapitalization textCapitalization = .none,
 
-  /// Smart-dashes input feature.
   final SmartDashesType? smartDashesType,
 
-  /// Smart-quotes input feature.
   final SmartQuotesType? smartQuotesType,
 
-  /// Whether to enable input suggestions.
   final bool enableSuggestions = true,
 
-  /// Whether to enable autocorrect. Defaults to `true` (matches Cupertino's upstream default, Material
-  /// treats `true` and `null` identically).
+  /// `true` to match Cupertino's own default. Material can't tell `true` from `null` anyway.
   final bool autocorrect = true,
 
-  /// Whether to enable IME personalised learning.
+  /// Lets the keyboard learn from what gets typed here.
   final bool enableIMEPersonalizedLearning = true,
 
-  /// Whether stylus handwriting is enabled.
   final bool stylusHandwritingEnabled = true,
 
-  /// Keyboard appearance (light or dark).
   final Brightness? keyboardAppearance,
 
   // ---- Text rendering -------------------------------------------------------
-
-  /// Text style for the input text.
   final TextStyle? style,
 
-  /// Strut style for the input text.
   final StrutStyle? strutStyle,
 
-  /// Text alignment within the field.
   final TextAlign textAlign = .start,
 
-  /// Vertical text alignment within the field.
   final TextAlignVertical? textAlignVertical,
 
-  /// Text direction.
   final TextDirection? textDirection,
 
-  /// Character used to obscure text (e.g. for passwords).
+  /// What each character turns into while [obscureText] is on.
   final String obscuringCharacter = '•',
 
-  /// Whether to obscure the text.
+  /// For passwords and the like.
   final bool obscureText = false,
 
-  /// Maximum number of lines.
+  /// `null` lets the field grow without limit.
   final int? maxLines = 1,
 
-  /// Minimum number of lines.
   final int? minLines,
 
-  /// Whether the field expands to fill its parent.
+  /// Fills the parent's height, which needs [maxLines] and [minLines] both `null`.
   final bool expands = false,
 
-  /// Maximum character length.
   final int? maxLength,
 
-  /// How [maxLength] is enforced.
+  /// Whether going over [maxLength] is blocked outright or merely flagged.
   final MaxLengthEnforcement? maxLengthEnforcement = MaxLengthEnforcement.enforced,
 
-  /// Input formatters applied to the text.
   final List<TextInputFormatter>? inputFormatters,
 
   // ---- Cursor ---------------------------------------------------------------
-
-  /// Whether to show the cursor. When `null`, derived from focus state.
+  /// Left out, the field decides from whether it has focus.
   final bool? showCursor,
 
-  /// Width of the cursor.
   final double cursorWidth = 2.0,
 
-  /// Height of the cursor. When `null`, derived from text metrics.
+  /// Left out, the field sizes it from the text.
   final double? cursorHeight,
 
-  /// Radius of the cursor.
   final Radius? cursorRadius = const Radius.circular(2),
 
-  /// Whether the cursor opacity animates.
+  /// Whether the cursor fades in and out rather than blinking.
   final bool cursorOpacityAnimates = true,
 
-  /// Colour of the cursor.
   final Color? cursorColor,
 
   // ---- Selection ------------------------------------------------------------
-
-  /// Selection-region height style.
   final BoxHeightStyle? selectionHeightStyle,
 
-  /// Selection-region width style.
   final BoxWidthStyle? selectionWidthStyle,
 
-  /// Whether interactive selection is enabled.
+  /// Lets the user select and copy text at all.
   final bool? enableInteractiveSelection = true,
 
-  /// Whether to select all text on focus.
   final bool? selectAllOnFocus,
 
-  /// Custom text-selection controls.
   final TextSelectionControls? selectionControls,
 
   // ---- Callbacks ------------------------------------------------------------
-
-  /// Callback fired when the text changes. Optional, text fields are frequently controller-driven
-  /// (read `controller.text` on submit), so nullable per Flutter's own [TextField.onChanged] shape.
+  /// Optional, since plenty of fields are controller-driven and just read `controller.text` at the end.
+  /// Same shape as Flutter's own [TextField.onChanged].
   final ValueChanged<String>? onChanged,
 
-  /// Callback fired when editing is complete (e.g. on submit).
   final VoidCallback? onEditingComplete,
 
-  /// Callback fired when the text is submitted.
   final ValueChanged<String>? onSubmitted,
 
-  /// Callback fired when the field is tapped.
   final GestureTapCallback? onTap,
 
-  /// Callback fired when tapping outside the field.
   final TapRegionCallback? onTapOutside,
 
-  /// Callback fired on tap-up outside the field.
-  ///
-  /// **Cupertino-bug workaround.** Upstream Cupertino's `onTapUpOutside` callback is typed as if it
-  /// received a [PointerDownEvent] (the package expects [PointerUpEvent] per [TapRegionUpCallback]).
-  /// The build site synthesises a [PointerUpEvent] from the Cupertino-provided [PointerDownEvent] so
-  /// callers can write a single [TapRegionUpCallback] that works on both platforms.
+  /// Cupertino hands its version a [PointerDownEvent] where the type says [PointerUpEvent], so the build
+  /// site fakes up the right event. That way one [TapRegionUpCallback] works on both platforms.
   final TapRegionUpCallback? onTapUpOutside,
 
   // ---- Scrolling / layout ---------------------------------------------------
-
-  /// Scroll controller for the field's internal scroll view.
   final ScrollController? scrollController,
 
-  /// Scroll physics for the field's internal scroll view.
   final ScrollPhysics? scrollPhysics,
 
-  /// Scroll padding applied while bringing the cursor into view.
+  /// How much room to keep around the cursor when scrolling it into view.
   final EdgeInsets scrollPadding = const .all(20),
 
-  /// Drag-start behaviour for text-selection gestures.
   final DragStartBehavior dragStartBehavior = .start,
 
-  /// Clip behaviour applied to the field's render box.
   final Clip clipBehavior = .hardEdge,
 
   // ---- Autofill / context ---------------------------------------------------
-
-  /// Autofill hints for the OS-level autofill service.
+  /// Tells the OS autofill service what kind of value goes here.
   final Iterable<String>? autofillHints,
 
-  /// Configuration for content insertion (paste, drag-drop).
+  /// Covers pasting and drag-and-drop of non-text content.
   final ContentInsertionConfiguration? contentInsertionConfiguration,
 
-  /// Restoration ID for state restoration.
   final String? restorationId,
 
-  /// Custom context-menu builder.
   final EditableTextContextMenuBuilder? contextMenuBuilder,
 
-  /// Spell-check configuration.
   final SpellCheckConfiguration? spellCheckConfiguration,
 
-  /// Magnifier configuration.
+  /// The loupe that pops up while dragging the cursor.
   final TextMagnifierConfiguration? magnifierConfiguration,
 
   // ---- Per-platform records -------------------------------------------------
-
-  /// Material-only visual + functional overrides. Optional.
-  ///
-  /// Fields set on this record drive the Material branch only. Setting `decoration.hintText` /
-  /// `decoration.prefixIcon` / `decoration.suffixIcon` here overrides the corresponding widget-level
-  /// flat slots ([hintText], [prefix], [suffix]) on Material.
+  /// Material-branch overrides, plus the knobs Cupertino has no answer for. Its `decoration` slots beat
+  /// the flat [hintText] / [prefix] / [suffix] here.
   final MaterialTextFieldData? materialTextFieldData,
 
-  /// Cupertino-only visual + functional overrides. Optional.
-  ///
-  /// Fields set on this record drive the Cupertino branch only. Setting [CupertinoTextFieldData.placeholder]
-  /// / `prefix` / `suffix` here overrides the corresponding widget-level flat slots ([hintText],
-  /// [prefix], [suffix]) on Cupertino.
+  /// Cupertino-branch overrides, plus the knobs Material has no answer for. Its `placeholder` / `prefix`
+  /// / `suffix` beat the flat ones here.
   final CupertinoTextFieldData? cupertinoTextFieldData,
   super.widgetKey,
   super.key,
@@ -445,11 +367,8 @@ class const PlatformTextField({
   );
 }
 
-/// Bridges Cupertino's [PointerDownEvent]-typed `onTapUpOutside` callback to the package's exposed
-/// [TapRegionUpCallback] (which takes [PointerUpEvent]). Upstream Flutter bug. Cupertino names the
-/// param `onTapUpOutside` but types it as if it received a tap-down event. [PlatformTextField.buildCupertino]
-/// uses this extension to fabricate a [PointerUpEvent] with the same pointer metadata so the caller's
-/// single [TapRegionUpCallback] works on both platforms.
+/// Works around an upstream bug: Cupertino's `onTapUpOutside` is typed for a tap-down event despite
+/// the name. Copies the pointer metadata across so callers get the [PointerUpEvent] they asked for.
 extension _PointerEventConversionExtension on PointerDownEvent {
   PointerUpEvent toPointerUpEvent() => PointerUpEvent(
     pointer: pointer,

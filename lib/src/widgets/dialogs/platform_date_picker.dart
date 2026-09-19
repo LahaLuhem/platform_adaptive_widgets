@@ -14,17 +14,14 @@ import '/src/models/dialogs/platform_time_picker_data.dart';
 
 part 'platform_time_picker.dart';
 
-/// Shows a platform-adaptive date picker. Material [showDatePicker] on Android, [CupertinoDatePicker]
-/// in date mode wrapped in [showCupertinoModalPopup] on iOS.
+/// Shows a date picker. Material's [showDatePicker] on Android, a [CupertinoDatePicker] in a bottom
+/// popup on iOS.
 ///
-/// On iOS the picker is rendered inside a bottom-sheet popup. The value is observed continuously and
-/// returned when the popup is dismissed. Use [CupertinoDatePickerData.changeReportingBehavior] to
-/// tune *when* iOS reports changes.
+/// The iOS wheel reports as it turns and the value comes back once the popup closes. [CupertinoDatePickerData.changeReportingBehavior]
+/// decides how often it reports.
 ///
-/// Shared show-function args ([anchorPoint], [barrierColor], [barrierDismissible], [routeSettings],
-/// [useRootNavigator], [selectableDayPredicate], [builder]) live flat on the function. Per-platform
-/// tuning is opt-in via [materialDatePickerData] and [cupertinoDatePickerData] (the same Cupertino
-/// data class is reused by [showPlatformTimePicker]. See [CupertinoDatePickerData]).
+/// Per-platform tuning lives in [materialDatePickerData] / [cupertinoDatePickerData], the latter shared
+/// with [showPlatformTimePicker] since iOS draws both with one widget.
 ///
 /// Example:
 /// {@example /example/lib/snippets/dialogs/platform_date_picker.dart#platform_date_picker}
@@ -107,11 +104,8 @@ Future<Date?> showPlatformDatePicker({
 Date? _toDate(DateTime? dateTime) =>
     dateTime == null ? null : Date.fromDateTime(dateTime).getOrNull();
 
-/// Shared iOS modal-popup helper, the same [CupertinoDatePicker] + [showCupertinoModalPopup] scaffolding
-/// is used by both [showPlatformDatePicker] (mode `.date`) and [showPlatformTimePicker] (mode `.time`).
-/// Returns the picker's final [DateTime] value (callers slice it to [Date] or [TimeOfDay] downstream).
-///
-/// Library-private. Reachable from `platform_time_picker.dart` via the `part of` directive.
+/// One popup for both pickers, since iOS only changes the [CupertinoDatePicker]'s `mode` between them.
+/// Callers slice the [DateTime] down to a [Date] or a [TimeOfDay] afterwards.
 Future<DateTime?> _showCupertinoModePickerPopup({
   required BuildContext context,
   required CupertinoDatePickerMode mode,
@@ -174,9 +168,8 @@ Future<DateTime?> _showCupertinoModePickerPopup({
   return selectedDateTime;
 }
 
-/// Standard 216pt-high container used to wrap [CupertinoDatePicker] inside [showCupertinoModalPopup],
-/// provides background, top padding, and safe-area adjustment for the system navigation bar. Shared
-/// by both date and time picker iOS paths.
+/// The standard 216pt shell around the wheel: background, a little top padding, and room for the system
+/// navigation bar.
 class const _CupertinoPickerContainer({required final CupertinoDatePicker pickerWidget})
     extends StatelessWidget {
   @override

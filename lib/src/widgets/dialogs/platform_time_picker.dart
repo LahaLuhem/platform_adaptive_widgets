@@ -2,13 +2,12 @@
 
 part of 'platform_date_picker.dart';
 
-/// Shows a platform-adaptive time picker. Material [showTimePicker] on Android, [CupertinoDatePicker]
-/// in time mode wrapped in [showCupertinoModalPopup] on iOS.
+/// Shows a time picker. Material's [showTimePicker] on Android, a [CupertinoDatePicker] in a bottom
+/// popup on iOS.
 ///
-/// The Cupertino side reuses the same widget + modal-popup scaffolding as [showPlatformDatePicker]
-/// (only the `mode` differs), so [cupertinoTimePickerData] is the same [CupertinoDatePickerData] type
-/// as the date picker uses. Mode-irrelevant fields ([CupertinoDatePickerData.showDayOfWeek] in time
-/// mode, etc.) are silently ignored.
+/// iOS draws this with the same widget as [showPlatformDatePicker] and only changes its `mode`, which
+/// is why [cupertinoTimePickerData] is a [CupertinoDatePickerData]. Date-only fields on it, like [CupertinoDatePickerData.showDayOfWeek],
+/// are simply ignored here.
 ///
 /// Example:
 /// {@example /example/lib/snippets/dialogs/platform_time_picker.dart#platform_time_picker}

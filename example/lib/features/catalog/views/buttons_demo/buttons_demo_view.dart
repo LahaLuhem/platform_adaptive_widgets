@@ -12,10 +12,8 @@ import '/features/catalog/widgets/property_editor/enum_knob.dart';
 import '/features/catalog/widgets/property_editor/property_editor.dart';
 import 'buttons_demo_view_model.dart';
 
-/// The Buttons section of the Catalog accordion, a live `PlatformButton` playground. Shared knobs
-/// cover variant / enabled / `.icon`. The Cupertino panel (iOS, or via the About platform override)
-/// tunes `cupertinoButtonData`. Material's visual surface is `ButtonStyle`-based, so it has no
-/// field-knobs.
+/// A live `PlatformButton` playground. Only iOS gets a platform panel here, since Material puts its
+/// whole surface behind `ButtonStyle` and there are no individual fields to knob.
 class ButtonsDemoView extends StatelessWidget {
   const ButtonsDemoView({super.key});
 

@@ -14,130 +14,101 @@ import 'package:material_ui/material_ui.dart'
 /// and `PlatformTabScaffold`.
 const kDefaultResizeToAvoidBottomInset = true;
 
-/// Shared-visual base for the per-platform scaffold records.
-///
-/// Holds only [backgroundColor], the one scaffold property that exists on both platforms and that a
-/// caller may reasonably want to differ per platform. Everything functional (`body`, `resizeToAvoidBottomInset`,
-/// `widgetKey`) is flat on `PlatformScaffold`, the single source of truth.
-///
-/// Private, [MaterialScaffoldData] and [CupertinoScaffoldData] inherit [backgroundColor] via
-/// `super`-forwarding. Never constructed or exported directly.
-base class const _PlatformScaffoldData({
-  /// Background color of the scaffold.
-  final Color? backgroundColor,
-}) {
-  /// Creates platform scaffold data with the shared-visual properties.
-  this;
-}
+/// Shared-visual base for the 2 scaffold records, holding the one property worth varying per platform.
+/// Everything else (`body`, `resizeToAvoidBottomInset`, `widgetKey`) stays flat on `PlatformScaffold`.
+/// Private, never exported.
+base class const _PlatformScaffoldData({final Color? backgroundColor});
 
-/// Material-specific scaffold data.
-///
-/// Contains properties specific to Material Design `Scaffold` widgets. Shared content (`body`,
-/// `resizeToAvoidBottomInset`, `widgetKey`) is flat on `PlatformScaffold`.
+/// Material-side settings for a platform scaffold, mapping onto `Scaffold`. The content itself stays
+/// flat on `PlatformScaffold`.
 base class const MaterialScaffoldData({
   super.backgroundColor,
 
-  /// The app bar to display at the top of the scaffold.
   final PreferredSizeWidget? appBar,
 
-  /// The floating action button to display.
   final Widget? floatingActionButton,
 
-  /// The location of the floating action button.
   final FloatingActionButtonLocation? floatingActionButtonLocation,
 
-  /// The animator for the floating action button.
+  /// How the button moves when its location changes.
   final FloatingActionButtonAnimator? floatingActionButtonAnimator,
 
-  /// Buttons to display at the bottom of the scaffold.
+  /// Pinned along the bottom, above any [bottomNavigationBar].
   final List<Widget>? persistentFooterButtons,
 
-  /// Alignment for the persistent footer buttons.
   final AlignmentDirectional persistentFooterAlignment = kDefaultPersistentFooterAlignment,
 
-  /// Decoration for the persistent footer buttons area.
   final BoxDecoration? persistentFooterDecoration,
 
-  /// The drawer to display from the left side.
+  /// Slides in from the start edge.
   final Widget? drawer,
 
-  /// Callback when the drawer state changes.
+  /// Fires with `true` on open, `false` on close.
   final void Function(bool)? onDrawerChanged,
 
-  /// The drawer to display from the right side.
+  /// Slides in from the end edge.
   final Widget? endDrawer,
 
-  /// Callback when the end drawer state changes.
   final void Function(bool)? onEndDrawerChanged,
 
-  /// The bottom sheet to display.
+  /// A sheet that stays put, unlike the one `showPlatformModalBottomSheet` puts up.
   final Widget? bottomSheet,
 
-  /// The bottom navigation bar (or bottom app bar) to display.
-  ///
-  /// Material-only, `CupertinoPageScaffold` has no equivalent slot. For an iOS tab bar, use
-  /// `PlatformTabScaffold`. This slot is for a plain `Scaffold`'s bottom bar (e.g. a `BottomAppBar`
-  /// with a FAB notch).
+  /// `CupertinoPageScaffold` has no such slot. For an iOS tab bar reach for `PlatformTabScaffold`, this
+  /// one is for a plain `Scaffold`'s bottom bar, a `BottomAppBar` with a FAB notch say.
   final Widget? bottomNavigationBar,
 
-  /// Whether this scaffold is the primary scaffold.
+  /// Leaves room for the status bar.
   final bool primary = kPrimary,
 
-  /// The drag start behavior for the drawer.
   final DragStartBehavior drawerDragStartBehavior = kDrawerDragStartBehavior,
 
-  /// Whether to extend the body behind the app bar.
+  /// Runs the body under the [bottomNavigationBar].
   final bool extendBody = kExtendBody,
 
-  /// Whether the drawer barrier can be dismissed.
   final bool drawerBarrierDismissible = kDrawerBarrierDismissible,
 
-  /// Whether to extend the body behind the app bar.
+  /// Runs the body under the [appBar].
   final bool extendBodyBehindAppBar = kExtendBodyBehindAppBar,
 
-  /// Color of the scrim that appears behind the drawer.
   final Color? drawerScrimColor,
 
-  /// Builder for the scrim that appears behind bottom sheets.
   final Widget? Function(BuildContext, Animation<double>)? bottomSheetScrimBuilder,
 
-  /// Width of the area that responds to drawer drag gestures.
+  /// How wide a strip along the edge starts a drawer drag.
   final double? drawerEdgeDragWidth,
 
-  /// Whether the drawer can be opened with a drag gesture.
   final bool drawerEnableOpenDragGesture = kDrawerEnableOpenDragGesture,
 
-  /// Whether the end drawer can be opened with a drag gesture.
   final bool endDrawerEnableOpenDragGesture = kEndDrawerEnableOpenDragGesture,
 
-  /// Restoration ID for saving and restoring scaffold state.
   final String? restorationId,
 }) extends _PlatformScaffoldData {
-  /// Default value for persistent footer alignment.
+  /// Default value for [persistentFooterAlignment].
   static const kDefaultPersistentFooterAlignment = AlignmentDirectional.centerEnd;
 
-  /// Default value for primary scaffold.
+  /// Default value for [primary].
   static const kPrimary = true;
 
-  /// Default value for drawer drag start behavior.
+  /// Default value for [drawerDragStartBehavior].
   static const kDrawerDragStartBehavior = DragStartBehavior.start;
 
-  /// Default value for extend body.
+  /// Default value for [extendBody].
   static const kExtendBody = false;
 
-  /// Default value for drawer barrier dismissible.
+  /// Default value for [drawerBarrierDismissible].
   static const kDrawerBarrierDismissible = true;
 
-  /// Default value for extend body behind app bar.
+  /// Default value for [extendBodyBehindAppBar].
   static const kExtendBodyBehindAppBar = false;
 
-  /// Default value for drawer enable open drag gesture.
+  /// Default value for [drawerEnableOpenDragGesture].
   static const kDrawerEnableOpenDragGesture = true;
 
-  /// Default value for end drawer enable open drag gesture.
+  /// Default value for [endDrawerEnableOpenDragGesture].
   static const kEndDrawerEnableOpenDragGesture = true;
 
-  /// Default builder for the scrim that appears behind bottom sheets.
+  /// Fades a scrim in behind a bottom sheet as it rises, so the content underneath recedes.
   static Widget kDefaultBottomSheetScrimBuilder(BuildContext _, Animation<double> animation) =>
       AnimatedBuilder(
         animation: animation,
@@ -160,19 +131,16 @@ base class const MaterialScaffoldData({
   static const _kMinBottomSheetScrimOpacity = 0.1;
   static const _kMaxBottomSheetScrimOpacity = 0.6;
 
-  /// Creates Material-specific scaffold data.
+  /// Creates Material-side scaffold settings.
   this;
 }
 
-/// Cupertino-specific scaffold data.
-///
-/// Shared content (`body`, `resizeToAvoidBottomInset`, `widgetKey`) is flat on `PlatformScaffold`.
+/// Cupertino-side settings for a platform scaffold. The content itself stays flat on `PlatformScaffold`.
 base class const CupertinoScaffoldData({
   super.backgroundColor,
 
-  /// The navigation bar to display at the top of the scaffold.
   final ObstructingPreferredSizeWidget? navigationBar,
 }) extends _PlatformScaffoldData {
-  /// Creates Cupertino-specific scaffold data.
+  /// Creates Cupertino-side scaffold settings.
   this;
 }
