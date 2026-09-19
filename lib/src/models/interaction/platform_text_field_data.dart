@@ -13,12 +13,8 @@ import 'package:cupertino_ui/cupertino_ui.dart' show OverlayVisibilityMode;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show InputCounterWidgetBuilder, InputDecoration;
 
-/// Default value for [MaterialTextFieldData.decoration]. Matches upstream `TextField.decoration`'s
-/// `const InputDecoration()` default.
-///
-/// The build site merges the widget's flat [PlatformTextField.hintText], [PlatformTextField.prefix],
-/// and [PlatformTextField.suffix] into this base via `copyWith`: data-class decoration values win
-/// when explicitly set. Flat widget values fill the gaps. See [PlatformTextField]'s class dartdoc.
+/// Starting point the widget's flat [PlatformTextField.hintText] / `prefix` / `suffix` get merged into.
+/// Matches upstream's own `const InputDecoration()`.
 const kDefaultMaterialTextFieldDecoration = InputDecoration();
 
 /// Default value for [MaterialTextFieldData.canRequestFocus]. Matches upstream.
@@ -30,8 +26,7 @@ const kDefaultMaterialTextFieldOnTapAlwaysCalled = false;
 /// Default value for [CupertinoTextFieldData.clearButtonMode]. Matches upstream `CupertinoTextField.clearButtonMode`.
 const kDefaultCupertinoTextFieldClearButtonMode = OverlayVisibilityMode.never;
 
-/// Default value for [CupertinoTextFieldData.crossAxisAlignment]. Matches upstream
-/// `CupertinoTextField.crossAxisAlignment`.
+/// Default value for [CupertinoTextFieldData.crossAxisAlignment]. Matches upstream `CupertinoTextField.crossAxisAlignment`.
 const kDefaultCupertinoTextFieldCrossAxisAlignment = CrossAxisAlignment.center;
 
 /// Default value for [CupertinoTextFieldData.padding]. Matches upstream `CupertinoTextField.padding`.
@@ -43,111 +38,78 @@ const kDefaultCupertinoTextFieldPrefixMode = OverlayVisibilityMode.always;
 /// Default value for [CupertinoTextFieldData.suffixMode]. Matches upstream.
 const kDefaultCupertinoTextFieldSuffixMode = OverlayVisibilityMode.always;
 
-/// Material-only configuration for [PlatformTextField].
+/// Material-side settings for [PlatformTextField], passed as `materialTextFieldData`. Everything declared
+/// here has no Cupertino counterpart at all, since Material puts its whole look in [InputDecoration]
+/// where Cupertino uses separate placeholder / prefix / suffix / padding fields.
 ///
-/// Pass this via `PlatformTextField.materialTextFieldData` when tuning Material rendering. The fields
-/// declared here have no Cupertino equivalent. Material concentrates its visual surface in
-/// [InputDecoration], while Cupertino exposes individual placeholder / prefix / suffix / padding /
-/// border fields on [CupertinoTextFieldData].
-///
-/// **Common slots are flat on the widget.** [PlatformTextField.hintText], [PlatformTextField.prefix],
-/// and [PlatformTextField.suffix] live on the widget directly. Set those for the common case. The
-/// [decoration] field here is for the rest of Material's decoration surface (border, label, helper
-/// / error text, counter, etc.). If you set `decoration.hintText` / `decoration.prefixIcon` /
-/// `decoration.suffixIcon` here, your values win over the widget-level flat fields.
+/// The everyday slots stay flat on the widget: [PlatformTextField.hintText], `prefix` and `suffix`.
+/// Reach for [decoration] for the rest of Material's surface (border, label, helper and error text,
+/// counter). Set `hintText` / `prefixIcon` / `suffixIcon` on it and yours beat the flat ones.
 final class const MaterialTextFieldData({
-  /// Builder for a custom input counter widget.
   final InputCounterWidgetBuilder? buildCounter,
 
-  /// Whether the text field can request focus. Defaults to [kDefaultMaterialTextFieldCanRequestFocus].
   final bool canRequestFocus = kDefaultMaterialTextFieldCanRequestFocus,
 
-  /// Cursor colour shown when the field is in an error state. When `null`, Material falls through to
-  /// the theme's `colorScheme.error`.
+  /// Falls through to the theme's `colorScheme.error` when left out.
   final Color? cursorErrorColor,
 
-  /// Input decoration. Defaults to [kDefaultMaterialTextFieldDecoration] (the upstream-matched `const
-  /// InputDecoration()` sentinel). The build site merges the widget's flat [PlatformTextField.hintText]
-  /// / [PlatformTextField.prefix] / [PlatformTextField.suffix] into this base, when this decoration
-  /// has `hintText` / `prefixIcon` / `suffixIcon` explicitly set, those win. Otherwise the flat widget
-  /// values fill the gap.
+  /// Everything the flat widget fields don't cover. See the note above on which side wins.
   final InputDecoration decoration = kDefaultMaterialTextFieldDecoration,
 
-  /// Locales used by the hint text for locale-specific glyph variants. Rarely needed.
+  /// Picks locale-specific glyph shapes for the hint. Rarely needed.
   final List<Locale>? hintLocales,
 
-  /// Whether the text field ignores pointer events. When `null`, Material derives this from `enabled`.
+  /// Left out, Material works it out from `enabled`.
   final bool? ignorePointers,
 
-  /// Mouse cursor while hovering over the field. Material-only. Cupertino's [CupertinoTextField] has
-  /// no top-level `mouseCursor` parameter.
+  /// [CupertinoTextField] takes no top-level cursor, so this one is Material's alone.
   final MouseCursor? mouseCursor,
 
-  /// Callback for app-private commands.
   final AppPrivateCommandCallback? onAppPrivateCommand,
 
-  /// Whether [PlatformTextField.onTap] is invoked even when the field already has focus. Defaults to
-  /// [kDefaultMaterialTextFieldOnTapAlwaysCalled].
+  /// Fires [PlatformTextField.onTap] even on a field that already has focus.
   final bool onTapAlwaysCalled = kDefaultMaterialTextFieldOnTapAlwaysCalled,
 
-  /// Controller for the field's interaction states.
   final WidgetStatesController? statesController,
 }) {
-  /// Creates Material-only configuration for [PlatformTextField].
+  /// Creates Material-side settings for [PlatformTextField].
   this;
 }
 
-/// Cupertino-only configuration for [PlatformTextField].
+/// Cupertino-side settings for [PlatformTextField], passed as `cupertinoTextFieldData`. Everything declared
+/// here has no Material counterpart at all, which Material folds into [InputDecoration] on [MaterialTextFieldData].
 ///
-/// Pass this via `PlatformTextField.cupertinoTextFieldData` when tuning Cupertino rendering. The
-/// fields declared here have no Material equivalent, Material concentrates its visual surface in
-/// [InputDecoration] on [MaterialTextFieldData].
-///
-/// **Common slots are flat on the widget.** [PlatformTextField.hintText], [PlatformTextField.prefix],
-/// and [PlatformTextField.suffix] live on the widget directly. Set those for the common case. The
-/// [placeholder] / [prefix] / [suffix] fields here let you override the Cupertino branch specifically
-/// (e.g. shorter copy on iOS), when set, they win over the widget-level flat fields.
+/// The everyday slots stay flat on the widget: [PlatformTextField.hintText], `prefix` and `suffix`.
+/// [placeholder], [prefix] and [suffix] here are for when iOS wants something different, shorter copy
+/// say, and they beat the flat ones when set.
 final class const CupertinoTextFieldData({
-  /// Box decoration. When `null`, Cupertino applies its theme-driven default (rounded rectangle
-  /// border).
+  /// Left out, you get Cupertino's rounded rectangle border.
   final BoxDecoration? decoration,
 
-  /// When the clear (x) button is visible. Defaults to [kDefaultCupertinoTextFieldClearButtonMode]
-  /// (never shown).
+  /// When the clear (x) button shows up. Never, out of the box.
   final OverlayVisibilityMode clearButtonMode = kDefaultCupertinoTextFieldClearButtonMode,
 
-  /// Accessibility label for the clear button.
   final String? clearButtonSemanticLabel,
 
-  /// Cross-axis alignment of the field's content. Defaults to [kDefaultCupertinoTextFieldCrossAxisAlignment].
   final CrossAxisAlignment crossAxisAlignment = kDefaultCupertinoTextFieldCrossAxisAlignment,
 
-  /// Padding around the field's content. Defaults to [kDefaultCupertinoTextFieldPadding].
   final EdgeInsetsGeometry padding = kDefaultCupertinoTextFieldPadding,
 
-  /// Placeholder text. When set, overrides the widget-level [PlatformTextField.hintText] for the
-  /// Cupertino branch.
+  /// iOS's name for the hint text.
   final String? placeholder,
 
-  /// Text style for the placeholder.
   final TextStyle? placeholderStyle,
 
-  /// Widget rendered before the text input (e.g. an icon). When set, overrides the widget-level
-  /// [PlatformTextField.prefix] for the Cupertino branch. See [prefixMode] for visibility control.
+  /// Sits before the input. [prefixMode] decides when it's on screen.
   final Widget? prefix,
 
-  /// When the [prefix] widget is visible. Defaults to [kDefaultCupertinoTextFieldPrefixMode] (always
-  /// shown).
   final OverlayVisibilityMode prefixMode = kDefaultCupertinoTextFieldPrefixMode,
 
-  /// Widget rendered after the text input (e.g. an icon). When set, overrides the widget-level
-  /// [PlatformTextField.suffix] for the Cupertino branch. See [suffixMode] for visibility control.
+  /// Sits after the input. [suffixMode] decides when it's on screen.
   final Widget? suffix,
 
-  /// When the [suffix] widget is visible. Defaults to [kDefaultCupertinoTextFieldSuffixMode] (always
-  /// shown).
   final OverlayVisibilityMode suffixMode = kDefaultCupertinoTextFieldSuffixMode,
 }) {
-  /// Creates Cupertino-only configuration for [PlatformTextField].
+  /// Creates Cupertino-side settings for [PlatformTextField].
   this;
 }

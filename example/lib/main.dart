@@ -12,8 +12,8 @@ import 'features/root/views/root_tabs_view.dart';
 void main() => runApp(const _ExampleApp());
 
 /// Navigator entry point: `PlatformApp` + a scaffold-managed [RootTabsView]. Owns the app-wide theme
-/// mode and platform override, publishing them via [ThemeScope] / [PlatformScope] so the About tab
-/// can flip the appearance and the rendered platform.
+/// mode and platform override, publishing them via [ThemeScope] / [PlatformScope] so the About tab can
+/// flip the appearance and the rendered platform.
 class _ExampleApp extends StatefulWidget {
   const _ExampleApp();
 

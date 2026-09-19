@@ -18,7 +18,7 @@ heading, keep the anchor stable or grep-and-update every caller.
   example subdirectory follows the same pattern
   (`example/AGENTS.md → example/.ai/AGENTS.md`).
 - **Why:** Claude Code (and most other coding agents) auto-discover `CLAUDE.md` /
-  `AGENTS.md` at the project root, but two more loose Markdown files at the root add
+  `AGENTS.md` at the project root, but 2 more loose Markdown files at the root add
   visual noise to the file tree. Scoping the agent-guidance files under `.ai/` keeps
   them together. The root symlinks preserve auto-discovery.
 - **Cross-platform note:** symlinks survive `git clone` on macOS/Linux. On Windows
@@ -56,7 +56,7 @@ heading, keep the anchor stable or grep-and-update every caller.
 <a id="platform-widget-base-hierarchy"></a>
 ## `PlatformWidgetBase` is an abstract base, not a function or mixin
 
-- **Chosen:** every `PlatformXxx` widget subclasses one of four abstract base classes
+- **Chosen:** every `PlatformXxx` widget subclasses one of 4 abstract base classes
   in [`lib/src/models/platform_widget_base.dart`](./lib/src/models/platform_widget_base.dart):
   `PlatformWidgetBase`, `PlatformWidgetKeyedBase` (adds an inner-widget `widgetKey`),
   `PlatformWidgetBuilderBase` (adds a required `child`),
@@ -68,7 +68,7 @@ heading, keep the anchor stable or grep-and-update every caller.
   or the package's promise ("write app code that doesn't branch on platform")
   silently degrades. An abstract base with `@nonVirtual` `build` makes that
   impossible-to-fork at the type system: subclasses *cannot* override `build`, only
-  the two builders. The throw-on-unsupported is centralised in one place.
+  the 2 builders. The throw-on-unsupported is centralised in one place.
 - **Why not a function or mixin?**
   - A free function (`Widget platformWidget({material, cupertino})`) loses the
     `StatelessWidget` identity, the resulting widget can't be a const-constructed,
@@ -77,14 +77,14 @@ heading, keep the anchor stable or grep-and-update every caller.
   - A mixin can't enforce non-virtuality the same way. It also couldn't carry the
     `@protected` / `@visibleForOverriding` annotations that signal intent to readers
     of `lib/src/widgets/`.
-- **Four base classes, not one with optional fields.** `widgetKey` and `child` are
+- **4 base classes, not one with optional fields.** `widgetKey` and `child` are
   positional in the inheritance chain, making them optional on a single base would
   mean every subclass declares both even when it uses neither, and would forfeit the
-  `super.key` / `super.widgetKey` / `super.child` shorthand at construction. The four
+  `super.key` / `super.widgetKey` / `super.child` shorthand at construction. The 4
   bases each pin exactly the shape their leaf needs.
 - **What this rules out:** declaring a new `PlatformXxx` widget that extends
   `StatelessWidget` directly. If you find yourself reaching for that, the dispatch
-  invariant has been forked, go back through the four base classes and pick the
+  invariant has been forked, go back through the 4 base classes and pick the
   right one.
 
 ---
@@ -93,7 +93,7 @@ heading, keep the anchor stable or grep-and-update every caller.
 ## Field classification: functional vs visual
 
 Every parameter on a `PlatformXxx` widget (or `showPlatformXxx` helper) falls into
-exactly one of three buckets. The bucket determines where the field lives and
+exactly one of 3 buckets. The bucket determines where the field lives and
 whether per-platform override is possible.
 
 ### Buckets
@@ -119,10 +119,10 @@ whether per-platform override is possible.
 - **Platform-only**: concept (visual or functional) exists on one
   platform's underlying widget with no equivalent on the other. Visual
   examples: Material's `ButtonStyle`, `MaterialTapTargetSize`,
-  `splashRadius`; Cupertino's `applyTheme`, `onLabelColor`,
+  `splashRadius`. Cupertino's `applyTheme`, `onLabelColor`,
   `crossAxisAlignment`, `CupertinoButtonSize`. Functional examples:
   `MaterialProgressIndicatorData.value` (Material has progress, Cupertino's
-  activity indicator is always indeterminate);
+  activity indicator is always indeterminate).
   `CupertinoProgressIndicatorData.animating` (toggle for Cupertino's
   spinner, no Material equivalent). When a concept has no equivalent on the
   other platform, there's nothing to keep in sync, it belongs on the
@@ -140,7 +140,7 @@ whether per-platform override is possible.
 Build-method resolution:
 
 - **Functional**: `this.field` directly.
-- **Shared visual**: `materialXxxData?.field ?? this.field` on Material branch;
+- **Shared visual**: `materialXxxData?.field ?? this.field` on Material branch,
   `cupertinoXxxData?.field ?? this.field` on Cupertino branch.
 - **Platform-only visual**: read only on its own branch.
 
@@ -155,11 +155,11 @@ Build-method resolution:
   per platform reach for `materialXxxData` / `cupertinoXxxData`.
 - **Private `_PlatformXxxData` base, not public.** Exists only so per-platform
   records inherit shared-visual fields via `super.x` forwarding,
-  compile-time-checked, no codegen needed for that edge. (The other two edges,
+  compile-time-checked, no codegen needed for that edge. (The other 2 edges,
   the widget mirroring the base's fields, and the `?? ` build-method wiring, are
   *not* compiler-checked. They're held by the parity guard, see
   [*Enforcement*](#field-classification) below.) Never exported from
-  [`lib/platform_adaptive_widgets.dart`](./lib/platform_adaptive_widgets.dart);
+  [`lib/platform_adaptive_widgets.dart`](./lib/platform_adaptive_widgets.dart), so
   callers never see it.
 
 ### Rule of thumb for new fields
@@ -178,7 +178,7 @@ Build-method resolution:
    - **Yes** → shared visual, on `_PlatformXxxData` base + flat widget param.
 3. **Don't invent a unifying abstraction** for fields that are only
    superficially similar. If `MaterialFoo.color` paints fill and
-   `CupertinoFoo.tint` paints border, they're two platform-only fields,
+   `CupertinoFoo.tint` paints border, they're 2 platform-only fields,
    not a shared visual.
 
 <a id="callback-nullability"></a>
@@ -199,7 +199,7 @@ forks based on whether the callback is essential to the widget:
 **Never** use callback nullability to encode "disabled" state. `isEnabled: bool`
 is the only disabling mechanism, the underlying platform widget receives a
 `null` callback when `isEnabled: false`, but the package's public API keeps the
-two concerns separate.
+2 concerns separate.
 
 This is a deliberate deviation from Flutter's `Widget.onChanged: null = disabled`
 convention. The trade-off, more explicit at call sites, no nullability dance,
@@ -215,13 +215,13 @@ variant, the right answer is to use a different widget (e.g. `Text` instead of
 ### Tristate checkbox split
 
 `PlatformCheckbox`'s default constructor exposes non-null `value: bool` /
-`onChanged: ValueChanged<bool>`: the common two-state case. The indeterminate
+`onChanged: ValueChanged<bool>`: the common 2-state case. The indeterminate
 (third) state, supported natively on both platforms, is a second constructor,
 `PlatformCheckbox.tristate`, whose `value` / `onChanged` are nullable (`bool?`).
 
 **Why not one `tristate`-flagged widget with nullable `value` / `onChanged`
 (Flutter's own shape).** That forces the nullability dance (`v!`, `v ?? false`,
-`bool?`-typed state) onto the *common* two-state caller, contradicting
+`bool?`-typed state) onto the *common* 2-state caller, contradicting
 [#callback-nullability](#callback-nullability): the package's interactive
 widgets give callers non-null callbacks, with `PlatformSwitch` as the model.
 The checkbox is the one control with a genuine third state, so the third state
@@ -230,7 +230,7 @@ entirely was rejected, both platforms support the indeterminate state natively
 (Cupertino renders `null` as a dash, like Material), and it's demonstrated in
 the example.
 
-**Why two constructors on one class can't share a single `onChanged` field.**
+**Why 2 constructors on one class can't share a single `onChanged` field.**
 `buildMaterial` / `buildCupertino` hand `onChanged` to `Checkbox` /
 `CupertinoCheckbox`, both of which type it `ValueChanged<bool?>?`, so a stored
 callback must be `ValueChanged<bool?>`. `value` *can* be one shared `bool?`
@@ -241,32 +241,32 @@ parameters are contravariant, so `ValueChanged<bool>` is a *supertype* of
 `ValueChanged<bool?>` field needs an adapter closure, which can't run in a
 `const` constructor.
 
-**How.** Two **private** callback fields, `_onChanged` (`ValueChanged<bool>?`)
+**How.** 2 **private** callback fields, `_onChanged` (`ValueChanged<bool>?`)
 and `_onChangedTristate` (`ValueChanged<bool?>?`), exactly one non-null per
 instance. Keep both constructors `const`. The default ctor binds its callback
 as a `this._onChanged` initializing formal *typed* `ValueChanged<bool>`: Dart
 drops the leading underscore, so callers still pass a non-null `onChanged:` and
 no `prefer_initializing_formals` ignore is needed. Private fields as named
-initializing formals is a Dart 3.12 feature, gated by the package's
-`sdk: >=3.12.0` constraint. (Omit the type and the formal inherits the field's
-nullable type, silently re-opening `onChanged` to `null`: the bug to avoid.) The `.tristate` ctor assigns in the initializer list instead;
+initializing formals need a recent Dart, which the `pubspec.yaml` floor already
+guarantees. (Omit the type and the formal inherits the field's
+nullable type, silently re-opening `onChanged` to `null`: the bug to avoid.) The `.tristate` ctor assigns in the initializer list instead,
 it can't use the formal because its field `_onChangedTristate` would surface as
 `onChangedTristate`, while its public parameter must also be `onChanged` (the
 lint leaves that assignment alone for the same reason). Widening to the
 underlying `ValueChanged<bool?>?` happens at *build* time, not construction (so
 both ctors stay `const`): build uses `_onChangedTristate ?? _adaptedOnChanged`,
 with `_adaptedOnChanged` = `(v) => _onChanged!(v!)`: safe, reached only in
-two-state mode where `tristate: false` never yields null. `_isTristate` is
+2-state mode where `tristate: false` never yields null. `_isTristate` is
 `_onChangedTristate != null`.
 
-**Chosen over two sibling classes** (`PlatformCheckbox` +
+**Chosen over 2 sibling classes** (`PlatformCheckbox` +
 `PlatformTristateCheckbox`) for the single discoverable name plus a `.tristate`
 constructor. The costs are minor and accepted:
 - One extra null pointer-slot per instance (the unused callback field). Not a
   heap allocation, `null` doesn't allocate, and object layout is per-class,
   so it isn't elided, ~8 bytes on an immutable widget.
 - `value` is one `bool?` field, so `widget.value` reads back as `bool?` even on
-  the two-state path (the default constructor still rejects `null` at the call
+  the 2-state path (the default constructor still rejects `null` at the call
   site via the narrowing formal).
 
 ### Carve-outs
@@ -308,7 +308,7 @@ constructor. The costs are minor and accepted:
 
 ### Enforcement: the data ↔ widget parity guard
 
-The two halves of this contract the Dart compiler does **not** check are guarded
+The 2 halves of this contract the Dart compiler does **not** check are guarded
 by a static AST test that runs on every PR (via `flutter test` in
 [`.github/workflows/package.yml`](./.github/workflows/package.yml)):
 [`test/data_widget_parity_test.dart`](./test/data_widget_parity_test.dart). For
@@ -331,11 +331,11 @@ every canonical widget, those whose shared-visual fields live on a private
 A third check asserts the guard actually discovered the known canonical widgets,
 so a future analyzer-AST change or a `lib/src/models/` move can't quietly reduce
 it to a vacuous pass. Bases that exist only to DRY a single field across their
-two records with no flat widget twin by design, `_PlatformScaffoldData` and
+2 records with no flat widget twin by design, `_PlatformScaffoldData` and
 `_PlatformAppBarData`, whose lone `backgroundColor` is read straight off the
 record, are listed in the test's `_basesWithoutFlatMirror` and skipped.
 
-The guard catches the two *mechanical* drift modes (a new shared field left
+The guard catches the 2 *mechanical* drift modes (a new shared field left
 unmirrored, or wired in only one builder). It does not adjudicate whether a
 field *belongs* on the shared base vs a per-platform record, that's the human
 judgement the buckets above describe.
@@ -375,15 +375,15 @@ Each row maps a single package field to its native counterparts.
 
 During a widget's review phase, every shared-visual field where the underlying
 parameter diverges from the package's chosen unified surface, either by name
-or by type / nullability, gets a row here. **Same fact, three places to
+or by type / nullability, gets a row here. **Same fact, 3 places to
 repeat it**: this table, the dartdoc on the widget's flat field, and the
-dartdoc on `_PlatformXxxData`'s field. All three say "maps to
+dartdoc on `_PlatformXxxData`'s field. All 3 say "maps to
 `UnderlyingWidget.nativeParam` on iOS / Android", and where the type
 diverges, name the conversion the build method performs.
 
 ### Choosing the unified surface
 
-When the two underlying parameters diverge:
+When the 2 underlying parameters diverge:
 
 - **Names differ.** Prefer the less ambiguous name, `activeThumbColor` beats
   `thumbColor` because the latter silently raises "active or inactive?".
@@ -396,7 +396,7 @@ When the two underlying parameters diverge:
   build time.
 - Don't invent a third name unless both native names are bad. Pick one,
   document the mapping for the other side.
-- If the two native parameters agree on both name and type (e.g.
+- If the 2 native parameters agree on both name and type (e.g.
   `activeTrackColor: Color?` on both sides), no mapping is needed and no row
   goes here.
 
@@ -423,7 +423,7 @@ mismatch.
   means a reader can navigate from a widget to its config classes (and vice versa)
   without grepping. The duplication of category names is intentional: it's the
   navigational handle.
-- **Why two trees instead of one folder per widget?** Some categories
+- **Why 2 trees instead of one folder per widget?** Some categories
   (`dialogs/`) carry cross-cutting consts (`const_values.dart`) and standalone
   helpers that don't fit under a single widget. Keeping models and widgets in
   separate trees lets these helpers sit in `models/<category>/` where they belong
@@ -547,7 +547,7 @@ Callers who relied on the public `targetPlatform` symbol should import
 
 ### Enforcement: regression guards on every PR
 
-Two complementary CI checks defend the pruning contract. Both run on every PR
+2 complementary CI checks defend the pruning contract. Both run on every PR
 via `.github/workflows/package.yml`.
 
 1. **Static AST lint**: [`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart).
@@ -569,7 +569,7 @@ via `.github/workflows/package.yml`.
    pruning failure on any of those surfaces fails the build empirically,
    even if it slips past the static lint.
 
-Necessary-but-not-sufficient (static) plus empirical (size) is the two-layer
+Necessary-but-not-sufficient (static) plus empirical (size) is the 2-layer
 contract. When the size budget needs raising because a Flutter SDK update
 genuinely grew the Cupertino baseline, retune the constant in
 `check_size_regression.dart`: never to silence a real leak, only to
@@ -578,16 +578,16 @@ re-baseline noise.
 ---
 
 <a id="two-entry-point-example"></a>
-## Two entry points in `example/`: `main.dart` and `main_go_router.dart`
+## 2 entry points in `example/`: `main.dart` and `main_go_router.dart`
 
-- **Chosen:** the demo app under `example/lib/` ships two `main()` functions:
+- **Chosen:** the demo app under `example/lib/` ships 2 `main()` functions:
   - [`example/lib/main.dart`](./example/lib/main.dart), boots `PlatformApp` with a
     scaffold-managed tab structure (Catalog / Under the hood / About) where
     `PlatformTabScaffold` owns the selected-index state.
   - [`example/lib/main_go_router.dart`](./example/lib/main_go_router.dart), boots
     `PlatformApp.router` with `go_router`'s `StatefulNavigationShell`, where tab
     selection is driven by the router rather than the scaffold.
-- **Why two entry points instead of one?** `PlatformApp` and `PlatformApp.router`
+- **Why 2 entry points instead of one?** `PlatformApp` and `PlatformApp.router`
   are *both* part of the public API, and they exercise meaningfully different
   navigation invariants. A single entry point would force a choice between the
   router-less ergonomic demo and the router-integrated showcase. Shipping both as

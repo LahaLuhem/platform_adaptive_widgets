@@ -9,45 +9,34 @@ import '/src/models/layout/platform_app_bar_data.dart';
 import '/src/models/layout/platform_scaffold_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive scaffold. Material `Scaffold` on Android, `CupertinoPageScaffold` on iOS.
+/// Material `Scaffold` on Android, `CupertinoPageScaffold` on iOS.
 ///
-/// Shared content (`body`, `resizeToAvoidBottomInset`, `widgetKey`) is functional and lives flat on
-/// this widget, single source of truth. [backgroundColor] is shared-visual (per-platform override
-/// via [MaterialScaffoldData.backgroundColor] / [CupertinoScaffoldData.backgroundColor]). The rest
-/// of each platform's surface lives on [materialScaffoldData] / [cupertinoScaffoldData].
-///
-/// [appBarData] is the cross-platform app bar (typically a [PlatformAppBar]). It's wrapped to the
-/// right platform widget for each branch.
+/// Per-platform tuning lives in [materialScaffoldData] / [cupertinoScaffoldData], which can also override
+/// [backgroundColor] on one side alone.
 ///
 /// Example:
 /// {@example /example/lib/snippets/layout/platform_scaffold.dart#platform_scaffold}
 class const PlatformScaffold({
-  /// The main content of the scaffold.
   required final Widget body,
 
-  /// Material-specific scaffold data.
+  /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialScaffoldData? materialScaffoldData,
 
-  /// Cupertino-specific scaffold data.
+  /// Cupertino-branch overrides, plus the knobs Material has no answer for.
   final CupertinoScaffoldData? cupertinoScaffoldData,
 
-  /// Platform-shared app bar data.
-  ///
-  /// Has a premade implementation of [PlatformAppBar].
+  /// The bar across the top. [PlatformAppBar] is the ready-made one, and gets unwrapped to the right
+  /// widget on each branch.
   final PlatformAppBarData? appBarData,
 
-  /// Background color of the scaffold.
   final Color? backgroundColor,
 
-  /// Whether the scaffold should resize to avoid the bottom inset.
+  /// Shrinks the body when the keyboard comes up, rather than letting it hide the bottom.
   final bool resizeToAvoidBottomInset = kDefaultResizeToAvoidBottomInset,
   super.widgetKey,
   super.key,
 }) extends PlatformWidgetKeyedBase {
   /// Creates a platform-adaptive scaffold.
-  ///
-  /// The scaffold renders as a Material `Scaffold` on Android and a `CupertinoPageScaffold` on iOS.
-  /// [appBarData] has a premade implementation of [PlatformAppBar].
   this;
 
   @override
@@ -76,10 +65,8 @@ class const PlatformScaffold({
         materialScaffoldData?.endDrawerEnableOpenDragGesture ??
         MaterialScaffoldData.kEndDrawerEnableOpenDragGesture;
 
-    // bottomSheetScrimBuilder is a non-null Scaffold param whose default is a
-    // private SDK implementation we can't reference. When the caller doesn't
-    // supply one, omit the param so Scaffold applies its own default, rather
-    // than substitute a hand-rolled replica that could drift from the SDK.
+    // Scaffold's own default for bottomSheetScrimBuilder is private, so the param is omitted rather
+    // than filled with a copy of it that could drift.
     return materialScaffoldData?.bottomSheetScrimBuilder == null
         ? Scaffold(
             key: widgetKey,

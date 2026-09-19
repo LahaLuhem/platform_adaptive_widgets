@@ -15,130 +15,107 @@ import 'package:material_ui/material_ui.dart'
 /// upstream default.
 const kDefaultPlatformToastDuration = Duration(seconds: 4);
 
-/// Default value for [CupertinoToastData.backgroundColor]. Translucent black HUD-style background
-/// that adapts to light/dark theming.
+/// Default value for [CupertinoToastData.backgroundColor]. A translucent HUD that flips with the theme.
 const kDefaultCupertinoToastBackgroundColor = CupertinoDynamicColor.withBrightness(
   color: Color(0xCC1F1F1F),
   darkColor: Color(0xCCFAFAFA),
 );
 
-/// Default value for [CupertinoToastData.foregroundColor]. Inverted of the background for legibility.
+/// Default value for [CupertinoToastData.foregroundColor]. The background inverted, so the text reads.
 const kDefaultCupertinoToastForegroundColor = CupertinoDynamicColor.withBrightness(
   color: CupertinoColors.white,
   darkColor: CupertinoColors.black,
 );
 
-/// Default value for [CupertinoToastData.padding]. Matches the iOS-native notification banner inset.
+/// Default value for [CupertinoToastData.padding]. Matches the inset on iOS's own notification banner.
 const kDefaultCupertinoToastPadding = EdgeInsets.symmetric(horizontal: 16, vertical: 12);
 
-/// Default value for [CupertinoToastData.outerMargin], the gap between the toast and the screen edges
-/// (so it doesn't hug the sides on phones).
+/// Default value for [CupertinoToastData.outerMargin], keeping the toast off the screen edges so it
+/// doesn't hug the sides of a phone.
 const kDefaultCupertinoToastOuterMargin = EdgeInsets.symmetric(horizontal: 16, vertical: 8);
 
-/// Default value for [CupertinoToastData.borderRadius]. Matches the iOS-native notification banner
-/// corner radius.
+/// Default value for [CupertinoToastData.borderRadius]. Matches iOS's own notification banner.
 const kDefaultCupertinoToastBorderRadius = BorderRadius.all(Radius.circular(14));
 
-/// Default value for [CupertinoToastData.maxWidth], caps the toast width on tablets/desktops so it
-/// doesn't span the full screen.
+/// Default value for [CupertinoToastData.maxWidth], stopping the toast spanning a tablet or desktop
+/// screen.
 const kDefaultCupertinoToastMaxWidth = 480.0;
 
-/// Default value for [CupertinoToastData.transitionDuration]. The slide-in / fade-in animation
-/// duration.
+/// Default value for [CupertinoToastData.transitionDuration], covering the slide and fade in.
 const kDefaultCupertinoToastTransitionDuration = Duration(milliseconds: 250);
 
-/// Material-only configuration for `showPlatformToast`. Backed by [SnackBar].
+/// Material-side settings for `showPlatformToast`. Backed by [SnackBar].
 final class const MaterialToastData({
-  /// Background colour of the snack bar.
   final Color? backgroundColor,
 
-  /// Elevation of the snack bar surface.
   final double? elevation,
 
-  /// Margin around the snack bar.
   final EdgeInsetsGeometry? margin,
 
-  /// Padding inside the snack bar.
   final EdgeInsetsGeometry? padding,
 
-  /// Fixed width of the snack bar. When `null`, fills the screen.
+  /// Left out, the bar spans the screen.
   final double? width,
 
-  /// Shape of the snack bar border.
   final ShapeBorder? shape,
 
-  /// Hit-test behaviour for the snack bar.
   final HitTestBehavior? hitTestBehavior,
 
-  /// SnackBar behaviour, fixed (anchored to bottom) vs floating.
+  /// Anchored to the bottom, or floating above it.
   final SnackBarBehavior? snackBarBehavior,
 
-  /// Optional inline action button on the snack bar (e.g. "Undo").
+  /// An inline button, the classic being "Undo".
   final SnackBarAction? action,
 
-  /// Overflow threshold for the action button.
+  /// How wide the [action] may get before it drops onto its own line.
   final double? actionOverflowThreshold,
 
-  /// Whether to show the close (×) icon.
   final bool? showCloseIcon,
 
-  /// Colour of the close icon.
   final Color? closeIconColor,
 
-  /// Whether the snack bar persists past its duration.
+  /// Keeps the bar up past its duration, until something dismisses it.
   final bool? persist,
 
-  /// Custom animation override for the snack bar.
   final Animation<double>? animation,
 
-  /// Callback fired when the snack bar becomes visible.
   final VoidCallback? onVisible,
 
-  /// Direction in which the user can swipe to dismiss.
+  /// Which way the user can swipe it away.
   final DismissDirection? dismissDirection,
 
-  /// Clip behaviour applied to the snack bar.
   final Clip clipBehavior = Clip.hardEdge,
 }) {
-  /// Creates Material-only configuration for `showPlatformToast`.
+  /// Creates Material-side settings for `showPlatformToast`.
   this;
 }
 
-/// Cupertino-only configuration for `showPlatformToast`. Drives the package's custom HUD-style overlay
-/// banner (iOS has no native toast primitive).
+/// Cupertino-side settings for `showPlatformToast`. iOS ships no toast of its own, so this drives the
+/// HUD-style banner the package draws instead.
 final class const CupertinoToastData({
-  /// Background colour of the toast. Defaults to [kDefaultCupertinoToastBackgroundColor], a translucent
-  /// theme-adaptive HUD.
   final Color backgroundColor = kDefaultCupertinoToastBackgroundColor,
 
-  /// Foreground (text) colour. Defaults to [kDefaultCupertinoToastForegroundColor], inverted of the
-  /// background.
+  /// Colours the message text.
   final Color foregroundColor = kDefaultCupertinoToastForegroundColor,
 
-  /// Padding around the message text. Defaults to [kDefaultCupertinoToastPadding].
+  /// Around the message text, where [outerMargin] holds the whole toast off the screen edges.
   final EdgeInsetsGeometry padding = kDefaultCupertinoToastPadding,
 
-  /// Margin between the toast and the screen edges. Defaults to [kDefaultCupertinoToastOuterMargin].
   final EdgeInsetsGeometry outerMargin = kDefaultCupertinoToastOuterMargin,
 
-  /// Corner radius of the toast. Defaults to [kDefaultCupertinoToastBorderRadius].
   final BorderRadiusGeometry borderRadius = kDefaultCupertinoToastBorderRadius,
 
-  /// Maximum width of the toast (so it doesn't span full-screen on tablets/desktops). Defaults to
-  /// [kDefaultCupertinoToastMaxWidth].
   final double maxWidth = kDefaultCupertinoToastMaxWidth,
 
-  /// Optional text-style override for the message. When `null`, the package uses a 15pt sized,
-  /// [foregroundColor]-coloured default.
+  /// Left out, you get 15pt in [foregroundColor].
   final TextStyle? textStyle,
 
-  /// Duration of the slide-in / fade-in animation. Defaults to [kDefaultCupertinoToastTransitionDuration].
   final Duration transitionDuration = kDefaultCupertinoToastTransitionDuration,
 }) {
-  /// Creates Cupertino-only configuration for `showPlatformToast`.
+  /// Creates Cupertino-side settings for `showPlatformToast`.
   this;
 }
 
-/// Re-exported for callers awaiting the Material toast's close future, saves them an explicit
-/// `package:material_ui/material_ui.dart` import for the enum.
+/// Re-exported so awaiting the Material toast's close future doesn't drag in a `material_ui` import
+/// just for the enum.
 typedef PlatformToastClosedReason = SnackBarClosedReason;

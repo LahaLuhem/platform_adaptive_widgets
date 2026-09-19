@@ -5,44 +5,32 @@ import 'package:material_ui/material_ui.dart' show ExpansionTile;
 import '/src/models/interaction/platform_expansion_tile_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive expansion tile that renders Material [ExpansionTile] on Android and
-/// [CupertinoExpansionTile] on iOS.
+/// Material [ExpansionTile] on Android, [CupertinoExpansionTile] on iOS.
 ///
-/// All functional inputs (title content, child content, expansion controller) live as flat constructor
-/// parameters. Per-platform visual + behavioural tuning is opt-in via [materialExpansionTileData]
-/// and [cupertinoExpansionTileData]. See `APPENDIX.md#field-classification`.
+/// One child, not a list of them, because [CupertinoExpansionTile] takes exactly one. Wrap it in a `Column`
+/// yourself for Material's multi-child look. Per-platform tuning lives in [materialExpansionTileData]
+/// / [cupertinoExpansionTileData]. See `APPENDIX.md#field-classification`.
 ///
-/// Single-child only, [CupertinoExpansionTile] has no multi-child slot. Callers wanting Material's
-/// multi-child layout wrap with `Column` at the call site (`child: Column(children: [...])`). See
-/// `APPENDIX.md#cross-platform-field-mappings` for the `child` ↔ `children` mapping.
-///
-/// No `isEnabled` flag, [CupertinoExpansionTile] has no built-in disabled state. Material's `enabled`
-/// lives on [MaterialExpansionTileData]. For Cupertino, wrap with [IgnorePointer] (or [Opacity] for
-/// a faded-out look).
+/// No `isEnabled` here either, since iOS has no disabled state for this. Material's `enabled` sits on
+/// [MaterialExpansionTileData], and on iOS an [IgnorePointer] does the job, with an [Opacity] if you
+/// want it to look the part too.
 ///
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_expansion_tile.dart#platform_expansion_tile}
 class const PlatformExpansionTile({
-  /// Primary content of the tile header.
-  ///
-  /// Required non-null, both [ExpansionTile.title] and [CupertinoExpansionTile.title] require non-null
-  /// upstream.
+  /// The always-visible header.
   required final Widget title,
 
-  /// Content shown when the tile is expanded.
-  ///
-  /// Required non-null, [CupertinoExpansionTile.child] requires it. Material wraps it as `[child]`
-  /// for its `children:` slot. See `APPENDIX.md#cross-platform-field-mappings`.
+  /// What the tile reveals when it opens.
   required final Widget child,
 
-  /// Optional controller for programmatic expand / collapse + state observation. Same [ExpansibleController]
-  /// type on both platforms.
+  /// Expand and collapse from code, and watch the state. Same type on both platforms.
   final ExpansibleController? controller,
 
-  /// Material-only visual + functional overrides. Optional.
+  /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialExpansionTileData? materialExpansionTileData,
 
-  /// Cupertino-only visual + functional overrides. Optional.
+  /// Cupertino-branch overrides, plus the knobs Material has no answer for.
   final CupertinoExpansionTileData? cupertinoExpansionTileData,
   super.widgetKey,
   super.key,

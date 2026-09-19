@@ -23,137 +23,106 @@ const kDefaultCupertinoButtonPressedOpacity = 0.4;
 /// Default value for [CupertinoButtonData.alignment]. Matches upstream.
 const kDefaultCupertinoButtonAlignment = Alignment.center;
 
-/// Default gap between the icon and the label rendered by [PlatformButton.icon]. On the Material
-/// branch this spacing is implicit in the underlying `.icon` factory's layout. On the Cupertino branch
-/// the package wraps the icon and label in a [Row] with `spacing` set to this constant (Cupertino
-/// has no native icon-button factory).
+/// Gap between icon and label in [PlatformButton.icon]. Only the Cupertino branch reads it, since iOS
+/// has no icon-button factory and we lay the 2 out in a [Row] ourselves. Material's factory already
+/// handles its own spacing.
 const kDefaultButtonIconLabelGap = 8.0;
 
-/// Material button variants for [PlatformButton.materialButtonVariant].
-///
-/// Each variant pairs with a different Material button class, and (when [PlatformButton.icon] is
-/// used) with that class's `.icon` factory.
+/// Which Material button class [PlatformButton.materialButtonVariant] renders.
 enum MaterialButtonVariant() {
-  /// Renders as [TextButton] (or [TextButton.icon] via [PlatformButton.icon]).
+  /// [TextButton], or [TextButton.icon] with [PlatformButton.icon].
   text,
 
-  /// Renders as [ElevatedButton] (or [ElevatedButton.icon] via [PlatformButton.icon]).
+  /// [ElevatedButton], or [ElevatedButton.icon] with [PlatformButton.icon].
   elevated,
 
-  /// Renders as [OutlinedButton] (or [OutlinedButton.icon] via [PlatformButton.icon]).
+  /// [OutlinedButton], or [OutlinedButton.icon] with [PlatformButton.icon].
   outlined,
 
-  /// Renders as [FilledButton] (or [FilledButton.icon] via [PlatformButton.icon]).
+  /// [FilledButton], or [FilledButton.icon] with [PlatformButton.icon].
   filled,
 
-  /// Renders as [FilledButton.tonal] (or [FilledButton.tonalIcon] via [PlatformButton.icon]). The
-  /// tonal variant is a middle ground between [filled] and [outlined], useful for secondary actions
-  /// that need more emphasis than an outline but less than a fill.
+  /// [FilledButton.tonal], or [FilledButton.tonalIcon] with [PlatformButton.icon]. Sits between [filled]
+  /// and [outlined], for a secondary action that still wants some weight.
   tonal,
 }
 
-/// Material-only configuration for [PlatformButton].
+/// Material-side settings for [PlatformButton], passed as `materialButtonData`. Everything declared
+/// here has no Cupertino counterpart at all.
 ///
-/// Pass this via `PlatformButton.materialButtonData` when tuning Material rendering. The fields
-/// declared here have no Cupertino equivalent. Material concentrates its visual surface in [ButtonStyle],
-/// while Cupertino exposes individual colour / border / padding fields on [CupertinoButtonData].
-///
-/// **Mouse cursor.** Material's button classes don't expose a top-level `mouseCursor` parameter. Set
-/// it via `style.mouseCursor` ([ButtonStyle.mouseCursor]). Cupertino's equivalent lives on
-/// [CupertinoButtonData.mouseCursor].
+/// Thin on purpose. Material funnels almost every visual through [ButtonStyle], where Cupertino spreads
+/// the same ground over separate colour / border / padding fields on [CupertinoButtonData]. The mouse
+/// cursor is the one that catches people out: it's `style.mouseCursor` here, a plain field there.
 final class const MaterialButtonData({
-  /// Callback when the hover state changes (mouse enter / leave the button area).
   final ValueChanged<bool>? onHover,
 
-  /// Button style. Houses Material's full visual surface (background colour, foreground colour, text
-  /// style, padding, mouse cursor, etc.) keyed by [WidgetState]. When `null`, the underlying Material
-  /// variant applies its theme-driven defaults.
+  /// Material's whole visual surface, keyed by [WidgetState]. `null` leaves it to the theme.
   final ButtonStyle? style,
 
-  /// Clip behaviour. When `null`, each underlying Material button applies its own ctor-level default
-  /// (typically `Clip.none`).
   final Clip? clipBehavior,
 
-  /// Controller for the widget's interaction states.
   final WidgetStatesController? statesController,
 
-  /// Whether the button is announced as a semantic button. Honoured only when [PlatformButton.materialButtonVariant]
-  /// is `.text` and the button is constructed via [PlatformButton.new] (not [PlatformButton.icon]),
-  /// upstream's other variants and all `.icon` factories don't surface the parameter, and the package
-  /// silently drops it for those combinations.
+  /// Only reaches the widget for the `.text` variant built through [PlatformButton.new]. Upstream doesn't
+  /// take it anywhere else, so every other combination drops it on the floor.
   final bool? isSemanticButton,
 }) {
-  /// Creates Material-only configuration for [PlatformButton].
+  /// Creates Material-side settings for [PlatformButton].
   this;
 }
 
-/// Cupertino-only configuration for [PlatformButton].
+/// Cupertino-side settings for [PlatformButton], passed as `cupertinoButtonData`. Everything declared
+/// here has no Material counterpart at all, which on Material's side is all folded into [ButtonStyle].
 ///
-/// Pass this via `PlatformButton.cupertinoButtonData` when tuning Cupertino rendering. The fields
-/// declared here have no Material equivalent. Material concentrates its visual surface in [ButtonStyle]
-/// on [MaterialButtonData].
+/// Leave any of the nullable ones out and Cupertino falls back to whatever its size style or variant
+/// says.
 final class const CupertinoButtonData({
-  /// Size style. Defaults to [kDefaultCupertinoButtonSizeStyle].
   final CupertinoButtonSize sizeStyle = kDefaultCupertinoButtonSizeStyle,
 
-  /// Padding around the button content. When `null`, Cupertino applies its size-style-driven default.
   final EdgeInsetsGeometry? padding,
 
-  /// Background colour. When `null`, Cupertino applies its variant-driven default (e.g. the theme's
-  /// `primaryColor` for `.filled`).
+  /// Background colour.
   final Color? color,
 
-  /// Foreground (text / icon) colour. When `null`, Cupertino derives it from the background.
+  /// Text and icon colour. Cupertino works it out from the background when left out.
   final Color? foregroundColor,
 
-  /// Colour used when the button is disabled. When `null`, the build site substitutes
-  /// [CupertinoButtonVariant.defaultDisabledColor] for the rendered variant, mirrors upstream's
-  /// per-ctor inline default.
+  /// Left out, the build site fills in the rendered variant's [CupertinoButtonVariant.defaultDisabledColor],
+  /// which is what you'd have got from Cupertino directly.
   final Color? disabledColor,
 
-  /// Minimum size of the button. When `null`, Cupertino applies its size-style-driven default.
   final Size? minimumSize,
 
-  /// Opacity applied while the button is being pressed. Defaults to [kDefaultCupertinoButtonPressedOpacity].
+  /// How far the button fades while held down.
   final double pressedOpacity = kDefaultCupertinoButtonPressedOpacity,
 
-  /// Border radius. When `null`, Cupertino applies its size-style-driven default.
   final BorderRadius? borderRadius,
 
-  /// Alignment of the button content. Defaults to [kDefaultCupertinoButtonAlignment].
+  /// Where the content sits inside the button.
   final AlignmentGeometry alignment = kDefaultCupertinoButtonAlignment,
 
-  /// Colour shown while the button is focused. When `null`, Cupertino applies the theme's focus
-  /// colour.
   final Color? focusColor,
 
-  /// Mouse cursor while hovering. Cupertino-only. Material's equivalent lives at `style.mouseCursor`
-  /// on [MaterialButtonData] (Material's button classes don't expose a top-level `mouseCursor`
-  /// parameter).
+  /// Material keeps its own at `style.mouseCursor` on [MaterialButtonData], since its button classes
+  /// take no top-level cursor.
   final MouseCursor? mouseCursor,
 }) {
-  /// Creates Cupertino-only configuration for [PlatformButton].
+  /// Creates Cupertino-side settings for [PlatformButton].
   this;
 }
 
-/// Cupertino button variants for [PlatformButton.cupertinoButtonVariant].
-///
-/// Each variant carries the [defaultDisabledColor] applied by the build site when
-/// [CupertinoButtonData.disabledColor] is `null`: mirrors upstream's per-ctor inline default
-/// (`quaternarySystemFill` for the unfilled [CupertinoButton], `tertiarySystemFill` for `.filled`
-/// and `.tinted`).
+/// Which Cupertino button [PlatformButton.cupertinoButtonVariant] renders.
 enum CupertinoButtonVariant({
-  /// Colour applied by [PlatformButton]'s build site when [CupertinoButtonData.disabledColor] is
-  /// `null`. Mirrors the matching upstream constructor's inline default, keeps the package's "no
-  /// override" path bit-identical to instantiating Cupertino's button directly.
+  /// Stands in for [CupertinoButtonData.disabledColor] when that's left out, copying the matching upstream
+  /// constructor's own default so the untouched path renders identically.
   required final Color defaultDisabledColor,
 }) {
-  /// Renders as [CupertinoButton] (no background fill).
+  /// [CupertinoButton], no background fill.
   normal(defaultDisabledColor: CupertinoColors.quaternarySystemFill),
 
-  /// Renders as [CupertinoButton.filled] (solid background fill).
+  /// [CupertinoButton.filled], solid background.
   filled(defaultDisabledColor: CupertinoColors.tertiarySystemFill),
 
-  /// Renders as [CupertinoButton.tinted] (subtle background tint).
+  /// [CupertinoButton.tinted], subtle background tint.
   tinted(defaultDisabledColor: CupertinoColors.tertiarySystemFill),
 }

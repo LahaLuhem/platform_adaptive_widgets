@@ -8,51 +8,39 @@ import 'package:material_ui/material_ui.dart' show AppBar;
 
 import '/src/models/layout/platform_app_bar_data.dart';
 
-/// A platform-adaptive app bar. Material `AppBar` on Android, `CupertinoNavigationBar` on iOS.
+/// Material `AppBar` on Android, `CupertinoNavigationBar` on iOS.
 ///
-/// Shared content (`title`, `leading`, `bottom`, `automaticallyImplyLeading`, `widgetKey`) is functional
-/// and lives flat on this widget, single source of truth. The only per-platform-overridable property
-/// is [backgroundColor] (shared-visual, iOS nav bars are often translucent, Android opaque). Pass
-/// [materialAppBarData] / [cupertinoNavigationBarData] for the rest of each platform's surface.
+/// Per-platform tuning lives in [materialAppBarData] / [cupertinoNavigationBarData], which can also
+/// override [backgroundColor] on one side alone. Worth doing, since iOS nav bars tend to be translucent
+/// where Android's are opaque.
 ///
-/// Unlike the rest of the package, `PlatformAppBar` `implements` [PlatformAppBarData] rather than
-/// extending `PlatformWidgetBase`: a scaffold's app-bar slot requires a `PreferredSizeWidget` (Material)
-/// / `ObstructingPreferredSizeWidget` (Cupertino), neither of which a plain `StatelessWidget` satisfies.
-/// So instead of a `build` method it exposes [materialBuilder] / [cupertinoBuilder]. [PlatformScaffold]
-/// calls the matching one for the target platform.
+/// The odd one out in this package: it `implements` [PlatformAppBarData] instead of extending `PlatformWidgetBase`,
+/// because a scaffold's bar slot wants a `PreferredSizeWidget` and a plain `StatelessWidget` isn't one.
+/// So there's no `build` here, just the 2 builders [PlatformScaffold] picks between.
 ///
 /// Example:
 /// {@example /example/lib/snippets/layout/platform_app_bar.dart#platform_app_bar}
 class const PlatformAppBar({
-  /// Optional key for the app bar widget.
+  /// Goes on the bar itself, since this isn't a widget with a [Key] of its own.
   final Key? widgetKey,
 
-  /// Material-specific app bar data.
+  /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialAppBarData? materialAppBarData,
 
-  /// Cupertino-specific navigation bar data.
+  /// Cupertino-branch overrides, plus the knobs Material has no answer for.
   final CupertinoNavigationBarData? cupertinoNavigationBarData,
 
-  /// The primary title of the app bar.
   final Widget? title,
 
-  /// Background color of the app bar. Per-platform override via [MaterialAppBarData.backgroundColor]
-  /// / [CupertinoNavigationBarData.backgroundColor].
   final Color? backgroundColor,
 
-  /// Widget to display before the title.
-  ///
-  /// Typically used for navigation or menu icons.
+  /// Before the title, usually a navigation or menu icon.
   final Widget? leading,
 
-  /// Whether to automatically imply a leading widget.
-  ///
-  /// If true, a back button is automatically added when appropriate.
+  /// Puts a back button in [leading]'s place when there's somewhere to go back to.
   final bool automaticallyImplyLeading = true,
 
-  /// Widget to display below the app bar.
-  ///
-  /// Typically used for tabs or other supplementary content.
+  /// Under the bar, usually tabs.
   final PreferredSizeWidget? bottom,
 }) implements PlatformAppBarData {
   /// Creates a platform-adaptive app bar.
@@ -107,8 +95,7 @@ class const PlatformAppBar({
 
   @override
   ObstructingPreferredSizeWidget cupertinoBuilder(BuildContext context) {
-    // Shared values resolved once, both the standard/large variants and the
-    // heroTag null/non-null sub-branches below pass the identical set.
+    // Resolved once, since every branch below passes the same set.
     final resolvedBackgroundColor = cupertinoNavigationBarData?.backgroundColor ?? backgroundColor;
     final automaticallyImplyMiddle =
         cupertinoNavigationBarData?.automaticallyImplyMiddle ??
@@ -122,18 +109,13 @@ class const PlatformAppBar({
     final transitionBetweenRoutes =
         cupertinoNavigationBarData?.transitionBetweenRoutes ??
         CupertinoNavigationBarData.kTransitionBetweenRoutes;
-    // Promoted to non-null inside the `heroTag != null` branches below, so the
-    // constructor calls pass it without a force-unwrap.
+    // Promoted to non-null inside the branches below, so no force-unwrap is needed there.
     final heroTag = cupertinoNavigationBarData?.heroTag;
 
-    // The .large variant renders iOS's expanded, left-aligned large title:
-    // `title` becomes the `largeTitle` and `automaticallyImplyMiddle` drives the
-    // ctor's `automaticallyImplyTitle`. Everything else matches the standard
-    // bar. iOS-only. There is no static large-title AppBar on Material.
     if (cupertinoNavigationBarData?.large ?? CupertinoNavigationBarData.kLarge) {
       return heroTag == null
-          // No heroTag: omit the param so CupertinoNavigationBar applies its own
-          // default tag (a private detail we can't reference to substitute).
+          // CupertinoNavigationBar's own default tag is private, so the param is omitted rather than
+          // filled with a copy of it.
           // ignore: prefer-define-hero-tag
           ? CupertinoNavigationBar.large(
               key: widgetKey,

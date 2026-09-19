@@ -1,7 +1,7 @@
 # AGENTS.md, `example/`
 
 Tool-agnostic brief for the runnable demo app under `example/`. Library-package
-conventions live in the parent [`AGENTS.md`](../../.ai/AGENTS.md);
+conventions live in the parent [`AGENTS.md`](../../.ai/AGENTS.md), and
 example-specific code style (MVVM, naming, widget composition, …) lives in
 [`CODESTYLE.md`](../CODESTYLE.md). Read both before working in this subdirectory.
 
@@ -11,7 +11,7 @@ example-specific code style (MVVM, naming, widget composition, …) lives in
   reactivity, go_router integration).
 - Not published to pub.dev (`publish_to: 'none'` in `pubspec.yaml`). No semver
   discipline. Freely depends on Flutter and ecosystem packages.
-- **Two `main` entry points:**
+- **2 `main` entry points:**
   - [`lib/main.dart`](../lib/main.dart), boots `PlatformApp` with a router-less
     `PlatformTabScaffold` (the scaffold owns tab selection state).
   - [`lib/main_go_router.dart`](../lib/main_go_router.dart), boots

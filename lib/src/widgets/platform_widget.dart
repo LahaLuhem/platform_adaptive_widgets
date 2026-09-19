@@ -2,35 +2,18 @@ import 'package:flutter/widgets.dart';
 
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive widget that provides different implementations for Material and Cupertino.
-///
-/// This widget automatically selects the appropriate builder based on the target platform:
-/// - On Android, it uses [materialBuilder]
-/// - On iOS, it uses [cupertinoBuilder]
-///
-/// Use this widget when you need completely different widget implementations for each platform. For
-/// simpler cases where you're just adapting properties, consider using [PlatformWidgetBuilder].
+/// Builds one thing on Android and a different thing on iOS, when the 2 have nothing in common. Only
+/// wrapping the same widget differently? [PlatformWidgetBuilder] is the lighter option.
 ///
 /// Example:
 /// {@example /example/lib/snippets/platform_widget.dart#platform_widget}
 class const PlatformWidget({
-  /// Builder function for the Material Design (Android) implementation.
-  ///
-  /// This function is called when the app is running on Android devices. The returned widget will be
-  /// used as the platform-specific implementation.
   @protected required final WidgetBuilder materialBuilder,
 
-  /// Builder function for the Cupertino (iOS) implementation.
-  ///
-  /// This function is called when the app is running on iOS devices. The returned widget will be used
-  /// as the platform-specific implementation.
   @protected required final WidgetBuilder cupertinoBuilder,
   super.key,
 }) extends PlatformWidgetBase {
-  /// Creates a platform-adaptive widget with separate builders for each platform.
-  ///
-  /// [materialBuilder] and [cupertinoBuilder] are required and must not be null. Both builders are
-  /// eagerly evaluated when the widget is built.
+  /// Creates a platform-adaptive widget with a builder for each platform.
   this;
 
   @override
@@ -40,41 +23,23 @@ class const PlatformWidget({
   Widget buildCupertino(BuildContext context) => cupertinoBuilder(context);
 }
 
-/// A platform-adaptive widget that wraps a child widget with platform-specific behavior.
-///
-/// This widget provides a child widget to platform-specific builder functions, allowing you to wrap
-/// the child with platform-appropriate styling or behavior.
-///
-/// This is useful when you want to apply platform-specific decorations, padding, or behavior to an
-/// existing widget.
+/// Hands one [child] to whichever builder the platform calls for, so you can wrap it in different padding,
+/// decoration or behaviour without writing the child twice.
 ///
 /// Example:
 /// {@example /example/lib/snippets/platform_widget.dart#platform_widget_builder}
 class const PlatformWidgetBuilder({
-  /// Builder function for the Material Design (Android) implementation.
-  ///
-  /// This function receives the `context` and [child] widget and should return a wrapped version of
-  /// the child with Material-specific styling or behavior.
   @protected
   required final Widget Function(BuildContext context, Widget child) materialWidgetBuilder,
 
-  /// Builder function for the Cupertino (iOS) implementation.
-  ///
-  /// This function receives the `context` and [child] widget and should return a wrapped version of
-  /// the child with Cupertino-specific styling or behavior.
   @protected
   required final Widget Function(BuildContext context, Widget child) cupertinoWidgetBuilder,
 
-  /// The child widget to be wrapped with platform-specific behavior.
-  ///
-  /// This widget is passed to the appropriate builder function based on the platform.
+  /// Goes to whichever builder runs.
   required final Widget child,
   super.key,
 }) extends PlatformWidgetBase {
-  /// Creates a platform-adaptive builder widget with a required child.
-  ///
-  /// [materialWidgetBuilder] and [cupertinoWidgetBuilder] are required and must not be null. [child]
-  /// is also required and will be passed to the appropriate builder.
+  /// Creates a platform-adaptive wrapper around a [child].
   this;
 
   @override

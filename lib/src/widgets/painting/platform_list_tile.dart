@@ -7,88 +7,51 @@ import 'package:material_ui/material_ui.dart' show ListTile;
 import '/src/models/painting/platform_list_tile_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive list tile that renders Material [ListTile] on Android and [CupertinoListTile]
-/// on iOS.
+/// Material [ListTile] on Android, [CupertinoListTile] on iOS.
 ///
-/// All functional inputs (content slots, callbacks, state-gating) and shared visual defaults live as
-/// flat constructor parameters. Per-platform visual + functional tuning is opt-in via [materialListTileData]
-/// and [cupertinoListTileData]. See `APPENDIX.md#field-classification` for the classification rule
-/// and `APPENDIX.md#cross-platform-field-mappings` for fields whose underlying parameter name or type
-/// diverges from the package's unified surface ([title], [leadingWidth], [color], [padding]).
-///
-/// To render the Cupertino notched variant ([CupertinoListTile.notched]), set [CupertinoListTileData.isNotched]
-/// to `true`. Material renders identically regardless.
+/// Per-platform tuning lives in [materialListTileData] / [cupertinoListTileData], and iOS's notched
+/// variant is [CupertinoListTileData.isNotched]. See `APPENDIX.md#field-classification`, and `APPENDIX.md#cross-platform-field-mappings`
+/// for the fields named differently underneath.
 ///
 /// Example:
 /// {@example /example/lib/snippets/painting/platform_list_tile.dart#platform_list_tile}
 class const PlatformListTile({
-  /// Primary title of the tile.
-  ///
-  /// Required non-null. Cupertino's [CupertinoListTile.title] is a required `Widget`. See
-  /// `APPENDIX.md#cross-platform-field-mappings`.
+  /// Required, because iOS's is.
   required final Widget title,
 
-  /// Optional subtitle displayed below the title.
+  /// Below the title.
   final Widget? subtitle,
 
-  /// Optional widget displayed before the title.
+  /// Before the title.
   final Widget? leading,
 
-  /// Optional widget displayed after the title.
+  /// After the title.
   final Widget? trailing,
 
-  /// Optional callback fired when the tile is tapped.
-  ///
-  /// Nullable per the optional-callback rule in `APPENDIX.md#callback-nullability`: list tiles can
-  /// be display-only. The broader `FutureOr<void>` return type matches Cupertino's [CupertinoListTile.onTap].
-  /// It is assignable to Material's stricter `void Function()?` (return values discard).
+  /// Optional, since a tile can be there to look at. The `FutureOr<void>` return matches [CupertinoListTile.onTap]
+  /// and still fits Material's stricter signature, which just drops the value. See `APPENDIX.md#callback-nullability`.
   // Needed for CupertinoListTile compatibility.
   // ignore: avoid_futureor_void
   final FutureOr<void> Function()? onTap,
 
-  /// Whether the tile is enabled and responds to taps.
-  ///
-  /// When `false`:
-  /// - Material: the tile receives `enabled: false` AND `onTap: null`, the disabled-state visuals
-  ///   (greyed text + icon) apply.
-  /// - Cupertino: the tile receives `onTap: null`, suppressing the short-tap flicker and long-press
-  ///   activation feedback that [CupertinoListTile] applies when `onTap` is set.
-  ///
-  /// The package's [onTap] field stays non-null regardless. See `APPENDIX.md#callback-nullability`.
+  /// The way to disable a tile, leaving [onTap] non-null. Material greys the content out, iOS just stops
+  /// the tap flicker and long-press feedback, having no disabled look of its own.
   final bool isEnabled = true,
 
-  /// Width of the leading widget slot.
-  ///
-  /// Maps to [ListTile.minLeadingWidth] on Android and to [CupertinoListTile.leadingSize] on iOS
-  /// (Cupertino is non-null with per-variant defaults. See [kDefaultCupertinoListTileLeadingSize] /
-  /// [kDefaultCupertinoNotchedListTileLeadingSize]). Shared visual, overridable per platform via
-  /// [materialListTileData] / [cupertinoListTileData]. See `APPENDIX.md#cross-platform-field-mappings`.
+  /// [ListTile.minLeadingWidth] on Android, [CupertinoListTile.leadingSize] on iOS, where it can't be
+  /// null and the default depends on the variant.
   final double? leadingWidth,
 
-  /// Background colour of the tile.
-  ///
-  /// Maps to [ListTile.tileColor] on Android and to [CupertinoListTile.backgroundColor] on iOS. Shared
-  /// visual. See `APPENDIX.md#cross-platform-field-mappings`.
+  /// [ListTile.tileColor] on Android, [CupertinoListTile.backgroundColor] on iOS.
   final Color? color,
 
-  /// Padding around the tile content.
-  ///
-  /// Maps to [ListTile.contentPadding] on Android and to [CupertinoListTile.padding] on iOS. Shared
-  /// visual. See `APPENDIX.md#cross-platform-field-mappings`.
+  /// [ListTile.contentPadding] on Android, [CupertinoListTile.padding] on iOS.
   final EdgeInsetsGeometry? padding,
 
-  /// Material-only visual + functional overrides. Optional.
-  ///
-  /// Fields set on this record override the widget's flat shared-visual defaults on the Material
-  /// branch. Material-only fields (focus, hover, selection state, text styles, splash, long-press, etc.)
-  /// are read only from here.
+  /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialListTileData? materialListTileData,
 
-  /// Cupertino-only visual overrides. Optional.
-  ///
-  /// Fields set on this record override the widget's flat shared-visual defaults on the Cupertino
-  /// branch. Cupertino-only fields (`additionalInfo`, `backgroundColorActivated`, `leadingToTitle`, `isNotched`)
-  /// are read only from here.
+  /// Cupertino-branch overrides, plus the knobs Material has no answer for.
   final CupertinoListTileData? cupertinoListTileData,
   super.widgetKey,
   super.key,

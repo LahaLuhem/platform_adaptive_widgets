@@ -31,66 +31,53 @@ const kDefaultDebugShowCheckedModeBanner = true;
 /// Default value for `supportedLocales` on [PlatformApp] / [PlatformApp.router].
 const kDefaultSupportedLocales = [Locale('en', 'US')];
 
-/// Default Material theme animation duration. Read by [MaterialAppData]'s field default and substituted
-/// in [PlatformApp]'s Material build branch.
+/// Default value for [MaterialAppData.themeAnimationDuration].
 const kMaterialDefaultThemeAnimationDuration = kThemeAnimationDuration;
 
-/// Default Material theme animation curve. Read by [MaterialAppData]'s field default and substituted
-/// in [PlatformApp]'s Material build branch.
+/// Default value for [MaterialAppData.themeAnimationCurve].
 const kMaterialDefaultThemeAnimationCurve = Curves.linear;
 
 /// Default value for [MaterialAppData.debugShowMaterialGrid].
 const kDebugShowMaterialGrid = false;
 
-/// Material-only configuration for [PlatformApp] / [PlatformApp.router].
+/// Material-side settings for [PlatformApp] and [PlatformApp.router]. The app surface proper (`title`,
+/// `home`, `routes`, `locale`, `builder` and the rest) stays flat on the widget.
 ///
-/// The cross-platform app surface (`title`, `home`, `routes`, `locale`, `builder`, …) is functional
-/// and lives flat on the [PlatformApp] widget. This holds only what's Material-specific: the theme
-/// surface (Material's [ThemeData], distinct from Cupertino's [CupertinoThemeData]) plus
-/// [scaffoldMessengerKey] (no Cupertino equivalent).
+/// Thin, because almost nothing about an app is platform-specific. What's left is the theme, where [ThemeData]
+/// and [CupertinoThemeData] share no ground at all, plus [scaffoldMessengerKey], which iOS has no use
+/// for.
 final class const MaterialAppData({
-  /// Global key for the [ScaffoldMessengerState].
   final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey,
 
-  /// The theme data for the app in light mode.
+  /// Used in light mode, and in dark mode too when [darkTheme] is left out.
   final ThemeData? theme,
 
-  /// The theme data for the app in dark mode.
   final ThemeData? darkTheme,
 
-  /// The theme data for high contrast light mode.
   final ThemeData? highContrastTheme,
 
-  /// The theme data for high contrast dark mode.
   final ThemeData? highContrastDarkTheme,
 
-  /// The theme mode to use (light, dark, or system).
+  /// Light, dark, or follow the system.
   final ThemeMode? themeMode,
 
-  /// Duration for theme transitions. Defaults to [kMaterialDefaultThemeAnimationDuration].
+  /// How long a theme change takes to cross-fade.
   final Duration themeAnimationDuration = kMaterialDefaultThemeAnimationDuration,
 
-  /// Animation curve for theme transitions. Defaults to [kMaterialDefaultThemeAnimationCurve].
   final Curve themeAnimationCurve = kMaterialDefaultThemeAnimationCurve,
 
-  /// Whether to show the Material design grid overlay. Defaults to [kDebugShowMaterialGrid].
+  /// Paints the Material baseline grid over the app, for lining things up during development.
   final bool debugShowMaterialGrid = kDebugShowMaterialGrid,
 
-  /// Animation style for theme transitions.
   final AnimationStyle? themeAnimationStyle,
 }) {
-  /// Creates Material-only configuration for [PlatformApp].
+  /// Creates Material-side settings for [PlatformApp].
   this;
 }
 
-/// Cupertino-only configuration for [PlatformApp] / [PlatformApp.router].
-///
-/// Holds only the Cupertino [CupertinoThemeData]. The cross-platform app surface is functional and
-/// lives flat on the [PlatformApp] widget.
-final class const CupertinoAppData({
-  /// The theme data for the app.
-  final CupertinoThemeData? theme,
-}) {
-  /// Creates Cupertino-only configuration for [PlatformApp].
+/// Cupertino-side settings for [PlatformApp] and [PlatformApp.router]. Just the theme, since the app
+/// surface proper stays flat on the widget.
+final class const CupertinoAppData({final CupertinoThemeData? theme}) {
+  /// Creates Cupertino-side settings for [PlatformApp].
   this;
 }

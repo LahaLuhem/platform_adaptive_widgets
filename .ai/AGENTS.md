@@ -14,10 +14,10 @@ Public API in v1.x is stable: `PlatformXxx` widgets + per-platform `MaterialXxxD
 README for the full widget catalogue. APPENDIX for design rationale.
 
 ## Stack
-- **Flutter ≥ 3.38**, **Dart ≥ 3.10** (both pinned in `pubspec.yaml`). Dart 3.10 is the
-  floor because of the static dot-shorthand feature. Bump only when a new language
-  feature is actually consumed. `.fvmrc` pins the Flutter channel to `stable` for local
-  use, whatever toolchain manager serves it (FVM, asdf, plain `flutter`) is a local
+- **Flutter and Dart floors live in `pubspec.yaml`'s `environment:` block.** Read them
+  there, they are not repeated here. Raise them only when a new language feature is
+  actually consumed. `.fvmrc` pins the Flutter channel to `stable` for local use,
+  whatever toolchain manager serves it (FVM, asdf, plain `flutter`) is a local
   implementation detail.
 - **`flutter analyze`** (or `dart analyze` for the pure-Dart subset) for pedantic static
   analysis. The lint posture is deliberately strict. See `analysis_options.yaml` for
@@ -28,7 +28,7 @@ README for the full widget catalogue. APPENDIX for design rationale.
   Shell scripts (`shellcheck`) and GitHub workflows (`actionlint`) are linted by running
   the public, multi-arch `ghcr.io/lahaluhem/linterpol:latest` image
   (`docker run --rm -v "$PWD:/work:ro" "$LINTERPOL_IMAGE" <tool>`), not hand-installed
-  tools. CI jobs live in `.github/workflows/repo.yml`; `scripts/release.sh` runs
+  tools. CI jobs live in `.github/workflows/repo.yml`, and `scripts/release.sh` runs
   `shellcheck` the same way (image-only, so Docker must be running). Don't reintroduce
   `brew` / `pip` / `uv` linter installs. The image ref is one `LINTERPOL_IMAGE` var per
   file (swap to a digest there to pin).
@@ -42,7 +42,7 @@ README for the full widget catalogue. APPENDIX for design rationale.
   `flutter pub get --no-example`, which keeps `example/pubspec.lock` byte-identical
   through the publish dry-run. No manual `flutter pub publish` invocation.
 - **`CHANGELOG.md`, the `version:` field in `pubspec.yaml`, and the release tag** are
-  the three things that must move in lockstep for a release. CHANGELOG entries are
+  the 3 things that must move in lockstep for a release. CHANGELOG entries are
   appended automatically by `.github/workflows/changelog.yml` on every merged PR
   (driven by the PR's `sem-*` label and the `cider:` block in `pubspec.yaml`), no
   manual append is needed during routine PR work. Cutting a release is one command:
@@ -102,7 +102,7 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
 2. Overrides `buildMaterial(context)` and `buildCupertino(context)`. The abstract base's
    `build` is `@nonVirtual`: it switches on `defaultTargetPlatform` and delegates. Don't
    override `build` directly.
-3. Constructor shape, every field falls into one of three buckets:
+3. Constructor shape, every field falls into one of 3 buckets:
    - **Functional + shared visual**: flat `const` params on the widget itself
      (callbacks, value, controllers, state-gating, plus visual fields that
      exist on both platforms with possible per-platform override).
@@ -122,8 +122,8 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    widget *and* on the `_PlatformXxxData` base, and merged with `?? ` in both
    `buildMaterial` and `buildCupertino`. The
    [data ↔ widget parity guard](../test/data_widget_parity_test.dart) fails the
-   PR if either edge drifts (these two edges are the ones the Dart compiler does
-   not catch; `super.x` forwarding base → records, it does). See
+   PR if either edge drifts (these 2 edges are the ones the Dart compiler does
+   not catch, unlike `super.x` forwarding base → records). See
    [`APPENDIX.md#field-classification`](../APPENDIX.md#field-classification)
    (*Enforcement*).
 
@@ -166,7 +166,7 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    `platform*` value selectors stay around for callers who knowingly accept
    the size cost. Internally we always inline. See
    [`APPENDIX.md#aot-pruning-rules`](../APPENDIX.md#aot-pruning-rules).
-   **Enforced on every PR** by two CI guards:
+   **Enforced on every PR** by 2 CI guards:
    [`test/aot_pruning_regression_test.dart`](../test/aot_pruning_regression_test.dart)
    (static AST lint over `lib/src/`) and
    [`tool/check_size_regression.dart`](../tool/check_size_regression.dart)
@@ -177,12 +177,12 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    CHANGELOG appends are bot-driven (`changelog.yml` + `cider`), but cutting a
    release, bumping `version:`, finalising the `[Unreleased]` section, committing,
    and pushing the matching `X.Y.Z` tag, is still hand-driven. If you edit
-   `version:` or finalise `## [Unreleased]` without the other two moving in the same
+   `version:` or finalise `## [Unreleased]` without the other 2 moving in the same
    commit, the publish workflow's tag push will mismatch the in-tree state. Do not
    edit either file without an explicit user instruction to cut a release. See
    [*Forbidden / confirm-first actions* in CLAUDE.md](./CLAUDE.md#forbidden--confirm-first-actions).
 9. **`.idea/` is deliberately part-tracked.** Only [`.idea/.gitignore`](../.idea/.gitignore)
-   and [`.idea/runConfigurations/`](../.idea/runConfigurations/) are committed; `/.idea/*`
+   and [`.idea/runConfigurations/`](../.idea/runConfigurations/) are committed. `/.idea/*`
    in `.gitignore` drops the rest. The run configs are shared tooling, so don't let a
    cleanliness sweep untrack `.idea/` wholesale. Extend the negations to share a new path.
 
@@ -220,13 +220,16 @@ Full guide: [`../CODESTYLE.md`](../CODESTYLE.md). The lint posture is deliberate
 (see `analysis_options.yaml`), the explicit `errors:` block promotes a long list of
 lints to errors. Top-level rules to keep in working memory:
 
-- Type-annotate every public symbol; `final` by default for fields and locals.
+- Type-annotate every public symbol. `final` by default for fields and locals.
 - Nullability is explicit (no `as T` on `T?`).
 - 100-column line width (`formatter.page_width: 100` in `analysis_options.yaml`).
 - No magic numbers in `lib/` code, pull to named `static const`s.
-- Public symbols carry `///` dartdoc explaining *why*, not *what*.
-- Prefer Dart 3.10 static dot shorthands (`.android`, `.iOS`, `.all(16)`,
-  `.symmetric(...)`, `.start`, `.min`), the codebase relies on them heavily.
+- Public symbols carry `///` dartdoc explaining *why*, not *what*. Aim for 1 or 2 lines, and
+  leave a field bare where the name and type already say it.
+- Prose of any kind follows [Prose & voice](../CODESTYLE.md#prose), which opens with
+  <https://noslopgrenade.com/>. Read that page before writing any.
+- Prefer static dot shorthands (`.android`, `.iOS`, `.all(16)`, `.symmetric(...)`,
+  `.start`, `.min`), the codebase relies on them heavily.
 
 For everything else, naming, idioms, class structure, DCM rules, markdown conventions,
 go to [`../CODESTYLE.md`](../CODESTYLE.md).
@@ -248,7 +251,7 @@ go to [`../CODESTYLE.md`](../CODESTYLE.md).
   flag through layers, duplicating a block, or working around an abstraction, do the
   enabling refactor *first* as its own behaviour-preserving step (separate commit,
   verified green), then build the new behaviour on the clean shape. Long-term
-  maintainability of the package outranks shipping the immediate change faster. Two
+  maintainability of the package outranks shipping the immediate change faster. 2
   repo-specific teeth: a preparatory refactor that touches the public surface (a
   re-export, a `PlatformXxx` constructor, a `*Data` field) is itself a semver event, so
   classify it (patch / minor / major) and surface that before doing it, like any
@@ -263,6 +266,9 @@ go to [`../CODESTYLE.md`](../CODESTYLE.md).
   added to the appropriate table in `README.md` in the same change. Rationale + design
   trade-offs still belong in `APPENDIX.md`. The README is the user-facing entry point
   and must reflect what the package actually offers.
+- **Read <https://noslopgrenade.com/> before writing any prose.** Dartdoc, comments, commit
+  messages, PR bodies. Fetch the page, don't cite it from memory: it is the intent behind
+  [Prose & voice](../CODESTYLE.md#prose), and skipping it is how the wall of text gets written.
 - **Read `analysis_options.yaml` before writing code.** The `errors:` block promotes
   many lints to errors. The lint posture is far stricter than the Dart default, code
   that fails lint won't pass review.
@@ -272,7 +278,7 @@ go to [`../CODESTYLE.md`](../CODESTYLE.md).
 - **Test changes in `example/` when feasible.** The demo app under `example/` is the
   living usage reference, running it (`cd example && flutter run`) and watching the
   feature work on both an Android emulator and an iOS simulator is the most reliable
-  verification path for any widget change. The two entry points
+  verification path for any widget change. The 2 entry points
   (`lib/main.dart` and `lib/main_go_router.dart`) exercise different navigation
   strategies. Touch both when a change could affect either (see
   [`APPENDIX.md#two-entry-point-example`](../APPENDIX.md#two-entry-point-example)).
