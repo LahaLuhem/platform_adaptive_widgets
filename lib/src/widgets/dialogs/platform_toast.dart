@@ -11,22 +11,17 @@ import 'package:material_ui/material_ui.dart' show ScaffoldMessenger, SnackBar;
 
 import '/src/models/dialogs/platform_toast_data.dart';
 
-/// Shows a transient, self-dismissing message. Material [SnackBar] via [ScaffoldMessenger] on Android
-/// (anchored to the bottom of the screen), and a custom HUD-style banner overlay on iOS (slides in
-/// from the top, translucent dark background).
+/// Shows a message that fades on its own. A [SnackBar] along the bottom on Android, and on iOS a banner
+/// that slides down from under the status bar. The returned future completes once it's gone.
 ///
-/// **Why two distinct primitives?** [showPlatformToast] is for routine feedback that doesn't require
-/// the user to act ("Saved", "Copied to clipboard"). For messages that *must* be acknowledged before
-/// continuing (errors, confirmations), use `showPlatformAcknowledge`: that wraps a proper alert dialog
-/// on both platforms.
+/// For the "Saved" and "Copied to clipboard" sort of thing, that nobody needs to act on. Anything that
+/// must be acknowledged first wants `showPlatformAcknowledge` and a real dialog.
 ///
-/// **iOS HUD overlay.** Cupertino ships no native toast / banner primitive. The package implements
-/// one here that follows iOS visual conventions (translucent rounded banner under the status bar,
-/// safe-area aware, tap-to-dismiss). Tuning via [cupertinoToastData].
+/// iOS ships no toast at all, so that banner is ours: translucent, rounded, safe-area aware and tap-to-dismiss,
+/// tuned through [cupertinoToastData].
 ///
-/// Returns a `Future<void>` that resolves when the toast is gone. The Material branch's `SnackBarClosedReason`
-/// is collapsed to `void`: callers who need the reason should use `ScaffoldMessenger` directly (see
-/// [PlatformToastClosedReason] in `platform_toast_data.dart` if you re-add a non-void return shape).
+/// Material's `SnackBarClosedReason` is dropped on the way out. Reach for `ScaffoldMessenger` directly
+/// if you need it.
 Future<void> showPlatformToast({
   required BuildContext context,
   required String message,
@@ -69,8 +64,7 @@ Future<void> showPlatformToast({
   _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
 };
 
-/// Inserts the HUD overlay into the nearest [Overlay] and returns a future that completes when the
-/// overlay is dismissed (by timer or by tap).
+/// Completes when the banner goes away, whether the timer ran out or someone tapped it.
 Future<void> _showCupertinoToast({
   required BuildContext context,
   required String message,
@@ -101,8 +95,7 @@ Future<void> _showCupertinoToast({
   return completer.future;
 }
 
-/// The HUD-style banner widget, stateful so it can drive the slide+fade animation and the auto-dismiss
-/// timer.
+/// Stateful for the slide-and-fade animation and the auto-dismiss timer.
 class const _CupertinoToastOverlay({
   required final String message,
   required final Duration duration,
@@ -134,8 +127,7 @@ class _CupertinoToastOverlayState()
     _dismissTimer = Timer(widget.duration, _startDismiss);
   }
 
-  /// Plays the reverse animation, then calls [_CupertinoToastOverlay.onDismiss] to remove the overlay
-  /// entry from the host overlay.
+  /// Runs the animation backwards first, then pulls the overlay entry.
   Future<void> _startDismiss() async {
     _dismissTimer?.cancel();
     if (!mounted) return;
@@ -154,8 +146,7 @@ class _CupertinoToastOverlayState()
 
   @override
   Widget build(BuildContext context) {
-    // CupertinoDynamicColor.resolve accepts both dynamic and plain Color,
-    // returns the input unchanged if it isn't a dynamic colour.
+    // resolve() hands a plain Color straight back, so no need to check first.
     final resolvedBackground = CupertinoDynamicColor.resolve(widget.data.backgroundColor, context);
     final resolvedForeground = CupertinoDynamicColor.resolve(widget.data.foregroundColor, context);
     final resolvedTextStyle =
@@ -174,14 +165,11 @@ class _CupertinoToastOverlayState()
                 opacity: _fadeAnimation,
                 child: GestureDetector(
                   onTap: () => unawaited(_startDismiss()),
-                  // Opaque so taps anywhere on the toast count, not just on
-                  // the text glyphs.
+                  // Opaque, so a tap anywhere on the banner counts, not just on the glyphs.
                   behavior: HitTestBehavior.opaque,
                   child: ClipRRect(
                     borderRadius: widget.data.borderRadius,
-                    // BackdropFilter gives the iOS-native frosted-glass feel,
-                    // the toast's translucent background tints whatever's
-                    // behind it after a gentle blur.
+                    // Blur first, then tint through the translucent background, for the frosted glass look.
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
                       child: DecoratedBox(

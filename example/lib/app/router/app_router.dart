@@ -13,9 +13,8 @@ final _catalogNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'Catalog');
 final _showcaseNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'Showcase');
 final _aboutNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'About');
 
-/// go_router configuration: a [StatefulShellRoute] with one branch per top-level tab. The shell's
-/// container is [RootTabsRouterView]. Tab selection is owned by the shell. Unmatched locations fall
-/// through to [ErrorView] via `errorBuilder`.
+/// One [StatefulShellRoute] branch per tab, wrapped in [RootTabsRouterView], with anything unmatched
+/// falling through to [ErrorView].
 final class AppRouter {
   static const _args = AppArgs(isUsingGoRouter: true);
 

@@ -9,136 +9,128 @@ import 'package:material_ui/material_ui.dart' show MaterialApp;
 import '/src/models/layout/platform_app_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive app, [MaterialApp] on Android, [CupertinoApp] on iOS.
+/// [MaterialApp] on Android, [CupertinoApp] on iOS.
 ///
-/// The two underlying apps share ~26 functional properties (`title`, `home`, `routes`, `locale`,
-/// `builder`, navigator config, …). Per the package's field-classification rule those are functional,
-/// they live flat on this widget as the single source of truth, never duplicated into a per-platform
-/// record. The only per-platform surface is the theme, since Material's [ThemeData] and Cupertino's
-/// [CupertinoThemeData] are disjoint types: pass [materialAppData] / [cupertinoAppData] for those.
+/// Almost everything an app takes is the same on both platforms, so it all sits flat here. The theme
+/// is the exception, [ThemeData] and [CupertinoThemeData] having nothing in common, and lives on [materialAppData]
+/// / [cupertinoAppData].
 ///
-/// Use the default constructor for navigator-based routing (`home`, `routes`, `onGenerateRoute`, …).
-/// Use [PlatformApp.router] for Flutter's declarative router API (`routerConfig`, `routerDelegate`,
-/// …), the two constructors expose disjoint routing surfaces, so the type system keeps you from mixing
-/// navigator and router config.
+/// The default constructor is for navigator routing, [PlatformApp.router] for the declarative router
+/// API. They expose different fields on purpose, so the type system stops you mixing the 2.
 ///
 /// Example:
 /// {@example /example/lib/snippets/layout/platform_app.dart#platform_app}
 class PlatformApp extends PlatformWidgetKeyedBase {
-  /// A one-line description of the app for the OS.
+  /// A one-liner for the OS to show in the task switcher.
   final String? title;
 
-  /// A callback to generate the app's title.
+  /// Builds [title] instead, when it needs localising.
   final GenerateAppTitle? onGenerateTitle;
 
-  /// The primary color to use for the application in the OS interface.
+  /// What the OS tints the app with, in the task switcher and the like.
   final Color? color;
 
-  /// The initial locale for the app.
+  /// Overrides the device's own locale.
   final Locale? locale;
 
-  /// The delegates for this app's `Localizations` widget.
+  /// Where the app's translations come from.
   // Signature matching
   // ignore: avoid-dynamic
   final Iterable<LocalizationsDelegate<dynamic>>? localizationsDelegates;
 
-  /// A callback used to resolve the locale when the device's locale changes.
+  /// Picks a locale from the device's ordered preference list.
   final LocaleListResolutionCallback? localeListResolutionCallback;
 
-  /// A callback used to resolve the locale when the app is starting.
+  /// Picks a locale from just the top preference.
   final LocaleResolutionCallback? localeResolutionCallback;
 
-  /// The list of locales this app has been localized for. Defaults to [kDefaultSupportedLocales].
+  /// Which locales the app actually has translations for.
   final Iterable<Locale> supportedLocales;
 
-  /// Whether to show the performance overlay. Defaults to [kDefaultShowPerformanceOverlay].
+  /// Debugging overlay, off by default.
   final bool showPerformanceOverlay;
 
-  /// Whether to checkerboard raster cache images. Defaults to [kDefaultCheckerboardRasterCacheImages].
+  /// Debugging overlay, off by default.
   final bool checkerboardRasterCacheImages;
 
-  /// Whether to checkerboard layers rendered to offscreen bitmaps. Defaults to [kDefaultCheckerboardOffscreenLayers].
+  /// Debugging overlay, off by default.
   final bool checkerboardOffscreenLayers;
 
-  /// Whether to show the semantics debugger. Defaults to [kDefaultShowSemanticsDebugger].
+  /// Debugging overlay, off by default.
   final bool showSemanticsDebugger;
 
-  /// Whether to show the "DEBUG" banner. Defaults to [kDefaultDebugShowCheckedModeBanner].
+  /// The "DEBUG" ribbon in the corner, on by default in debug builds.
   final bool debugShowCheckedModeBanner;
 
-  /// The default map of keyboard shortcuts.
+  /// App-wide key bindings.
   final Map<LogicalKeySet, Intent>? shortcuts;
 
-  /// The default map of intent actions.
+  /// What those bindings actually do.
   final Map<Type, Action<Intent>>? actions;
 
-  /// The restoration scope ID for the app.
+  /// Turns on state restoration for the whole app.
   final String? restorationScopeId;
 
-  /// The default scroll behavior for the app.
+  /// App-wide scroll physics and overscroll look.
   final ScrollBehavior? scrollBehavior;
 
-  /// A builder inserted above the app's content (e.g. for shared chrome).
+  /// Wraps every route, for chrome that outlives navigation.
   final TransitionBuilder? builder;
 
-  /// A callback to listen for `NavigationNotification`s bubbling up.
+  /// Hears `NavigationNotification`s on their way up.
   final bool Function(NavigationNotification)? onNavigationNotification;
 
-  /// Global key for the navigator state. Navigator-routing only, `null` on [PlatformApp.router].
+  /// Navigator routing only, `null` on [PlatformApp.router].
   final GlobalKey<NavigatorState>? navigatorKey;
 
-  /// The home widget of the app. Navigator-routing only.
+  /// The first screen. Navigator routing only.
   final Widget? home;
 
-  /// Named routes for the app. Navigator-routing only. Defaults to `{}`.
+  /// Navigator routing only.
   final Map<String, WidgetBuilder> routes;
 
-  /// The initial route name. Navigator-routing only.
+  /// Navigator routing only.
   final String? initialRoute;
 
-  /// Route factory for generating routes. Navigator-routing only.
+  /// Builds routes [routes] doesn't name. Navigator routing only.
   final RouteFactory? onGenerateRoute;
 
-  /// Factory for generating the initial route stack. Navigator-routing only.
+  /// Builds the whole starting stack rather than one route. Navigator routing only.
   // Signature matching
   // ignore: avoid-dynamic
   final List<Route<dynamic>> Function(String)? onGenerateInitialRoutes;
 
-  /// Route factory for unknown routes. Navigator-routing only.
+  /// Last resort when nothing else matches. Navigator routing only.
   final RouteFactory? onUnknownRoute;
 
-  /// Navigator observers. Navigator-routing only. Defaults to `[]`.
+  /// Navigator routing only.
   final List<NavigatorObserver> navigatorObservers;
 
-  /// Provider for route information from the platform. Router-routing only, `null` on the default
-  /// constructor.
+  /// Router routing only, `null` on the default constructor.
   final RouteInformationProvider? routeInformationProvider;
 
-  /// Parser converting route information to a route configuration. Router-routing only.
+  /// Turns a URL into your own route configuration. Router routing only.
   final RouteInformationParser<Object>? routeInformationParser;
 
-  /// Delegate building the navigation stack. Router-routing only.
+  /// Turns that configuration back into a stack of pages. Router routing only.
   final RouterDelegate<Object>? routerDelegate;
 
-  /// Configuration object bundling the router pieces. Router-routing only.
+  /// Bundles the other router pieces into one. Router routing only.
   final RouterConfig<Object>? routerConfig;
 
-  /// Dispatcher for back-button presses. Router-routing only.
+  /// Router routing only.
   final BackButtonDispatcher? backButtonDispatcher;
 
-  /// Material-specific configuration (themes, `scaffoldMessengerKey`).
+  /// Material-branch overrides: themes, and the scaffold messenger key.
   final MaterialAppData? materialAppData;
 
-  /// Cupertino-specific configuration (theme).
+  /// Cupertino-branch overrides: the theme.
   final CupertinoAppData? cupertinoAppData;
 
-  /// Discriminates [PlatformApp.router] from the default constructor, selects `MaterialApp.router`
-  /// / `CupertinoApp.router` over their navigator forms.
+  /// Which of the 2 constructors ran, and so which upstream app gets built.
   final bool _useRouter;
 
-  /// Creates a platform-adaptive app using navigator-based routing.
-  ///
-  /// Renders [MaterialApp] on Android and [CupertinoApp] on iOS.
+  /// Creates an app on navigator routing.
   const new({
     this.title,
     this.onGenerateTitle,
@@ -178,9 +170,7 @@ class PlatformApp extends PlatformWidgetKeyedBase {
        routerConfig = null,
        backButtonDispatcher = null;
 
-  /// Creates a platform-adaptive app using Flutter's declarative router API.
-  ///
-  /// Renders `MaterialApp.router` on Android and `CupertinoApp.router` on iOS.
+  /// Creates an app on the declarative router API.
   const new router({
     this.title,
     this.onGenerateTitle,

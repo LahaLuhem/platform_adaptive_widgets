@@ -11,9 +11,8 @@ import '/features/catalog/views/selection_demo/selection_demo_view.dart';
 import '/features/catalog/views/text_demo/text_demo_view.dart';
 import 'catalog_view_model.dart';
 
-/// The Catalog tab, every widget the library offers, grouped into expandable sections so the reader
-/// can poke each control in place. "Expand all" opens everything into one flat, hands-on scroll.
-/// "Collapse all" reduces it to a scannable list. No drill-down, nothing is more than a scroll away.
+/// Every widget the library offers, in expandable sections you can poke in place. Expand all for one
+/// long hands-on scroll, collapse all for a list you can scan. Nothing is more than a scroll away.
 class CatalogView extends StatelessWidget {
   const CatalogView({super.key});
 

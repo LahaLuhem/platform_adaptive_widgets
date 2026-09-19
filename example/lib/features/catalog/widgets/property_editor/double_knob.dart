@@ -1,32 +1,23 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// A labelled double control for a property editor, backed by a [PlatformSlider] over a fixed [min]
-/// to [max] range. The current value is shown beside the label, formatted by [valueLabel] when given
-/// (e.g. to name a sentinel value), else as a one-decimal number.
+/// A [PlatformSlider] knob over a fixed [min] to [max] range, with the live value beside the label.
 class DoubleKnob extends StatelessWidget {
-  /// The property name shown beside the value.
   final String label;
 
-  /// The current value.
   final double value;
 
-  /// Fired as the user drags the slider.
   final ValueChanged<double> onChanged;
 
-  /// Lower bound of the slider.
   final double min;
 
-  /// Upper bound of the slider.
   final double max;
 
-  /// Optional discrete divisions across the range.
   final int? divisions;
 
-  /// Optional formatter for the numeric readout. Defaults to the value at one decimal place.
+  /// Left out, the readout is the value to 1 decimal place. Useful for naming a sentinel value.
   final String Function(double)? valueLabel;
 
-  /// Creates a double knob over a fixed range.
   const DoubleKnob({
     required this.label,
     required this.value,

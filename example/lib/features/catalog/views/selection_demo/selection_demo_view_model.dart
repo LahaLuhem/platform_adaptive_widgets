@@ -1,11 +1,11 @@
 import 'package:flutter/widgets.dart' show AxisDirection, Color;
 import 'package:pmvvm/pmvvm.dart';
 
-/// State for the Selection-controls demo. The checkbox / switch / slider each back a small playground
-/// (live value + visual knobs), the segmented button, radio group and menu picker all read and write
-/// [selectedDirection], so changing one updates the others, a showcase of shared selection state.
-/// All state is flat fields mutated via `notifyListeners()` (see `CODESTYLE.md`'s reactivity note on
-/// playground view-models).
+/// State for the Selection-controls demo.
+///
+/// The checkbox, switch and slider each back their own playground. The segmented button, radio group
+/// and menu picker instead all read and write [selectedDirection], so moving any of them moves the other
+/// 2, which is the point of that section.
 final class SelectionDemoViewModel extends ViewModel {
   var _checkboxValue = true;
   var _shouldEnableCheckbox = true;

@@ -5,82 +5,55 @@ import 'package:material_ui/material_ui.dart' show Slider;
 import '/src/models/interaction/platform_slider_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive slider that renders Material [Slider] on Android and [CupertinoSlider] on iOS.
+/// Material [Slider] on Android, [CupertinoSlider] on iOS.
 ///
-/// All functional inputs (value, callbacks, state-gating, range/divisions) and shared visual defaults
-/// live as flat constructor parameters. Per-platform visual tuning is opt-in via [materialSliderData]
-/// and [cupertinoSliderData]. See `APPENDIX.md#field-classification` for the classification rule and
-/// `APPENDIX.md#cross-platform-field-mappings` for fields whose underlying parameter type diverges
-/// from the package's unified type (notably [thumbColor]).
+/// Per-platform tuning lives in [materialSliderData] / [cupertinoSliderData]. See `APPENDIX.md#field-classification`,
+/// and `APPENDIX.md#cross-platform-field-mappings` where the type underneath diverges, [thumbColor]
+/// most of all.
 ///
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_slider.dart#platform_slider}
 class const PlatformSlider({
-  /// Current value of the slider.
   required final double value,
 
-  /// Callback fired when the user changes the slider value.
-  ///
-  /// Required and non-null. To disable the slider, set [isEnabled] to `false`: do **not** pass `null`
-  /// here. See `APPENDIX.md#callback-nullability`.
+  /// Stays required and non-null even for a disabled slider. That's [isEnabled]'s job, not a null callback's.
+  /// See `APPENDIX.md#callback-nullability`.
   required final ValueChanged<double> onChanged,
 
-  /// Whether the slider is enabled and responds to input.
-  ///
-  /// When `false`, the underlying platform widget receives `null` for its `onChanged` callback (the
-  /// platform-native "disabled" state). The package's [onChanged] field stays non-null regardless.
+  /// The way to disable a slider, passing the underlying widget a `null` callback for its standard disabled
+  /// look.
   final bool isEnabled = true,
 
-  /// Optional observation callback fired when the user starts dragging.
-  ///
-  /// Nullable per the optional-callback rule in `APPENDIX.md#callback-nullability`.
+  /// Fires once as the drag begins, where [onChanged] fires all the way through it.
   final ValueChanged<double>? onChangeStart,
 
-  /// Optional observation callback fired when the user stops dragging.
-  ///
-  /// Nullable per the optional-callback rule in `APPENDIX.md#callback-nullability`.
+  /// Fires once as the drag ends.
   final ValueChanged<double>? onChangeEnd,
 
-  /// Minimum value of the slider. Defaults to `0.0`.
   final double min = 0.0,
 
-  /// Maximum value of the slider. Defaults to `1.0`.
   final double max = 1.0,
 
-  /// Number of discrete divisions on the slider.
+  /// Snaps the slider to this many steps instead of sliding freely.
   final int? divisions,
 
-  /// Colour of the active portion of the slider track.
-  ///
-  /// Shared visual, overridable per platform via [materialSliderData] / [cupertinoSliderData].
+  /// Colours the filled part of the track, not the thumb.
   final Color? activeColor,
 
-  /// Colour of the slider thumb.
-  ///
-  /// Maps to [Slider.thumbColor] on Android (typed `Color?`, theme-falls through when `null`) and to
-  /// [CupertinoSlider.thumbColor] on iOS (typed non-null `Color`, defaulting to `CupertinoColors.white`).
-  /// The Cupertino branch substitutes [kDefaultCupertinoSliderThumbColor] when `null`. See
-  /// `APPENDIX.md#cross-platform-field-mappings`.
+  /// [Slider.thumbColor] on Android falls through to the theme when `null`. [CupertinoSlider.thumbColor]
+  /// can't be null, so iOS swaps in [kDefaultCupertinoSliderThumbColor]. See `APPENDIX.md#cross-platform-field-mappings`.
   final Color? thumbColor,
 
-  /// Material-only visual + functional overrides. Optional.
-  ///
-  /// Fields set on this record override the widget's flat shared-visual defaults on the Material
-  /// branch. Material-only fields (`secondaryTrackValue`, `label`, `inactiveColor`, etc.) are read
-  /// only from here.
+  /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialSliderData? materialSliderData,
 
-  /// Cupertino-only visual overrides. Optional.
-  ///
-  /// Fields set on this record override the widget's flat shared-visual defaults on the Cupertino
-  /// branch. [CupertinoSlider] has no Cupertino-only fields beyond the shared-visual surface, so
-  /// today this record carries only [activeColor] / [thumbColor]. It exists for API symmetry and to
-  /// forward-compat with future Cupertino-only additions.
+  /// Cupertino-branch overrides. Thin, since [CupertinoSlider] has nothing of its own beyond the shared
+  /// fields, but here so you can retune those on iOS alone.
   final CupertinoSliderData? cupertinoSliderData,
   super.widgetKey,
   super.key,
 }) extends PlatformWidgetKeyedBase {
-  /// Creates a platform-adaptive slider.
+  /// Creates a platform-adaptive slider. Disable it with [isEnabled] rather than a null callback.
   this;
 
   @override

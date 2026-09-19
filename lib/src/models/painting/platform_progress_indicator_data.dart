@@ -14,89 +14,62 @@ const kDefaultProgressIndicatorAnimating = true;
 /// Default value for [CupertinoProgressIndicatorData.radius].
 const kDefaultProgressIndicatorRadius = 10.0;
 
-/// Internal abstract base holding shared-visual fields for [PlatformProgressIndicator].
-///
-/// Inherited by [MaterialProgressIndicatorData] and [CupertinoProgressIndicatorData] so each per-platform
-/// record carries the shared-visual surface via `super.x` constructor forwarding. Library-private,
-/// never exported from the package.
-///
-/// See `APPENDIX.md#field-classification` for the rule placing shared-visual fields on a private
-/// base.
-abstract class const _PlatformProgressIndicatorData({
-  /// The color of the progress indicator.
-  final Color? color,
-});
+/// Shared-visual fields for [PlatformProgressIndicator], forwarded into both records via `super.x`.
+/// Private, never exported. See `APPENDIX.md#field-classification`.
+abstract class const _PlatformProgressIndicatorData({final Color? color});
 
-/// Material-only configuration for [PlatformProgressIndicator].
-///
-/// Pass this via `PlatformProgressIndicator.materialProgressIndicatorData` when tuning Material
-/// rendering. The inherited [color] field overrides the widget's flat default on the Material branch.
-/// The fields declared here have no Cupertino equivalent.
-///
-/// Houses both Material-only visual fields (`backgroundColor`, `strokeWidth`, `padding`, etc.) and
-/// Material-only functional fields (`value`, `controller`, `semanticsLabel`, `semanticsValue`) per
-/// the platform-only bucket in `APPENDIX.md#field-classification`: Cupertino's activity indicator
-/// exposes none of these.
+/// Material-side settings for [PlatformProgressIndicator], passed as `materialProgressIndicatorData`.
+/// The inherited [color] overrides the widget's flat one on this branch, and everything declared here
+/// has no Cupertino counterpart, iOS's activity indicator being a much plainer thing.
 final class const MaterialProgressIndicatorData({
   super.color,
 
-  /// The value of the progress indicator. `null` indicates indeterminate progress. Functional, but
-  /// Material-only. Cupertino's activity indicator is always indeterminate.
+  /// Leave it out for the spinning kind. iOS only does that kind.
   final double? value,
 
-  /// The background color of the progress indicator.
+  /// Fills the track behind the bar.
   final Color? backgroundColor,
 
-  /// The animation of the progress indicator's value.
+  /// Animates the bar's own colour, overriding [color] while it runs.
   final Animation<Color?>? valueColor,
 
-  /// The width of the stroke used to draw the indicator.
   final double? strokeWidth,
 
-  /// The alignment of the stroke within the indicator's bounds.
+  /// Whether the stroke sits inside, outside or centred on the indicator's edge.
   final double? strokeAlign,
 
-  /// The semantic label for the progress indicator. Material-only, Cupertino auto-generates accessibility
-  /// semantics for the spinner.
+  /// iOS writes its own, so this is Material's alone.
   final String? semanticsLabel,
 
-  /// The semantic value of the progress indicator.
   final String? semanticsValue,
 
-  /// The shape of the progress indicator's stroke.
+  /// Rounds or squares off the ends of the stroke.
   final StrokeCap? strokeCap,
 
-  /// The constraints to apply to the progress indicator.
   final BoxConstraints? constraints,
 
-  /// The gap between the track and the indicator.
+  /// Space between the filled part and the track behind it.
   final double? trackGap,
 
-  /// The padding to apply to the progress indicator.
   final EdgeInsetsGeometry? padding,
 
-  /// The controller for the progress indicator's animation. Functional, but Material-only.
+  /// Drives the animation yourself instead of letting it run free.
   final AnimationController? controller,
 }) extends _PlatformProgressIndicatorData {
-  /// Creates Material-only configuration for [PlatformProgressIndicator].
+  /// Creates Material-side settings for [PlatformProgressIndicator].
   this;
 }
 
-/// Cupertino-only configuration for [PlatformProgressIndicator].
-///
-/// Pass this via `PlatformProgressIndicator.cupertinoProgressIndicatorData` when tuning Cupertino
-/// rendering. The inherited [color] field overrides the widget's flat default on the Cupertino branch.
-/// The fields declared here have no Material equivalent.
+/// Cupertino-side settings for [PlatformProgressIndicator], passed as `cupertinoProgressIndicatorData`.
+/// The inherited [color] overrides the widget's flat one on this branch.
 final class const CupertinoProgressIndicatorData({
   super.color,
 
-  /// Whether the progress indicator is animating. Functional toggle, Cupertino-only. Material's
-  /// progress indicator has no animating-toggle equivalent. Defaults to [kDefaultProgressIndicatorAnimating].
+  /// Freezes the spinner mid-turn when off. Material's has no such switch.
   final bool animating = kDefaultProgressIndicatorAnimating,
 
-  /// The radius of the progress indicator. Defaults to [kDefaultProgressIndicatorRadius].
   final double radius = kDefaultProgressIndicatorRadius,
 }) extends _PlatformProgressIndicatorData {
-  /// Creates Cupertino-only configuration for [PlatformProgressIndicator].
+  /// Creates Cupertino-side settings for [PlatformProgressIndicator].
   this;
 }

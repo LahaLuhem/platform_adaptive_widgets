@@ -7,59 +7,43 @@ import '/src/models/layout/platform_scaffold_data.dart';
 import '/src/models/layout/platform_tab_scaffold_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive tab scaffold. Material `Scaffold` + `NavigationBar` on Android, `CupertinoTabScaffold`
-/// + `CupertinoTabBar` on iOS.
+/// Material `Scaffold` and `NavigationBar` on Android, `CupertinoTabScaffold` and `CupertinoTabBar`
+/// on iOS.
 ///
-/// Works in one of two modes, distinguished by whether [tabBodyBuilder] is set:
+/// 2 ways to use it, and [tabBodyBuilder] is what tells them apart. Leave it out and give every [TabDestination]
+/// a `view`, and the scaffold handles selection itself, giving each iOS tab its own `CupertinoTabView`
+/// navigator and caching the Material side to match. Pass it, along with [selectedIndex] and [onTabDestinationTap],
+/// and something outside owns selection instead. That's usually `go_router`'s `StatefulShellRoute`,
+/// where the 3 map onto the shell's branch navigators, `currentIndex` and `goBranch`.
 ///
-/// - **Managed**: give each [TabDestination] a `view` and omit [tabBodyBuilder]. The scaffold owns
-///   selection: tapping a tab switches content itself. On iOS each tab gets its own `CupertinoTabView`
-///   navigator (native deep-nav semantics), the Material side replicates the keep-alive caching via
-///   [_TabSwitchingView].
-/// - **Controlled**: provide [tabBodyBuilder] plus [selectedIndex] and [onTabDestinationTap]. An
-///   external emitter owns selection, most commonly `go_router`'s `StatefulShellRoute`, where
-///   `selectedIndex` is `navigationShell.currentIndex`, `onTabDestinationTap` is `goBranch`, and
-///   `tabBodyBuilder` returns the shell's branch navigators.
+/// One or the other, not both, which an `assert` enforces.
 ///
-/// Exactly one mode must be used, a constructor `assert` enforces "either `tabBodyBuilder`, or a
-/// `view` on every destination".
+/// Each tab brings its own app bar by default, either a `PlatformScaffold` per tab or whatever [tabBodyBuilder]
+/// returns, which is what both platforms expect. Material will also take a single bar above all the
+/// tabs via [MaterialTabScaffoldData.appBar]. iOS won't, its HIG saying no.
 ///
-/// **App bars.** By default each tab supplies its own app bar, give each tab a `PlatformScaffold`
-/// (managed) or return one from [tabBodyBuilder] (controlled). This matches both platforms' tab
-/// conventions. Material *additionally* allows a single persistent top app bar across tabs via
-/// [MaterialTabScaffoldData.appBar], a Material-only option with no iOS counterpart (iOS HIG disallows
-/// a top bar over tabs).
-///
-/// On iOS the underlying `CupertinoTabScaffold` is controller-driven. In controlled mode this widget
-/// owns one persistent [CupertinoTabController] and syncs `controller.index` to [selectedIndex] when
-/// the external index changes, it does **not** recreate the controller each build, so an external
-/// emitter like `go_router` drives it without leaking controllers or rebuild churn.
+/// Under controlled mode the one [CupertinoTabController] is kept and re-pointed as [selectedIndex]
+/// changes, never rebuilt, so an outside driver doesn't leak controllers or churn rebuilds.
 class const PlatformTabScaffold({
-  /// The destinations to display in the tab bar. Two or more: Material's bar refuses fewer.
+  /// 2 or more, since Material's bar refuses fewer.
   required final List<TabDestination> tabDestinations,
 
-  /// The selected tab index.
-  ///
-  /// In managed mode this is the initial tab. In controlled mode it's the current tab, driven by the
-  /// external emitter.
+  /// The starting tab when the scaffold owns selection, the current one when something else does.
   final int selectedIndex = 0,
 
-  /// Called when a tab destination is tapped.
   final ValueChanged<int>? onTabDestinationTap,
 
-  /// Builds the body for each tab, presence selects controlled mode.
+  /// Passing this hands selection to the caller. See above.
   final IndexedWidgetBuilder? tabBodyBuilder,
 
-  /// The background color of the scaffold.
   final Color? backgroundColor,
 
-  /// Whether the scaffold should resize to avoid the bottom inset.
+  /// Shrinks the body when the keyboard comes up, rather than letting it hide the bottom.
   final bool resizeToAvoidBottomInset = kDefaultResizeToAvoidBottomInset,
 
-  /// A restoration ID to save and restore the state of the scaffold.
   final String? restorationId,
 
-  /// Material-specific data for the tab scaffold.
+  /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialTabScaffoldData? materialTabScaffoldData,
   super.widgetKey,
   super.key,
@@ -100,10 +84,8 @@ class const PlatformTabScaffold({
     );
   }
 
-  /// Debug-only checks, run per build: at least two destinations, and exactly one mode in use (a
-  /// [tabBodyBuilder] XOR a `view` on every destination). Neither `.length` nor the `.every` closure
-  /// is const-evaluable, so moving these to a constructor assert would cost every caller their
-  /// `const`.
+  /// Per build rather than in a constructor assert, because neither the length check nor the `.every`
+  /// closure is const-evaluable and moving them up would cost every caller their `const`.
   void _debugAssertUsage() {
     assert(
       tabDestinations.length >= 2,
@@ -118,9 +100,8 @@ class const PlatformTabScaffold({
   }
 }
 
-/// iOS implementation. Owns a persistent [CupertinoTabController] so an external emitter (controlled
-/// mode) can drive selection by [selectedIndex] without the controller being recreated each build.
-/// See [PlatformTabScaffold].
+/// The iOS half. Holds one [CupertinoTabController] for its lifetime so an outside driver can move selection
+/// without it being rebuilt underneath.
 class const _CupertinoTabScaffold({
   required final int selectedIndex,
   required final bool resizeToAvoidBottomInset,
@@ -149,11 +130,8 @@ class _CupertinoTabScaffoldState() extends State<_CupertinoTabScaffold> {
   void didUpdateWidget(_CupertinoTabScaffold oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Controlled mode: the external emitter (e.g. go_router's StatefulShell)
-    // owns the index, push it into the persistent controller. In managed mode
-    // selectedIndex is constant, so this never fires and the controller
-    // self-manages on tap. `CupertinoTabScaffold` listens to the controller and
-    // rebuilds on this assignment.
+    // Push the outside index into the controller, which the scaffold listens to. Never fires in
+    // managed mode, where selectedIndex doesn't move and the controller handles taps itself.
     if (widget.selectedIndex != oldWidget.selectedIndex &&
         _controller.index != widget.selectedIndex) {
       _controller.index = widget.selectedIndex;
@@ -193,10 +171,9 @@ class _CupertinoTabScaffoldState() extends State<_CupertinoTabScaffold> {
   );
 }
 
-/// Android implementation. In managed mode it owns a [ValueNotifier] for the selected index. In
-/// controlled mode it renders [PlatformTabScaffold.selectedIndex] directly. [_TabSwitchingView] gives
-/// the keep-alive tab caching that `CupertinoTabScaffold` provides natively but Material's `Scaffold`
-/// does not.
+/// The Android half. Keeps its own [ValueNotifier] when it owns selection, and reads [PlatformTabScaffold.selectedIndex]
+/// straight through when it doesn't. [_TabSwitchingView] supplies the keep-alive caching iOS gets for
+/// free and Material's `Scaffold` doesn't.
 class const _MaterialTabScaffold({
   required final int selectedIndex,
   required final bool resizeToAvoidBottomInset,
@@ -213,8 +190,7 @@ class const _MaterialTabScaffold({
 }
 
 class _MaterialTabScaffoldState() extends State<_MaterialTabScaffold> {
-  /// Owns the selected index in managed mode; `null` in controlled mode (the external
-  /// [PlatformTabScaffold.selectedIndex] drives selection instead).
+  /// `null` when something outside owns selection.
   ValueNotifier<int>? _selectedIndexNotifier;
 
   @override
@@ -234,8 +210,7 @@ class _MaterialTabScaffoldState() extends State<_MaterialTabScaffold> {
   @override
   Widget build(BuildContext context) => Scaffold(
     key: widget.widgetKey,
-    // Material-only: an optional persistent top app bar above the tab content.
-    // iOS has no equivalent (see MaterialTabScaffoldData.appBar).
+    // Material only. See MaterialTabScaffoldData.appBar for why iOS has none.
     appBar: widget.materialTabScaffoldData?.appBar,
     backgroundColor: widget.materialTabScaffoldData?.backgroundColor ?? widget.backgroundColor,
     resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
@@ -276,7 +251,7 @@ class _MaterialTabScaffoldState() extends State<_MaterialTabScaffold> {
         MaterialScaffoldData.kEndDrawerEnableOpenDragGesture,
     restorationId: widget.materialTabScaffoldData?.restorationId ?? widget.restorationId,
     bottomNavigationBar: _selectedIndexNotifier == null
-        // Controlled mode: selection is driven externally.
+        // Driven from outside.
         ? _MaterialNavigationBar(
             selectedIndex: widget.selectedIndex,
             tabDestinations: widget.tabDestinations,
@@ -312,8 +287,8 @@ class _MaterialTabScaffoldState() extends State<_MaterialTabScaffold> {
 
 /// Ripped from Cupertino's `_TabSwitchingView`.
 ///
-/// A widget laying out multiple tabs with only one active tab being built at a time and on stage.
-/// Off stage tabs' animations are stopped.
+/// A widget laying out multiple tabs with only one active tab being built at a time and on stage. Off
+/// stage tabs' animations are stopped.
 class const _TabSwitchingView({
   required final int currentTabIndex,
   required final int tabCount,

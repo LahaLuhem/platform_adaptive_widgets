@@ -1,8 +1,8 @@
 // Parity guard for the field-classification contract in
 // APPENDIX.md#field-classification. For every canonical widget whose
 // shared-visual fields live on a private `_PlatformXxxData` base (inherited by
-// `MaterialXxxData` / `CupertinoXxxData` via `super`-forwarding), two static
-// checks over `lib/src/` keep the two edges the Dart compiler does NOT check
+// `MaterialXxxData` / `CupertinoXxxData` via `super`-forwarding), 2 static
+// checks over `lib/src/` keep the 2 edges the Dart compiler does NOT check
 // honest:
 //
 //   1. Field-set parity, every field on the `_PlatformXxxData` base also
@@ -20,7 +20,7 @@
 //      edge and the one the compiler is blindest to.
 //
 // Bases listed in `_basesWithoutFlatMirror` exist only to DRY a single field
-// across the two records and have no flat widget twin by design. See that
+// across the 2 records and have no flat widget twin by design. See that
 // set's comment.
 
 // This guard declares several private visitor / record classes in one file.
@@ -38,16 +38,12 @@ import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Private `_PlatformXxxData` bases that intentionally have NO flat mirror on their widget. Their
-/// base exists only to share a single field declaration (`backgroundColor`) across the two per-platform
-/// records. The widget reads it straight off the record, so there is no widget-flat field to keep in
-/// parity. See APPENDIX.md#field-classification (scaffold / app-bar carve-out).
+/// Bases with deliberately no flat mirror on their widget. They exist only to share one `backgroundColor`
+/// declaration between the 2 records, which the widget then reads directly. See APPENDIX.md#field-classification.
 const _basesWithoutFlatMirror = {'_PlatformAppBarData', '_PlatformScaffoldData'};
 
-/// The canonical widgets the guard MUST discover. A floor, not a ceiling: a new canonical widget
-/// auto-enrolls in the checks below and need not be added here. This set only guards against discovery
-/// silently finding nothing (e.g. after an analyzer AST change or a lib/src/models layout move),
-/// which would let the parity checks pass vacuously.
+/// A floor, not a ceiling. New widgets enrol themselves, and this only catches discovery quietly finding
+/// nothing, which would let every check below pass on an empty set.
 const _knownCanonicalWidgets = {
   'PlatformCheckbox',
   'PlatformRadio',
@@ -205,8 +201,7 @@ Set<String> _instanceFieldNames(ClassDeclaration node) => node.body.members
     .map((variable) => variable.name.lexeme)
     .toSet();
 
-/// Field names merged via `<accessorPrefix>...?.field ?? field` inside the [methodName] method of
-/// [node].
+/// Fields merged as `<accessorPrefix>…?.field ?? field` inside [node]'s [methodName].
 Set<String> _mergedFields(ClassDeclaration node, String methodName, String accessorPrefix) {
   final visitor = _MergeVisitor(accessorPrefix);
   final methods = node.body.members.whereType<MethodDeclaration>().where(

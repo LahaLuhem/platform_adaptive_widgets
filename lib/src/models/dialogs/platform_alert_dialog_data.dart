@@ -14,120 +14,90 @@ import 'package:flutter/widgets.dart';
 /// default.
 const kDefaultMaterialAlertDialogScrollable = false;
 
-/// Default value for [CupertinoAlertDialogData.insetAnimationDuration]. Matches upstream
-/// `CupertinoAlertDialog`'s default.
+/// Default value for [CupertinoAlertDialogData.insetAnimationDuration]. Matches upstream `CupertinoAlertDialog`'s
+/// default.
 const kDefaultCupertinoAlertDialogInsetAnimationDuration = Duration(milliseconds: 100);
 
 /// Default value for [CupertinoAlertDialogData.insetAnimationCurve]. Matches upstream `CupertinoAlertDialog`'s
 /// default.
 const kDefaultCupertinoAlertDialogInsetAnimationCurve = Curves.decelerate;
 
-/// Material-only configuration for `showPlatformAlertDialog`.
+/// Material-side settings for `showPlatformAlertDialog`, passed as `materialAlertDialogData`. The content
+/// itself (title, content, actions, widgetKey) stays flat on the show function.
 ///
-/// Pass this via `showPlatformAlertDialog`'s `materialAlertDialogData` parameter when tuning the
-/// Material [AlertDialog] specifically. Common content (title, content, actions, widgetKey) lives
-/// flat on the show function. Set those for the cross-platform case.
-///
-/// Distinct from `MaterialDialogData` (used by `showPlatformDialog` to style the wrapping [Dialog]
-/// widget). [AlertDialog] is its own Dialog under the hood, so the package never wraps it, alert-dialog
-/// calls bypass the `MaterialDialogData` surface entirely.
+/// Not the same thing as `MaterialDialogData`, which styles the [Dialog] that `showPlatformDialog` wraps
+/// around your content. [AlertDialog] already is a Dialog, so nothing wraps it and that surface never
+/// comes into play here.
 final class const MaterialAlertDialogData({
-  /// Optional icon displayed above the title.
+  /// Sits above the title.
   final Widget? icon,
 
-  /// Padding around the [icon].
   final EdgeInsetsGeometry? iconPadding,
 
-  /// Colour of the [icon].
   final Color? iconColor,
 
-  /// Padding around the dialog's title.
   final EdgeInsetsGeometry? titlePadding,
 
-  /// Text style for the dialog's title.
   final TextStyle? titleTextStyle,
 
-  /// Padding around the dialog's content.
   final EdgeInsetsGeometry? contentPadding,
 
-  /// Text style for the dialog's content.
   final TextStyle? contentTextStyle,
 
-  /// Padding around the action-button row.
+  /// Wraps the whole action row, where [buttonPadding] wraps each button inside it.
   final EdgeInsetsGeometry? actionsPadding,
 
-  /// Alignment of action buttons along the main axis.
   final MainAxisAlignment? actionsAlignment,
 
-  /// Alignment of overflowing action buttons.
+  /// The 3 `actionsOverflow*` fields only bite once the buttons stop fitting on one row and stack.
   final OverflowBarAlignment? actionsOverflowAlignment,
 
-  /// Direction for overflowing action buttons.
   final VerticalDirection? actionsOverflowDirection,
 
-  /// Spacing between overflowing action buttons.
   final double? actionsOverflowButtonSpacing,
 
-  /// Padding around each individual action button.
   final EdgeInsetsGeometry? buttonPadding,
 
-  /// Background colour of the dialog surface.
   final Color? backgroundColor,
 
-  /// Elevation of the dialog surface.
   final double? elevation,
 
-  /// Shadow colour of the dialog.
   final Color? shadowColor,
 
-  /// Surface-tint colour of the dialog.
   final Color? surfaceTintColor,
 
-  /// Semantic label for accessibility tooling.
   final String? semanticLabel,
 
-  /// Inset padding (distance from screen edges).
+  /// How far the dialog keeps off the screen edges.
   final EdgeInsets? insetPadding,
 
-  /// Clip behaviour applied to the dialog's content.
   final Clip? clipBehavior,
 
-  /// Shape of the dialog border.
   final ShapeBorder? shape,
 
-  /// Alignment of the dialog within the screen.
   final AlignmentGeometry? alignment,
 
-  /// Size constraints on the dialog.
   final BoxConstraints? constraints,
 
-  /// Whether the dialog's content is scrollable. Defaults to [kDefaultMaterialAlertDialogScrollable].
   final bool scrollable = kDefaultMaterialAlertDialogScrollable,
 }) {
-  /// Creates Material-only configuration for `showPlatformAlertDialog`.
+  /// Creates Material-side settings for `showPlatformAlertDialog`.
   this;
 }
 
-/// Cupertino-only configuration for `showPlatformAlertDialog`.
-///
-/// Pass this via `showPlatformAlertDialog`'s `cupertinoAlertDialogData` parameter when tuning the
-/// Cupertino [CupertinoAlertDialog] specifically. Common content (title, content, actions, widgetKey)
-/// lives flat on the show function.
+/// Cupertino-side settings for `showPlatformAlertDialog`, passed as `cupertinoAlertDialogData`. The
+/// content itself (title, content, actions, widgetKey) stays flat on the show function.
 final class const CupertinoAlertDialogData({
-  /// Scroll controller for the content. Typically unnecessary. Cupertino auto-wraps oversized content
-  /// in a scroll view.
+  /// Rarely needed. Cupertino already puts oversized content in a scroll view for you.
   final ScrollController? scrollController,
 
-  /// Scroll controller for the actions row. Typically unnecessary.
   final ScrollController? actionScrollController,
 
-  /// Duration of the inset-slide animation when the keyboard appears. Defaults to
-  /// [kDefaultCupertinoAlertDialogInsetAnimationDuration].
+  /// How the dialog slides up out of the keyboard's way.
   final Duration insetAnimationDuration = kDefaultCupertinoAlertDialogInsetAnimationDuration,
 
-  /// Curve of the inset-slide animation. Defaults to [kDefaultCupertinoAlertDialogInsetAnimationCurve].
   final Curve insetAnimationCurve = kDefaultCupertinoAlertDialogInsetAnimationCurve,
 }) {
-  /// Creates Cupertino-only configuration for `showPlatformAlertDialog`.
+  /// Creates Cupertino-side settings for `showPlatformAlertDialog`.
   this;
 }

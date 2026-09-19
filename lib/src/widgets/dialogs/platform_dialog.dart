@@ -12,38 +12,26 @@ import '/src/models/platform_widget_base.dart';
 
 part 'platform_alert_dialog.dart';
 
-/// Shows a centered modal dialog. The [builder]'s widget is wrapped in a platform dialog surface:
-/// Material [Dialog] on Android (via [showDialog]), and a screen-centered [CupertinoPopupSurface] on
-/// iOS (via [showCupertinoDialog], whose route paints only the barrier, not a surface).
+/// Shows a centred modal dialog, wrapping your content in a [Dialog] on Android and a [CupertinoPopupSurface]
+/// on iOS. Want to bring your own surface, or none at all? That's [showPlatformRawDialog].
 ///
-/// To skip the surface wrap entirely, supplying your own surface, or none (a floating image, a custom
-/// card). Use [showPlatformRawDialog].
+/// Give it content that sizes itself, a [Column] with `mainAxisSize: .min` say. The Cupertino route
+/// hands the builder the whole screen, so anything unbounded stretches the card to fill it.
 ///
-/// Pass intrinsically-sized content (e.g. a [Column] with `mainAxisSize: MainAxisSize.min`). The
-/// Cupertino route hands the builder the full screen, so an unbounded child, a [Center], or a
-/// default-`max` [Column], stretches the surface to fill it.
+/// **On iOS, tapping the barrier does nothing by default.** That matches the HIG, where an alert is
+/// dismissed by a button rather than by tapping away, and there's no system back button to fall back
+/// on. So your content needs its own way out or the dialog is a dead end. `barrierDismissible: true`
+/// opts into the non-standard behaviour.
 ///
-/// **Dismissal on iOS:** the barrier is not tap-to-dismiss by default (`barrierDismissible` is `false`:
-/// matching the iOS HIG, where alerts are dismissed by a button, not by tapping outside). Give the
-/// content its own dismiss / confirm affordance (e.g. a button that pops the route), or the dialog
-/// is a dead-end on iOS. There is no system back button. Pass `barrierDismissible: true` only to opt
-/// into the non-standard tap-outside behaviour.
+/// Fullscreen is [showPlatformFullscreenDialog]. iOS has no such thing and shows the same centred dialog
+/// either way. For a genuinely fullscreen iOS presentation, push a `CupertinoPageRoute` with `fullscreenDialog: true`
+/// yourself.
 ///
-/// For fullscreen modals, use [showPlatformFullscreenDialog], that variant uses [Dialog.fullscreen]
-/// on Material and exposes only the fullscreen-valid params via [MaterialFullscreenDialogData]. iOS
-/// has no native fullscreen dialog. Both functions present the same centered Cupertino dialog on iOS.
-/// For iOS-style fullscreen route presentation, push a `CupertinoPageRoute` with `fullscreenDialog:
-/// true` directly.
+/// Either pass [builder] for content shared across both, or pass [materialBuilder] and [cupertinoBuilder]
+/// together. Mixing the 2 trips an assert.
 ///
-/// Content selection:
-/// - Pass [builder] for shared content on both platforms.
-/// - Or pass both [materialBuilder] and [cupertinoBuilder] for per-platform content.
-/// - Combining `builder` with a platform-specific builder fires an assert.
-///
-/// Per-platform Material tuning is opt-in via [materialDialogData], fields for the centered [Dialog]
-/// (`alignment`, `shape`, `clipBehavior`, …) plus the [showDialog] knobs (`animationStyle`,
-/// `traversalEdgeBehavior`, `useSafeArea`). [showCupertinoDialog] has no params beyond the shared
-/// show-function flat args, no Cupertino data record exists.
+/// [materialDialogData] tunes the Android side. There's no Cupertino equivalent, since [showCupertinoDialog]
+/// takes nothing beyond the flat args already here.
 ///
 /// Example:
 /// {@example /example/lib/snippets/dialogs/platform_dialog.dart#platform_dialog}
@@ -118,20 +106,14 @@ Future<T?> showPlatformDialog<T>({
   };
 }
 
-/// Shows a fullscreen modal dialog. The [builder]'s widget is wrapped in Material [Dialog.fullscreen]
-/// on Android (and shown via [showDialog] with `fullscreenDialog: true` to also flip the route
-/// presentation). On iOS the widget is wrapped in a screen-centered [CupertinoPopupSurface] and shown
-/// via [showCupertinoDialog]. Cupertino has no native fullscreen-dialog concept, so the iOS branch
-/// presents the same centered dialog as [showPlatformDialog].
+/// Shows a fullscreen modal dialog on Android, via [Dialog.fullscreen]. iOS has no such concept and
+/// gets the same centred dialog [showPlatformDialog] would give it.
 ///
-/// Material's surface is split: [MaterialFullscreenDialogData] exposes only the [Dialog.fullscreen]-valid
-/// params (background, animation, semantics, safe-area, traversal). The centered-only knobs (`alignment`,
-/// `shape`, `clipBehavior`, `constraints`, `elevation`, `insetPadding`, `shadowColor`, `surfaceTintColor`)
-/// live on [MaterialDialogData] under [showPlatformDialog], this kills the v1 footgun where they were
-/// silently dropped when `fullscreenDialog: true` was set.
+/// [MaterialFullscreenDialogData] deliberately carries fewer fields than [MaterialDialogData], only
+/// the ones [Dialog.fullscreen] actually honours. The centred-only knobs stay over there, which is how
+/// the old design used to lose them without saying anything.
 ///
-/// Content-builder selection, and the iOS dismissal caveat (the barrier isn't tap-to-dismiss by
-/// default, so content needs its own dismiss affordance), follows the same rules as [showPlatformDialog].
+/// Builder selection and the iOS dismissal caveat work exactly as in [showPlatformDialog].
 ///
 /// Example:
 /// {@example /example/lib/snippets/dialogs/platform_dialog.dart#fullscreen_dialog}
@@ -196,23 +178,15 @@ Future<T?> showPlatformFullscreenDialog<T>({
   };
 }
 
-/// Shows a raw, unopinionated modal dialog: the content is passed **without any surface wrapping**
-/// to [showDialog] on Android and [showCupertinoDialog] on iOS. Unlike [showPlatformDialog], the
-/// package adds no [Dialog] / [CupertinoPopupSurface] around your widget, you own the surface, or
-/// render none (a floating image, a custom-painted card, an onboarding coachmark). Both routes still
-/// provide the platform-native barrier and transition, so you get adaptive presentation without
-/// hand-rolling a `switch (defaultTargetPlatform)`.
+/// Shows a modal dialog with no surface wrapped around your content at all. You get the platform's barrier
+/// and transition, and everything inside is yours: a floating image, a hand-painted card, an onboarding
+/// coachmark.
 ///
-/// Reach for this over [showPlatformDialog] when its centered card gets in the way, e.g. dropping in
-/// your own [CupertinoAlertDialog] or a custom-shaped surface on iOS without it being double-wrapped,
-/// or presenting full-bleed media.
+/// Worth reaching for when [showPlatformDialog]'s card is in the way, say when you're dropping in your
+/// own [CupertinoAlertDialog] and don't want it double-wrapped, or going full-bleed.
 ///
-/// **Dismissal on iOS** is unchanged from [showPlatformDialog]: the barrier is not tap-to-dismiss by
-/// default and there is no system back button, so the content must carry its own dismiss affordance
-/// (or pass `barrierDismissible: true`).
-///
-/// Content-builder selection follows the same rules as [showPlatformDialog]. No Material `*Data`
-/// record is exposed. There is no [Dialog] to configure.
+/// Builder selection and the iOS dismissal caveat work exactly as in [showPlatformDialog]. No `materialDialogData`
+/// here, since there's no [Dialog] left to configure.
 Future<T?> showPlatformRawDialog<T>({
   required BuildContext context,
   WidgetBuilder? builder,
@@ -265,14 +239,9 @@ Future<T?> showPlatformRawDialog<T>({
   };
 }
 
-/// Asserts exactly one of the two valid builder-input shapes was used: `builder` alone, or both
-/// `materialBuilder` and `cupertinoBuilder` together.
-///
-/// Takes the args' *nullness* rather than the builders themselves: passing the `WidgetBuilder`s in
-/// would name two function-typed `material*`/`cupertino*` params and trip the AOT-pruning guard
-/// (`test/aot_pruning_regression_test.dart`), even though a null-only check can't keep either platform's
-/// code reachable. Booleans satisfy the contract and the guard both. Used by [showPlatformDialog]
-/// and [showPlatformFullscreenDialog].
+/// Takes booleans rather than the builders themselves. 2 function-typed `material*`/`cupertino*` params
+/// would trip the AOT-pruning guard in `test/aot_pruning_regression_test.dart`, even though a null check
+/// alone can't keep either branch reachable.
 void _assertBuilderInvariant({
   required bool hasBuilder,
   required bool hasMaterialBuilder,
@@ -290,12 +259,8 @@ void _assertBuilderInvariant({
   );
 }
 
-/// Shared Material-side route-show plumbing, marshals the [showDialog] arguments without imposing
-/// any content wrapping. Callers pass an already-shaped [builder] (the user's widget pre-wrapped in
-/// [Dialog] / [Dialog.fullscreen] / [AlertDialog] as appropriate).
-///
-/// Extracted to a top-level function so the unused-platform branch of `switch (defaultTargetPlatform)`
-/// is dead code under AOT compilation when the platform const-folds.
+/// Takes an already-wrapped [builder] and just marshals arguments. Top-level rather than inline so the
+/// unused platform's branch const-folds away under AOT.
 Future<T?> _showMaterialDialog<T>({
   required BuildContext context,
   required WidgetBuilder builder,
@@ -349,13 +314,10 @@ Future<T?> _showCupertinoDialog<T>({
   requestFocus: requestFocus,
 );
 
-/// Wraps [content] in a screen-centered [CupertinoPopupSurface], the iOS counterpart to the Material
-/// [Dialog] the Android branch applies in [showPlatformDialog] / [showPlatformFullscreenDialog].
-/// Needed because [showCupertinoDialog]'s route paints only the barrier and runs the transition (its
-/// transition builder returns the child unchanged), the route is *not* a visual shell, so unwrapped
-/// content would float on the dim with no card.
+/// iOS's answer to the [Dialog] the Android branch wraps on. [showCupertinoDialog]'s route only paints
+/// the barrier and runs the transition, so without this the content floats on the dim with no card.
 ///
-/// Deliberately not folded into [_showCupertinoDialog]: [showPlatformAlertDialog] builds its own
-/// [CupertinoAlertDialog] (which already carries a surface), so it must skip this to avoid double-wrapping.
+/// Kept out of [_showCupertinoDialog] because [showPlatformAlertDialog] brings its own surface and would
+/// end up double-wrapped.
 WidgetBuilder _cupertinoDialogSurface(WidgetBuilder content) =>
     (context) => Center(child: CupertinoPopupSurface(child: content(context)));

@@ -90,7 +90,7 @@ class DialogsDemoView extends StatelessWidget {
         ),
         DemoCard(
           title: 'Raw bottom sheet',
-          description: 'No surface wrap, content floats on iOS; Android keeps its native sheet.',
+          description: 'No surface wrap, so content floats on iOS. Android keeps its native sheet.',
           child: PlatformButton(
             onPressed: viewModel.onShowRawBottomSheetPressed,
             child: const Text('Show raw bottom sheet'),

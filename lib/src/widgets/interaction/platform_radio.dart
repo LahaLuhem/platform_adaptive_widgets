@@ -1,6 +1,3 @@
-/// @docImport 'package:flutter/foundation.dart';
-library;
-
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoRadio;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Radio;
@@ -8,78 +5,47 @@ import 'package:material_ui/material_ui.dart' show Radio;
 import '/src/models/interaction/platform_radio_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive radio button that renders Material [Radio] on Android and [CupertinoRadio] on
-/// iOS.
+/// Material [Radio] on Android, [CupertinoRadio] on iOS.
 ///
-/// **Leaf widget**: must be a descendant of an ancestor [RadioGroup] (from `package:flutter/widgets.dart`)
-/// which holds the group's selected value and `onChanged` callback. This widget contributes one
-/// selectable option.
+/// Does nothing on its own. It needs a [RadioGroup] ancestor, which owns the selected value and the
+/// `onChanged` callback, and contributes one option to it. For the usual "radios with labels" layout,
+/// [PlatformRadioGroupBuilder] wires both up for you.
 ///
-/// For the common pattern of "a layout of radios paired with labels", use [PlatformRadioGroupBuilder],
-/// a convenience widget that bundles the [RadioGroup] + a `Wrap` layout + per-item rendering.
-///
-/// All functional inputs (value, state-gating, focus) and shared visual defaults live as flat
-/// constructor parameters. Per-platform visual tuning is opt-in via [materialRadioData] and
-/// [cupertinoRadioData]. See `APPENDIX.md#field-classification` for the classification rule and
-/// `APPENDIX.md#cross-platform-field-mappings` for [fillColor]'s type-divergence handling.
+/// Per-platform tuning lives in [materialRadioData] / [cupertinoRadioData]. See `APPENDIX.md#field-classification`.
 ///
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_radio.dart#platform_radio}
 class const PlatformRadio<T extends Object>({
-  /// The value this radio button represents within its ancestor `RadioGroup<T>`. The radio is selected
-  /// when the ancestor's `groupValue` equals [value].
+  /// Selected when the ancestor [RadioGroup]'s `groupValue` matches this.
   required final T value,
 
-  /// Whether tapping a selected radio deselects it (returning `null` to the ancestor's `onChanged`).
-  /// Defaults to `false`.
+  /// Lets a tap on the already-selected radio clear it, handing `null` to the group's `onChanged`.
   final bool toggleable = false,
 
-  /// Whether this radio is enabled and responds to taps.
-  ///
-  /// - `true` (default): defers to the ancestor `RadioGroup`'s state, the underlying [Radio.enabled]
-  ///   / [CupertinoRadio.enabled] receives `null`.
-  /// - `false`: force-disables this specific radio (underlying widget receives `enabled: false`),
-  ///   regardless of the group's state.
-  ///
-  /// See `APPENDIX.md#callback-nullability`.
+  /// `true` defers to the ancestor [RadioGroup]'s state, so the underlying widget gets `null`. `false`
+  /// force-disables this one radio whatever the group says. See `APPENDIX.md#callback-nullability`.
   final bool isEnabled = true,
 
-  /// Optional focus node for the radio. Same on both platforms.
   final FocusNode? focusNode,
 
-  /// Whether the radio should autofocus when mounted. Defaults to `false`.
   final bool autofocus = false,
 
-  /// Colour applied when the radio is selected.
-  ///
-  /// Shared visual, overridable per platform via [materialRadioData] / [cupertinoRadioData].
+  /// Colour while selected.
   final Color? activeColor,
 
-  /// Colour applied when the radio is focused. Shared visual.
   final Color? focusColor,
 
-  /// Cursor displayed when hovering over the radio. Shared visual.
   final MouseCursor? mouseCursor,
 
-  /// Fill colour for the radio's inner mark.
-  ///
-  /// Maps to [Radio.fillColor] on Android directly (richer `WidgetStateProperty<Color?>?` passes
-  /// through) and to [CupertinoRadio.fillColor] on iOS after resolving to a single `Color?` via
-  /// `.resolve({.selected, if (!isEnabled) .disabled})`: radios primarily show fill when selected.
-  /// Disabled state forwarded based on [isEnabled]. See `APPENDIX.md#cross-platform-field-mappings`.
+  /// [Radio.fillColor] on Android, which takes the `WidgetStateProperty` as-is. iOS wants a plain `Color?`,
+  /// so it gets `.resolve({.selected, if (!isEnabled) .disabled})`, a radio mostly showing its fill
+  /// when selected.
   final WidgetStateProperty<Color?>? fillColor,
 
-  /// Material-only visual overrides. Optional.
-  ///
-  /// Fields set on this record override the widget's flat shared-visual defaults on the Material
-  /// branch. Material-only fields (`hoverColor`, `overlayColor`, `splashRadius`, `materialTapTargetSize`,
-  /// `visualDensity`, `backgroundColor`, `side`, `innerRadius`) are read only from here.
+  /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialRadioData? materialRadioData,
 
-  /// Cupertino-only visual overrides. Optional.
-  ///
-  /// Fields set on this record override the widget's flat shared-visual defaults on the Cupertino
-  /// branch. Cupertino-only fields (`inactiveColor`, `useCheckmarkStyle`) are read only from here.
+  /// Cupertino-branch overrides, plus the knobs Material has no answer for.
   final CupertinoRadioData? cupertinoRadioData,
   super.widgetKey,
   super.key,
@@ -134,57 +100,45 @@ class const PlatformRadio<T extends Object>({
   }
 }
 
-/// Convenience widget that bundles a [RadioGroup] + a [Wrap] layout + per-item rendering for the
-/// common radio-group pattern.
+/// A [RadioGroup] wrapped around a [Wrap] of radios, so you don't hand-roll the usual radio-next-to-a-label
+/// layout. Hand it [values] and an [itemBuilder].
 ///
-/// Collapses the boilerplate of "wrap a [RadioGroup] around a layout of [PlatformRadio]- plus-label
-/// rows" into a single widget. The caller supplies [values] and an [itemBuilder]. This widget owns
-/// group state (delegated to the underlying [RadioGroup]) and lays the items out with [Wrap], which
-/// degrades to row/column behaviour when items fit and wraps to the next run on narrow screens.
+/// A plain [StatelessWidget] rather than a `PlatformWidgetBase`, because [RadioGroup] and [Wrap] are
+/// both platform-agnostic. Branching would hand back the same widget twice.
 ///
-/// Intentionally extends [StatelessWidget] rather than `PlatformWidgetBase`: the underlying [RadioGroup]
-/// is itself platform-agnostic (`package:flutter/widgets.dart`), so branching on [defaultTargetPlatform]
-/// would only return the same widget on both branches, misleading.
-///
-/// When this widget's layout knobs aren't enough (mixing radios with non-radio siblings, scrollable
-/// layouts, alignment beyond [Wrap]'s surface), fall back to composing [RadioGroup] + [PlatformRadio]
-/// directly.
+/// Outgrow it (non-radio siblings, scrolling, alignment past what [Wrap] offers) and compose [RadioGroup]
+/// + [PlatformRadio] yourself.
 ///
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_radio.dart#platform_radio_group_builder}
 class const PlatformRadioGroupBuilder<T extends Object>({
-  /// Values to render as radio options. One [itemBuilder] call per value, in iteration order.
+  /// One [itemBuilder] call per value, in iteration order.
   required final Iterable<T> values,
 
-  /// Currently-selected value within the group. `null` means no selection. Forwarded to the underlying
-  /// [RadioGroup] as `groupValue`.
+  /// The selected value, or `null` for nothing selected.
   required final T? groupValue,
 
-  /// Called when a descendant [PlatformRadio] is tapped. Receives the tapped radio's value, or `null`
-  /// if a toggleable radio was deselected. Forwarded to the underlying [RadioGroup].
+  /// Gets the tapped radio's value, or `null` when a toggleable one was cleared.
   required final ValueChanged<T?> onChanged,
 
-  /// Builds the widget for one value, typically a [PlatformRadio] paired with a label, but any
-  /// composition that includes a [PlatformRadio] (with the same `value`) somewhere in its subtree
-  /// works.
+  /// Usually a [PlatformRadio] next to a label. Anything works, so long as a [PlatformRadio] carrying
+  /// the same `value` sits somewhere in the subtree.
   required final Widget Function(BuildContext context, T value) itemBuilder,
 
-  /// Primary axis along which the items lay out. Defaults to [Axis.horizontal]. Forwarded to
-  /// [Wrap.direction].
+  /// Forwarded to [Wrap.direction].
   final Axis direction = .horizontal,
 
-  /// Spacing between items along [direction]. Defaults to `16.0`. Forwarded to [Wrap.spacing].
+  /// Forwarded to [Wrap.spacing].
   final double spacing = 16,
 
-  /// Spacing between runs (rows when [direction] is horizontal, columns when vertical). Defaults to
-  /// `8.0`. Forwarded to [Wrap.runSpacing].
+  /// Gap between runs, so between rows when horizontal and columns when vertical. Forwarded to [Wrap.runSpacing].
   final double runSpacing = 8,
 
-  /// Optional key applied to the inner [RadioGroup] (distinct from the outer widget's [key]).
+  /// Goes on the inner [RadioGroup]. The outer widget has [key] for that.
   final Key? widgetKey,
   super.key,
 }) extends StatelessWidget {
-  /// Creates a [PlatformRadio]-aware group + layout convenience widget.
+  /// Creates a group of radios laid out with [Wrap].
   this;
 
   @override

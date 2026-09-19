@@ -5,88 +5,54 @@ import 'package:material_ui/material_ui.dart' show SearchBar;
 import '/src/models/interaction/platform_search_bar_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A platform-adaptive search bar that renders Material [SearchBar] on Android and [CupertinoSearchTextField]
-/// on iOS.
+/// Material [SearchBar] on Android, [CupertinoSearchTextField] on iOS.
 ///
-/// All functional inputs (controller, callbacks, hint, leading slot, keyboard / focus / enabled state)
-/// live as flat constructor parameters. Per-platform visual + behavioural tuning is opt-in via
-/// [materialSearchBarData] and [cupertinoSearchBarData]. See `APPENDIX.md#field-classification` for
-/// the classification rule and `APPENDIX.md#cross-platform-field-mappings` for the type-divergent
-/// shared visuals that consequently live per-platform rather than as a shared private base (notably
-/// `backgroundColor`, `padding`, `textStyle`, `hintStyle`: Material exposes them as [WidgetStateProperty]
-/// while Cupertino exposes them as direct values).
+/// Per-platform tuning lives in [materialSearchBarData] / [cupertinoSearchBarData], and there's more
+/// of it here than usual: `backgroundColor`, `padding`, `textStyle` and `hintStyle` all exist on both
+/// platforms but with different types, Material keying them off [WidgetStateProperty] where Cupertino
+/// takes a plain value. See `APPENDIX.md#field-classification` and `APPENDIX.md#cross-platform-field-mappings`.
 ///
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_search_bar.dart#platform_search_bar}
 class const PlatformSearchBar({
-  /// Callback fired when the search text changes.
-  ///
-  /// Required and non-null per the callback-nullability rule (`APPENDIX.md#callback-nullability`),
-  /// a search bar without change observation is just a text field with a glyph. To disable the search
-  /// bar, set [isEnabled] to `false`.
+  /// Stays required and non-null. A search bar nobody listens to is a text field with a magnifying glass.
+  /// Disable it with [isEnabled] instead. See `APPENDIX.md#callback-nullability`.
   required final ValueChanged<String> onChanged,
 
-  /// Text-editing controller for the search input.
   final TextEditingController? controller,
 
-  /// Hint / placeholder text displayed when the search bar is empty. Maps to [SearchBar.hintText] on
-  /// Android and [CupertinoSearchTextField.placeholder] on iOS. See `APPENDIX.md#cross-platform-field-mappings`.
+  /// Shown while the bar is empty. iOS calls it the placeholder.
   final String? hintText,
 
-  /// Leading widget, typically a search-glyph icon.
-  ///
-  /// Maps to [SearchBar.leading] on Android (typed `Widget?`, no default) and [CupertinoSearchTextField.prefixIcon]
-  /// on iOS (typed non-null `Widget`, defaulting to `Icon(CupertinoIcons.search)`). The Cupertino
-  /// branch substitutes [kDefaultCupertinoSearchBarLeading] when `null`. See `APPENDIX.md#cross-platform-field-mappings`.
+  /// Usually the magnifying glass. iOS insists on having one, so it falls back to [kDefaultCupertinoSearchBarLeading]
+  /// when you leave this out. Android is happy without.
   final Widget? leading,
 
-  /// Callback fired when the user submits (presses the keyboard's action key). Optional, most
-  /// controllers consume [onChanged] live and treat submit as a no-op.
+  /// Fires on the keyboard's action key. Often unused, since [onChanged] already reports every keystroke.
   final ValueChanged<String>? onSubmitted,
 
-  /// Callback fired when the search bar itself is tapped (distinct from the editing callbacks).
-  /// Optional.
+  /// Fires on a tap of the bar itself, which is separate from the editing callbacks.
   final VoidCallback? onTap,
 
-  /// Keyboard type for the search input. When `null`, each platform applies its own default (Cupertino
-  /// defaults to [TextInputType.text], Material hands `null` straight through to its inner [EditableText]).
+  /// Left out, each platform brings its own default.
   final TextInputType? keyboardType,
 
-  /// Whether the search bar should autofocus on mount. Defaults to `false`. Maps to [SearchBar.autoFocus]
-  /// on Android and [CupertinoSearchTextField.autofocus] (lower-`f`) on iOS. See
-  /// `APPENDIX.md#cross-platform-field-mappings`.
+  /// Note the capital F, which iOS spells lowercase underneath. See `APPENDIX.md#cross-platform-field-mappings`.
   final bool autoFocus = false,
 
-  /// Focus node for the search bar.
   final FocusNode? focusNode,
 
-  /// Whether the search bar is enabled and responds to input. Defaults to `true`. Passed straight to
-  /// each platform's `enabled` (Material defaults to `true`; Cupertino's `enabled` is nullable and
-  /// `null`-means-enabled, the package collapses both to the same boolean).
+  /// One boolean for both, though iOS's own `enabled` is nullable and treats `null` as enabled.
   final bool isEnabled = true,
 
-  /// Smart-dashes input feature. When `null`, each platform applies its own default.
   final SmartDashesType? smartDashesType,
 
-  /// Smart-quotes input feature. When `null`, each platform applies its own default.
   final SmartQuotesType? smartQuotesType,
 
-  /// Material-only visual + functional overrides. Optional.
-  ///
-  /// Fields set on this record drive the Material branch only. Material-only fields (`trailing`,
-  /// `onTapOutside`, `constraints`, `elevation`, `backgroundColor`/`padding`/`textStyle`/`hintStyle`
-  /// as state-properties, `shadowColor`, `surfaceTintColor`, `overlayColor`, `side`, `shape`,
-  /// `textCapitalization`, `textInputAction`, `scrollPadding`, `contextMenuBuilder`, `readOnly`) are
-  /// read only from here.
+  /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialSearchBarData? materialSearchBarData,
 
-  /// Cupertino-only visual + functional overrides. Optional.
-  ///
-  /// Fields set on this record drive the Cupertino branch only. Cupertino-only fields (`style`,
-  /// `placeholderStyle`, `decoration`, plain-typed `backgroundColor` / `padding`, `borderRadius`,
-  /// `itemColor`, `itemSize`, `prefixInsets`, `suffixInsets`, `suffixIcon`, `suffixMode`, `onSuffixTap`,
-  /// `restorationId`, `enableIMEPersonalizedLearning`, `autocorrect`, cursor metrics) are read only
-  /// from here.
+  /// Cupertino-branch overrides, plus the knobs Material has no answer for.
   final CupertinoSearchBarData? cupertinoSearchBarData,
   super.widgetKey,
   super.key,

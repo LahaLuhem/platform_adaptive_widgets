@@ -1,20 +1,17 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// One entry in the Under-the-hood tour: a [title], an explanatory [body], an optional [code] snippet,
-/// and an optional live [demo]. Outlined (a border, no fill) to stay fully cross-platform, no Material
-/// surface.
+/// One entry in the Under-the-hood tour. Outlined rather than filled, so it stays clear of Material's
+/// surface and works on both platforms.
 class NuanceCard extends StatelessWidget {
-  /// The decision this card is about.
   final String title;
 
-  /// The explanation, what a naive wrapper gets wrong, and what the library does.
+  /// What a naive wrapper gets wrong, and what this one does instead.
   final String body;
 
-  /// Optional API snippet, shown in a monospace block.
+  /// Rendered in a monospace block.
   final String? code;
 
-  /// Optional live, interactive proof.
   final Widget? demo;
 
   const NuanceCard({required this.title, required this.body, this.code, this.demo, super.key});
@@ -44,7 +41,7 @@ class NuanceCard extends StatelessWidget {
   }
 }
 
-/// A monospace, tinted block for the code snippets in a [NuanceCard].
+/// The tinted monospace block inside a [NuanceCard].
 class _CodeBlock extends StatelessWidget {
   final String code;
 

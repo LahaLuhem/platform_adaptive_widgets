@@ -9,24 +9,20 @@ import 'package:flutter/widgets.dart';
 
 import 'platform_scaffold_data.dart';
 
-/// Data for a single destination in a tab-based navigation structure.
+/// One tab: its icons, its label, and the content behind it.
 final class const TabDestination({
-  /// The icon to display when the destination is inactive.
   required final Widget inactiveIcon,
 
-  /// The widget to display as the content for this destination.
+  /// What the tab shows when it's the selected one.
   final Widget? view,
 
-  /// The icon to display when the destination is active.
+  /// Left out, [inactiveIcon] is used for both states.
   final Widget? activeIcon,
 
-  /// A label to display for the destination.
   final String label = '',
 
-  /// A tooltip to display for the destination.
   final String? tooltip,
 
-  /// An optional key for the destination.
   final Key? key,
 }) {
   //TODO(lahaluhem): account for material's `enabled` property
@@ -34,23 +30,17 @@ final class const TabDestination({
   this;
 }
 
-/// Material-specific data for a tab-based scaffold.
+/// Material-side settings for a tab scaffold, a trimmed-down [MaterialScaffoldData]. The tab inputs
+/// themselves (selected index, destinations, callbacks, body builder) stay flat on [PlatformTabScaffold].
 ///
-/// A curated subclass of [MaterialScaffoldData].
+/// `appBar` survives the trim, which makes this lopsided on purpose. Material is happy to put one persistent
+/// bar above every tab, iOS is not: its HIG gives each tab its own navigation stack and nav bar, and
+/// `CupertinoTabScaffold` has no top-bar slot at all. So there's no Cupertino twin of this class. For
+/// something that looks right on both, leave `appBar` alone and give each tab its own [PlatformScaffold]
+/// and [PlatformAppBar].
 ///
-/// **`appBar` is exposed, a Material-only capability.** Material permits a persistent top app bar
-/// above tab content (a `Scaffold` with *both* an `appBar` and a `bottomNavigationBar`), so a Material
-/// app can opt into one unified bar across tabs. iOS has **no equivalent**: its HIG structures each
-/// tab as an independent navigation stack with its own nav bar, and `CupertinoTabScaffold` has no
-/// top-bar slot, so there is deliberately no Cupertino counterpart. For the cross-platform-idiomatic
-/// shape (works on both platforms), give each tab its own [PlatformScaffold] with its own [PlatformAppBar]
-/// instead, and leave this `appBar` unset.
-///
-/// **`bottomNavigationBar` is omitted**: the tab scaffold owns that slot (it builds the `NavigationBar`).
-/// Exposing it would be a conflicting duplicate.
-///
-/// The tab inputs (selected index, destinations, callbacks, body builder) are functional and live
-/// flat on [PlatformTabScaffold].
+/// `bottomNavigationBar` doesn't survive it. The tab scaffold builds the `NavigationBar` itself, so
+/// a second one would only fight it.
 final class const MaterialTabScaffoldData({
   super.appBar,
   super.backgroundColor,

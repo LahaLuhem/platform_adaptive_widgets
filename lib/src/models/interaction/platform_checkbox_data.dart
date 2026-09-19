@@ -12,42 +12,31 @@ import 'package:material_ui/material_ui.dart' show MaterialTapTargetSize, Visual
 /// Default value for [MaterialCheckboxData.isError].
 const kDefaultCheckboxIsError = false;
 
-/// Internal abstract base holding shared-visual fields for [PlatformCheckbox].
-///
-/// Inherited by [MaterialCheckboxData] and [CupertinoCheckboxData] so each per-platform record carries
-/// the shared-visual surface via `super.x` constructor forwarding. Library-private, never exported
-/// from the package. Callers never reference this type directly.
-///
-/// See `APPENDIX.md#field-classification` for the rule placing shared-visual fields on a private
-/// base.
+/// Shared-visual fields for [PlatformCheckbox], forwarded into both records via `super.x`. Private,
+/// never exported. See `APPENDIX.md#field-classification`.
 abstract class const _PlatformCheckboxData({
-  /// Mouse cursor when hovering over the checkbox.
   final MouseCursor? mouseCursor,
 
-  /// Color of the checkbox when active.
+  /// Colour while ticked.
   final Color? activeColor,
 
-  /// Fill color as a [WidgetStateProperty].
+  /// Fills the box behind the tick.
   final WidgetStateProperty<Color?>? fillColor,
 
-  /// Color of the check mark.
+  /// Colours the tick itself.
   final Color? checkColor,
 
-  /// Color of the checkbox when focused.
   final Color? focusColor,
 
-  /// Shape of the checkbox border.
   final OutlinedBorder? shape,
 
-  /// Border side of the checkbox.
+  /// Outlines the box.
   final BorderSide? side,
 });
 
-/// Material-only visual overrides for [PlatformCheckbox].
-///
-/// Pass this via `PlatformCheckbox.materialCheckboxData` when tuning Material rendering. Inherited
-/// shared-visual fields override the widget's flat defaults on the Material branch. The fields declared
-/// here have no Cupertino equivalent.
+/// Material-side settings for [PlatformCheckbox], passed as `materialCheckboxData`. The inherited shared-visual
+/// fields override the widget's flat ones on this branch, and everything declared here has no Cupertino
+/// counterpart at all.
 final class const MaterialCheckboxData({
   super.mouseCursor,
   super.activeColor,
@@ -57,37 +46,28 @@ final class const MaterialCheckboxData({
   super.shape,
   super.side,
 
-  /// Color when hovering over the checkbox.
   final Color? hoverColor,
 
-  /// Overlay color as a [WidgetStateProperty].
   final WidgetStateProperty<Color?>? overlayColor,
 
-  /// Splash radius of the checkbox.
   final double? splashRadius,
 
-  /// Material tap target size.
-  ///
-  /// Conceptually similar to but distinct from [CupertinoCheckboxData.tapTargetSize]. Material uses
-  /// an enum of presets ([MaterialTapTargetSize.shrinkWrap] / `.padded`), Cupertino uses an explicit
-  /// [Size]. They are not unified at the widget level.
+  /// A preset, where [CupertinoCheckboxData.tapTargetSize] is an explicit [Size]. Close enough to look
+  /// like one field, different enough that the widget keeps them apart.
   final MaterialTapTargetSize? materialTapTargetSize,
 
-  /// Visual density of the checkbox.
   final VisualDensity? visualDensity,
 
-  /// Whether the checkbox is in an error state. Affects rendering.
+  /// Swaps in the error-state container and tick colours. Material 3 only.
   final bool isError = kDefaultCheckboxIsError,
 }) extends _PlatformCheckboxData {
-  /// Creates Material-only visual overrides for [PlatformCheckbox].
+  /// Creates Material-side settings for [PlatformCheckbox].
   this;
 }
 
-/// Cupertino-only visual overrides for [PlatformCheckbox].
-///
-/// Pass this via `PlatformCheckbox.cupertinoCheckboxData` when tuning Cupertino rendering. Inherited
-/// shared-visual fields override the widget's flat defaults on the Cupertino branch. The fields
-/// declared here have no Material equivalent.
+/// Cupertino-side settings for [PlatformCheckbox], passed as `cupertinoCheckboxData`. The inherited
+/// shared-visual fields override the widget's flat ones on this branch, and everything declared here
+/// has no Material counterpart at all.
 final class const CupertinoCheckboxData({
   super.mouseCursor,
   super.activeColor,
@@ -97,12 +77,9 @@ final class const CupertinoCheckboxData({
   super.shape,
   super.side,
 
-  /// Custom tap target size for the checkbox, as an explicit [Size].
-  ///
-  /// Conceptually similar to but distinct from [MaterialCheckboxData.materialTapTargetSize]. See that
-  /// field's dartdoc.
+  /// An explicit [Size], where [MaterialCheckboxData.materialTapTargetSize] is a preset.
   final Size? tapTargetSize,
 }) extends _PlatformCheckboxData {
-  /// Creates Cupertino-only visual overrides for [PlatformCheckbox].
+  /// Creates Cupertino-side settings for [PlatformCheckbox].
   this;
 }

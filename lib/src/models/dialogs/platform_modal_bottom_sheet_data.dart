@@ -14,12 +14,12 @@ import 'dart:ui' show ImageFilter;
 import 'package:cupertino_ui/cupertino_ui.dart' show kCupertinoModalBarrierColor;
 import 'package:flutter/widgets.dart';
 
-/// Default value for [MaterialModalBottomSheetData.isScrollControlled]. Matches upstream
-/// `showModalBottomSheet`'s default.
+/// Default value for [MaterialModalBottomSheetData.isScrollControlled]. Matches upstream `showModalBottomSheet`'s
+/// default.
 const kDefaultMaterialModalBottomSheetIsScrollControlled = false;
 
-/// Default value for [MaterialModalBottomSheetData.scrollControlDisabledMaxHeightRatio]. Matches
-/// upstream `_kDefaultScrollControlDisabledMaxHeightRatio` (9/16).
+/// Default value for [MaterialModalBottomSheetData.scrollControlDisabledMaxHeightRatio]. Matches upstream
+/// `_kDefaultScrollControlDisabledMaxHeightRatio` (9/16).
 const kDefaultMaterialModalBottomSheetScrollControlDisabledMaxHeightRatio = 9.0 / 16.0;
 
 /// Default value for [MaterialModalBottomSheetData.isDismissible]. Matches upstream `showModalBottomSheet`'s
@@ -41,95 +41,69 @@ const kDefaultCupertinoModalPopupBarrierColor = kCupertinoModalBarrierColor;
 /// default.
 const kDefaultCupertinoModalPopupBarrierDismissible = true;
 
-/// Default value for [CupertinoModalPopupData.semanticsDismissible]. Matches upstream
-/// `showCupertinoModalPopup`'s default.
+/// Default value for [CupertinoModalPopupData.semanticsDismissible]. Matches upstream `showCupertinoModalPopup`'s
+/// default.
 const kDefaultCupertinoModalPopupSemanticsDismissible = false;
 
-/// Material-only configuration for `showPlatformModalBottomSheet`.
+/// Material-side settings for `showPlatformModalBottomSheet`, passed as `materialModalBottomSheetData`.
+/// None of it reaches iOS, where `showCupertinoModalPopup` is a far plainer thing with its own fields
+/// on [CupertinoModalPopupData].
 ///
-/// Pass this via `showPlatformModalBottomSheet`'s `materialModalBottomSheetData` parameter. The fields
-/// declared here have no Cupertino equivalent, `showCupertinoModalPopup` is a much simpler popup
-/// surface, with its own platform-only fields living on [CupertinoModalPopupData].
-///
-/// **Dismissibility & dragging.** Material's bottom sheet has two distinct concepts: [isDismissible]
-/// (tap-outside-or-swipe-down to dismiss) and [enableDrag] (allow dragging the sheet to resize/dismiss).
-/// Cupertino's popup has just [CupertinoModalPopupData.barrierDismissible] (tap-outside to dismiss).
-/// The package does not unify these. Set on each per-platform record explicitly.
+/// Dismissing is 2 separate ideas here and one over there, so set them per platform. [isDismissible]
+/// covers tapping outside or swiping down, [enableDrag] covers dragging the sheet to resize or throw
+/// it away, and iOS only has [CupertinoModalPopupData.barrierDismissible] for the tap.
 final class const MaterialModalBottomSheetData({
-  /// Background colour of the sheet surface.
   final Color? backgroundColor,
 
-  /// Semantic label for the modal barrier.
   final String? barrierLabel,
 
-  /// Elevation of the sheet surface.
   final double? elevation,
 
-  /// Shape of the sheet's border (typically a rounded top edge).
+  /// Usually a rounded top edge.
   final ShapeBorder? shape,
 
-  /// Clip behaviour applied to the sheet's content.
   final Clip? clipBehavior,
 
-  /// Size constraints on the sheet.
   final BoxConstraints? constraints,
 
-  /// Whether the sheet is allowed to scroll past its preferred height. Defaults to
-  /// [kDefaultMaterialModalBottomSheetIsScrollControlled].
+  /// Lets the sheet grow past its preferred height, up to the full screen.
   final bool isScrollControlled = kDefaultMaterialModalBottomSheetIsScrollControlled,
 
-  /// Max-height ratio when [isScrollControlled] is `false`. Defaults to
-  /// [kDefaultMaterialModalBottomSheetScrollControlDisabledMaxHeightRatio] (9/16).
+  /// The ceiling while [isScrollControlled] is off, as a fraction of the screen.
   final double scrollControlDisabledMaxHeightRatio =
       kDefaultMaterialModalBottomSheetScrollControlDisabledMaxHeightRatio,
 
-  /// Whether the user can dismiss the sheet by tapping outside or swiping down. Defaults to
-  /// [kDefaultMaterialModalBottomSheetIsDismissible].
   final bool isDismissible = kDefaultMaterialModalBottomSheetIsDismissible,
 
-  /// Whether the user can drag the sheet to resize / dismiss it. Defaults to
-  /// [kDefaultMaterialModalBottomSheetEnableDrag].
   final bool enableDrag = kDefaultMaterialModalBottomSheetEnableDrag,
 
-  /// Whether to show the drag-handle glyph above the sheet's content. When `null`, Material derives
-  /// this from the theme.
+  /// The little grab bar above the content. Left out, the theme decides.
   final bool? showDragHandle,
 
-  /// Whether to wrap the sheet in a [SafeArea]. Defaults to [kDefaultMaterialModalBottomSheetUseSafeArea].
   final bool useSafeArea = kDefaultMaterialModalBottomSheetUseSafeArea,
 
-  /// Custom transition animation controller. Rarely needed.
+  /// Rarely needed.
   final AnimationController? transitionAnimationController,
 
-  /// Animation style for the sheet's appearance.
   final AnimationStyle? sheetAnimationStyle,
 }) {
-  /// Creates Material-only configuration for `showPlatformModalBottomSheet`.
+  /// Creates Material-side settings for `showPlatformModalBottomSheet`.
   this;
 }
 
-/// Cupertino-only configuration for `showPlatformModalBottomSheet`.
-///
-/// Pass this via `showPlatformModalBottomSheet`'s `cupertinoModalPopupData` parameter. The fields
-/// declared here have no Material equivalent (or are genuinely Cupertino-specific, [filter] applies
-/// the iOS-typical blur).
+/// Cupertino-side settings for `showPlatformModalBottomSheet`, passed as `cupertinoModalPopupData`.
 final class const CupertinoModalPopupData({
-  /// Image filter applied to the popup background, typically a Gaussian blur to mimic iOS's frosted-glass
-  /// effect.
+  /// Usually a Gaussian blur, for the frosted glass look iOS goes in for.
   final ImageFilter? filter,
 
-  /// Barrier colour. Defaults to [kDefaultCupertinoModalPopupBarrierColor] (the iOS-standard translucent
-  /// black).
   final Color barrierColor = kDefaultCupertinoModalPopupBarrierColor,
 
-  /// Whether the user can dismiss the popup by tapping outside. Defaults to
-  /// [kDefaultCupertinoModalPopupBarrierDismissible].
+  /// Lets a tap outside dismiss the popup.
   final bool barrierDismissible = kDefaultCupertinoModalPopupBarrierDismissible,
 
-  /// Whether the dismiss action is exposed to accessibility tooling. Defaults to
-  /// [kDefaultCupertinoModalPopupSemanticsDismissible].
+  /// Offers that dismiss action to screen readers too.
   final bool semanticsDismissible = kDefaultCupertinoModalPopupSemanticsDismissible,
 }) {
-  /// Creates Cupertino-only configuration for `showPlatformModalBottomSheet`.
+  /// Creates Cupertino-side settings for `showPlatformModalBottomSheet`.
   this;
 }
