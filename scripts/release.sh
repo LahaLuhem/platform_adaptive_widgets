@@ -411,7 +411,7 @@ cider release
 # example/pubspec.yaml uses `path: ../`, so the lockfile records the parent's
 # version at resolve time. Without this step, `example/pubspec.lock` still
 # references the previous version, and the next `flutter pub get` anywhere
-# in the pipeline (CI's publish step, pana on pub.dev, or even an IDE on a
+# in the pipeline (pana on pub.dev, or even an IDE on a
 # contributor's machine) would rewrite it, triggering "modified checked-in
 # file" complaints during `flutter pub publish`. Regenerating + staging it
 # here folds the resync into the same prep commit so the tree is consistent.

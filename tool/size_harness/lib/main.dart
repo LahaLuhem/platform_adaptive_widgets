@@ -1,6 +1,6 @@
 // Size-harness app for the AOT-pruning regression guard. Built only for
-// Android by CI; tool/check_size_regression.dart asserts no Cupertino
-// symbols survive in the resulting snapshot.
+// Android by CI, and tool/check_size_regression.dart checks the Cupertino
+// symbols left in the resulting snapshot against a budget.
 //
 // Goal: exercise every public dispatching entry point on the package so a
 // future refactor that re-introduces deferred-dispatch (closures-as-args

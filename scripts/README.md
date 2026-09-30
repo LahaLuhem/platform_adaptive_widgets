@@ -57,8 +57,8 @@ will not survive the next release.
 declares its parent via `path: ../`: when the parent version changes, the lockfile
 needs to follow. The release script runs `(cd example && flutter pub get)` after the
 bump and stages the refreshed lockfile in the prep commit, so the tree is consistent
-before pub.dev sees it. Without this, the next `flutter pub get` *anywhere* (CI's
-publish step, pana on pub.dev, an IDE on a contributor's machine) would rewrite it
+before pub.dev sees it. Without this, the next `flutter pub get` *anywhere* (pana on
+pub.dev, an IDE on a contributor's machine) would rewrite it
 and `flutter pub publish` would complain that a checked-in file is modified.
 
 The `## Unreleased` block in `CHANGELOG.md` is the script's **input**: populated

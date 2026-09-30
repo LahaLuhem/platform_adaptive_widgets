@@ -26,22 +26,20 @@ README for the full widget catalogue. APPENDIX for design rationale.
   `errors:`-promoted rules. Pedantic mode is intentional, not negotiable.
 - **`flutter_test`** for widget / unit tests.
 - **CLI linting via the [linterpol](https://github.com/LahaLuhem/linterpol) Docker image.**
-  Shell scripts (`shellcheck`) and GitHub workflows (`actionlint`) are linted by running
-  the public, multi-arch `ghcr.io/lahaluhem/linterpol:latest` image
+  Shell scripts (`shellcheck`), GitHub workflows (`actionlint`), Markdown (`rumdl`) and YAML
+  (`ryl`) are linted by running the public, multi-arch `ghcr.io/lahaluhem/linterpol:latest` image
   (`docker run --rm -v "$PWD:/work:ro" "$LINTERPOL_IMAGE" <tool>`), not hand-installed
-  tools. CI jobs live in `.github/workflows/repo.yml`, and `scripts/release.sh` runs
+  tools. CI runs the checks in `.github/lint-checks.json`, and `scripts/release.sh` runs
   `shellcheck` the same way (image-only, so Docker must be running). Don't reintroduce
-  `brew` / `pip` / `uv` linter installs. The image ref is one `LINTERPOL_IMAGE` var per
-  file (swap to a digest there to pin).
+  `brew` / `pip` / `uv` linter installs. `release.sh` keeps its image ref in one
+  `LINTERPOL_IMAGE` var (swap to a digest there to pin).
 - **Android + iOS only.** `platforms:` in `pubspec.yaml` declares the supported set. The
   `PlatformWidgetBase.build` switch throws `UnsupportedError` for anything else.
 - **Published to pub.dev.** `.pubignore` controls what ships in the tarball. The
   `.github/workflows/publish.yml` workflow fires on a pushed semver tag
-  (`{{version}}`) and publishes via OIDC (configured by `dart-lang/setup-dart`). The
-  job is inlined, not the reusable
-  `dart-lang/setup-dart/.github/workflows/publish.yml@v1`: so it can run
-  `flutter pub get --no-example`, which keeps `example/pubspec.lock` byte-identical
-  through the publish dry-run. No manual `flutter pub publish` invocation.
+  (`{{version}}`) and hands off to dartender's `publish.yml`, which publishes via OIDC
+  (configured by `dart-lang/setup-dart`) and runs no `pub get`, so `example/pubspec.lock`
+  stays byte-identical through the publish dry-run. No manual `flutter pub publish` invocation.
 - **`CHANGELOG.md`, the `version:` field in `pubspec.yaml`, and the release tag** are
   the 3 things that must move in lockstep for a release. CHANGELOG entries are
   appended automatically by `.github/workflows/changelog.yml` on every merged PR
@@ -80,8 +78,8 @@ platform_adaptive_widgets/
 ├── pubspec.yaml                                Deps + platforms + topics
 ├── .pubignore                                  Files excluded from `flutter pub publish`
 ├── .fvmrc                                      FVM channel pin (`stable`)
-├── .github/workflows/                          CI: pr-conventions, changelog, package,
-│                                                example, repo, publish (tag-triggered)
+├── .github/workflows/                          CI: dartender's ci, conventions, changelog,
+│                                                publish (tag-triggered), local size-regression
 ├── CHANGELOG.md                                Release log (bot-appended on merge,
 │                                                hand-finalised at release)
 ├── README.md                                   pub.dev landing page (widget catalogue)
@@ -191,13 +189,13 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
     cleanliness sweep untrack `.idea/` wholesale. Extend the negations to share a new path.
 
 ## PR conventions
-The `.github/workflows/pr-conventions.yml` workflow enforces branch-name, PR-label,
+The `.github/workflows/conventions.yml` workflow enforces branch-name, PR-label,
 and commit-subject rules on every PR. On merge, `.github/workflows/changelog.yml`
 auto-appends to `CHANGELOG.md` based on the PR's `sem-*` label (via `cider log`).
 **PRs that don't comply will be blocked by CI.** The conventions:
 
 - **Branch name**: `<type>/#<issue>-<slug>`, where `<type>` is one of
-  `feature`, `bugfix`, `chore`, `refactor`, `hotfix`. Example: `chore/#12-tidy-readme`.
+  `feature`, `bugfix`, `chore` or `refactor`. Example: `chore/#12-tidy-readme`.
 - **Exactly one `sem-*` label per PR**, mapped to a CHANGELOG section:
 
   | Label           | CHANGELOG section | When to use                                    |
