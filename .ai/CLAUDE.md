@@ -14,12 +14,14 @@ slow to walk back (unpublished versions stay reserved for 7 days, and a tag push
 triggers an automated publish).
 
 ## Communication
+
 - **Concise.** No "here's what I just did" recap. The diff speaks.
 - **Explain the *why*** when recommending. The *what* is in the diff.
 - Reference code as `file.dart:42` (markdown links if you can).
 - Flag breaking-API or lint-violation implications loudly and early.
 
 ## Technical choices, always ask first
+
 - **Do not silently pick between reasonable alternatives.** Whenever a task admits more
   than one defensible approach (which Cupertino primitive to wrap, whether a new field
   is functional / shared-visual / platform-only per
@@ -37,6 +39,7 @@ triggers an automated publish).
   lint error), just do them.
 
 ## Tool preferences
+
 - **Read / Edit / Grep / Glob** over `cat` / `sed` / `grep` / `find`. Always.
 - **Bash** only for things without a dedicated tool: `flutter`, `dart`, `git`. The
   user's shell aliases `flutter` / `dart` to whatever toolchain manager serves the
@@ -48,6 +51,7 @@ triggers an automated publish).
   context. Not for trivial lookups.
 
 ## Scope awareness
+
 - **Public-API edits** (anything in `lib/platform_adaptive_widgets.dart`, or anything
   re-exported from it, every `PlatformXxx` widget, every `*Data` class, every
   extension, every typedef) are pub.dev-visible. Treat them with care. Flag whether the
@@ -65,6 +69,7 @@ triggers an automated publish).
   `platforms:` entries is also pub.dev-visible.
 
 ## Auto-memory conventions for this project
+
 - **`project` memories**: scope/constraints the user states aloud (e.g. "we're cutting
   v1.1 before Friday", "minimum Flutter bumps to 3.40 on date Y", "Y feature is on hold
   until Z lands upstream"). Convert relative dates to absolute.
@@ -80,6 +85,7 @@ triggers an automated publish).
 - **Before acting on a memory**, verify the named file / widget / symbol still exists.
 
 ## Plan before editing when
+
 - The change touches the public API (anything re-exported from
   `lib/platform_adaptive_widgets.dart`). Even adding a new public widget or `*Data`
   field affects semver and downstream users.
@@ -102,6 +108,7 @@ tag, is **not** in the routine-edit list. All 3 move together only when the user
 explicitly says "cut a release". See *Forbidden / confirm-first actions* below.
 
 ## Commit / PR etiquette
+
 - **Never commit without being asked.** Not after a fix, not as a "checkpoint".
 - **Never push without being asked.** Especially not to `master`, and especially not a
   semver tag (which triggers pub.dev publish via
@@ -116,6 +123,7 @@ explicitly says "cut a release". See *Forbidden / confirm-first actions* below.
   approval.
 
 ## Forbidden / confirm-first actions
+
 - **Never** `flutter pub publish` or `dart pub publish`. Publishing is effectively
   one-way, pub.dev reserves the version for 7 days after retraction. Releases happen
   through the tag-triggered workflow at `.github/workflows/publish.yml`. Pushing a
@@ -138,8 +146,9 @@ explicitly says "cut a release". See *Forbidden / confirm-first actions* below.
   first.
 
 ## Definition of done
-- `flutter analyze` clean (the project's `errors:` block promotes many lints to errors
- , non-negotiable).
+
+- `flutter analyze` clean (the project's `errors:` block promotes many lints to errors,
+  non-negotiable).
 - `dcm analyze` clean, the `dart_code_metrics` rules (e.g. `avoid-returning-widgets`)
   are **not** surfaced by `flutter analyze`, so they need their own pass via the `dcm`
   CLI (`dcm analyze <dir>`). Treat it as a separate, required lint gate.

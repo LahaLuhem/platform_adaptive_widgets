@@ -29,11 +29,9 @@ screenshots:
 
 
 
-
 environment:
   sdk: ">=3.13.0 <4.0.0"
   flutter: ">=3.47.0"
-
 
 
 
@@ -50,7 +48,6 @@ dependencies:
 
 
 
-
 dev_dependencies:
   analyzer: ^14.4.0   # AOT-pruning regression guard
   checks: ^0.3.2
@@ -61,10 +58,6 @@ dev_dependencies:
   # dart_code_metrics:metrics check-unused-files lib --disable-sunset-warning
   # Selectively on/off due to https://github.com/huanghui1998hhh/prefer_shorthands/issues/7
 #  prefer_shorthands: ^0.4.7
-
-# dependency_validator 5.0.6 caps analyzer below 14. Drop once its master's wider cap ships.
-dependency_overrides:
-  analyzer: ^14.4.0
 
 cider:
   link_template:

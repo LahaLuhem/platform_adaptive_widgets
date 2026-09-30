@@ -111,19 +111,24 @@ style.
   | `ctx`       | `context` (Flutter's `BuildContext` arg stays `context` by convention) |
   | `evt`       | `event` |
 
-  This rule binds *every* identifier, fields, locals, parameters, pattern bindings (`switch (x) { final cb => … }` is **out**, spell it). The only carve-outs are the genre conventions: single-letter loop counters (`i`, `j`), `e` in `catch (e)`, `(a, b)` in symmetric comparator pairs, `x`/`y` for coordinates.
+  This rule binds *every* identifier, fields, locals, parameters, pattern bindings
+  (`switch (x) { final cb => … }` is **out**, spell it). The only carve-outs are the genre
+  conventions: single-letter loop counters (`i`, `j`), `e` in `catch (e)`, `(a, b)` in symmetric
+  comparator pairs, `x`/`y` for coordinates.
+
 - **Local-variable names carry a concise type-suffix.** Dart is strongly typed, but a
   reader without IDE inlay-hints can't see the inferred type, the *name* has to do
   that work. Suffix a local with what it *is* so the next reader doesn't have to scroll
   back to the assignment (or install a plugin) to recover the type. **Callback
-  parameters** are exempt and stay single-word (`value`, `direction`, `selectedDate`)
- , the enclosing call site already pins the type. Single-letter callback params are
+  parameters** are exempt and stay single-word (`value`, `direction`, `selectedDate`),
+  since the enclosing call site already pins the type. Single-letter callback params are
   out, *except* symmetric pair-wise params in comparators / reducers where `(a, b)` is
   the genre convention. Regular method parameters follow the local-variable rule, not
   the callback exemption. **When a domain type exists, the suffix is the type name**,
   `cupertinoButtonData` (not `cupertinoData`), `platformAdaptiveIcons` (not `icons`),
   `tabDestinations` (not `destinations`). Generic suffixes (`Data`, `Info`, `Result`)
   lose the disambiguation the rule is meant to provide.
+
 - **Unused closure parameters take the discard `_`, not a real name.** Don't declare
   an identifier you don't reference, `_` makes the unused-ness immediate and removes
   a name the reader otherwise has to mentally scan the body for.
@@ -458,6 +463,7 @@ the leading type name in *all* of these positions, not just the obvious enum cas
   `cupertinoButtonData: CupertinoButtonData(padding: .zero)`.
 - **Constructor field defaults**: when the field's declared type pins the context,
   the default literal drops its prefix:
+
   ```dart
   final Axis direction;
   final DragStartBehavior dragStartBehavior;
@@ -466,6 +472,7 @@ the leading type name in *all* of these positions, not just the obvious enum cas
     this.dragStartBehavior = .start,         // not DragStartBehavior.start
   });
   ```
+
   Top-level / `static const` initializations are the exception, without an explicit
   type annotation on the LHS, Dart infers the constant's type from the RHS, so the
   prefix has to stay (`const kDefaultDirection = Axis.horizontal;` cannot become
@@ -565,6 +572,7 @@ enum CupertinoButtonVariant { normal, filled, tinted }
 ```
 
 **Why.** 3 real wins:
+
 - **Locality.** The default lives on the variant it describes. Adding a new
   variant requires picking a default, the const constructor parameter forces
   the choice at compile time. Top-level constants are easy to add then forget
@@ -652,6 +660,7 @@ children: [
 // Over:
 children: AxisDirection.values.map((dir) => DirectionTile(dir)).toList(),
 ```
+
 <a id="library-pipeline-methods-over-hand-rolled-loops"></a>
 ### Library pipeline methods over hand-rolled loops (for data manipulation)
 
@@ -859,6 +868,7 @@ they change. What follows is only this project's policy on each.
   /// start == end makes the directional form redundant).
   const kDefaultCupertinoSearchBarPadding = EdgeInsets.symmetric(horizontal: 5.5, vertical: 8);
   ```
+
 ---
 
 <a id="documentation-conventions-markdown"></a>

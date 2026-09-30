@@ -6,6 +6,7 @@ example-specific code style (MVVM, naming, widget composition, …) lives in
 [`CODESTYLE.md`](../CODESTYLE.md). Read both before working in this subdirectory.
 
 ## Scope
+
 - Runnable demo of `platform_adaptive_widgets`: showcases the public widgets on both
   Android and iOS and demonstrates the recommended usage patterns (MVVM, ValueNotifier
   reactivity, go_router integration).

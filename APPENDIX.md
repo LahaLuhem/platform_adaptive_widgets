@@ -156,7 +156,7 @@ Build-method resolution:
 - **Private `_PlatformXxxData` base, not public.** Exists only so per-platform
   records inherit shared-visual fields via `super.x` forwarding,
   compile-time-checked, no codegen needed for that edge. (The other 2 edges,
-  the widget mirroring the base's fields, and the `?? ` build-method wiring, are
+  the widget mirroring the base's fields, and the `??` build-method wiring, are
   *not* compiler-checked. They're held by the parity guard, see
   [*Enforcement*](#field-classification) below.) Never exported from
   [`lib/platform_adaptive_widgets.dart`](./lib/platform_adaptive_widgets.dart), so
@@ -249,7 +249,8 @@ drops the leading underscore, so callers still pass a non-null `onChanged:` and
 no `prefer_initializing_formals` ignore is needed. Private fields as named
 initializing formals need a recent Dart, which the `pubspec.yaml` floor already
 guarantees. (Omit the type and the formal inherits the field's
-nullable type, silently re-opening `onChanged` to `null`: the bug to avoid.) The `.tristate` ctor assigns in the initializer list instead,
+nullable type, silently re-opening `onChanged` to `null`: the bug to avoid.) The `.tristate` ctor
+assigns in the initializer list instead,
 it can't use the formal because its field `_onChangedTristate` would surface as
 `onChangedTristate`, while its public parameter must also be `onChanged` (the
 lint leaves that assignment alone for the same reason). Widening to the
@@ -262,6 +263,7 @@ with `_adaptedOnChanged` = `(v) => _onChanged!(v!)`: safe, reached only in
 **Chosen over 2 sibling classes** (`PlatformCheckbox` +
 `PlatformTristateCheckbox`) for the single discoverable name plus a `.tristate`
 constructor. The costs are minor and accepted:
+
 - One extra null pointer-slot per instance (the unused callback field). Not a
   heap allocation, `null` doesn't allocate, and object layout is per-class,
   so it isn't elided, ~8 bytes on an immutable widget.
@@ -299,8 +301,8 @@ constructor. The costs are minor and accepted:
 - **Cross-platform** functional fields (callbacks, controllers, value,
   state-gating that exist on both platforms) on `MaterialXxxData` or
   `CupertinoXxxData`. If the concept exists on both, it must be flat on the
-  widget, never in a per-platform record. (Platform-only functional fields
- , e.g. `MaterialProgressIndicatorData.value`: are the exception: they
+  widget, never in a per-platform record. (Platform-only functional fields,
+  e.g. `MaterialProgressIndicatorData.value`, are the exception: they
   have no other home since the concept doesn't exist on the other side.)
 - Direct passthrough to `Switch` / `CupertinoSwitch` constructor signatures.
   The widget still owns its public API. Per-platform records do not leak the
@@ -483,6 +485,7 @@ lexical references actually get pruned depends on **how** the dispatch is shaped
 | `cupertinoBuilder: (ctx) => CupertinoXxx(...)` passed as an argument | ✗ | Same as above, the closure literal is constructed at the call site regardless of whether the receiving function ever invokes it. |
 
 ### Internal rules the package follows
+
 1. **All `showPlatformXxx` functions switch on `defaultTargetPlatform` *first*,
    then construct only the matching-platform builder closure / call only the
    matching-platform private helper.** See

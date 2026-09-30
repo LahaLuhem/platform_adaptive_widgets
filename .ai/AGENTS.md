@@ -14,6 +14,7 @@ Public API in v1.x is stable: `PlatformXxx` widgets + per-platform `MaterialXxxD
 README for the full widget catalogue. APPENDIX for design rationale.
 
 ## Stack
+
 - **Flutter and Dart floors live in `pubspec.yaml`'s `environment:` block.** Read them
   there, they are not repeated here. Raise them only when a new language feature is
   actually consumed. `.fvmrc` pins the Flutter channel to `stable` for local use,
@@ -50,7 +51,8 @@ README for the full widget catalogue. APPENDIX for design rationale.
   pipeline-owned-files rules in [`scripts/README.md`](../scripts/README.md).
 
 ## Repo layout
-```
+
+```text
 platform_adaptive_widgets/
 ├── lib/
 │   ├── platform_adaptive_widgets.dart         Public entry; `export 'src/…'` only
@@ -96,6 +98,7 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
 `models/` (see [`APPENDIX.md#models-widgets-mirror-layout`](../APPENDIX.md#models-widgets-mirror-layout)).
 
 **The widget pattern (every `PlatformXxx`):**
+
 1. Extends one of `PlatformWidgetBase` / `PlatformWidgetKeyedBase` /
    `PlatformWidgetBuilderBase` / `PlatformWidgetKeyedBuilderBase` from
    [`lib/src/models/platform_widget_base.dart`](../lib/src/models/platform_widget_base.dart).
@@ -119,7 +122,7 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    for shared-visual fields whose native names or types diverge.
 
    A new shared-visual field must be added in **both** places, flat on the
-   widget *and* on the `_PlatformXxxData` base, and merged with `?? ` in both
+   widget *and* on the `_PlatformXxxData` base, and merged with `??` in both
    `buildMaterial` and `buildCupertino`. The
    [data ↔ widget parity guard](../test/data_widget_parity_test.dart) fails the
    PR if either edge drifts (these 2 edges are the ones the Dart compiler does
@@ -128,6 +131,7 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    (*Enforcement*).
 
 ## Hard rules
+
 1. **The public API lives only in `lib/platform_adaptive_widgets.dart`.** That file
    re-exports from `lib/src/`. Don't make users import from
    `package:platform_adaptive_widgets/src/…`: the `src/` subtree is private by
@@ -173,7 +177,7 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    (size benchmark over an Android build of `tool/size_harness/`). A regression
    trips at least one of them. Don't disable or weaken either without an
    explicit conversation.
-8. **`CHANGELOG.md` and `version:` move together with the release tag.** Routine
+9. **`CHANGELOG.md` and `version:` move together with the release tag.** Routine
    CHANGELOG appends are bot-driven (`changelog.yml` + `cider`), but cutting a
    release, bumping `version:`, finalising the `[Unreleased]` section, committing,
    and pushing the matching `X.Y.Z` tag, is still hand-driven. If you edit
@@ -181,10 +185,10 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    commit, the publish workflow's tag push will mismatch the in-tree state. Do not
    edit either file without an explicit user instruction to cut a release. See
    [*Forbidden / confirm-first actions* in CLAUDE.md](./CLAUDE.md#forbidden--confirm-first-actions).
-9. **`.idea/` is deliberately part-tracked.** Only [`.idea/.gitignore`](../.idea/.gitignore)
-   and [`.idea/runConfigurations/`](../.idea/runConfigurations/) are committed. `/.idea/*`
-   in `.gitignore` drops the rest. The run configs are shared tooling, so don't let a
-   cleanliness sweep untrack `.idea/` wholesale. Extend the negations to share a new path.
+10. **`.idea/` is deliberately part-tracked.** Only [`.idea/.gitignore`](../.idea/.gitignore)
+    and [`.idea/runConfigurations/`](../.idea/runConfigurations/) are committed. `/.idea/*`
+    in `.gitignore` drops the rest. The run configs are shared tooling, so don't let a
+    cleanliness sweep untrack `.idea/` wholesale. Extend the negations to share a new path.
 
 ## PR conventions
 The `.github/workflows/pr-conventions.yml` workflow enforces branch-name, PR-label,
@@ -235,6 +239,7 @@ For everything else, naming, idioms, class structure, DCM rules, markdown conven
 go to [`../CODESTYLE.md`](../CODESTYLE.md).
 
 ## Guidelines for any AI agent
+
 - **Always ask before making technical choices.** When the task admits more than one
   reasonable approach (which platform-specific widget to wrap on the Cupertino side,
   whether to add a new `*Data` field vs reuse an existing one, whether to expose a
@@ -242,8 +247,8 @@ go to [`../CODESTYLE.md`](../CODESTYLE.md).
   etc.), stop and ask. Present the options with trade-offs, say which you'd pick and
   why, then wait. Don't silently pick one and build. This applies even when a choice
   feels small, small choices compound.
-- **Mark recommendations with `★`.** Prefix your preferred option in every set with `★`
- , in tables, bullet lists, headings, inline, so the user can scan and reply by
+- **Mark recommendations with `★`.** Prefix your preferred option in every set with `★`,
+  in tables, bullet lists, headings, inline, so the user can scan and reply by
   echoing or overriding (e.g. "★ for 1-4, change 5 to B"). Exactly one star per option
   set in most cases. Occasionally a combined choice warrants more.
 - **Refactor first when the change needs it.** Before building a feature, check whether
