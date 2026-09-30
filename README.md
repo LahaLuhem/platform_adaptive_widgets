@@ -1,4 +1,5 @@
-[![Package checks](https://github.com/LahaLuhem/platform_adaptive_widgets/actions/workflows/package.yml/badge.svg?branch=master)](https://github.com/LahaLuhem/platform_adaptive_widgets/actions/workflows/package.yml)
+[![CI](https://github.com/LahaLuhem/platform_adaptive_widgets/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/LahaLuhem/platform_adaptive_widgets/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/LahaLuhem/platform_adaptive_widgets/badge.svg?branch=master)](https://coveralls.io/github/LahaLuhem/platform_adaptive_widgets?branch=master)
 [![Pub Version](https://img.shields.io/pub/v/platform_adaptive_widgets.svg)](https://pub.dev/packages/platform_adaptive_widgets)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/pulls)
 [![Pub Package](https://img.shields.io/pub/v/platform_adaptive_widgets.svg)](https://pub.dev/packages/platform_adaptive_widgets)
