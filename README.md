@@ -1,10 +1,13 @@
 [![Package checks](https://github.com/LahaLuhem/platform_adaptive_widgets/actions/workflows/package.yml/badge.svg?branch=master)](https://github.com/LahaLuhem/platform_adaptive_widgets/actions/workflows/package.yml)
 [![Pub Version](https://img.shields.io/pub/v/platform_adaptive_widgets.svg)](https://pub.dev/packages/platform_adaptive_widgets)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/pulls) [![Pub Package](https://img.shields.io/pub/v/platform_adaptive_widgets.svg)](https://pub.dev/packages/platform_adaptive_widgets)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/pulls)
+[![Pub Package](https://img.shields.io/pub/v/platform_adaptive_widgets.svg)](https://pub.dev/packages/platform_adaptive_widgets)
 [![Pub Points](https://img.shields.io/pub/points/platform_adaptive_widgets?logo=dart)](https://pub.dev/packages/platform_adaptive_widgets/score)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/LahaLuhem/platform_adaptive_widgets.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/issues) [![GitHub closed issues](https://img.shields.io/github/issues-closed/LahaLuhem/platform_adaptive_widgets.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/issues?q=is%3Aissue+is%3Aclosed)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/LahaLuhem/platform_adaptive_widgets.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/pulls) [![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/LahaLuhem/platform_adaptive_widgets.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/pulls?q=is%3Apr+is%3Aclosed)
+[![GitHub issues](https://img.shields.io/github/issues/LahaLuhem/platform_adaptive_widgets.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/issues)
+[![GitHub closed issues](https://img.shields.io/github/issues-closed/LahaLuhem/platform_adaptive_widgets.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/issues?q=is%3Aissue+is%3Aclosed)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/LahaLuhem/platform_adaptive_widgets.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/pulls)
+[![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/LahaLuhem/platform_adaptive_widgets.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/pulls?q=is%3Apr+is%3Aclosed)
 
 One set of widgets that feels native on both phones, **Material** on Android, **Cupertino** on
 iOS, without a single `Platform.isIOS` check in your own code.
@@ -300,7 +303,8 @@ If you're ever unsure where a given property belongs,
 
 ### Base Classes
 
-All platform widgets extend one of these base classes, which use compile-time `defaultTargetPlatform` resolution:
+All platform widgets extend one of these base classes, which use compile-time
+`defaultTargetPlatform` resolution:
 
 | Base Class                       | Description                                                                    |
 |----------------------------------|--------------------------------------------------------------------------------|
@@ -387,7 +391,7 @@ behind the `.ai/` arrangement.
 ## Contributors
 
 <a href="https://github.com/LahaLuhem/platform_adaptive_widgets/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=LahaLuhem/platform_adaptive_widgets"  alt="Contributors"/>
+  <img src="https://contrib.rocks/image?repo=LahaLuhem/platform_adaptive_widgets" alt="Contributors"/>
 </a>
 
 Made with [contrib.rocks](https://contrib.rocks).
