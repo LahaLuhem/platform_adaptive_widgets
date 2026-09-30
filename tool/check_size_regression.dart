@@ -1,30 +1,3 @@
-// AOT-pruning size-regression guard for the size-harness Android build.
-//
-// Walks the JSON snapshot produced by `flutter build apk --analyze-size`,
-// sums the bytes of every symbol whose path contains "cupertino"
-// (case-insensitive), and fails if the total exceeds a budget.
-//
-// Why a threshold and not "zero":
-//
-//   - Some Cupertino code is pulled into every Material-only Android build by
-//     Flutter SDK internals (e.g. text-selection toolbars). We can't drive
-//     that to zero from outside the SDK.
-//   - The pruning contract we care about: a refactor that re-introduces
-//     deferred-dispatch (closures-as-args passed into a sub-helper instead of
-//     dispatched inline at the public entry point) drags in entire Cupertino
-//     widget implementations, `CupertinoAlertDialog`, `CupertinoDatePicker`,
-//     etc., adding ~150-200 KB. The threshold is calibrated so the current
-//     correctly-pruned build passes with comfortable headroom, while a full
-//     deferred-dispatch regression fails loudly.
-//
-// When the threshold needs raising: a Flutter SDK update genuinely grew the
-// baseline. Re-run the build locally, read the printed "actual" number, and
-// raise [_maxCupertinoBytes] above it by a small buffer. Don't raise it to
-// silence an actual leak, investigate first against
-// APPENDIX.md#aot-pruning-rules.
-//
-// Usage: dart tool/check_size_regression.dart <path-to-app-size-analysis.json>
-
 // ignore_for_file: prefer-match-file-name
 
 import 'dart:convert';
@@ -35,18 +8,27 @@ import 'dart:io';
 /// The harness measured ~107 KB on 2026-06-08, nearly all of it SDK-internal Cupertino nothing outside
 /// the SDK can prune. This sits ~33 KB above that, which is the point: one leaked `CupertinoDatePicker`
 /// costs ~61 KB and so trips it, where the old 200 KB budget had enough headroom to swallow that
-/// silently. The remaining margin covers SDK drift about threefold.
+/// silently. The remaining margin covers SDK drift about threefold. Raise it only for SDK growth, never
+/// for a leak: APPENDIX.md#aot-pruning-rules.
 const int _maxCupertinoBytes = 140 * 1024;
 
 /// Number of top offenders to print on failure.
 const _maxOffendersShown = 30;
 
+/// `flutter build apk --analyze-size` writes its report here, and keeps the earlier ones.
+final _reportsDir = Directory('${Platform.environment['HOME']!}/.flutter-devtools');
+final _reportName = RegExp(r'^apk-code-size-analysis_.*\.json$');
+
 Future<void> main(List<String> args) async {
-  if (args.length != 1) {
-    stderr.writeln('Usage: dart tool/check_size_regression.dart <path-to-app-size-analysis.json>');
+  if (args.length > 1) {
+    stderr.writeln('Usage: dart tool/check_size_regression.dart [path-to-app-size-analysis.json]');
     exit(64);
   }
-  final file = File(args.single);
+  final file = args.isEmpty ? _newestReport() : File(args.single);
+  if (file == null) {
+    stderr.writeln('No size report in ${_reportsDir.path} to check.');
+    exit(66);
+  }
   if (!file.existsSync()) {
     stderr.writeln('File not found: ${file.path}');
     exit(66);
@@ -82,6 +64,20 @@ Future<void> main(List<String> args) async {
   }
 
   exit(1);
+}
+
+File? _newestReport() {
+  if (!_reportsDir.existsSync()) return null;
+
+  final reports =
+      _reportsDir
+          .listSync()
+          .whereType<File>()
+          .where((file) => _reportName.hasMatch(file.uri.pathSegments.last))
+          .toList(growable: false)
+        ..sort((a, b) => a.lastModifiedSync().compareTo(b.lastModifiedSync()));
+
+  return reports.lastOrNull;
 }
 
 /// Every leaf in the `--analyze-size` tree whose path mentions cupertino, case-insensitively. Lazy.

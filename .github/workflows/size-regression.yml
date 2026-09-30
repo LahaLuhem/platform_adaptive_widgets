@@ -1,0 +1,50 @@
+name: Size regression
+
+# No `paths:` filter: a run it skips never reports, which leaves the required check waiting.
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  size-regression:
+    name: AOT pruning size regression
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+          java-package: jdk
+          set-default: true
+          cache: gradle
+      # `flutter create` below gets the harness's packages, and the check uses none.
+      - uses: LahaLuhem/dartender/actions/setup-flutter@main
+        with:
+          pub-get: false
+      # The harness keeps no android/ folder in git, so this makes one.
+      - working-directory: tool/size_harness
+        run: flutter create --platforms=android .
+      - working-directory: tool/size_harness
+        run: flutter build apk --release --analyze-size --target-platform=android-arm64
+      - run: dart tool/check_size_regression.dart
+
+  # The ruleset requires this job's id, so it gets no `name:`.
+  size-regression-ok:
+    needs: size-regression
+    if: always()
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - env:
+          RESULTS: size-regression=${{ needs.size-regression.result }}
+        run: echo "$RESULTS"
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
