@@ -16,7 +16,6 @@ build/
 *.iml
 
 # Maintainer-only tooling.
-scripts/
 tool/
 
 # Context7 doc-indexer config — repo metadata for context7.com, not a consumer file.

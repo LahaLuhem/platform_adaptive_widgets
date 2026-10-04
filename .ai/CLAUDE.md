@@ -136,8 +136,7 @@ explicitly says "cut a release". See *Forbidden / confirm-first actions* below.
   `example/pubspec.lock` without an explicit user instruction to cut a release,
   the 3 are pipeline-owned and move in lockstep. Routine CHANGELOG appends are
   handled by the `changelog.yml` bot on PR merge. When the user authorises a
-  release, run [`scripts/release.sh`](scripts/release.sh), full mechanics in
-  [`scripts/README.md`](../scripts/README.md).
+  release, start **Release** from the Actions tab, or `gh workflow run release.yml -f bump=<bump>`.
 - **Never** edit `pubspec.lock` directly (root or `example/`). It's `flutter pub get`'s
   output.
 - **Never** delete files under `.fvm/`, `.dart_tool/`, or `pubspec.lock` without

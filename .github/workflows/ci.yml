@@ -6,6 +6,8 @@ on:
     branches: [master]
   push:
     branches: [master]
+  # The release caller runs it first.
+  workflow_call:
 
 jobs:
   # The required check, ci / ok, takes its name from this job.
@@ -19,4 +21,3 @@ jobs:
       coveralls: true
       min-coverage: 20
       coverage-excludes: ""
-      python-min-coverage: 0
