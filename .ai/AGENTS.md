@@ -26,13 +26,11 @@ README for the full widget catalogue. APPENDIX for design rationale.
   `errors:`-promoted rules. Pedantic mode is intentional, not negotiable.
 - **`flutter_test`** for widget / unit tests.
 - **CLI linting via the [linterpol](https://github.com/LahaLuhem/linterpol) Docker image.**
-  Shell scripts (`shellcheck`), GitHub workflows (`actionlint`), Markdown (`rumdl`) and YAML
-  (`ryl`) are linted by running the public, multi-arch `ghcr.io/lahaluhem/linterpol:latest` image
-  (`docker run --rm -v "$PWD:/work:ro" "$LINTERPOL_IMAGE" <tool>`), not hand-installed
-  tools. CI runs the checks in `.github/lint-checks.json`, and `scripts/release.sh` runs
-  `shellcheck` the same way (image-only, so Docker must be running). Don't reintroduce
-  `brew` / `pip` / `uv` linter installs. `release.sh` keeps its image ref in one
-  `LINTERPOL_IMAGE` var (swap to a digest there to pin).
+  GitHub workflows (`actionlint`), Markdown (`rumdl`) and YAML (`ryl`) are linted by running
+  the public, multi-arch `ghcr.io/lahaluhem/linterpol:latest` image
+  (`docker run --rm -v "$PWD:/work:ro" ghcr.io/lahaluhem/linterpol:latest <tool>`), not
+  hand-installed tools. CI runs the checks in `.github/lint-checks.json`. Don't reintroduce
+  `brew` / `pip` / `uv` linter installs.
 - **Android + iOS only.** `platforms:` in `pubspec.yaml` declares the supported set. The
   `PlatformWidgetBase.build` switch throws `UnsupportedError` for anything else.
 - **Published to pub.dev.** `.pubignore` controls what ships in the tarball. The
@@ -44,9 +42,8 @@ README for the full widget catalogue. APPENDIX for design rationale.
   the 3 things that must move in lockstep for a release. CHANGELOG entries are
   appended automatically by `.github/workflows/changelog.yml` on every merged PR
   (driven by the PR's `sem-*` label and the `cider:` block in `pubspec.yaml`), no
-  manual append is needed during routine PR work. Cutting a release is one command:
-  `scripts/release.sh [patch|minor|major]`: full mechanics, preflight, and
-  pipeline-owned-files rules in [`scripts/README.md`](../scripts/README.md).
+  manual append is needed during routine PR work. A release starts from the Actions tab, see
+  [dartender's Releasing](https://github.com/LahaLuhem/dartender#releasing).
 
 ## Repo layout
 
@@ -213,9 +210,9 @@ auto-appends to `CHANGELOG.md` based on the PR's `sem-*` label (via `cider log`)
 - **PR body must not be empty**, **no merge commits in the PR range** (rebase to
   integrate `master`), and **commit subjects ≤ 82 characters**.
 
-Cutting a release is one command: `scripts/release.sh [patch|minor|major]`: see
-[`scripts/README.md`](../scripts/README.md) for usage, preflight, flags, and the
-pipeline-owned-files contract.
+Cutting a release is one run: **Release** in the Actions tab, then the bump. It runs CI, moves
+the version, the CHANGELOG and `example/pubspec.lock` together, and pushes the tag `publish.yml`
+picks up. [dartender's Releasing](https://github.com/LahaLuhem/dartender#releasing) has the rest.
 
 ## Style
 Full guide: [`../CODESTYLE.md`](../CODESTYLE.md). The lint posture is deliberately strict
