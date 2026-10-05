@@ -21,7 +21,9 @@ README for the full widget catalogue. APPENDIX for design rationale.
   whatever toolchain manager serves it (FVM, asdf, plain `flutter`) is a local
   implementation detail.
 - **`flutter analyze`** (or `dart analyze` for the pure-Dart subset) for pedantic static
-  analysis. The lint posture is deliberately strict. See `analysis_options.yaml` for
+  analysis. The lint posture is deliberately strict. See
+  [dartender's shared lints](https://github.com/LahaLuhem/dartender/blob/main/lints/lib/analysis_options.yaml),
+  which `analysis_options.yaml` includes, for
   `strict-casts`, `strict-inference`, `strict-raw-types`, plus the
   `errors:`-promoted rules. Pedantic mode is intentional, not negotiable.
 - **`flutter_test`** for widget / unit tests.
@@ -71,7 +73,7 @@ platform_adaptive_widgets/
 │           ├── layout/                         `PlatformApp` / `Scaffold` / `AppBar` / …
 │           └── painting/                       `PlatformListTile` / `ProgressIndicator`
 ├── example/                                    Runnable Flutter demo (see example/.ai/AGENTS.md)
-├── analysis_options.yaml                       Strict-mode + opinionated lints
+├── analysis_options.yaml                       Includes dartender's shared lints
 ├── pubspec.yaml                                Deps + platforms + topics
 ├── .pubignore                                  Files excluded from `flutter pub publish`
 ├── .fvmrc                                      FVM channel pin (`stable`)
@@ -134,9 +136,9 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    [`APPENDIX.md#public-api-via-single-export-file`](../APPENDIX.md#public-api-via-single-export-file).
 2. **No `print()` in library code.** Diagnostic output is the caller's responsibility
    (loggers, callbacks, the example app). `avoid_print` is already a warning in
-   `analysis_options.yaml`.
+   the shared lints.
 3. **No `dynamic` escape hatches.** `strict-casts`, `strict-inference`, and
-   `strict-raw-types` are all on in `analysis_options.yaml`. If you reach for `dynamic`
+   `strict-raw-types` are all on in the shared lints. If you reach for `dynamic`
    or unconstrained `Object?`, stop and reconsider.
 4. **Public symbols carry dartdoc.** Every public class / widget / function / getter /
    extension needs a `///` comment that explains *why*, not *what*, types already carry
@@ -216,12 +218,12 @@ picks up. [dartender's Releasing](https://github.com/LahaLuhem/dartender#releasi
 
 ## Style
 Full guide: [`../CODESTYLE.md`](../CODESTYLE.md). The lint posture is deliberately strict
-(see `analysis_options.yaml`), the explicit `errors:` block promotes a long list of
+(see the shared lints), the explicit `errors:` block promotes a long list of
 lints to errors. Top-level rules to keep in working memory:
 
 - Type-annotate every public symbol. `final` by default for fields and locals.
 - Nullability is explicit (no `as T` on `T?`).
-- 100-column line width (`formatter.page_width: 100` in `analysis_options.yaml`).
+- 100-column line width (`formatter.page_width: 100` in the shared lints).
 - No magic numbers in `lib/` code, pull to named `static const`s.
 - Public symbols carry `///` dartdoc explaining *why*, not *what*. Aim for 1 or 2 lines, and
   leave a field bare where the name and type already say it.
@@ -269,7 +271,7 @@ go to [`../CODESTYLE.md`](../CODESTYLE.md).
 - **Read <https://noslopgrenade.com/> before writing any prose.** Dartdoc, comments, commit
   messages, PR bodies. Fetch the page, don't cite it from memory: it is the intent behind
   [Prose & voice](../CODESTYLE.md#prose), and skipping it is how the wall of text gets written.
-- **Read `analysis_options.yaml` before writing code.** The `errors:` block promotes
+- **Read the shared lints before writing code.** The `errors:` block promotes
   many lints to errors. The lint posture is far stricter than the Dart default, code
   that fails lint won't pass review.
 - **Surface semver implications loudly.** If a change touches anything re-exported from

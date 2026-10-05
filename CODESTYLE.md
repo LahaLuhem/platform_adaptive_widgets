@@ -4,8 +4,9 @@ Library-package code style. Project facts (goal, stack, repo layout, hard rules)
 [`example/CODESTYLE.md`](./example/CODESTYLE.md).
 
 The lint posture is deliberately strict (see
-[`analysis_options.yaml`](./analysis_options.yaml), the `errors:` block promotes many
-lints to errors). The house style values explicit types, no ambient mutability, and
+[dartender's shared lints](https://github.com/LahaLuhem/dartender/blob/main/lints/lib/analysis_options.yaml),
+which [`analysis_options.yaml`](./analysis_options.yaml) includes: the `errors:` block promotes
+many lints to errors). The house style values explicit types, no ambient mutability, and
 small focused classes.
 
 Each heading below carries an explicit `<a id="…">` anchor. Link by anchor, not by
@@ -217,7 +218,7 @@ style.
 ## Formatting
 
 - **Wrap text-file content at 100 columns.** `formatter.page_width: 100` in
-  `analysis_options.yaml` is authoritative for Dart code. Markdown and **dartdoc
+  the shared lints is authoritative for Dart code. Markdown and **dartdoc
   comments** follow the same cap by hand, since `dart format` does *not* reflow
   comment prose.
 - **Don't squash prose to fit the cap.** For docs and comments the 100 is a guide,
@@ -804,7 +805,7 @@ public getters and methods, and the primary constructor itself (which is what th
 Fill a `///` line until a word takes it to or past column 100, keep that word on the
 line, then wrap. Lines therefore end up slightly over 100 rather than short of it.
 `dart format` never rewraps comments, and `lines_longer_than_80_chars` is `ignore`d in
-`analysis_options.yaml`, so nothing fights this.
+the shared lints, so nothing fights this.
 
 Never break inside a backtick span, since the code then straddles 2 lines in source
 even though Markdown still renders it.
@@ -876,7 +877,7 @@ they change. What follows is only this project's policy on each.
 
 - **Never restate what another file already states.** Point at it instead. A version
   constraint, a lint list, a dependency set, a file tree, a test count: all of these
-  live in `pubspec.yaml`, `analysis_options.yaml` or the repo itself, and a prose copy
+  live in `pubspec.yaml`, the shared lints or the repo itself, and a prose copy
   is both redundant and quietly wrong the moment the real one moves. Write "the floor is
   whatever `pubspec.yaml`'s `environment:` says", not the numbers.
 

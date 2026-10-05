@@ -25,4 +25,9 @@ dependencies:
 flutter:
   uses-material-design: true
 dev_dependencies:
+  dartender_lints:
+    git:
+      url: https://github.com/LahaLuhem/dartender.git
+      path: lints
+      ref: main
   dependency_validator: ^5.1.0
