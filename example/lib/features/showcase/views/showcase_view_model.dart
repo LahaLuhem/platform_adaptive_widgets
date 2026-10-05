@@ -23,10 +23,16 @@ final class ShowcaseViewModel extends ViewModel {
 
   void onProbeIncremented() => _tapCountNotifier.value++;
 
+  // A view-event callback, named on<Event> per CODESTYLE.
+  // ignore: use_setters_to_change_properties
   void onControlEnabledToggled({required bool value}) => _controlEnabledNotifier.value = value;
 
+  // A view-event callback, named on<Event> per CODESTYLE.
+  // ignore: use_setters_to_change_properties
   void onGatedToggled({required bool value}) => _gatedValueNotifier.value = value;
 
+  // A view-event callback, named on<Event> per CODESTYLE.
+  // ignore: use_setters_to_change_properties
   void onCheckboxToggled({required bool? value}) => _checkboxValueNotifier.value = value;
 
   Future<void> onPushPagePressed({required bool large}) =>

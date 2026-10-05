@@ -44,9 +44,9 @@ triggers an automated publish).
 - **Bash** only for things without a dedicated tool: `flutter`, `dart`, `git`. The
   user's shell aliases `flutter` / `dart` to whatever toolchain manager serves the
   `.fvmrc`-pinned channel, invoke plain `flutter` / `dart`, not the manager directly.
-- **Lint with `flutter analyze`** (or `dart analyze` for the pure-Dart subset under
-  `lib/src/extensions/` etc.). The project promotes many lints to `error:` in
-  `analysis_options.yaml`: those are the contract, not suggestions.
+- **Lint with `flutter analyze --fatal-infos --fatal-warnings`** (or `dart analyze` with the same
+  flags for the pure-Dart subset under `lib/src/extensions/` etc.). The shared lints promote many
+  lints to `error:`: those are the contract, not suggestions.
 - **Agent tool** for wide / open-ended searches or to keep large outputs out of main
   context. Not for trivial lookups.
 
@@ -62,8 +62,8 @@ triggers an automated publish).
 - **`example/` edits** are local, no publish impact. The demo app is the living usage
   reference. Keep it building and runnable on both Android and iOS. See
   [`example/.ai/AGENTS.md`](example/.ai/AGENTS.md) for sub-scope conventions.
-- **`analysis_options.yaml` edits** affect every file. Surface lint-posture changes
-  loudly and add a written reason in `APPENDIX.md`.
+- **`analysis_options.yaml` edits** override dartender's shared lints, which every repo gets.
+  Surface them loudly and add a written reason in `APPENDIX.md`.
 - **`pubspec.yaml` edits** that touch `dependencies` add to every downstream user's
   transitive closure. Treat as public-API-class. Adding or removing `topics:` or
   `platforms:` entries is also pub.dev-visible.
@@ -91,8 +91,8 @@ triggers an automated publish).
   field affects semver and downstream users.
 - You're adding or removing a dependency in `pubspec.yaml`. Each dep expands the
   user-facing surface area and constrains downstream resolution.
-- You're changing `analysis_options.yaml`. Lint posture is project-wide. Any toggle
-  deserves a written reason in APPENDIX.
+- You're overriding a shared lint in `analysis_options.yaml`. Lint posture is project-wide. Any
+  toggle deserves a written reason in APPENDIX.
 - You're adding a new `PlatformXxx` widget. The pattern is load-bearing
   (`PlatformWidgetBase` subclass + paired `*Data` classes + matching `models/` ↔
   `widgets/` location). Plan the shape against the existing pattern before writing
@@ -146,13 +146,13 @@ explicitly says "cut a release". See *Forbidden / confirm-first actions* below.
 
 ## Definition of done
 
-- `flutter analyze` clean (the project's `errors:` block promotes many lints to errors,
-  non-negotiable).
+- `flutter analyze --fatal-infos --fatal-warnings` clean (the shared `errors:` block promotes
+  many lints to errors, non-negotiable).
 - `dcm analyze` clean, the `dart_code_metrics` rules (e.g. `avoid-returning-widgets`)
   are **not** surfaced by `flutter analyze`, so they need their own pass via the `dcm`
   CLI (`dcm analyze <dir>`). Treat it as a separate, required lint gate.
 - `dart format --output=none --set-exit-if-changed .` clean (100-column width matches
-  `analysis_options.yaml`'s `formatter.page_width`).
+  the shared lints' `formatter.page_width`).
 - `flutter test` green (where tests exist).
 - `flutter pub publish --dry-run` clean if the change is publish-relevant. Do **not**
   bump the version or add a CHANGELOG entry to make the dry-run happy. Those are

@@ -1,16 +1,6 @@
-analyzer:
-  exclude:
-    - build/**
-    - android/**
-    - ios/**
-    - web/**
-    - windows/**
-    - macos/**
-    - linux/**
-include: ../analysis_options.yaml
+# Not ../analysis_options.yaml, which dependency_validator doesn't count as using the package.
+include: package:dartender_lints/analysis_options.yaml
 
 linter:
   rules:
-    diagnostic_describe_all_properties: false   # For package-level only
     public_member_api_docs: false   # Demo code doesn't document members.
-    use_setters_to_change_properties: false   # Conflicts with simple VM methods
