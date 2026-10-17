@@ -40,7 +40,7 @@ void main() {
       check(
         because:
             'dart doc only warns on a broken ref and still exits 0, so the example '
-            'just vanishes from the rendered page. Nothing else catches this.',
+            'just vanishes from the rendered page.',
         broken,
       ).isEmpty();
     });

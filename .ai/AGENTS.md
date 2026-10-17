@@ -20,7 +20,7 @@ README for the full widget catalogue. APPENDIX for design rationale.
   actually consumed. `.fvmrc` pins the Flutter channel to `stable` for local use,
   whatever toolchain manager serves it (FVM, asdf, plain `flutter`) is a local
   implementation detail.
-- **`flutter analyze`** (or `dart analyze` for the pure-Dart subset) for pedantic static
+- **`dart analyze --fatal-infos --fatal-warnings .`**, as CI runs it, for pedantic static
   analysis. The lint posture is deliberately strict. See
   [dartender's shared lints](https://github.com/LahaLuhem/dartender/blob/main/lints/lib/analysis_options.yaml),
   which `analysis_options.yaml` includes, for
@@ -31,8 +31,10 @@ README for the full widget catalogue. APPENDIX for design rationale.
   GitHub workflows (`actionlint`), Markdown (`rumdl`) and YAML (`ryl`) are linted by running
   the public, multi-arch `ghcr.io/lahaluhem/linterpol:latest` image
   (`docker run --rm -v "$PWD:/work:ro" ghcr.io/lahaluhem/linterpol:latest <tool>`), not
-  hand-installed tools. CI runs the checks in `.github/lint-checks.json`. Don't reintroduce
-  `brew` / `pip` / `uv` linter installs.
+  hand-installed tools. CI runs the checks in `.github/lint-checks.json`, after copying in
+  [dartender's default configs](https://github.com/LahaLuhem/dartender/tree/main/actions/lint/defaults)
+  as `.rumdl.toml` and `.yamllint.yaml`, since this repo has neither. Copy them in for a local
+  rumdl or ryl run too. Don't reintroduce `brew` / `pip` / `uv` linter installs.
 - **Android + iOS only.** `platforms:` in `pubspec.yaml` declares the supported set. The
   `PlatformWidgetBase.build` switch throws `UnsupportedError` for anything else.
 - **Published to pub.dev.** `.pubignore` controls what ships in the tarball. The
@@ -40,12 +42,12 @@ README for the full widget catalogue. APPENDIX for design rationale.
   (`{{version}}`) and hands off to dartender's `publish.yml`, which publishes via OIDC
   (configured by `dart-lang/setup-dart`) and runs no `pub get`, so `example/pubspec.lock`
   stays byte-identical through the publish dry-run. No manual `flutter pub publish` invocation.
-- **`CHANGELOG.md`, the `version:` field in `pubspec.yaml`, and the release tag** are
-  the 3 things that must move in lockstep for a release. CHANGELOG entries are
-  appended automatically by `.github/workflows/changelog.yml` on every merged PR
-  (driven by the PR's `sem-*` label and the `cider:` block in `pubspec.yaml`), no
-  manual append is needed during routine PR work. A release starts from the Actions tab, see
-  [dartender's Releasing](https://github.com/LahaLuhem/dartender#releasing).
+- **`CHANGELOG.md`, the `version:` field in `pubspec.yaml`, and the release tag** move
+  together in the Release run, which the user starts from the Actions tab (see
+  [dartender's Releasing](https://github.com/LahaLuhem/dartender#releasing)). It also adds
+  Dependabot's CHANGELOG lines. Every other line comes from `.github/workflows/changelog.yml`,
+  one per merged PR with a `sem-*` label other than `sem-skip`, so routine PR work appends
+  nothing by hand.
 
 ## Repo layout
 
@@ -78,9 +80,10 @@ platform_adaptive_widgets/
 ├── .pubignore                                  Files excluded from `flutter pub publish`
 ├── .fvmrc                                      FVM channel pin (`stable`)
 ├── .github/workflows/                          CI: dartender's ci, conventions, changelog,
-│                                                publish (tag-triggered), local size-regression
+│                                                release, publish (tag-triggered), and the
+│                                                local size-regression
 ├── CHANGELOG.md                                Release log (bot-appended on merge,
-│                                                hand-finalised at release)
+│                                                finalised by the Release run)
 ├── README.md                                   pub.dev landing page (widget catalogue)
 ├── APPENDIX.md                                 Design rationale (anchor-keyed)
 ├── CODESTYLE.md                                Library-package code style
@@ -174,13 +177,10 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    (size benchmark over an Android build of `tool/size_harness/`). A regression
    trips at least one of them. Don't disable or weaken either without an
    explicit conversation.
-9. **`CHANGELOG.md` and `version:` move together with the release tag.** Routine
-   CHANGELOG appends are bot-driven (`changelog.yml` + `cider`), but cutting a
-   release, bumping `version:`, finalising the `[Unreleased]` section, committing,
-   and pushing the matching `X.Y.Z` tag, is still hand-driven. If you edit
-   `version:` or finalise `## [Unreleased]` without the other 2 moving in the same
-   commit, the publish workflow's tag push will mismatch the in-tree state. Do not
-   edit either file without an explicit user instruction to cut a release. See
+9. **`CHANGELOG.md` and `version:` move together with the release tag, in the Release
+   run.** Routine CHANGELOG lines come from `changelog.yml` + `cider`. The Release run
+   bumps `version:`, dates `[Unreleased]`, commits, and pushes the commit with its `X.Y.Z`
+   tag (see *PR conventions* below). So don't edit either file by hand. See
    [*Forbidden / confirm-first actions* in CLAUDE.md](./CLAUDE.md#forbidden--confirm-first-actions).
 10. **`.idea/` is deliberately part-tracked.** Only [`.idea/.gitignore`](../.idea/.gitignore)
     and [`.idea/runConfigurations/`](../.idea/runConfigurations/) are committed. `/.idea/*`
