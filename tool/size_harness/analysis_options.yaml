@@ -2,7 +2,7 @@
 # `include:`s `package:flutter_lints/flutter.yaml`: unresolvable from the
 # root package's context and noisy under `dart format .` / `dart fix`.
 #
-# The harness is a one-file demo. Default Dart lints are enough.
+# The harness is a one-file demo, so the analyzer's own checks are enough, with no lints.
 
 analyzer:
   exclude:

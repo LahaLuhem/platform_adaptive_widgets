@@ -311,8 +311,8 @@ constructor. The costs are minor and accepted:
 ### Enforcement: the data ↔ widget parity guard
 
 The 2 halves of this contract the Dart compiler does **not** check are guarded
-by a static AST test that runs on every PR (in the Tests job of
-[`.github/workflows/ci.yml`](./.github/workflows/ci.yml)):
+by a static AST test that runs on every PR (in CI's Tests job, `ci / Tests`, from
+[dartender's `ci.yml`](https://github.com/LahaLuhem/dartender/blob/main/.github/workflows/ci.yml)):
 [`test/data_widget_parity_test.dart`](./test/data_widget_parity_test.dart). For
 every canonical widget, those whose shared-visual fields live on a private
 `_PlatformXxxData` base, it asserts:
@@ -551,7 +551,7 @@ Callers who relied on the public `targetPlatform` symbol should import
 ### Enforcement: regression guards on every PR
 
 2 complementary CI checks defend the pruning contract. Both run on every PR, the AST
-lint in `.github/workflows/ci.yml`'s Tests job and the size benchmark in
+lint in CI's Tests job (`ci / Tests`) and the size benchmark in
 `.github/workflows/size-regression.yml`.
 
 1. **Static AST lint**: [`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart).

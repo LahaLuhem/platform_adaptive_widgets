@@ -44,9 +44,8 @@ triggers an automated publish).
 - **Bash** only for things without a dedicated tool: `flutter`, `dart`, `git`. The
   user's shell aliases `flutter` / `dart` to whatever toolchain manager serves the
   `.fvmrc`-pinned channel, invoke plain `flutter` / `dart`, not the manager directly.
-- **Lint with `flutter analyze --fatal-infos --fatal-warnings`** (or `dart analyze` with the same
-  flags for the pure-Dart subset under `lib/src/extensions/` etc.). The shared lints promote many
-  lints to `error:`: those are the contract, not suggestions.
+- **Lint with `dart analyze --fatal-infos --fatal-warnings .`**, as CI runs it. The shared lints
+  promote many lints to `error:`: those are the contract, not suggestions.
 - **Agent tool** for wide / open-ended searches or to keep large outputs out of main
   context. Not for trivial lookups.
 
@@ -125,17 +124,17 @@ explicitly says "cut a release". See *Forbidden / confirm-first actions* below.
 ## Forbidden / confirm-first actions
 
 - **Never** `flutter pub publish` or `dart pub publish`. Publishing is effectively
-  one-way, pub.dev reserves the version for 7 days after retraction. Releases happen
-  through the tag-triggered workflow at `.github/workflows/publish.yml`. Pushing a
-  matching `X.Y.Z` git tag is the trigger and is itself a confirm-first action.
+  one-way, pub.dev reserves the version for 7 days after retraction. Releases go through
+  the Release run, whose tag push starts `.github/workflows/publish.yml`. Pushing a
+  matching `X.Y.Z` git tag by hand starts it too, so that's a confirm-first action.
 - **Never** push a semver tag (`git push origin <tag>` or `git push --tags`) without
   explicit instruction. The tag triggers `.github/workflows/publish.yml`, which
   authenticates to pub.dev via OIDC (configured by `dart-lang/setup-dart`). There is
   no manual confirmation step on the pub.dev side.
 - **Never** edit `CHANGELOG.md`, the `version:` field in `pubspec.yaml`, or
-  `example/pubspec.lock` without an explicit user instruction to cut a release,
-  the 3 are pipeline-owned and move in lockstep. Routine CHANGELOG appends are
-  handled by the `changelog.yml` bot on PR merge. When the user authorises a
+  `example/pubspec.lock` by hand. The Release run moves the 3 together, `changelog.yml`
+  writes each PR's line on merge, and Dependabot bumps `example/pubspec.lock` too. After
+  changing `example/pubspec.yaml`, run `flutter pub get` in `example/`. When the user authorises a
   release, start **Release** from the Actions tab, or `gh workflow run release.yml -f bump=<bump>`.
 - **Never** edit `pubspec.lock` directly (root or `example/`). It's `flutter pub get`'s
   output.
@@ -146,17 +145,16 @@ explicitly says "cut a release". See *Forbidden / confirm-first actions* below.
 
 ## Definition of done
 
-- `flutter analyze --fatal-infos --fatal-warnings` clean (the shared `errors:` block promotes
-  many lints to errors, non-negotiable).
+- Every check `ci / ok` waits on passes on your tree: the `needs:` of the `ok` job in
+  [dartender's `ci.yml`](https://github.com/LahaLuhem/dartender/blob/main/.github/workflows/ci.yml),
+  run with this repo's inputs from [`ci.yml`](../.github/workflows/ci.yml). So does this repo's
+  own [`size-regression.yml`](../.github/workflows/size-regression.yml).
 - `dcm analyze` clean, the `dart_code_metrics` rules (e.g. `avoid-returning-widgets`)
-  are **not** surfaced by `flutter analyze`, so they need their own pass via the `dcm`
-  CLI (`dcm analyze <dir>`). Treat it as a separate, required lint gate.
-- `dart format --output=none --set-exit-if-changed .` clean (100-column width matches
-  the shared lints' `formatter.page_width`).
-- `flutter test` green (where tests exist).
-- `flutter pub publish --dry-run` clean if the change is publish-relevant. Do **not**
-  bump the version or add a CHANGELOG entry to make the dry-run happy. Those are
-  release-time edits.
+  are **not** surfaced by `dart analyze`, and CI runs no DCM, so they need their own pass via
+  the `dcm` CLI (`dcm analyze <dir>`). Treat it as a separate, required lint gate.
+- `flutter pub publish --dry-run` clean if the change is publish-relevant, apart from its
+  warning about uncommitted files, which fails it until you commit. Do **not** bump the version
+  or add a CHANGELOG entry to make the dry-run happy. Those are release-time edits.
 - Public widget / `*Data` additions documented with `///` dartdoc, reflected in the
   appropriate `README.md` widget-catalogue table, and exported from
   `lib/platform_adaptive_widgets.dart`.
