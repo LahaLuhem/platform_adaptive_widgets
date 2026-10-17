@@ -2,16 +2,16 @@
 
 Claude-Code-specific guidance. Project facts, stack, hard rules, and AI-agent
 guidelines live in [AGENTS.md](./AGENTS.md), the full code-style guide lives in
-[`CODESTYLE.md`](CODESTYLE.md), design rationale lives in
-[`APPENDIX.md`](APPENDIX.md). Read AGENTS.md and CODESTYLE.md first.
+[`CODESTYLE.md`](../CODESTYLE.md), design rationale lives in
+[`APPENDIX.md`](../APPENDIX.md). Read AGENTS.md and CODESTYLE.md first.
 
 ## Role & context
 You're assisting with **platform_adaptive_widgets**: a Flutter package that exposes
 `PlatformXxx` widgets which render Material on Android and Cupertino on iOS without app
 code branching. Treat the user as technical and direct. The package is published on
 pub.dev, changes are visible to every downstream user, so breakage is expensive and
-slow to walk back (unpublished versions stay reserved for 7 days, and a tag push
-triggers an automated publish).
+slow to walk back (pub.dev never unpublishes a version, it only lets you retract one within
+7 days of publishing, and a tag push triggers an automated publish).
 
 ## Communication
 
@@ -25,7 +25,7 @@ triggers an automated publish).
 - **Do not silently pick between reasonable alternatives.** Whenever a task admits more
   than one defensible approach (which Cupertino primitive to wrap, whether a new field
   is functional / shared-visual / platform-only per
-  [`APPENDIX.md#field-classification`](APPENDIX.md#field-classification), whether a
+  [`APPENDIX.md#field-classification`](../APPENDIX.md#field-classification), whether a
   symbol belongs in the public re-exports or stays under `lib/src/`, function-vs-class
   API shape, whether to add a dependency, etc.), **stop and ask**. Recommendations in
   the question are expected, list the options with trade-offs, say which you'd pick
@@ -60,7 +60,7 @@ triggers an automated publish).
   `lib/platform_adaptive_widgets.dart`.
 - **`example/` edits** are local, no publish impact. The demo app is the living usage
   reference. Keep it building and runnable on both Android and iOS. See
-  [`example/.ai/AGENTS.md`](example/.ai/AGENTS.md) for sub-scope conventions.
+  [`example/.ai/AGENTS.md`](../example/.ai/AGENTS.md) for sub-scope conventions.
 - **`analysis_options.yaml` edits** override dartender's shared lints, which every repo gets.
   Surface them loudly and add a written reason in `APPENDIX.md`.
 - **`pubspec.yaml` edits** that touch `dependencies` add to every downstream user's
@@ -98,7 +98,7 @@ triggers an automated publish).
   code.
 - You're touching anything in `lib/src/models/platform_widget_base.dart`. The abstract
   base hierarchy is the dispatch invariant for every widget in the package. See
-  [`APPENDIX.md#platform-widget-base-hierarchy`](APPENDIX.md#platform-widget-base-hierarchy).
+  [`APPENDIX.md#platform-widget-base-hierarchy`](../APPENDIX.md#platform-widget-base-hierarchy).
 
 For single-file, single-concern fixes inside `lib/src/`: just do it.
 
@@ -114,19 +114,17 @@ explicitly says "cut a release". See *Forbidden / confirm-first actions* below.
   `.github/workflows/publish.yml`).
 - **Never `--amend`** unless the user asked, create a new commit instead.
 - **Never `--no-verify`**, **never `git add -A`**: stage named paths.
-- Match existing commit style (short imperative subject, lowercase, no Claude-authored
-  footer unless asked). Recent examples from `git log`: "Remove unnecessary assertion",
-  "remove unnecessary type info for MenuPickerItem", "Force-inject CupertinoTabControlle
-  (current) index for correct update".
+- Match existing commit style (short imperative subject, no Claude-authored footer unless
+  asked), as `git log` shows it.
 - When asked for a commit: show `git status` + `git diff`, draft the message, wait for
   approval.
 
 ## Forbidden / confirm-first actions
 
-- **Never** `flutter pub publish` or `dart pub publish`. Publishing is effectively
-  one-way, pub.dev reserves the version for 7 days after retraction. Releases go through
-  the Release run, whose tag push starts `.github/workflows/publish.yml`. Pushing a
-  matching `X.Y.Z` git tag by hand starts it too, so that's a confirm-first action.
+- **Never** `flutter pub publish` or `dart pub publish`. Publishing is one-way, since
+  pub.dev never unpublishes a version and only lets you retract one within 7 days. Releases
+  go through the Release run, whose tag push starts `.github/workflows/publish.yml`. Pushing
+  a matching `X.Y.Z` git tag by hand starts it too, so that's a confirm-first action.
 - **Never** push a semver tag (`git push origin <tag>` or `git push --tags`) without
   explicit instruction. The tag triggers `.github/workflows/publish.yml`, which
   authenticates to pub.dev via OIDC (configured by `dart-lang/setup-dart`). There is

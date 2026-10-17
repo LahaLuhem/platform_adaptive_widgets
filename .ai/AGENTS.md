@@ -9,7 +9,7 @@ A Flutter package providing **platform-adaptive widgets**: a spiritual continuat
 `PlatformXxx` widget automatically renders **Material** on Android and **Cupertino** on
 iOS, so app code never needs explicit `Platform.isAndroid` / `Platform.isIOS` branching.
 
-Public API in v1.x is stable: `PlatformXxx` widgets + per-platform `MaterialXxxData` /
+The public API is stable: `PlatformXxx` widgets + per-platform `MaterialXxxData` /
 `CupertinoXxxData` tuning records + cross-platform `PlatformXxxData` unified params. See
 README for the full widget catalogue. APPENDIX for design rationale.
 
@@ -60,14 +60,13 @@ platform_adaptive_widgets/
 │       ├── models/                             Value types + per-widget *Data records
 │       │   ├── platform_widget_base.dart       Abstract base hierarchy (see APPENDIX)
 │       │   ├── platform_adaptive_icons.dart    Icon mapping helper
-│       │   ├── date.dart                       Calendar-date value type
 │       │   ├── dialogs/                        Per-dialog *Data classes + consts
 │       │   ├── interaction/                    Per-interaction-widget *Data classes
 │       │   ├── layout/                         Per-layout-widget *Data classes
 │       │   └── painting/                       Per-painting-widget *Data classes
 │       │       └── platform_theme.dart         Cross-platform theme accessor
 │       ├── utils/
-│       │   └── target_platform.dart            `defaultTargetPlatform` shim
+│       │   └── is_platform.dart                `isAndroid` / `isIOS`, folded at AOT
 │       └── widgets/                            Concrete widget impls (mirrors models/)
 │           ├── platform_widget.dart            Standalone `PlatformWidget` helper
 │           ├── dialogs/                        `showPlatformXxx` + `PlatformXxx` dialogs
