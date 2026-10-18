@@ -114,9 +114,6 @@ class const PlatformAppBar({
 
     if (cupertinoNavigationBarData?.large ?? CupertinoNavigationBarData.kLarge) {
       return heroTag == null
-          // CupertinoNavigationBar's own default tag is private, so the param is omitted rather than
-          // filled with a copy of it.
-          // ignore: prefer-define-hero-tag
           ? CupertinoNavigationBar.large(
               key: widgetKey,
               largeTitle: title,
@@ -155,8 +152,6 @@ class const PlatformAppBar({
     }
 
     return heroTag == null
-        // Covered in the next declaration
-        // ignore: prefer-define-hero-tag
         ? CupertinoNavigationBar(
             key: widgetKey,
             leading: leading,

@@ -14,10 +14,10 @@ dependencies:
   platform_adaptive_widgets:
     path: ../
 
-  cupertino_ui: ^1.1.1
+  cupertino_ui: ^1.1.3
   gap: ^3.0.1
-  go_router: ^18.0.2
-  material_ui: ^1.2.0
+  go_router: ^18.1.0
+  material_ui: ^1.7.0
   multi_value_listenable_builder_typed: ^0.2.1
   platform_icons: ^0.1.1
   pmvvm: ^4.0.1

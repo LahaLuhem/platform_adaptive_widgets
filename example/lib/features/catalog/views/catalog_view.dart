@@ -59,7 +59,7 @@ class CatalogView extends StatelessWidget {
                   ],
                 ),
                 child: Padding(
-                  padding: const .fromLTRB(16, 0, 16, 16),
+                  padding: const .only(left: 16, top: 16, bottom: 16),
                   child: switch (category) {
                     .buttons => const ButtonsDemoView(),
                     .selection => const SelectionDemoView(),
