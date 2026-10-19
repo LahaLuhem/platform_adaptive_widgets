@@ -7,7 +7,7 @@ import 'dart:ui' show ImageFilter;
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoDynamicColor;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart' show ScaffoldMessenger, SnackBar;
+import 'package:material_ui/material_ui.dart' show ScaffoldMessenger, SnackBar, SnackBarAction;
 
 import '/src/models/dialogs/platform_toast_data.dart';
 
@@ -22,10 +22,14 @@ import '/src/models/dialogs/platform_toast_data.dart';
 ///
 /// Material's `SnackBarClosedReason` is dropped on the way out. Reach for `ScaffoldMessenger` directly
 /// if you need it.
+///
+/// Guidelines: [M3 snackbar](https://m3.material.io/components/snackbar/guidelines),
+/// [HIG feedback](https://developer.apple.com/design/human-interface-guidelines/feedback#Best-practices).
 Future<void> showPlatformToast({
   required BuildContext context,
   required String message,
   Duration duration = kDefaultPlatformToastDuration,
+  PlatformToastAction? action,
   MaterialToastData? materialToastData,
   CupertinoToastData? cupertinoToastData,
 }) => switch (defaultTargetPlatform) {
@@ -43,12 +47,13 @@ Future<void> showPlatformToast({
             shape: materialToastData?.shape,
             hitTestBehavior: materialToastData?.hitTestBehavior,
             behavior: materialToastData?.snackBarBehavior,
-            action: materialToastData?.action,
+            action: action == null
+                ? null
+                : SnackBarAction(label: action.label, onPressed: action.onPressed),
             actionOverflowThreshold: materialToastData?.actionOverflowThreshold,
             showCloseIcon: materialToastData?.showCloseIcon,
             closeIconColor: materialToastData?.closeIconColor,
             clipBehavior: materialToastData?.clipBehavior ?? Clip.hardEdge,
-            persist: materialToastData?.persist,
             animation: materialToastData?.animation,
             onVisible: materialToastData?.onVisible,
             dismissDirection: materialToastData?.dismissDirection,

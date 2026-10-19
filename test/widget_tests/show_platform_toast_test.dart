@@ -4,7 +4,6 @@ import 'package:checks/checks.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:material_ui/material_ui.dart' show SnackBarAction;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 import '../support/support.dart';
@@ -19,17 +18,12 @@ Future<BuildContext> _pumpPage(WidgetTester tester) async {
   return tester.element(find.byWidget(_page));
 }
 
-// Today the action only goes in through the Material record, so iOS never sees it.
 void _show(BuildContext context, {VoidCallback? onUndo}) => unawaited(
   showPlatformToast(
     context: context,
     message: _message,
     duration: _duration,
-    materialToastData: onUndo == null
-        ? null
-        : MaterialToastData(
-            action: SnackBarAction(label: 'Undo', onPressed: onUndo),
-          ),
+    action: onUndo == null ? null : PlatformToastAction(label: 'Undo', onPressed: onUndo),
   ),
 );
 
