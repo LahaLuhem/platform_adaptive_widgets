@@ -194,6 +194,10 @@ auto-appends to `CHANGELOG.md` based on the PR's `sem-*` label (via `cider log`)
 
 - **Branch name**: `<type>/#<issue>-<slug>`, where `<type>` is one of
   `feature`, `bugfix`, `chore` or `refactor`. Example: `chore/#12-tidy-readme`.
+- **Commit subject**: [Conventional Commits](https://www.conventionalcommits.org/) with a scope,
+  then the issue key, then a lowercase subject: `<type>(<scope>)[!]: [#<issue>] <subject>`. The
+  scope names the area (`dialogs`, `example`, `readme`, `deps`), `!` marks a public-API break, and
+  `[#0]` means no issue. Example: `fix(dialogs): [#46] iOS full-screen page route`.
 - **Exactly one `sem-*` label per PR**, mapped to a CHANGELOG section:
 
   | Label           | CHANGELOG section | When to use                                    |
