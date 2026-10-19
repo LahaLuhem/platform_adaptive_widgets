@@ -24,10 +24,26 @@ class DialogsDemoView extends StatelessWidget {
       children: [
         DemoCard(
           title: 'Dialog',
-          description: 'A centered modal, showDialog on Android, showCupertinoDialog on iOS.',
-          child: PlatformButton(
-            onPressed: viewModel.onShowDialogPressed,
-            child: const Text('Show dialog'),
+          description:
+              'A centered modal, showDialog on Android, showCupertinoDialog on iOS. Raw leaves out '
+              'the card around the content.',
+          child: PropertyEditor(
+            preview: PlatformButton(
+              onPressed: viewModel.onShowDialogPressed,
+              child: const Text('Show dialog'),
+            ),
+            knobs: [
+              BoolKnob(
+                label: 'raw',
+                value: viewModel.isDialogRaw,
+                onChanged: (value) => viewModel.onDialogRawToggled(value: value),
+              ),
+              BoolKnob(
+                label: 'barrierDismissible',
+                value: viewModel.shouldDismissDialogOnBarrierTap,
+                onChanged: (value) => viewModel.onBarrierDismissibleToggled(value: value),
+              ),
+            ],
           ),
         ),
         DemoCard(
@@ -40,23 +56,6 @@ class DialogsDemoView extends StatelessWidget {
               final event? => 'Saved: $event',
               null => 'New event',
             }),
-          ),
-        ),
-        DemoCard(
-          title: 'Raw dialog',
-          description: 'No surface wrap, you supply the surface (or none).',
-          child: PropertyEditor(
-            preview: PlatformButton(
-              onPressed: viewModel.onShowRawDialogPressed,
-              child: const Text('Show raw dialog'),
-            ),
-            knobs: [
-              BoolKnob(
-                label: 'barrierDismissible',
-                value: viewModel.shouldDismissRawDialogOnBarrierTap,
-                onChanged: (value) => viewModel.onBarrierDismissibleToggled(value: value),
-              ),
-            ],
           ),
         ),
         DemoCard(
@@ -107,34 +106,42 @@ class DialogsDemoView extends StatelessWidget {
         ),
         DemoCard(
           title: 'Modal bottom sheet',
-          description: 'Slides up from the bottom of the screen.',
-          child: PlatformButton(
-            onPressed: viewModel.onShowBottomSheetPressed,
-            child: const Text('Show bottom sheet'),
+          description:
+              'Slides up from the bottom of the screen. Raw leaves out the surface on iOS, Android '
+              'keeps its native sheet.',
+          child: PropertyEditor(
+            preview: PlatformButton(
+              onPressed: viewModel.onShowBottomSheetPressed,
+              child: const Text('Show bottom sheet'),
+            ),
+            knobs: [
+              BoolKnob(
+                label: 'raw',
+                value: viewModel.isSheetRaw,
+                onChanged: (value) => viewModel.onSheetRawToggled(value: value),
+              ),
+            ],
           ),
         ),
         DemoCard(
-          title: 'Raw bottom sheet',
-          description: 'No surface wrap, so content floats on iOS. Android keeps its native sheet.',
-          child: PlatformButton(
-            onPressed: viewModel.onShowRawBottomSheetPressed,
-            child: const Text('Show raw bottom sheet'),
-          ),
-        ),
-        DemoCard(
-          title: 'Date picker',
-          description: 'A calendar dialog on Android, a wheel on iOS.',
-          child: PlatformButton(
-            onPressed: viewModel.onShowDatePickerPressed,
-            child: Text(viewModel.selectedDate?.toString() ?? 'Pick a date'),
-          ),
-        ),
-        DemoCard(
-          title: 'Time picker',
-          description: 'A clock dialog on Android, a wheel on iOS.',
-          child: PlatformButton(
-            onPressed: viewModel.onShowTimePickerPressed,
-            child: Text(viewModel.selectedTime?.toString() ?? 'Pick a time'),
+          title: 'Date & time pickers',
+          description: 'A calendar or clock dialog on Android, wheels on iOS.',
+          child: Row(
+            spacing: 8,
+            children: [
+              Expanded(
+                child: PlatformButton(
+                  onPressed: viewModel.onShowDatePickerPressed,
+                  child: Text(viewModel.selectedDate?.toString() ?? 'Pick a date'),
+                ),
+              ),
+              Expanded(
+                child: PlatformButton(
+                  onPressed: viewModel.onShowTimePickerPressed,
+                  child: Text(viewModel.selectedTime?.toString() ?? 'Pick a time'),
+                ),
+              ),
+            ],
           ),
         ),
       ],

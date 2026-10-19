@@ -11,7 +11,9 @@ final class DialogsDemoViewModel extends ViewModel {
   var _alertTitle = 'Alert';
   var _alertMessage = 'Actions adapt their layout and styling to the platform.';
   var _alertActions = AlertActions.destructive;
-  var _shouldDismissRawDialogOnBarrierTap = true;
+  var _isDialogRaw = false;
+  var _shouldDismissDialogOnBarrierTap = true;
+  var _isSheetRaw = false;
   var _shouldOfferUndo = true;
   var _isUndone = false;
   String? _savedEvent;
@@ -24,7 +26,11 @@ final class DialogsDemoViewModel extends ViewModel {
 
   AlertActions get alertActions => _alertActions;
 
-  bool get shouldDismissRawDialogOnBarrierTap => _shouldDismissRawDialogOnBarrierTap;
+  bool get isDialogRaw => _isDialogRaw;
+
+  bool get shouldDismissDialogOnBarrierTap => _shouldDismissDialogOnBarrierTap;
+
+  bool get isSheetRaw => _isSheetRaw;
 
   bool get shouldOfferUndo => _shouldOfferUndo;
 
@@ -51,8 +57,18 @@ final class DialogsDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
+  void onDialogRawToggled({required bool value}) {
+    _isDialogRaw = value;
+    notifyListeners();
+  }
+
   void onBarrierDismissibleToggled({required bool value}) {
-    _shouldDismissRawDialogOnBarrierTap = value;
+    _shouldDismissDialogOnBarrierTap = value;
+    notifyListeners();
+  }
+
+  void onSheetRawToggled({required bool value}) {
+    _isSheetRaw = value;
     notifyListeners();
   }
 
@@ -61,27 +77,34 @@ final class DialogsDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
-  Future<void> onShowDialogPressed() => showPlatformDialog(
-    context: context,
-    // On iOS, custom content needs its own way out: tapping outside doesn't close a centred dialog
-    // (HIG), and there's no back button.
-    builder: (context) => Padding(
-      padding: const .all(24),
-      child: Column(
-        mainAxisSize: .min,
-        spacing: 16,
-        children: [
-          const Text('A centered platform dialog.'),
-          if (isIOS)
-            PlatformButton(
-              onPressed: () => Navigator.maybeOf(context)?.pop(),
-              materialButtonVariant: .text,
-              child: const Text('Done'),
+  Future<void> onShowDialogPressed() => _isDialogRaw
+      ? showPlatformRawDialog(
+          context: context,
+          barrierDismissible: _shouldDismissDialogOnBarrierTap,
+          builder: (_) => const Center(child: Text('A raw dialog, the package adds no card here.')),
+        )
+      : showPlatformDialog(
+          context: context,
+          barrierDismissible: _shouldDismissDialogOnBarrierTap,
+          // On iOS, custom content needs its own way out: by default tapping outside doesn't close a
+          // centred dialog (HIG), and there's no back button.
+          builder: (context) => Padding(
+            padding: const .all(24),
+            child: Column(
+              mainAxisSize: .min,
+              spacing: 16,
+              children: [
+                const Text('A centered platform dialog.'),
+                if (isIOS)
+                  PlatformButton(
+                    onPressed: () => Navigator.maybeOf(context)?.pop(),
+                    materialButtonVariant: .text,
+                    child: const Text('Done'),
+                  ),
+              ],
             ),
-        ],
-      ),
-    ),
-  );
+          ),
+        );
 
   Future<void> onShowFullscreenDialogPressed() async {
     _savedEvent = await showPlatformFullscreenDialog<String>(
@@ -97,12 +120,6 @@ final class DialogsDemoViewModel extends ViewModel {
     );
     notifyListeners();
   }
-
-  Future<void> onShowRawDialogPressed() => showPlatformRawDialog(
-    context: context,
-    barrierDismissible: _shouldDismissRawDialogOnBarrierTap,
-    builder: (_) => const Center(child: Text('A raw dialog, the package adds no card here.')),
-  );
 
   Future<void> onShowAlertDialogPressed() => switch (_alertActions) {
     .acknowledge => showPlatformAcknowledge(
@@ -152,28 +169,28 @@ final class DialogsDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
-  Future<void> onShowBottomSheetPressed() => showPlatformModalBottomSheet(
-    context: context,
-    builder: (_) => const SafeArea(
-      child: Padding(
-        padding: .all(24),
-        child: Text(
-          'A modal bottom sheet, a Material sheet on Android, an action-sheet-style '
-          'popup on iOS.',
-        ),
-      ),
-    ),
-  );
-
-  Future<void> onShowRawBottomSheetPressed() => showPlatformRawModalBottomSheet(
-    context: context,
-    builder: (_) => const SafeArea(
-      child: Padding(
-        padding: .all(24),
-        child: Text('A raw bottom sheet, the package adds no surface on iOS.'),
-      ),
-    ),
-  );
+  Future<void> onShowBottomSheetPressed() => _isSheetRaw
+      ? showPlatformRawModalBottomSheet(
+          context: context,
+          builder: (_) => const SafeArea(
+            child: Padding(
+              padding: .all(24),
+              child: Text('A raw bottom sheet, the package adds no surface on iOS.'),
+            ),
+          ),
+        )
+      : showPlatformModalBottomSheet(
+          context: context,
+          builder: (_) => const SafeArea(
+            child: Padding(
+              padding: .all(24),
+              child: Text(
+                'A modal bottom sheet, a Material sheet on Android, an action-sheet-style '
+                'popup on iOS.',
+              ),
+            ),
+          ),
+        );
 
   Future<void> onShowDatePickerPressed() async {
     final picked = await showPlatformDatePicker(

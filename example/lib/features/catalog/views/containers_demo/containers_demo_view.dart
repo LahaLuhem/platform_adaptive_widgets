@@ -126,27 +126,40 @@ class ContainersDemoView extends StatelessWidget {
         ),
         DemoCard(
           title: 'PlatformScrollbar',
-          description: 'A scrollbar over a vertical list.',
+          description: 'A scrollbar over a list that scrolls either way.',
           child: PropertyEditor(
             preview: SizedBox(
-              height: 160,
+              // A fresh scrollbar per direction, since the old one keeps the other direction's
+              // measurements for a frame and fails Flutter's orientation check.
+              key: ValueKey(viewModel.scrollAxis),
+              height: viewModel.scrollAxis == .vertical ? 160 : 80,
               child: PlatformScrollbar(
                 thumbVisibility: viewModel.shouldShowScrollbarThumb,
                 thickness: viewModel.scrollbarThickness,
                 scrollbarOrientation: viewModel.scrollbarOrientation,
-                controller: viewModel.scrollController,
+                controller: viewModel.currentScrollController,
                 materialScrollbarData: MaterialScrollbarData(
                   trackVisibility: viewModel.shouldShowScrollbarTrack,
                   interactive: viewModel.isScrollbarInteractive,
                 ),
                 child: ListView.builder(
-                  controller: viewModel.scrollController,
+                  scrollDirection: viewModel.scrollAxis,
+                  controller: viewModel.currentScrollController,
                   itemCount: 50,
-                  itemBuilder: (_, index) => Text('Item $index'),
+                  itemBuilder: (_, index) => switch (viewModel.scrollAxis) {
+                    .vertical => Text('Item $index'),
+                    .horizontal => SizedBox(width: 80, child: Center(child: Text('Item $index'))),
+                  },
                 ),
               ),
             ),
             knobs: [
+              SegmentKnob<Axis>(
+                label: 'scrollDirection',
+                value: viewModel.scrollAxis,
+                values: const [.vertical, .horizontal],
+                onChanged: viewModel.onScrollAxisSelected,
+              ),
               BoolKnob(
                 label: 'thumbVisibility',
                 value: viewModel.shouldShowScrollbarThumb,
@@ -163,7 +176,7 @@ class ContainersDemoView extends StatelessWidget {
               SegmentKnob<ScrollbarOrientation>(
                 label: 'scrollbarOrientation',
                 value: viewModel.scrollbarOrientation,
-                values: const [.left, .right],
+                values: viewModel.scrollbarOrientations,
                 onChanged: viewModel.onScrollbarOrientationSelected,
               ),
             ],
@@ -177,35 +190,6 @@ class ContainersDemoView extends StatelessWidget {
                 label: 'interactive',
                 value: viewModel.isScrollbarInteractive,
                 onChanged: (value) => viewModel.onScrollbarInteractiveToggled(value: value),
-              ),
-            ],
-          ),
-        ),
-        DemoCard(
-          title: 'PlatformScrollbar (horizontal)',
-          description: 'The same widget over a horizontal list, top / bottom orientation.',
-          child: PropertyEditor(
-            preview: SizedBox(
-              height: 80,
-              child: PlatformScrollbar(
-                thumbVisibility: true,
-                scrollbarOrientation: viewModel.horizontalScrollbarOrientation,
-                controller: viewModel.horizontalScrollController,
-                child: ListView.builder(
-                  scrollDirection: .horizontal,
-                  controller: viewModel.horizontalScrollController,
-                  itemCount: 50,
-                  itemBuilder: (_, index) =>
-                      SizedBox(width: 80, child: Center(child: Text('Item $index'))),
-                ),
-              ),
-            ),
-            knobs: [
-              SegmentKnob<ScrollbarOrientation>(
-                label: 'scrollbarOrientation',
-                value: viewModel.horizontalScrollbarOrientation,
-                values: const [.top, .bottom],
-                onChanged: viewModel.onHorizontalScrollbarOrientationSelected,
               ),
             ],
           ),
