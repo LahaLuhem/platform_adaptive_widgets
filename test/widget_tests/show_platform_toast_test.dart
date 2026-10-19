@@ -52,6 +52,20 @@ void main() {
       check(_isShowing(tester)).isFalse();
     });
 
+    scenarioWidgets('runs its action once, however fast it is tapped', (tester) async {
+      var undoCount = 0;
+      final context = await _pumpPage(tester);
+
+      _show(context, onUndo: () => undoCount++);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Undo'));
+      await tester.pump();
+      await tester.tap(find.text('Undo'));
+      await tester.pumpAndSettle();
+
+      check(undoCount).equals(1);
+    });
+
     scenarioWidgets('stays up past its duration while it has an action', (tester) async {
       final context = await _pumpPage(tester);
 

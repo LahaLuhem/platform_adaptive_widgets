@@ -15,10 +15,12 @@ const kDefaultPlatformAcknowledgeOkLabel = 'OK';
 /// returned future completes once it's dismissed.
 ///
 /// For anything the app shouldn't continue past until it's been seen: errors, irreversible confirmations.
-/// Routine feedback that can fade on its own wants `showPlatformToast` instead, which follows each platform's
-/// own idiom for that.
+/// Routine feedback wants `showPlatformToast` instead, or on iOS, showing the change itself.
 ///
 /// A thin wrapper over [showPlatformAlertDialog], so the same data classes and flat args apply.
+///
+/// Guidelines: [M3 dialogs](https://m3.material.io/components/dialogs/guidelines),
+/// [HIG alerts](https://developer.apple.com/design/human-interface-guidelines/alerts#Best-practices).
 ///
 /// Example:
 /// {@example /example/lib/snippets/dialogs/platform_acknowledge.dart#platform_acknowledge}
