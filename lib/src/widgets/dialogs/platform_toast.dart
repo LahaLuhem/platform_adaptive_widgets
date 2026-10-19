@@ -1,24 +1,29 @@
-// Callback-first
+// Named after its function, not the private banner below.
 // ignore_for_file: prefer-match-file-name
 
 import 'dart:async' show Completer, Timer, unawaited;
 import 'dart:ui' show ImageFilter;
 
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoDynamicColor;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoButton, CupertinoDynamicColor;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show ScaffoldMessenger, SnackBar, SnackBarAction;
 
 import '/src/models/dialogs/platform_toast_data.dart';
 
-/// Shows a message that fades on its own. A [SnackBar] along the bottom on Android, and on iOS a banner
-/// that slides down from under the status bar. The returned future completes once it's gone.
+/// Shows a short message with at most one [action], like Undo. A [SnackBar] along the bottom on Android,
+/// and on iOS a banner that slides down from under the status bar. The returned future completes once
+/// it's gone.
 ///
-/// For the "Saved" and "Copied to clipboard" sort of thing, that nobody needs to act on. Anything that
-/// must be acknowledged first wants `showPlatformAcknowledge` and a real dialog.
+/// Without an action it leaves after [duration]. With one it stays until someone taps the action or
+/// dismisses the toast, since a timer could take the action away before they get to it
+/// ([HIG accessibility](https://developer.apple.com/design/human-interface-guidelines/accessibility#Cognitive)).
 ///
-/// iOS ships no toast at all, so that banner is ours: translucent, rounded, safe-area aware and tap-to-dismiss,
-/// tuned through [cupertinoToastData].
+/// **On iOS, prefer showing the change itself**, like a row that goes away or a label that updates. iOS
+/// has no toast, so the banner is a convenience the package draws, styled through [cupertinoToastData]
+/// ([HIG feedback](https://developer.apple.com/design/human-interface-guidelines/feedback#Best-practices)).
+///
+/// Anything that must be acknowledged first wants `showPlatformAcknowledge` and a real dialog.
 ///
 /// Material's `SnackBarClosedReason` is dropped on the way out. Reach for `ScaffoldMessenger` directly
 /// if you need it.
@@ -64,16 +69,18 @@ Future<void> showPlatformToast({
     context: context,
     message: message,
     duration: duration,
+    action: action,
     data: cupertinoToastData ?? const CupertinoToastData(),
   ),
   _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
 };
 
-/// Completes when the banner goes away, whether the timer ran out or someone tapped it.
+/// Completes when the banner goes away: its timer ran out, someone tapped it, or its action ran.
 Future<void> _showCupertinoToast({
   required BuildContext context,
   required String message,
   required Duration duration,
+  required PlatformToastAction? action,
   required CupertinoToastData data,
 }) {
   final overlay = Overlay.of(context, rootOverlay: true);
@@ -90,6 +97,7 @@ Future<void> _showCupertinoToast({
     builder: (_) => _CupertinoToastOverlay(
       message: message,
       duration: duration,
+      action: action,
       data: data,
       onDismiss: dismiss,
     ),
@@ -100,10 +108,11 @@ Future<void> _showCupertinoToast({
   return completer.future;
 }
 
-/// Stateful for the slide-and-fade animation and the auto-dismiss timer.
+/// Stateful for the slide-and-fade animation and the timer that closes a toast without an action.
 class const _CupertinoToastOverlay({
   required final String message,
   required final Duration duration,
+  required final PlatformToastAction? action,
   required final CupertinoToastData data,
   required final VoidCallback onDismiss,
 }) extends StatefulWidget {
@@ -129,7 +138,15 @@ class _CupertinoToastOverlayState()
     );
     _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
     _controller.forward();
-    _dismissTimer = Timer(widget.duration, _startDismiss);
+    // One with an action waits until someone acts on it or dismisses it.
+    if (widget.action == null) _dismissTimer = Timer(widget.duration, _startDismiss);
+  }
+
+  void _runAction() {
+    // Already sliding away, so a second tap can't run the action twice.
+    if (!_controller.isForwardOrCompleted) return;
+    widget.action!.onPressed();
+    unawaited(_startDismiss());
   }
 
   /// Runs the animation backwards first, then pulls the overlay entry.
@@ -168,23 +185,47 @@ class _CupertinoToastOverlayState()
               position: _slideAnimation,
               child: FadeTransition(
                 opacity: _fadeAnimation,
-                child: GestureDetector(
-                  onTap: () => unawaited(_startDismiss()),
-                  // Opaque, so a tap anywhere on the banner counts, not just on the glyphs.
-                  behavior: HitTestBehavior.opaque,
-                  child: ClipRRect(
-                    borderRadius: widget.data.borderRadius,
-                    // Blur first, then tint through the translucent background, for the frosted glass look.
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(color: resolvedBackground),
-                        child: Padding(
-                          padding: widget.data.padding,
-                          child: DefaultTextStyle(
-                            style: resolvedTextStyle,
-                            textAlign: TextAlign.center,
-                            child: Text(widget.message),
+                child: Semantics(
+                  container: true,
+                  liveRegion: true,
+                  // VoiceOver's escape gesture, the way out once an action stops the timer.
+                  onDismiss: () => unawaited(_startDismiss()),
+                  child: GestureDetector(
+                    onTap: () => unawaited(_startDismiss()),
+                    // Opaque, so a tap anywhere on the banner counts, not just on the glyphs.
+                    behavior: HitTestBehavior.opaque,
+                    child: ClipRRect(
+                      borderRadius: widget.data.borderRadius,
+                      // Blur first, then tint through the translucent background, for the frosted glass look.
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(color: resolvedBackground),
+                          child: Padding(
+                            padding: widget.data.padding,
+                            child: DefaultTextStyle(
+                              style: resolvedTextStyle,
+                              textAlign: widget.action == null ? TextAlign.center : TextAlign.start,
+                              child: switch (widget.action) {
+                                null => Text(widget.message),
+                                final action => Row(
+                                  children: [
+                                    Expanded(child: Text(widget.message)),
+                                    CupertinoButton(
+                                      padding: const EdgeInsetsDirectional.only(start: 16),
+                                      onPressed: _runAction,
+                                      // The banner's own colour, since iOS blue is too dark to read on it.
+                                      child: Text(
+                                        action.label,
+                                        style: resolvedTextStyle.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              },
+                            ),
                           ),
                         ),
                       ),
