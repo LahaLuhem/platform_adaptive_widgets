@@ -118,6 +118,9 @@ Future<T?> showPlatformDialog<T>({
 /// [MaterialFullscreenDialogData] only carries the fields [Dialog.fullscreen] honours, so a centred
 /// dialog's knobs can't be passed here and quietly do nothing.
 ///
+/// Guidelines: [M3 full-screen dialogs](https://m3.material.io/components/dialogs/guidelines),
+/// [HIG full-screen modals](https://developer.apple.com/design/human-interface-guidelines/modality#Best-practices).
+///
 /// Example:
 /// {@example /example/lib/snippets/dialogs/platform_dialog.dart#fullscreen_dialog}
 Future<T?> showPlatformFullscreenDialog<T>({

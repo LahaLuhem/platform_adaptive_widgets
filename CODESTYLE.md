@@ -800,6 +800,28 @@ pub.dev a bare field still renders with its name and type.
 public getters and methods, and the primary constructor itself (which is what the
 `this;` body exists to hang a doc on). Those keep a one-liner.
 
+### Link the M3 and HIG pages behind a widget
+
+Every public `PlatformXxx` and `showPlatformXxx` dartdoc ends its prose with a `Guidelines:` line
+linking the M3 and HIG pages for what it maps to. A claim about one platform in the text above (a
+default, a "prefer X on iOS") links its own section inline. Link, don't quote. HIG links take a
+section anchor (`#Best-practices`). M3 pages have no stable anchors, so link the page's tab
+(`/guidelines`, `/accessibility`).
+
+```dart
+/// iOS has no toast, so prefer showing the change itself
+/// ([HIG feedback](https://developer.apple.com/design/human-interface-guidelines/feedback#Best-practices)).
+///
+/// Guidelines: [M3 snackbar](https://m3.material.io/components/snackbar/guidelines),
+/// [HIG feedback](https://developer.apple.com/design/human-interface-guidelines/feedback).
+```
+
+**Why.** The pairing and every call in it can be checked at the source in one click, and a link can't
+drift the way a paraphrase does.
+
+**How to apply.** Docstrings get their links when they're written or next touched, so an untouched
+widget picks them up with the first issue that changes its file.
+
 ### Wrap dartdoc past 100, not before it
 
 Fill a `///` line until a word takes it to or past column 100, keep that word on the
