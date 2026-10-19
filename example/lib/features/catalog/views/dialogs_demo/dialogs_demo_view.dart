@@ -2,9 +2,11 @@ import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
+import '/features/catalog/data/enums/alert_actions.dart';
 import '/features/catalog/widgets/demo_card.dart';
 import '/features/catalog/widgets/property_editor/bool_knob.dart';
 import '/features/catalog/widgets/property_editor/property_editor.dart';
+import '/features/catalog/widgets/property_editor/segment_knob.dart';
 import '/features/catalog/widgets/property_editor/string_knob.dart';
 import 'dialogs_demo_view_model.dart';
 
@@ -59,7 +61,7 @@ class DialogsDemoView extends StatelessWidget {
         ),
         DemoCard(
           title: 'Alert dialog',
-          description: 'Title, message, and adaptive action buttons.',
+          description: 'Title, message and actions, from a lone OK up to a destructive choice.',
           child: PropertyEditor(
             preview: PlatformButton(
               onPressed: viewModel.onShowAlertDialogPressed,
@@ -76,20 +78,31 @@ class DialogsDemoView extends StatelessWidget {
                 value: viewModel.alertMessage,
                 onChanged: viewModel.onAlertMessageChanged,
               ),
-              BoolKnob(
-                label: 'destructive action',
-                value: viewModel.shouldIncludeDestructiveAction,
-                onChanged: (value) => viewModel.onDestructiveActionToggled(value: value),
+              SegmentKnob<AlertActions>(
+                label: 'actions',
+                value: viewModel.alertActions,
+                values: AlertActions.values,
+                onChanged: viewModel.onAlertActionsChanged,
               ),
             ],
           ),
         ),
         DemoCard(
-          title: 'Toast & acknowledge',
-          description: 'A transient toast, then a blocking acknowledgement.',
-          child: PlatformButton(
-            onPressed: viewModel.onShowToastAndAcknowledgePressed,
-            child: const Text('Show toast → acknowledge'),
+          title: 'Toast',
+          description:
+              'A snackbar on Android, a banner on iOS. With an action, it waits to be tapped.',
+          child: PropertyEditor(
+            preview: PlatformButton(
+              onPressed: viewModel.onShowToastPressed,
+              child: Text(viewModel.isUndone ? 'Undone' : 'Show toast'),
+            ),
+            knobs: [
+              BoolKnob(
+                label: 'action',
+                value: viewModel.shouldOfferUndo,
+                onChanged: (value) => viewModel.onUndoToggled(value: value),
+              ),
+            ],
           ),
         ),
         DemoCard(

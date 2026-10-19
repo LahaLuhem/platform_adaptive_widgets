@@ -3,13 +3,17 @@ import 'package:material_ui/material_ui.dart' show TimeOfDay;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
+import '/features/catalog/data/enums/alert_actions.dart';
+
 /// Triggers for the dialog, sheet and picker showcase, plus the args their knobs set. The full-screen
-/// dialog, date and time buttons keep the last value they got back, so it can be shown on them.
+/// dialog, toast, date and time buttons keep the last result they got, so it can be shown on them.
 final class DialogsDemoViewModel extends ViewModel {
   var _alertTitle = 'Alert';
   var _alertMessage = 'Actions adapt their layout and styling to the platform.';
-  var _shouldIncludeDestructiveAction = true;
+  var _alertActions = AlertActions.destructive;
   var _shouldDismissRawDialogOnBarrierTap = true;
+  var _shouldOfferUndo = true;
+  var _isUndone = false;
   String? _savedEvent;
   Date? _selectedDate;
   TimeOfDay? _selectedTime;
@@ -18,9 +22,13 @@ final class DialogsDemoViewModel extends ViewModel {
 
   String get alertMessage => _alertMessage;
 
-  bool get shouldIncludeDestructiveAction => _shouldIncludeDestructiveAction;
+  AlertActions get alertActions => _alertActions;
 
   bool get shouldDismissRawDialogOnBarrierTap => _shouldDismissRawDialogOnBarrierTap;
+
+  bool get shouldOfferUndo => _shouldOfferUndo;
+
+  bool get isUndone => _isUndone;
 
   String? get savedEvent => _savedEvent;
 
@@ -38,13 +46,18 @@ final class DialogsDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
-  void onDestructiveActionToggled({required bool value}) {
-    _shouldIncludeDestructiveAction = value;
+  void onAlertActionsChanged(AlertActions value) {
+    _alertActions = value;
     notifyListeners();
   }
 
   void onBarrierDismissibleToggled({required bool value}) {
     _shouldDismissRawDialogOnBarrierTap = value;
+    notifyListeners();
+  }
+
+  void onUndoToggled({required bool value}) {
+    _shouldOfferUndo = value;
     notifyListeners();
   }
 
@@ -91,38 +104,52 @@ final class DialogsDemoViewModel extends ViewModel {
     builder: (_) => const Center(child: Text('A raw dialog, the package adds no card here.')),
   );
 
-  Future<void> onShowAlertDialogPressed() => showPlatformAlertDialog(
-    context: context,
-    title: Text(_alertTitle),
-    content: Text(_alertMessage),
-    actions: [
-      PlatformDialogAction(
-        isDefaultAction: true,
-        onPressed: (context) => Navigator.maybeOf(context)?.pop(),
-        child: const Text('OK'),
-      ),
-      if (_shouldIncludeDestructiveAction)
-        PlatformDialogAction(
-          isDestructiveAction: true,
-          onPressed: (context) => Navigator.maybeOf(context)?.pop(),
-          child: const Text('Delete'),
-        ),
-      PlatformDialogAction(
-        onPressed: (context) => Navigator.maybeOf(context)?.pop(),
-        child: const Text('Cancel'),
-      ),
-    ],
-  );
-
-  Future<void> onShowToastAndAcknowledgePressed() async {
-    await showPlatformToast(context: context, message: 'Transient toast, auto-dismisses');
-    if (!context.mounted) return;
-
-    await showPlatformAcknowledge(
+  Future<void> onShowAlertDialogPressed() => switch (_alertActions) {
+    .acknowledge => showPlatformAcknowledge(
       context: context,
-      title: 'Acknowledgement required',
-      message: 'This alert blocks until you tap OK.',
+      title: _alertTitle,
+      message: _alertMessage,
+    ),
+    .confirm || .destructive => showPlatformAlertDialog(
+      context: context,
+      title: Text(_alertTitle),
+      content: Text(_alertMessage),
+      actions: [
+        PlatformDialogAction(
+          isDefaultAction: true,
+          onPressed: (context) => Navigator.maybeOf(context)?.pop(),
+          child: const Text('OK'),
+        ),
+        if (_alertActions == .destructive)
+          PlatformDialogAction(
+            isDestructiveAction: true,
+            onPressed: (context) => Navigator.maybeOf(context)?.pop(),
+            child: const Text('Delete'),
+          ),
+        PlatformDialogAction(
+          onPressed: (context) => Navigator.maybeOf(context)?.pop(),
+          child: const Text('Cancel'),
+        ),
+      ],
+    ),
+  };
+
+  Future<void> onShowToastPressed() {
+    _isUndone = false;
+    notifyListeners();
+
+    return showPlatformToast(
+      context: context,
+      message: 'Draft deleted',
+      action: _shouldOfferUndo
+          ? PlatformToastAction(label: 'Undo', onPressed: _onUndoPressed)
+          : null,
     );
+  }
+
+  void _onUndoPressed() {
+    _isUndone = true;
+    notifyListeners();
   }
 
   Future<void> onShowBottomSheetPressed() => showPlatformModalBottomSheet(
