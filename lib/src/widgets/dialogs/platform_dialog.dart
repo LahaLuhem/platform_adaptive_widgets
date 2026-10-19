@@ -13,7 +13,9 @@ import 'package:material_ui/material_ui.dart'
 import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_alert_dialog_data.dart';
 import '/src/models/dialogs/platform_dialog_data.dart';
+import '/src/models/layout/platform_app_bar_data.dart';
 import '/src/models/platform_widget_base.dart';
+import '/src/widgets/layout/platform_scaffold.dart';
 
 part 'platform_alert_dialog.dart';
 
@@ -108,52 +110,51 @@ Future<T?> showPlatformDialog<T>({
 /// Shows a full-screen modal dialog: [Dialog.fullscreen] on Android, a full-screen [CupertinoPageRoute]
 /// on iOS.
 ///
+/// You hand over the page's parts, the bar and the body, and the package builds a [PlatformScaffold]
+/// from them. That way the bar gets each platform's close button (M3's X, iOS's Cancel) and the body
+/// sits on a page background. On iOS the bar is the only way out, since a full-screen page can't be
+/// swiped back.
+///
 /// [MaterialFullscreenDialogData] only carries the fields [Dialog.fullscreen] honours, so a centred
 /// dialog's knobs can't be passed here and quietly do nothing.
-///
-/// Builder selection works as in [showPlatformDialog].
 ///
 /// Example:
 /// {@example /example/lib/snippets/dialogs/platform_dialog.dart#fullscreen_dialog}
 Future<T?> showPlatformFullscreenDialog<T>({
   required BuildContext context,
-  WidgetBuilder? builder,
-  WidgetBuilder? materialBuilder,
-  WidgetBuilder? cupertinoBuilder,
-  Offset? anchorPoint,
-  Color? barrierColor,
-  String? barrierLabel,
+  required PlatformAppBarData appBarData,
+  required WidgetBuilder builder,
+  Color? backgroundColor,
   RouteSettings? routeSettings,
   bool useRootNavigator = kDefaultUseRootNavigator,
   bool? requestFocus,
   MaterialFullscreenDialogData? materialDialogData,
 }) {
-  _assertBuilderInvariant(
-    hasBuilder: builder != null,
-    hasMaterialBuilder: materialBuilder != null,
-    hasCupertinoBuilder: cupertinoBuilder != null,
+  final page = _fullscreenPage(
+    appBarData: appBarData,
+    backgroundColor: backgroundColor,
+    body: builder,
   );
 
   return switch (defaultTargetPlatform) {
     .android => _showMaterialDialog(
       context: context,
       builder: (context) => Dialog.fullscreen(
-        backgroundColor: materialDialogData?.backgroundColor,
         insetAnimationDuration:
             materialDialogData?.insetAnimationDuration ??
             kDefaultMaterialDialogInsetAnimationDuration,
         insetAnimationCurve:
             materialDialogData?.insetAnimationCurve ?? kDefaultMaterialDialogInsetAnimationCurve,
         semanticsRole: materialDialogData?.semanticsRole ?? kDefaultMaterialDialogSemanticsRole,
-        child: (materialBuilder ?? builder!)(context),
+        child: page(context),
       ),
       isFullscreenRoute: true,
-      // A full-screen dialog has no outside, so it runs under the status bar and can't be tapped away.
+      // A full-screen dialog has no outside, so the barrier settings don't apply and it covers the status bar.
       barrierDismissible: false,
+      barrierColor: null,
+      barrierLabel: null,
       useSafeArea: false,
-      anchorPoint: anchorPoint,
-      barrierColor: barrierColor,
-      barrierLabel: barrierLabel,
+      anchorPoint: materialDialogData?.anchorPoint,
       routeSettings: routeSettings,
       useRootNavigator: useRootNavigator,
       requestFocus: requestFocus,
@@ -162,7 +163,7 @@ Future<T?> showPlatformFullscreenDialog<T>({
     ),
     .iOS => _showCupertinoFullscreenDialog(
       context: context,
-      builder: cupertinoBuilder ?? builder!,
+      builder: page,
       routeSettings: routeSettings,
       useRootNavigator: useRootNavigator,
       requestFocus: requestFocus,
@@ -330,3 +331,16 @@ Future<T?> _showCupertinoFullscreenDialog<T>({
 /// end up double-wrapped.
 WidgetBuilder _cupertinoDialogSurface(WidgetBuilder content) =>
     (context) => Center(child: CupertinoPopupSurface(child: content(context)));
+
+/// Built by the package rather than the caller, so the close button and page background can't be
+/// forgotten.
+WidgetBuilder _fullscreenPage({
+  required PlatformAppBarData appBarData,
+  required Color? backgroundColor,
+  required WidgetBuilder body,
+}) =>
+    (context) => PlatformScaffold(
+      appBarData: appBarData,
+      backgroundColor: backgroundColor,
+      body: body(context),
+    );

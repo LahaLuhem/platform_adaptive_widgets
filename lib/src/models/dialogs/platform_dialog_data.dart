@@ -1,7 +1,6 @@
-// 2 data classes in one file, both Material-only dialog config, split by
-// dialog shape (centered vs fullscreen). Cupertino has no `…DialogData`
-// counterpart: `showCupertinoDialog` has no params beyond the shared
-// show-function flat args, so there's no platform-only Cupertino surface.
+// 2 data classes in one file, both Material-only dialog config, split by dialog shape (centred vs
+// full-screen). Cupertino has no counterpart, since neither iOS route needs more than the show
+// functions' flat args.
 // ignore_for_file: prefer-match-file-name
 
 /// @docImport 'package:cupertino_ui/cupertino_ui.dart';
@@ -13,27 +12,26 @@ import 'dart:ui' show SemanticsRole;
 
 import 'package:flutter/widgets.dart';
 
-/// Default value for [MaterialDialogData.useSafeArea] and [MaterialFullscreenDialogData.useSafeArea].
-/// Matches upstream `showDialog`'s default.
+/// Default value for [MaterialDialogData.useSafeArea]. Same as `showDialog`'s.
 const kDefaultMaterialDialogUseSafeArea = true;
 
 /// Default value for [MaterialDialogData.insetAnimationDuration] and [MaterialFullscreenDialogData.insetAnimationDuration].
-/// Matches upstream `Dialog`'s default.
+/// Same as `Dialog`'s.
 const kDefaultMaterialDialogInsetAnimationDuration = Duration(milliseconds: 100);
 
 /// Default value for [MaterialDialogData.insetAnimationCurve] and [MaterialFullscreenDialogData.insetAnimationCurve].
-/// Matches upstream `Dialog`'s default.
+/// Same as `Dialog`'s.
 const kDefaultMaterialDialogInsetAnimationCurve = Curves.decelerate;
 
 /// Default value for [MaterialDialogData.semanticsRole] and [MaterialFullscreenDialogData.semanticsRole].
-/// Matches upstream `Dialog`'s default.
+/// Same as `Dialog`'s.
 const kDefaultMaterialDialogSemanticsRole = SemanticsRole.dialog;
 
 /// Material-side settings for `showPlatformDialog`, the centred one, passed as `materialDialogData`.
 /// None of it reaches iOS, where `showCupertinoDialog` only takes the function-level args that already
 /// sit flat on the show function.
 ///
-/// Going fullscreen instead? That's `showPlatformFullscreenDialog` with [MaterialFullscreenDialogData],
+/// Going full-screen instead? That's `showPlatformFullscreenDialog` with [MaterialFullscreenDialogData],
 /// which leaves out everything below that only a centred dialog can honour.
 final class const MaterialDialogData({
   // ---- showDialog (function-level) ----
@@ -77,18 +75,16 @@ final class const MaterialDialogData({
 
 /// Material-side settings for `showPlatformFullscreenDialog`, passed as its `materialDialogData`.
 ///
-/// Matches what [Dialog.fullscreen] actually takes. The centred-only knobs on [MaterialDialogData] (alignment,
-/// shape, clip, constraints, elevation, inset padding, the 2 shadow colours) are left out on purpose,
-/// because a fullscreen dialog ignores them and the old single-flag design let them disappear without
-/// a word.
+/// Only what a full-screen dialog honours. A centred dialog's knobs on [MaterialDialogData] (alignment,
+/// shape, insets and the like) would do nothing here, so they're left out. The background is the flat
+/// `backgroundColor` on the show function, shared with iOS.
 final class const MaterialFullscreenDialogData({
   final AnimationStyle? animationStyle,
 
   final TraversalEdgeBehavior? traversalEdgeBehavior,
 
-  final bool useSafeArea = kDefaultMaterialDialogUseSafeArea,
-
-  final Color? backgroundColor,
+  /// Picks which screen of a foldable the dialog opens on.
+  final Offset? anchorPoint,
 
   /// How the dialog slides up out of the keyboard's way.
   final Duration insetAnimationDuration = kDefaultMaterialDialogInsetAnimationDuration,

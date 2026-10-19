@@ -11,11 +11,8 @@ const _bar = PlatformAppBar(title: Text('New event'));
 const _body = SizedBox.expand(key: Key('body'));
 const _statusBarHeight = 24.0;
 
-// Today's signature has no slot for the bar, so it rides in with the body.
-Future<String?> _open(BuildContext context) => showPlatformFullscreenDialog<String>(
-  context: context,
-  builder: (_) => const PlatformScaffold(appBarData: _bar, body: _body),
-);
+Future<String?> _open(BuildContext context) =>
+    showPlatformFullscreenDialog<String>(context: context, appBarData: _bar, builder: (_) => _body);
 
 void _addStatusBar(WidgetTester tester) {
   tester.view.padding = FakeViewPadding(top: _statusBarHeight * tester.view.devicePixelRatio);
