@@ -36,6 +36,16 @@ class _Surfaces extends StatelessWidget {
         child: const Text('dialog'),
       ),
 
+      // showPlatformFullscreenDialog, top-level switch dispatch.
+      TextButton(
+        onPressed: () => showPlatformFullscreenDialog<void>(
+          context: context,
+          appBarData: const PlatformAppBar(title: Text('title')),
+          builder: (_) => const Text('page'),
+        ),
+        child: const Text('fullscreen dialog'),
+      ),
+
       // showPlatformAlertDialog, top-level switch dispatch.
       TextButton(
         onPressed: () => showPlatformAlertDialog<void>(
