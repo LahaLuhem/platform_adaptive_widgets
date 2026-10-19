@@ -1,5 +1,10 @@
 import 'package:cupertino_ui/cupertino_ui.dart'
-    show CupertinoAlertDialog, CupertinoDialogAction, CupertinoPopupSurface, showCupertinoDialog;
+    show
+        CupertinoAlertDialog,
+        CupertinoDialogAction,
+        CupertinoPageRoute,
+        CupertinoPopupSurface,
+        showCupertinoDialog;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart'
@@ -162,14 +167,9 @@ Future<T?> showPlatformFullscreenDialog<T>({
       traversalEdgeBehavior: materialDialogData?.traversalEdgeBehavior,
       useSafeArea: materialDialogData?.useSafeArea ?? kDefaultMaterialDialogUseSafeArea,
     ),
-    .iOS => _showCupertinoDialog(
+    .iOS => _showCupertinoFullscreenDialog(
       context: context,
-      // iOS counterpart to the Android Dialog wrap. See _cupertinoDialogSurface.
-      builder: _cupertinoDialogSurface(cupertinoBuilder ?? builder!),
-      anchorPoint: anchorPoint,
-      barrierColor: barrierColor,
-      barrierDismissible: barrierDismissible,
-      barrierLabel: barrierLabel,
+      builder: cupertinoBuilder ?? builder!,
       routeSettings: routeSettings,
       useRootNavigator: useRootNavigator,
       requestFocus: requestFocus,
@@ -312,6 +312,22 @@ Future<T?> _showCupertinoDialog<T>({
   routeSettings: routeSettings,
   useRootNavigator: useRootNavigator,
   requestFocus: requestFocus,
+);
+
+/// A page route rather than a dialog one, since that's what iOS's full-screen modal is. See [_showMaterialDialog].
+Future<T?> _showCupertinoFullscreenDialog<T>({
+  required BuildContext context,
+  required WidgetBuilder builder,
+  required RouteSettings? routeSettings,
+  required bool useRootNavigator,
+  required bool? requestFocus,
+}) => Navigator.of(context, rootNavigator: useRootNavigator).push(
+  CupertinoPageRoute<T>(
+    builder: builder,
+    settings: routeSettings,
+    requestFocus: requestFocus,
+    fullscreenDialog: true,
+  ),
 );
 
 /// iOS's answer to the [Dialog] the Android branch wraps on. [showCupertinoDialog]'s route only paints
