@@ -1,3 +1,5 @@
+import 'dart:ui' show SemanticsRole;
+
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show CircularProgressIndicator;
@@ -14,6 +16,8 @@ import '/src/models/platform_widget_base.dart';
 /// {@example /example/lib/snippets/painting/platform_progress_indicator.dart#platform_progress_indicator}
 class const PlatformProgressIndicator({
   final Color? color,
+
+  final String? semanticsLabel,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialProgressIndicatorData? materialProgressIndicatorData,
@@ -35,8 +39,7 @@ class const PlatformProgressIndicator({
     valueColor: materialProgressIndicatorData?.valueColor,
     strokeWidth: materialProgressIndicatorData?.strokeWidth,
     strokeAlign: materialProgressIndicatorData?.strokeAlign,
-    semanticsLabel: materialProgressIndicatorData?.semanticsLabel,
-    semanticsValue: materialProgressIndicatorData?.semanticsValue,
+    semanticsLabel: semanticsLabel,
     strokeCap: materialProgressIndicatorData?.strokeCap,
     constraints: materialProgressIndicatorData?.constraints,
     trackGap: materialProgressIndicatorData?.trackGap,
@@ -45,10 +48,15 @@ class const PlatformProgressIndicator({
   );
 
   @override
-  Widget buildCupertino(BuildContext context) => CupertinoActivityIndicator(
-    key: widgetKey,
-    color: cupertinoProgressIndicatorData?.color ?? color,
-    animating: cupertinoProgressIndicatorData?.animating ?? kDefaultProgressIndicatorAnimating,
-    radius: cupertinoProgressIndicatorData?.radius ?? kDefaultProgressIndicatorRadius,
+  Widget buildCupertino(BuildContext context) => Semantics(
+    // cupertino_ui's spinner has no semantics of its own, so this matches what Material's sets.
+    label: semanticsLabel,
+    role: SemanticsRole.loadingSpinner,
+    child: CupertinoActivityIndicator(
+      key: widgetKey,
+      color: cupertinoProgressIndicatorData?.color ?? color,
+      animating: cupertinoProgressIndicatorData?.animating ?? kDefaultProgressIndicatorAnimating,
+      radius: cupertinoProgressIndicatorData?.radius ?? kDefaultProgressIndicatorRadius,
+    ),
   );
 }

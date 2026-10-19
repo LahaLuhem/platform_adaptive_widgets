@@ -38,11 +38,6 @@ final class const MaterialProgressIndicatorData({
   /// Whether the stroke sits inside, outside or centred on the indicator's edge.
   final double? strokeAlign,
 
-  /// iOS writes its own, so this is Material's alone.
-  final String? semanticsLabel,
-
-  final String? semanticsValue,
-
   /// Rounds or squares off the ends of the stroke.
   final StrokeCap? strokeCap,
 
