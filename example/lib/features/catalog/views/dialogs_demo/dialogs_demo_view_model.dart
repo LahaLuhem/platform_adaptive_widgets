@@ -3,13 +3,14 @@ import 'package:material_ui/material_ui.dart' show TimeOfDay;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
-/// Triggers for the dialog, sheet and picker showcase, plus the args their knobs set. The date and time
-/// buttons hold the last-picked value so it can be shown back.
+/// Triggers for the dialog, sheet and picker showcase, plus the args their knobs set. The full-screen
+/// dialog, date and time buttons keep the last value they got back, so it can be shown on them.
 final class DialogsDemoViewModel extends ViewModel {
   var _alertTitle = 'Alert';
   var _alertMessage = 'Actions adapt their layout and styling to the platform.';
   var _shouldIncludeDestructiveAction = true;
   var _shouldDismissRawDialogOnBarrierTap = true;
+  String? _savedEvent;
   Date? _selectedDate;
   TimeOfDay? _selectedTime;
 
@@ -20,6 +21,8 @@ final class DialogsDemoViewModel extends ViewModel {
   bool get shouldIncludeDestructiveAction => _shouldIncludeDestructiveAction;
 
   bool get shouldDismissRawDialogOnBarrierTap => _shouldDismissRawDialogOnBarrierTap;
+
+  String? get savedEvent => _savedEvent;
 
   Date? get selectedDate => _selectedDate;
 
@@ -47,8 +50,8 @@ final class DialogsDemoViewModel extends ViewModel {
 
   Future<void> onShowDialogPressed() => showPlatformDialog(
     context: context,
-    // Custom content must carry its own dismiss affordance: iOS doesn't dismiss
-    // a centered dialog by tapping the barrier (HIG), and has no back button.
+    // On iOS, custom content needs its own way out: tapping outside doesn't close a centred dialog
+    // (HIG), and there's no back button.
     builder: (context) => Padding(
       padding: const .all(24),
       child: Column(
@@ -67,9 +70,23 @@ final class DialogsDemoViewModel extends ViewModel {
     ),
   );
 
+  Future<void> onShowFullscreenDialogPressed() async {
+    _savedEvent = await showPlatformFullscreenDialog<String>(
+      context: context,
+      appBarData: const PlatformAppBar(title: Text('New event')),
+      // Save sits in the body for now, since the bar's trailing actions are still per platform.
+      builder: (context) => Center(
+        child: PlatformButton(
+          onPressed: () => Navigator.maybeOf(context)?.pop('Team lunch'),
+          child: const Text('Save "Team lunch"'),
+        ),
+      ),
+    );
+    notifyListeners();
+  }
+
   Future<void> onShowRawDialogPressed() => showPlatformRawDialog(
     context: context,
-    // Raw: no Dialog / CupertinoPopupSurface wrap.
     barrierDismissible: _shouldDismissRawDialogOnBarrierTap,
     builder: (_) => const Center(child: Text('A raw dialog, the package adds no card here.')),
   );
@@ -123,8 +140,6 @@ final class DialogsDemoViewModel extends ViewModel {
 
   Future<void> onShowRawBottomSheetPressed() => showPlatformRawModalBottomSheet(
     context: context,
-    // Raw: no CupertinoPopupSurface wrap, the content floats on iOS (Android
-    // keeps showModalBottomSheet's own native Material sheet).
     builder: (_) => const SafeArea(
       child: Padding(
         padding: .all(24),

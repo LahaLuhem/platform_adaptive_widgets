@@ -8,8 +8,8 @@ import '/features/catalog/widgets/property_editor/property_editor.dart';
 import '/features/catalog/widgets/property_editor/string_knob.dart';
 import 'dialogs_demo_view_model.dart';
 
-/// The Dialogs & pickers section of the Catalog accordion. Dialogs are imperative, so the playgrounds
-/// are configure-then-trigger: knobs set the args, the button fires the dialog.
+/// The Dialogs & pickers section of the Catalog accordion. Dialogs open from a function call, not as a
+/// widget, so each playground is configure-then-trigger: knobs set the args, the button opens the dialog.
 class DialogsDemoView extends StatelessWidget {
   const DialogsDemoView({super.key});
 
@@ -26,6 +26,18 @@ class DialogsDemoView extends StatelessWidget {
           child: PlatformButton(
             onPressed: viewModel.onShowDialogPressed,
             child: const Text('Show dialog'),
+          ),
+        ),
+        DemoCard(
+          title: 'Full-screen dialog',
+          description:
+              'A full-screen dialog on Android, a page that slides up on iOS. Its bar closes it.',
+          child: PlatformButton(
+            onPressed: viewModel.onShowFullscreenDialogPressed,
+            child: Text(switch (viewModel.savedEvent) {
+              final event? => 'Saved: $event',
+              null => 'New event',
+            }),
           ),
         ),
         DemoCard(
