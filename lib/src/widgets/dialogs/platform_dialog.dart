@@ -23,14 +23,11 @@ part 'platform_alert_dialog.dart';
 /// Give it content that sizes itself, a [Column] with `mainAxisSize: .min` say. The Cupertino route
 /// hands the builder the whole screen, so anything unbounded stretches the card to fill it.
 ///
-/// **On iOS, tapping the barrier does nothing by default.** That matches the HIG, where an alert is
-/// dismissed by a button rather than by tapping away, and there's no system back button to fall back
-/// on. So your content needs its own way out or the dialog is a dead end. `barrierDismissible: true`
-/// opts into the non-standard behaviour.
+/// **On iOS, tapping outside does nothing by default.** That matches the HIG, where an alert closes from
+/// a button rather than a tap outside, and there's no system back button to fall back on. So your
+/// content needs its own way out, or the dialog is a dead end. `barrierDismissible: true` opts out.
 ///
-/// Fullscreen is [showPlatformFullscreenDialog]. iOS has no such thing and shows the same centred dialog
-/// either way. For a genuinely fullscreen iOS presentation, push a `CupertinoPageRoute` with `fullscreenDialog: true`
-/// yourself.
+/// Full-screen is [showPlatformFullscreenDialog].
 ///
 /// Either pass [builder] for content shared across both, or pass [materialBuilder] and [cupertinoBuilder]
 /// together. Mixing the 2 trips an assert.
@@ -63,8 +60,6 @@ Future<T?> showPlatformDialog<T>({
   return switch (defaultTargetPlatform) {
     .android => _showMaterialDialog(
       context: context,
-      // Wrap the user's content in a Dialog, the package's centered
-      // convenience over upstream's raw `showDialog(builder: …)`.
       builder: (context) => Dialog(
         backgroundColor: materialDialogData?.backgroundColor,
         insetAnimationDuration:
@@ -97,7 +92,6 @@ Future<T?> showPlatformDialog<T>({
     ),
     .iOS => _showCupertinoDialog(
       context: context,
-      // iOS counterpart to the Android Dialog wrap. See _cupertinoDialogSurface.
       builder: _cupertinoDialogSurface(cupertinoBuilder ?? builder!),
       anchorPoint: anchorPoint,
       barrierColor: barrierColor,
@@ -111,14 +105,13 @@ Future<T?> showPlatformDialog<T>({
   };
 }
 
-/// Shows a fullscreen modal dialog on Android, via [Dialog.fullscreen]. iOS has no such concept and
-/// gets the same centred dialog [showPlatformDialog] would give it.
+/// Shows a full-screen modal dialog: [Dialog.fullscreen] on Android, a full-screen [CupertinoPageRoute]
+/// on iOS.
 ///
-/// [MaterialFullscreenDialogData] deliberately carries fewer fields than [MaterialDialogData], only
-/// the ones [Dialog.fullscreen] actually honours. The centred-only knobs stay over there, which is how
-/// the old design used to lose them without saying anything.
+/// [MaterialFullscreenDialogData] only carries the fields [Dialog.fullscreen] honours, so a centred
+/// dialog's knobs can't be passed here and quietly do nothing.
 ///
-/// Builder selection and the iOS dismissal caveat work exactly as in [showPlatformDialog].
+/// Builder selection works as in [showPlatformDialog].
 ///
 /// Example:
 /// {@example /example/lib/snippets/dialogs/platform_dialog.dart#fullscreen_dialog}
@@ -129,7 +122,6 @@ Future<T?> showPlatformFullscreenDialog<T>({
   WidgetBuilder? cupertinoBuilder,
   Offset? anchorPoint,
   Color? barrierColor,
-  bool? barrierDismissible,
   String? barrierLabel,
   RouteSettings? routeSettings,
   bool useRootNavigator = kDefaultUseRootNavigator,
@@ -156,16 +148,17 @@ Future<T?> showPlatformFullscreenDialog<T>({
         child: (materialBuilder ?? builder!)(context),
       ),
       isFullscreenRoute: true,
+      // A full-screen dialog has no outside, so it runs under the status bar and can't be tapped away.
+      barrierDismissible: false,
+      useSafeArea: false,
       anchorPoint: anchorPoint,
       barrierColor: barrierColor,
-      barrierDismissible: barrierDismissible,
       barrierLabel: barrierLabel,
       routeSettings: routeSettings,
       useRootNavigator: useRootNavigator,
       requestFocus: requestFocus,
       animationStyle: materialDialogData?.animationStyle,
       traversalEdgeBehavior: materialDialogData?.traversalEdgeBehavior,
-      useSafeArea: materialDialogData?.useSafeArea ?? kDefaultMaterialDialogUseSafeArea,
     ),
     .iOS => _showCupertinoFullscreenDialog(
       context: context,
@@ -183,7 +176,7 @@ Future<T?> showPlatformFullscreenDialog<T>({
 /// coachmark.
 ///
 /// Worth reaching for when [showPlatformDialog]'s card is in the way, say when you're dropping in your
-/// own [CupertinoAlertDialog] and don't want it double-wrapped, or going full-bleed.
+/// own [CupertinoAlertDialog] and don't want it double-wrapped, or going edge to edge.
 ///
 /// Builder selection and the iOS dismissal caveat work exactly as in [showPlatformDialog]. No `materialDialogData`
 /// here, since there's no [Dialog] left to configure.
@@ -259,8 +252,8 @@ void _assertBuilderInvariant({
   );
 }
 
-/// Takes an already-wrapped [builder] and just marshals arguments. Top-level rather than inline so the
-/// unused platform's branch const-folds away under AOT.
+/// Takes an already-wrapped [builder] and only passes arguments along. Top-level rather than inline, so
+/// release builds can drop the other platform's branch.
 Future<T?> _showMaterialDialog<T>({
   required BuildContext context,
   required WidgetBuilder builder,
