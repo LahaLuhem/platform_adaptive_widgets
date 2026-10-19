@@ -201,8 +201,6 @@ class ContainersDemoView extends StatelessWidget {
             preview: PlatformProgressIndicator(
               color: viewModel.progressColor,
               materialProgressIndicatorData: MaterialProgressIndicatorData(
-                // 0 is the knob's "indeterminate" sentinel (labelled "animating").
-                value: viewModel.progressValue == 0 ? null : viewModel.progressValue,
                 strokeWidth: viewModel.progressStrokeWidth,
               ),
               cupertinoProgressIndicatorData: CupertinoProgressIndicatorData(
@@ -218,15 +216,6 @@ class ContainersDemoView extends StatelessWidget {
               ),
             ],
             materialKnobs: [
-              DoubleKnob(
-                label: 'value',
-                min: 0,
-                max: 1,
-                divisions: 10,
-                value: viewModel.progressValue,
-                onChanged: viewModel.onProgressValueChanged,
-                valueLabel: (value) => value == 0 ? 'animating' : value.toStringAsFixed(1),
-              ),
               DoubleKnob(
                 label: 'strokeWidth',
                 min: 2,

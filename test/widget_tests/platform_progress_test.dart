@@ -12,13 +12,12 @@ import '../support/support.dart';
 const _indicatorKey = Key('indicator');
 const _label = 'Loading inbox';
 
-// Today the value only goes in through the Material record.
 class const _Indicator({final double? value, final String? label}) extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => PlatformProgressIndicator(
-    semanticsLabel: label,
-    materialProgressIndicatorData: MaterialProgressIndicatorData(value: value),
-  );
+  Widget build(BuildContext context) => switch (value) {
+    final value? => PlatformProgressBar(value: value, semanticsLabel: label),
+    null => PlatformProgressIndicator(semanticsLabel: label),
+  };
 }
 
 Future<void> _pump(WidgetTester tester, Widget indicator) => pumpPlatformWidget(

@@ -132,9 +132,7 @@ whether per-platform override is possible.
   platform's underlying widget with no equivalent on the other. Visual
   examples: Material's `ButtonStyle`, `MaterialTapTargetSize`,
   `splashRadius`. Cupertino's `applyTheme`, `onLabelColor`,
-  `crossAxisAlignment`, `CupertinoButtonSize`. Functional examples:
-  `MaterialProgressIndicatorData.value` (Material has progress, Cupertino's
-  activity indicator is always indeterminate).
+  `crossAxisAlignment`, `CupertinoButtonSize`. Functional example:
   `CupertinoProgressIndicatorData.animating` (toggle for Cupertino's
   spinner, no Material equivalent). When a concept has no equivalent on the
   other platform, there's nothing to keep in sync, it belongs on the
