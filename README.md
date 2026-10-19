@@ -222,6 +222,7 @@ column shows what you can pass to tune each side. See
 | Widget                      | Material                    | Cupertino                                         | Data Classes                                                      |
 |-----------------------------|-----------------------------|---------------------------------------------------|-------------------------------------------------------------------|
 | `PlatformListTile`          | `ListTile`                  | `CupertinoListTile` / `CupertinoListTile.notched` | `MaterialListTileData`, `CupertinoListTileData`                   |
+| `PlatformProgressBar`       | `LinearProgressIndicator`   | `CupertinoLinearActivityIndicator`                | `MaterialProgressBarData`, `CupertinoProgressBarData`             |
 | `PlatformProgressIndicator` | `CircularProgressIndicator` | `CupertinoActivityIndicator`                      | `MaterialProgressIndicatorData`, `CupertinoProgressIndicatorData` |
 
 <details>

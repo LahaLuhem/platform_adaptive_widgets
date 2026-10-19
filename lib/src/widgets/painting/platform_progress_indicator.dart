@@ -1,3 +1,6 @@
+/// @docImport 'platform_progress_bar.dart';
+library;
+
 import 'dart:ui' show SemanticsRole;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
@@ -7,16 +10,20 @@ import 'package:material_ui/material_ui.dart' show CircularProgressIndicator;
 import '/src/models/painting/platform_progress_indicator_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// Material [CircularProgressIndicator] on Android, [CupertinoActivityIndicator] on iOS.
+/// A spinner for work with no known end: Material [CircularProgressIndicator] on Android,
+/// [CupertinoActivityIndicator] on iOS. For work where you know how far along it is, use
+/// [PlatformProgressBar].
 ///
-/// Nothing to interact with, so [color] is the only thing flat on the widget. Determinate progress and
-/// animation control are Material's alone and live on [MaterialProgressIndicatorData]. See `APPENDIX.md#field-classification`.
+/// Guidelines: [M3 progress indicators](https://m3.material.io/components/progress-indicators/guidelines),
+/// [HIG progress indicators](https://developer.apple.com/design/human-interface-guidelines/progress-indicators#Best-practices).
 ///
 /// Example:
 /// {@example /example/lib/snippets/painting/platform_progress_indicator.dart#platform_progress_indicator}
 class const PlatformProgressIndicator({
   final Color? color,
 
+  /// What's loading, like "Loading inbox"
+  /// ([M3 accessibility](https://m3.material.io/components/progress-indicators/accessibility)).
   final String? semanticsLabel,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
@@ -34,7 +41,6 @@ class const PlatformProgressIndicator({
   Widget buildMaterial(BuildContext context) => CircularProgressIndicator(
     key: widgetKey,
     color: materialProgressIndicatorData?.color ?? color,
-    value: materialProgressIndicatorData?.value,
     backgroundColor: materialProgressIndicatorData?.backgroundColor,
     valueColor: materialProgressIndicatorData?.valueColor,
     strokeWidth: materialProgressIndicatorData?.strokeWidth,

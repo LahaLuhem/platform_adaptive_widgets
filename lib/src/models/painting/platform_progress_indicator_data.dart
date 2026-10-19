@@ -24,13 +24,10 @@ abstract class const _PlatformProgressIndicatorData({final Color? color});
 final class const MaterialProgressIndicatorData({
   super.color,
 
-  /// Leave it out for the spinning kind. iOS only does that kind.
-  final double? value,
-
-  /// Fills the track behind the bar.
+  /// Fills the track behind the ring.
   final Color? backgroundColor,
 
-  /// Animates the bar's own colour, overriding [color] while it runs.
+  /// Animates the ring's own colour, overriding [color] while it runs.
   final Animation<Color?>? valueColor,
 
   final double? strokeWidth,
