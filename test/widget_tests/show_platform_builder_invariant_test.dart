@@ -11,17 +11,10 @@ typedef _Show = Future<void> Function(
   WidgetBuilder? cupertinoBuilder,
 });
 
-// All 5 share one guard, so they share one examples table. A new showPlatformXxx belongs here.
+// Every showPlatformXxx taking the builder trio shares one guard, so they share one examples table.
 final _entryPoints = <String, _Show>{
   'showPlatformDialog': (context, {builder, materialBuilder, cupertinoBuilder}) =>
       showPlatformDialog<void>(
-        context: context,
-        builder: builder,
-        materialBuilder: materialBuilder,
-        cupertinoBuilder: cupertinoBuilder,
-      ),
-  'showPlatformFullscreenDialog': (context, {builder, materialBuilder, cupertinoBuilder}) =>
-      showPlatformFullscreenDialog<void>(
         context: context,
         builder: builder,
         materialBuilder: materialBuilder,

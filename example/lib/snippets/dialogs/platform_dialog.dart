@@ -45,10 +45,13 @@ class FullscreenDialogSnippet extends StatelessWidget {
     // #region fullscreen_dialog
     final choice = await showPlatformFullscreenDialog<String>(
       context: context,
-      // iOS's barrier is not tap-to-dismiss, so the content carries its own way out.
-      builder: (context) => PlatformButton(
-        onPressed: () => Navigator.maybeOf(context)?.pop('chosen'),
-        child: const Text('Done'),
+      // The bar brings the close button, so the body only holds the content.
+      appBarData: const PlatformAppBar(title: Text('Pick one')),
+      builder: (context) => Center(
+        child: PlatformButton(
+          onPressed: () => Navigator.maybeOf(context)?.pop('chosen'),
+          child: const Text('Done'),
+        ),
       ),
     );
     // #endregion
