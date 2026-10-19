@@ -89,6 +89,18 @@ heading, keep the anchor stable or grep-and-update every caller.
 
 ---
 
+<a id="sdk-widgets-not-adaptive"></a>
+## Real SDK widgets, not Flutter's `.adaptive` constructors
+
+- **Chosen:** each `PlatformXxx` builds the actual Material widget on Android and the actual
+  Cupertino widget on iOS. Nothing goes through `Switch.adaptive`, `AlertDialog.adaptive` and friends.
+- **Why:** an `.adaptive` constructor bolts iOS onto a Material widget. It keeps the whole Material
+  parameter list, so plenty of params quietly do nothing on iOS and nothing tells you which. Building
+  the real widget per platform keeps every param meaningful where it's offered, see
+  [field classification](#field-classification).
+
+---
+
 <a id="field-classification"></a>
 ## Field classification: functional vs visual
 
