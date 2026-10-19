@@ -195,24 +195,44 @@ class ContainersDemoView extends StatelessWidget {
           ),
         ),
         DemoCard(
-          title: 'PlatformProgressIndicator',
-          description: 'Material CircularProgressIndicator · CupertinoActivityIndicator.',
+          title: 'Progress',
+          description:
+              'PlatformProgressIndicator for an unknown end, PlatformProgressBar for known progress.',
           child: PropertyEditor(
-            preview: PlatformProgressIndicator(
-              color: viewModel.progressColor,
-              materialProgressIndicatorData: MaterialProgressIndicatorData(
-                strokeWidth: viewModel.progressStrokeWidth,
-              ),
-              cupertinoProgressIndicatorData: CupertinoProgressIndicatorData(
-                animating: viewModel.shouldAnimateProgress,
-                radius: viewModel.progressRadius,
-              ),
+            preview: Column(
+              spacing: 16,
+              children: [
+                PlatformProgressIndicator(
+                  color: viewModel.progressColor,
+                  semanticsLabel: 'Syncing inbox',
+                  materialProgressIndicatorData: MaterialProgressIndicatorData(
+                    strokeWidth: viewModel.progressStrokeWidth,
+                  ),
+                  cupertinoProgressIndicatorData: CupertinoProgressIndicatorData(
+                    animating: viewModel.shouldAnimateProgress,
+                    radius: viewModel.progressRadius,
+                  ),
+                ),
+                PlatformProgressBar(
+                  value: viewModel.progressValue,
+                  color: viewModel.progressColor,
+                  semanticsLabel: 'Downloading episode',
+                ),
+              ],
             ),
             knobs: [
               ColorKnob(
                 label: 'color',
                 value: viewModel.progressColor,
                 onChanged: viewModel.onProgressColorSelected,
+              ),
+              DoubleKnob(
+                label: 'value',
+                min: 0,
+                max: 1,
+                divisions: 10,
+                value: viewModel.progressValue,
+                onChanged: viewModel.onProgressValueChanged,
               ),
             ],
             materialKnobs: [

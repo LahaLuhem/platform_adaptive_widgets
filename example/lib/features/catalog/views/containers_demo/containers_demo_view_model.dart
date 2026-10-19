@@ -24,7 +24,7 @@ final class ContainersDemoViewModel extends ViewModel {
   var _scrollbarOrientation = ScrollbarOrientation.right;
 
   var _progressColor = const Color(0xFF2196F3);
-  double _progressValue = 0;
+  var _progressValue = 0.3;
   double _progressStrokeWidth = 4;
   var _shouldAnimateProgress = true;
   double _progressRadius = 10;
