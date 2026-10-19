@@ -114,8 +114,8 @@ explicitly says "cut a release". See *Forbidden / confirm-first actions* below.
   `.github/workflows/publish.yml`).
 - **Never `--amend`** unless the user asked, create a new commit instead.
 - **Never `--no-verify`**, **never `git add -A`**: stage named paths.
-- Match existing commit style (short imperative subject, no Claude-authored footer unless
-  asked), as `git log` shows it.
+- Commit subjects follow AGENTS.md's PR conventions (Conventional Commits with a scope and the
+  issue key). No Claude-authored footer unless asked.
 - When asked for a commit: show `git status` + `git diff`, draft the message, wait for
   approval.
 
