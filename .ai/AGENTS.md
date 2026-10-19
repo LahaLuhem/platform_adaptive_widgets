@@ -198,6 +198,8 @@ auto-appends to `CHANGELOG.md` based on the PR's `sem-*` label (via `cider log`)
   then the issue key, then a lowercase subject: `<type>(<scope>)[!]: [#<issue>] <subject>`. The
   scope names the area (`dialogs`, `example`, `readme`, `deps`), `!` marks a public-API break, and
   `[#0]` means no issue. Example: `fix(dialogs): [#46] iOS full-screen page route`.
+- **Docs ride with the code**: the dartdoc, M3 and HIG links and README rows that describe an
+  issue's change go in its last commit that changes `lib/`, not in a docs commit of their own.
 - **Exactly one `sem-*` label per PR**, mapped to a CHANGELOG section:
 
   | Label           | CHANGELOG section | When to use                                    |

@@ -58,7 +58,11 @@ class _Surfaces extends StatelessWidget {
 
       // showPlatformToast, single inline switch.
       TextButton(
-        onPressed: () => showPlatformToast(context: context, message: 'hi'),
+        onPressed: () => showPlatformToast(
+          context: context,
+          message: 'hi',
+          action: PlatformToastAction(label: 'undo', onPressed: () {}),
+        ),
         child: const Text('toast'),
       ),
 
