@@ -20,8 +20,8 @@ final class ContainersDemoViewModel extends ViewModel {
   double _scrollbarThickness = 8;
   var _shouldShowScrollbarTrack = false;
   var _isScrollbarInteractive = true;
+  var _scrollAxis = Axis.vertical;
   var _scrollbarOrientation = ScrollbarOrientation.right;
-  var _horizontalScrollbarOrientation = ScrollbarOrientation.bottom;
 
   var _progressColor = const Color(0xFF2196F3);
   double _progressValue = 0;
@@ -55,7 +55,18 @@ final class ContainersDemoViewModel extends ViewModel {
 
   ScrollbarOrientation get scrollbarOrientation => _scrollbarOrientation;
 
-  ScrollbarOrientation get horizontalScrollbarOrientation => _horizontalScrollbarOrientation;
+  Axis get scrollAxis => _scrollAxis;
+
+  ScrollController get currentScrollController => switch (_scrollAxis) {
+    .vertical => scrollController,
+    .horizontal => horizontalScrollController,
+  };
+
+  /// The sides the scrollbar can sit on, which depend on which way the list scrolls.
+  List<ScrollbarOrientation> get scrollbarOrientations => switch (_scrollAxis) {
+    .vertical => const [.left, .right],
+    .horizontal => const [.top, .bottom],
+  };
 
   Color get progressColor => _progressColor;
 
@@ -128,8 +139,10 @@ final class ContainersDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
-  void onHorizontalScrollbarOrientationSelected(ScrollbarOrientation orientation) {
-    _horizontalScrollbarOrientation = orientation;
+  void onScrollAxisSelected(Axis axis) {
+    _scrollAxis = axis;
+    // The old side doesn't exist on the new axis.
+    _scrollbarOrientation = scrollbarOrientations.last;
     notifyListeners();
   }
 
