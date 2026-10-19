@@ -1,4 +1,4 @@
-// Per-platform records for showPlatformToast.
+// The shared action and the per-platform records for showPlatformToast.
 // ignore_for_file: prefer-match-file-name
 
 /// @docImport 'package:cupertino_ui/cupertino_ui.dart';
@@ -8,14 +8,12 @@ library;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoColors, CupertinoDynamicColor;
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart'
-    show SnackBarAction, SnackBarBehavior, SnackBarClosedReason;
+import 'package:material_ui/material_ui.dart' show SnackBarBehavior;
 
-/// Default value for the toast's display duration on both platforms. Matches Material's `SnackBar.duration`
-/// upstream default.
+/// Default value for the toast's display duration on both platforms. Same as `SnackBar.duration`'s.
 const kDefaultPlatformToastDuration = Duration(seconds: 4);
 
-/// Default value for [CupertinoToastData.backgroundColor]. A translucent HUD that flips with the theme.
+/// Default value for [CupertinoToastData.backgroundColor]. Translucent, and flips with the theme.
 const kDefaultCupertinoToastBackgroundColor = CupertinoDynamicColor.withBrightness(
   color: Color(0xCC1F1F1F),
   darkColor: Color(0xCCFAFAFA),
@@ -44,6 +42,17 @@ const kDefaultCupertinoToastMaxWidth = 480.0;
 /// Default value for [CupertinoToastData.transitionDuration], covering the slide and fade in.
 const kDefaultCupertinoToastTransitionDuration = Duration(milliseconds: 250);
 
+/// The toast's one action, like Undo ([M3 snackbar](https://m3.material.io/components/snackbar/guidelines)).
+/// A [SnackBarAction] on Android, a text button in the banner on iOS. Tapping it runs [onPressed] and
+/// closes the toast.
+final class const PlatformToastAction({
+  required final String label,
+  required final VoidCallback onPressed,
+}) {
+  /// Creates the toast's action.
+  this;
+}
+
 /// Material-side settings for `showPlatformToast`. Backed by [SnackBar].
 final class const MaterialToastData({
   final Color? backgroundColor,
@@ -64,18 +73,12 @@ final class const MaterialToastData({
   /// Anchored to the bottom, or floating above it.
   final SnackBarBehavior? snackBarBehavior,
 
-  /// An inline button, the classic being "Undo".
-  final SnackBarAction? action,
-
-  /// How wide the [action] may get before it drops onto its own line.
+  /// How wide the toast's action may get before it drops onto its own line.
   final double? actionOverflowThreshold,
 
   final bool? showCloseIcon,
 
   final Color? closeIconColor,
-
-  /// Keeps the bar up past its duration, until something dismisses it.
-  final bool? persist,
 
   final Animation<double>? animation,
 
@@ -90,8 +93,8 @@ final class const MaterialToastData({
   this;
 }
 
-/// Cupertino-side settings for `showPlatformToast`. iOS ships no toast of its own, so this drives the
-/// HUD-style banner the package draws instead.
+/// Cupertino-side settings for `showPlatformToast`. iOS has no toast of its own, so this styles the
+/// banner the package draws instead.
 final class const CupertinoToastData({
   final Color backgroundColor = kDefaultCupertinoToastBackgroundColor,
 
@@ -115,7 +118,3 @@ final class const CupertinoToastData({
   /// Creates Cupertino-side settings for `showPlatformToast`.
   this;
 }
-
-/// Re-exported so awaiting the Material toast's close future doesn't drag in a `material_ui` import
-/// just for the enum.
-typedef PlatformToastClosedReason = SnackBarClosedReason;
