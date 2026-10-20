@@ -1,6 +1,7 @@
 ## [Unreleased]
 ### Changed
 - Toast action works on iOS too, and waits to be tapped
+- Progress shows on iOS too, as a bar
 
 ## [2.2.0] - 2026-09-13
 ### Added
