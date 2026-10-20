@@ -4,6 +4,7 @@
 import 'dart:ui' show BoxHeightStyle, BoxWidthStyle;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoTextField;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
@@ -197,6 +198,8 @@ class const PlatformTextField({
   this;
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildMaterial(BuildContext context) {
     // Merge widget-level flat slots into the Material decoration. Data-class values win when explicitly
     // set. Flat widget values fill the gaps.
@@ -283,6 +286,8 @@ class const PlatformTextField({
   }
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildCupertino(BuildContext context) => CupertinoTextField(
     key: widgetKey,
     groupId: groupId,

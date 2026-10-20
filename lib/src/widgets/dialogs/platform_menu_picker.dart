@@ -10,6 +10,7 @@ import 'package:cupertino_ui/cupertino_ui.dart'
         CupertinoMenuItem,
         CupertinoPicker,
         showCupertinoModalPopup;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show DropdownMenu, DropdownMenuEntry;
 
@@ -80,6 +81,8 @@ class const PlatformMenuPicker<T extends Object>({
   ];
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildMaterial(BuildContext context) {
     final transformed = _transformedItems();
 
@@ -111,6 +114,8 @@ class const PlatformMenuPicker<T extends Object>({
   }
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildCupertino(BuildContext context) {
     final transformed = _transformedItems();
     final useIconButton =

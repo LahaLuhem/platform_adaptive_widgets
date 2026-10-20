@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '/src/models/platform_widget_base.dart';
@@ -17,9 +18,13 @@ class const PlatformWidget({
   this;
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildMaterial(BuildContext context) => materialBuilder(context);
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildCupertino(BuildContext context) => cupertinoBuilder(context);
 }
 
@@ -43,8 +48,12 @@ class const PlatformWidgetBuilder({
   this;
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildMaterial(BuildContext context) => materialWidgetBuilder(context, child);
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildCupertino(BuildContext context) => cupertinoWidgetBuilder(context, child);
 }

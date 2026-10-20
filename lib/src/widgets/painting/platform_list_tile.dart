@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoListTile;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show ListTile;
 
@@ -60,6 +61,8 @@ class const PlatformListTile({
   this;
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildMaterial(BuildContext context) => ListTile(
     key: widgetKey,
     title: title,
@@ -103,6 +106,8 @@ class const PlatformListTile({
   );
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildCupertino(BuildContext context) {
     final isNotched = cupertinoListTileData?.isNotched ?? kDefaultCupertinoListTileIsNotched;
     final resolvedLeadingSize =

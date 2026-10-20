@@ -4,6 +4,7 @@ library;
 import 'dart:ui' show SemanticsRole;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActivityIndicator;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show CircularProgressIndicator;
 
@@ -38,6 +39,8 @@ class const PlatformProgressIndicator({
   this;
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildMaterial(BuildContext context) => CircularProgressIndicator(
     key: widgetKey,
     color: materialProgressIndicatorData?.color ?? color,
@@ -54,6 +57,8 @@ class const PlatformProgressIndicator({
   );
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildCupertino(BuildContext context) => Semantics(
     // cupertino_ui's spinner has no semantics of its own, so this matches what Material's sets.
     label: semanticsLabel,

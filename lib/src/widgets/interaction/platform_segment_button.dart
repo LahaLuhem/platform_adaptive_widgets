@@ -2,6 +2,7 @@
 library;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoSlidingSegmentedControl;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show ButtonSegment, SegmentedButton;
 
@@ -50,6 +51,8 @@ class const PlatformSegmentButton<T extends Object>({
   this;
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildMaterial(BuildContext context) => SegmentedButton<T>(
     key: widgetKey,
     segments: [
@@ -69,6 +72,8 @@ class const PlatformSegmentButton<T extends Object>({
   );
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildCupertino(BuildContext context) => CupertinoSlidingSegmentedControl<T>(
     key: widgetKey,
     children: {for (final choice in choices) choice: segmentBuilder(choice)},

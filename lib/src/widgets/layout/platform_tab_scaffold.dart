@@ -1,5 +1,6 @@
 import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoTabBar, CupertinoTabController, CupertinoTabScaffold, CupertinoTabView;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show NavigationBar, NavigationDestination, Scaffold;
 
@@ -52,6 +53,8 @@ class const PlatformTabScaffold({
   this;
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildMaterial(BuildContext context) {
     _debugAssertUsage();
 
@@ -69,6 +72,8 @@ class const PlatformTabScaffold({
   }
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildCupertino(BuildContext context) {
     _debugAssertUsage();
 

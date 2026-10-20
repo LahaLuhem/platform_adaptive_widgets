@@ -1,4 +1,5 @@
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoSwitch;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Switch;
@@ -73,6 +74,8 @@ class const PlatformSwitch({
   this;
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildMaterial(BuildContext context) => Switch(
     key: widgetKey,
     value: value,
@@ -110,6 +113,8 @@ class const PlatformSwitch({
   );
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildCupertino(BuildContext context) => CupertinoSwitch(
     key: widgetKey,
     value: value,

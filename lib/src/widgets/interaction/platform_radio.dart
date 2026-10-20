@@ -1,4 +1,5 @@
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoRadio;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Radio;
 
@@ -54,6 +55,8 @@ class const PlatformRadio<T extends Object>({
   this;
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildMaterial(BuildContext context) => Radio<T>(
     key: widgetKey,
     value: value,
@@ -76,6 +79,8 @@ class const PlatformRadio<T extends Object>({
   );
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildCupertino(BuildContext context) {
     final resolvedFillColor = (cupertinoRadioData?.fillColor ?? fillColor)?.resolve({
       .selected,

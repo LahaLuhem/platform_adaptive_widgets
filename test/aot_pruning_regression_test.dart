@@ -36,6 +36,11 @@ const _helperHomeBasename = 'platform_value.dart';
 // `isAndroid` / `isIOS` ask about the OS itself, not the look.
 const _platformReaderBasenames = {'design_language.dart', 'is_platform.dart'};
 
+const _halfNames = {'buildMaterial', 'buildCupertino'};
+
+// The analyzer doesn't carry the base's annotations over to overrides.
+const _halfLocks = {'protected', 'visibleForOverriding'};
+
 const _forbiddenHelperNames = {
   'platformValue',
   'platformValueNullable',
@@ -99,6 +104,22 @@ void main() {
       check(
         because: 'Switch on `designLanguage` instead, so every site agrees on the look.',
         offenders,
+      ).isEmpty();
+    });
+
+    test('every ${_halfNames.join(' / ')} is $_halfLocks', () {
+      final visitors = _libSrcUnits
+          .map((unit) {
+            final visitor = _HalfLockVisitor(unit.path, unit.parsed.lineInfo);
+            unit.parsed.unit.accept(visitor);
+
+            return visitor;
+          })
+          .toList(growable: false);
+      check(visitors.fold(0, (sum, visitor) => sum + visitor.halfCount)).isGreaterThan(0);
+      check(
+        because: 'A half callable from outside skips `designLanguage`.',
+        visitors.expand((visitor) => visitor.offenders),
       ).isEmpty();
     });
   });
@@ -196,5 +217,27 @@ class _PlatformReadVisitor(final String _filePath, final LineInfo _lineInfo)
       offenders.add('$_filePath:${loc.lineNumber}: reads defaultTargetPlatform');
     }
     super.visitSimpleIdentifier(node);
+  }
+}
+
+class _HalfLockVisitor(final String _filePath, final LineInfo _lineInfo)
+    extends RecursiveAstVisitor<void> {
+  final List<String> offenders = [];
+  var halfCount = 0;
+
+  @override
+  void visitMethodDeclaration(MethodDeclaration node) {
+    final name = node.name.lexeme;
+    if (_halfNames.contains(name)) {
+      halfCount++;
+      final missing = _halfLocks.difference(
+        node.metadata.map((annotation) => annotation.name.name).toSet(),
+      );
+      if (missing.isNotEmpty) {
+        final loc = _lineInfo.getLocation(node.offset);
+        offenders.add('$_filePath:${loc.lineNumber}: $name misses $missing');
+      }
+    }
+    super.visitMethodDeclaration(node);
   }
 }

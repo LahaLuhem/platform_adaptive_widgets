@@ -9,7 +9,7 @@ import '/src/utils/design_language.dart';
 /// Base class for every platform-adaptive widget here.
 ///
 /// Override [buildMaterial] and [buildCupertino], never [build], which picks one by [designLanguage].
-@protected
+@internal
 abstract class const PlatformWidgetBase({super.key}) extends StatelessWidget {
   /// Creates a platform-adaptive widget.
   this;
@@ -35,6 +35,7 @@ abstract class const PlatformWidgetBase({super.key}) extends StatelessWidget {
 
 /// A [PlatformWidgetBase] whose [widgetKey] goes on the platform widget inside, leaving [key] for the
 /// outer one.
+@internal
 abstract class const PlatformWidgetKeyedBase({final Key? widgetKey, super.key})
     extends PlatformWidgetBase {
   /// Creates a keyed platform-adaptive widget.
@@ -42,6 +43,7 @@ abstract class const PlatformWidgetKeyedBase({final Key? widgetKey, super.key})
 }
 
 /// A [PlatformWidgetBase] that wraps a required [child].
+@internal
 abstract class const PlatformWidgetBuilderBase({required final Widget child, super.key})
     extends PlatformWidgetBase {
   /// Creates a platform-adaptive builder widget with a required [child].
@@ -49,6 +51,7 @@ abstract class const PlatformWidgetBuilderBase({required final Widget child, sup
 }
 
 /// Both of the above at once.
+@internal
 abstract class const PlatformWidgetKeyedBuilderBase({
   required final Widget child,
   super.widgetKey,

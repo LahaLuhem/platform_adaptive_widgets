@@ -1,4 +1,5 @@
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoExpansionTile;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show ExpansionTile;
 
@@ -39,6 +40,8 @@ class const PlatformExpansionTile({
   this;
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildMaterial(BuildContext context) => ExpansionTile(
     key: widgetKey,
     title: title,
@@ -80,6 +83,8 @@ class const PlatformExpansionTile({
   );
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildCupertino(BuildContext context) => CupertinoExpansionTile(
     key: widgetKey,
     title: title,
