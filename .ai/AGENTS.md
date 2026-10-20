@@ -76,7 +76,7 @@ platform_adaptive_widgets/
 │           └── painting/                       `PlatformListTile` / `ProgressIndicator`
 ├── example/                                    Runnable Flutter demo (see example/.ai/AGENTS.md)
 ├── analysis_options.yaml                       Includes dartender's shared lints
-├── pubspec.yaml                                Deps + platforms + topics
+├── pubspec.yaml                                Deps + topics
 ├── .pubignore                                  Files excluded from `flutter pub publish`
 ├── .fvmrc                                      FVM channel pin (`stable`)
 ├── .github/workflows/                          CI: dartender's ci, conventions, changelog,
