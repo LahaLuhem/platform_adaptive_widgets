@@ -14,14 +14,14 @@ import '/src/utils/design_language.dart';
 
 part 'platform_time_picker.dart';
 
-/// Shows a date picker. Material's [showDatePicker] on Android, a [CupertinoDatePicker] in a bottom
-/// popup on iOS.
+/// Shows a date picker. [showDatePicker] on Material, a [CupertinoDatePicker] in a bottom
+/// popup on Cupertino.
 ///
-/// The iOS wheel reports as it turns and the value comes back once the popup closes. [CupertinoDatePickerData.changeReportingBehavior]
+/// The Cupertino wheel reports as it turns and the value comes back once the popup closes. [CupertinoDatePickerData.changeReportingBehavior]
 /// decides how often it reports.
 ///
 /// Per-platform tuning lives in [materialDatePickerData] / [cupertinoDatePickerData], the latter shared
-/// with [showPlatformTimePicker] since iOS draws both with one widget.
+/// with [showPlatformTimePicker] since Cupertino draws both with one widget.
 ///
 /// Example:
 /// {@example /example/lib/snippets/dialogs/platform_date_picker.dart#platform_date_picker}
@@ -103,8 +103,8 @@ Future<Date?> showPlatformDatePicker({
 Date? _toDate(DateTime? dateTime) =>
     dateTime == null ? null : Date.fromDateTime(dateTime).getOrNull();
 
-/// One popup for both pickers, since iOS only changes the [CupertinoDatePicker]'s `mode` between them.
-/// Callers slice the [DateTime] down to a [Date] or a [TimeOfDay] afterwards.
+/// One popup for both pickers, since Cupertino only changes the [CupertinoDatePicker]'s `mode` between
+/// them. Callers slice the [DateTime] down to a [Date] or a [TimeOfDay] afterwards.
 Future<DateTime?> _showCupertinoModePickerPopup({
   required BuildContext context,
   required CupertinoDatePickerMode mode,

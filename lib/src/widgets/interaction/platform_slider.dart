@@ -6,7 +6,7 @@ import 'package:material_ui/material_ui.dart' show Slider;
 import '/src/models/interaction/platform_slider_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// Material [Slider] on Android, [CupertinoSlider] on iOS.
+/// [Slider] on Material, [CupertinoSlider] on Cupertino.
 ///
 /// Per-platform tuning lives in [materialSliderData] / [cupertinoSliderData]. See `APPENDIX.md#field-classification`,
 /// and `APPENDIX.md#cross-platform-field-mappings` where the type underneath diverges, [thumbColor]
@@ -41,15 +41,15 @@ class const PlatformSlider({
   /// Colours the filled part of the track, not the thumb.
   final Color? activeColor,
 
-  /// [Slider.thumbColor] on Android falls through to the theme when `null`. [CupertinoSlider.thumbColor]
-  /// can't be null, so iOS swaps in [kDefaultCupertinoSliderThumbColor]. See `APPENDIX.md#cross-platform-field-mappings`.
+  /// [Slider.thumbColor] on Material falls through to the theme when `null`. [CupertinoSlider.thumbColor]
+  /// can't be null, so Cupertino swaps in [kDefaultCupertinoSliderThumbColor]. See `APPENDIX.md#cross-platform-field-mappings`.
   final Color? thumbColor,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialSliderData? materialSliderData,
 
   /// Cupertino-branch overrides. Thin, since [CupertinoSlider] has nothing of its own beyond the shared
-  /// fields, but here so you can retune those on iOS alone.
+  /// fields, but here so you can retune those on Cupertino alone.
   final CupertinoSliderData? cupertinoSliderData,
   super.widgetKey,
   super.key,

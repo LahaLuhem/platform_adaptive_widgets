@@ -10,7 +10,7 @@ import '/src/models/layout/platform_app_bar_data.dart';
 import '/src/models/layout/platform_scaffold_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// Material `Scaffold` on Android, `CupertinoPageScaffold` on iOS.
+/// `Scaffold` on Material, `CupertinoPageScaffold` on Cupertino.
 ///
 /// Per-platform tuning lives in [materialScaffoldData] / [cupertinoScaffoldData], which can also override
 /// [backgroundColor] on one side alone.

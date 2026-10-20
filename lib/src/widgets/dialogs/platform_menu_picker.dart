@@ -17,16 +17,16 @@ import 'package:material_ui/material_ui.dart' show DropdownMenu, DropdownMenuEnt
 import '/src/models/dialogs/platform_menu_picker_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// Where iOS gives up on a menu and reaches for a wheel instead. Apple's number, see <https://developer.apple.com/design/human-interface-guidelines/pickers#Best-practices>.
+/// Where Cupertino gives up on a menu and reaches for a wheel instead. Apple's number, see <https://developer.apple.com/design/human-interface-guidelines/pickers#Best-practices>.
 const kCupertinoMenuPickerSmallItemCountThreshold = 5;
 
-/// Standard 216pt height for the iOS modal-popup wheel ([CupertinoPicker]).
+/// Standard 216pt height for the Cupertino modal-popup wheel ([CupertinoPicker]).
 const _kCupertinoPickerModalHeight = 216.0;
 
-/// Standard item extent for the iOS modal-popup wheel.
+/// Standard item extent for the Cupertino modal-popup wheel.
 const _kCupertinoPickerModalItemExtent = 32.0;
 
-/// Material [DropdownMenu] on Android. On iOS it depends on how many items there are: up to [kCupertinoMenuPickerSmallItemCountThreshold]
+/// [DropdownMenu] on Material. On Cupertino it depends on how many items there are: up to [kCupertinoMenuPickerSmallItemCountThreshold]
 /// gets a [CupertinoMenuAnchor] whose entries can carry icons, more than that gets a [CupertinoPicker]
 /// wheel in a popup, which can't.
 ///
@@ -48,7 +48,7 @@ class const PlatformMenuPicker<T extends Object>({
   /// Sits before the label, or becomes the whole thing under an `.iconButton` variant.
   final Widget? leadingIcon,
 
-  /// Above the picker on Material, the field title on iOS. Unused by the `.iconButton` variants.
+  /// Above the picker on Material, the field title on Cupertino. Unused by the `.iconButton` variants.
   final String? labelText,
 
   final ValueChanged<T>? onSelected,

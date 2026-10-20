@@ -50,14 +50,14 @@ const kDefaultCupertinoListTileIsNotched = false;
 /// never exported. The names diverge across platforms, so see `APPENDIX.md#field-classification` and
 /// `APPENDIX.md#cross-platform-field-mappings`.
 abstract class const _PlatformListTileData({
-  /// [ListTile.minLeadingWidth] on Android, [CupertinoListTile.leadingSize] on iOS, where it can't be
-  /// null and the default depends on the variant.
+  /// [ListTile.minLeadingWidth] on Material, [CupertinoListTile.leadingSize] on Cupertino, where it
+  /// can't be null and the default depends on the variant.
   final double? leadingWidth,
 
-  /// [ListTile.tileColor] on Android, [CupertinoListTile.backgroundColor] on iOS.
+  /// [ListTile.tileColor] on Material, [CupertinoListTile.backgroundColor] on Cupertino.
   final Color? color,
 
-  /// [ListTile.contentPadding] on Android, [CupertinoListTile.padding] on iOS.
+  /// [ListTile.contentPadding] on Material, [CupertinoListTile.padding] on Cupertino.
   final EdgeInsetsGeometry? padding,
 });
 

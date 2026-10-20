@@ -1,5 +1,5 @@
 // 2 data classes in one file, both Material-only dialog config, split by dialog shape (centred vs
-// full-screen). Cupertino has no counterpart, since neither iOS route needs more than the show
+// full-screen). Cupertino has no counterpart, since neither of its routes needs more than the show
 // functions' flat args.
 // ignore_for_file: prefer-match-file-name
 
@@ -28,8 +28,8 @@ const kDefaultMaterialDialogInsetAnimationCurve = Curves.decelerate;
 const kDefaultMaterialDialogSemanticsRole = SemanticsRole.dialog;
 
 /// Material-side settings for `showPlatformDialog`, the centred one, passed as `materialDialogData`.
-/// None of it reaches iOS, where `showCupertinoDialog` only takes the function-level args that already
-/// sit flat on the show function.
+/// None of it reaches Cupertino, where `showCupertinoDialog` only takes the function-level args that
+/// already sit flat on the show function.
 ///
 /// Going full-screen instead? That's `showPlatformFullscreenDialog` with [MaterialFullscreenDialogData],
 /// which leaves out everything below that only a centred dialog can honour.
@@ -77,7 +77,7 @@ final class const MaterialDialogData({
 ///
 /// Only what a full-screen dialog honours. A centred dialog's knobs on [MaterialDialogData] (alignment,
 /// shape, insets and the like) would do nothing here, so they're left out. The background is the flat
-/// `backgroundColor` on the show function, shared with iOS.
+/// `backgroundColor` on the show function, shared with Cupertino.
 final class const MaterialFullscreenDialogData({
   final AnimationStyle? animationStyle,
 

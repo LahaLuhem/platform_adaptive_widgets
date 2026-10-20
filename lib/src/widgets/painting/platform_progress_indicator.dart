@@ -11,8 +11,8 @@ import 'package:material_ui/material_ui.dart' show CircularProgressIndicator;
 import '/src/models/painting/platform_progress_indicator_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// A spinner for work with no known end: Material [CircularProgressIndicator] on Android,
-/// [CupertinoActivityIndicator] on iOS. For work where you know how far along it is, use
+/// A spinner for work with no known end: [CircularProgressIndicator] on Material,
+/// [CupertinoActivityIndicator] on Cupertino. For work where you know how far along it is, use
 /// [PlatformProgressBar].
 ///
 /// Guidelines: [M3 progress indicators](https://m3.material.io/components/progress-indicators/guidelines),

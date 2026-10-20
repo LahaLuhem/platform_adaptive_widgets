@@ -43,8 +43,8 @@ const kDefaultCupertinoToastMaxWidth = 480.0;
 const kDefaultCupertinoToastTransitionDuration = Duration(milliseconds: 250);
 
 /// The toast's one action, like Undo ([M3 snackbar](https://m3.material.io/components/snackbar/guidelines)).
-/// A [SnackBarAction] on Android, a text button in the banner on iOS. Tapping it runs [onPressed] and
-/// closes the toast.
+/// A [SnackBarAction] on Material, a text button in the banner on Cupertino. Tapping it runs [onPressed]
+/// and closes the toast.
 final class const PlatformToastAction({
   required final String label,
   required final VoidCallback onPressed,

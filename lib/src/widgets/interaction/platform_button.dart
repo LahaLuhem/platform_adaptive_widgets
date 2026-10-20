@@ -11,7 +11,7 @@ import 'package:material_ui/material_ui.dart'
 import '/src/models/interaction/platform_button_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// One of Material's buttons on Android and one of Cupertino's on iOS, picked by [materialButtonVariant]
+/// One of Material's buttons or one of Cupertino's, picked by [materialButtonVariant]
 /// and [cupertinoButtonVariant].
 ///
 /// 2 shapes to build one. [PlatformButton.new] takes a free-form `child`. [PlatformButton.icon] takes
@@ -46,10 +46,10 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   /// Fires on focus gained and lost.
   final ValueChanged<bool>? onFocusChange;
 
-  /// Which Material button class Android renders.
+  /// Which Material button class to render.
   final MaterialButtonVariant materialButtonVariant;
 
-  /// Which Cupertino button constructor iOS calls.
+  /// Which Cupertino button constructor to call.
   final CupertinoButtonVariant cupertinoButtonVariant;
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.

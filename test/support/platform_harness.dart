@@ -3,11 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 /// Runs a scenario twice, once as Android and once as iOS. The default for every scenario, because
-/// a `PlatformXxx` widget renders a different subtree per platform, so a green Android run proves
-/// nothing about iOS.
+/// a `PlatformXxx` widget renders a different subtree per platform, so a green Material run proves
+/// nothing about Cupertino.
 const bothPlatforms = TargetPlatformVariant({TargetPlatform.android, TargetPlatform.iOS});
 
-/// For the rare scenario about one branch only, say a Material-only field with no iOS counterpart.
+/// For the rare scenario about one branch only, say a Material-only field with no Cupertino counterpart.
 const androidOnly = TargetPlatformVariant({TargetPlatform.android});
 
 /// The iOS half of [bothPlatforms].

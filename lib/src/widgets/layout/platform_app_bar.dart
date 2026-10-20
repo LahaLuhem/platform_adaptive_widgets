@@ -8,11 +8,11 @@ import 'package:material_ui/material_ui.dart' show AppBar;
 
 import '/src/models/layout/platform_app_bar_data.dart';
 
-/// Material `AppBar` on Android, `CupertinoNavigationBar` on iOS.
+/// `AppBar` on Material, `CupertinoNavigationBar` on Cupertino.
 ///
 /// Per-platform tuning lives in [materialAppBarData] / [cupertinoNavigationBarData], which can also
-/// override [backgroundColor] on one side alone. Worth doing, since iOS nav bars tend to be translucent
-/// where Android's are opaque.
+/// override [backgroundColor] on one side alone. Worth doing, since Cupertino nav bars tend to be translucent
+/// where Material's are opaque.
 ///
 /// The odd one out in this package: it `implements` [PlatformAppBarData] instead of extending `PlatformWidgetBase`,
 /// because a scaffold's bar slot wants a `PreferredSizeWidget` and a plain `StatelessWidget` isn't one.

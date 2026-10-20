@@ -54,8 +54,8 @@ base class const MaterialScaffoldData({
   /// A sheet that stays put, unlike the one `showPlatformModalBottomSheet` puts up.
   final Widget? bottomSheet,
 
-  /// `CupertinoPageScaffold` has no such slot. For an iOS tab bar reach for `PlatformTabScaffold`, this
-  /// one is for a plain `Scaffold`'s bottom bar, a `BottomAppBar` with a FAB notch say.
+  /// `CupertinoPageScaffold` has no such slot. For a Cupertino tab bar reach for `PlatformTabScaffold`,
+  /// this one is for a plain `Scaffold`'s bottom bar, a `BottomAppBar` with a FAB notch say.
   final Widget? bottomNavigationBar,
 
   /// Leaves room for the status bar.

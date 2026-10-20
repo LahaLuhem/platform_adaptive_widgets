@@ -6,7 +6,7 @@ import 'package:material_ui/material_ui.dart' show SearchBar;
 import '/src/models/interaction/platform_search_bar_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// Material [SearchBar] on Android, [CupertinoSearchTextField] on iOS.
+/// [SearchBar] on Material, [CupertinoSearchTextField] on Cupertino.
 ///
 /// Per-platform tuning lives in [materialSearchBarData] / [cupertinoSearchBarData], and there's more
 /// of it here than usual: `backgroundColor`, `padding`, `textStyle` and `hintStyle` all exist on both
@@ -22,11 +22,11 @@ class const PlatformSearchBar({
 
   final TextEditingController? controller,
 
-  /// Shown while the bar is empty. iOS calls it the placeholder.
+  /// Shown while the bar is empty. Cupertino calls it the placeholder.
   final String? hintText,
 
-  /// Usually the magnifying glass. iOS insists on having one, so it falls back to [kDefaultCupertinoSearchBarLeading]
-  /// when you leave this out. Android is happy without.
+  /// Usually the magnifying glass. Cupertino insists on having one, so it falls back to [kDefaultCupertinoSearchBarLeading]
+  /// when you leave this out. Material is happy without.
   final Widget? leading,
 
   /// Fires on the keyboard's action key. Often unused, since [onChanged] already reports every keystroke.
@@ -38,12 +38,12 @@ class const PlatformSearchBar({
   /// Left out, each platform brings its own default.
   final TextInputType? keyboardType,
 
-  /// Note the capital F, which iOS spells lowercase underneath. See `APPENDIX.md#cross-platform-field-mappings`.
+  /// Note the capital F, which Cupertino spells lowercase underneath. See `APPENDIX.md#cross-platform-field-mappings`.
   final bool autoFocus = false,
 
   final FocusNode? focusNode,
 
-  /// One boolean for both, though iOS's own `enabled` is nullable and treats `null` as enabled.
+  /// One boolean for both, though Cupertino's own `enabled` is nullable and treats `null` as enabled.
   final bool isEnabled = true,
 
   final SmartDashesType? smartDashesType,

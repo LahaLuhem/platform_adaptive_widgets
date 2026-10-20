@@ -6,12 +6,12 @@ import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 import '/src/utils/design_language.dart';
 
-/// Shows a modal that slides up from the bottom. [showModalBottomSheet] on Android, [showCupertinoModalPopup]
-/// on iOS, wrapped there in a [CupertinoPopupSurface] because that route only positions and dims where
-/// Material's paints a sheet. Skip the wrap with [showPlatformRawModalBottomSheet].
+/// Shows a modal that slides up from the bottom. [showModalBottomSheet] on Material, [showCupertinoModalPopup]
+/// on Cupertino, wrapped there in a [CupertinoPopupSurface] because that route only positions and dims
+/// where Material's paints a sheet. Skip the wrap with [showPlatformRawModalBottomSheet].
 ///
 /// Same idea on both platforms, barely overlapping parameters. Material brings a pile of sheet-shape,
-/// drag and safe-area knobs, iOS brings a filter and a barrier. So almost everything lives per-platform
+/// drag and safe-area knobs, Cupertino brings a filter and a barrier. So almost everything lives per-platform
 /// on [materialModalBottomSheetData] / [cupertinoModalPopupData].
 ///
 /// Either pass [builder] for content shared across both, or pass [materialBuilder] and [cupertinoBuilder]
@@ -63,12 +63,12 @@ Future<T?> showPlatformModalBottomSheet<T>({
   };
 }
 
-/// Same as [showPlatformModalBottomSheet] minus the iOS [CupertinoPopupSurface], so content there is
+/// Same as [showPlatformModalBottomSheet] minus the [CupertinoPopupSurface], so content there is
 /// bare unless you bring your own. Handy for a `CupertinoActionSheet`, which already has one and would
 /// otherwise end up double-chromed.
 ///
-/// The asymmetry is upstream's, not ours: Android's [showModalBottomSheet] always paints a sheet, which
-/// you can flatten with a transparent `backgroundColor` on [materialModalBottomSheetData], while iOS's
+/// The asymmetry is upstream's, not ours: Material's [showModalBottomSheet] always paints a sheet, which
+/// you can flatten with a transparent `backgroundColor` on [materialModalBottomSheetData], while Cupertino's
 /// route paints nothing. What you still get over calling the 2 directly is the dispatch and each platform's
 /// own transition.
 Future<T?> showPlatformRawModalBottomSheet<T>({
@@ -169,8 +169,8 @@ Future<T?> _showMaterialModalBottomSheet<T>({
   requestFocus: requestFocus,
 );
 
-/// The iOS half of [_showMaterialModalBottomSheet]. Takes an already-wrapped [builder], surfaced or
-/// bare depending on which entry point called it.
+/// The Cupertino half of [_showMaterialModalBottomSheet]. Takes an already-wrapped [builder], surfaced
+/// or bare depending on which entry point called it.
 Future<T?> _showCupertinoModalPopup<T>({
   required BuildContext context,
   required WidgetBuilder builder,

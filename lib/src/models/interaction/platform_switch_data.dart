@@ -12,8 +12,8 @@ import 'package:material_ui/material_ui.dart' show MaterialTapTargetSize;
 /// Shared-visual fields for [PlatformSwitch], forwarded into both records via `super.x`. Private, never
 /// exported. See `APPENDIX.md#field-classification`.
 abstract class const _PlatformSwitchData({
-  /// iOS calls this [CupertinoSwitch.thumbColor], which despite the plain name only covers the switched-on
-  /// thumb. See `APPENDIX.md#cross-platform-field-mappings`.
+  /// Cupertino calls this [CupertinoSwitch.thumbColor], which despite the plain name only covers the
+  /// switched-on thumb. See `APPENDIX.md#cross-platform-field-mappings`.
   final Color? activeThumbColor,
 
   final Color? activeTrackColor,
@@ -38,8 +38,9 @@ abstract class const _PlatformSwitchData({
 
   final WidgetStateProperty<Icon?>? thumbIcon,
 
-  /// iOS takes the property as-is. Android wants one [MouseCursor], so it gets `.resolve({.selected, .hovered, .focused, .disabled})`
-  /// first. See `APPENDIX.md#cross-platform-field-mappings`.
+  /// Cupertino takes the property as-is. Material wants one [MouseCursor], so it gets
+  /// `.resolve({.selected, .hovered, .focused, .disabled})` first. See
+  /// `APPENDIX.md#cross-platform-field-mappings`.
   final WidgetStateProperty<MouseCursor>? mouseCursor,
 });
 
@@ -101,7 +102,8 @@ final class const CupertinoSwitchData({
   /// Takes colours from the ambient [CupertinoTheme] rather than the switch's own defaults.
   final bool? applyTheme,
 
-  /// Colours the "on" accessibility label, which iOS only draws when the on/off labels setting is on.
+  /// Colours the "on" accessibility label, which Cupertino only draws when the on/off labels setting
+  /// is on.
   final Color? onLabelColor,
 
   final Color? offLabelColor,

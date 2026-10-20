@@ -8,11 +8,11 @@ import '/src/models/layout/platform_scaffold_data.dart';
 import '/src/models/layout/platform_tab_scaffold_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// Material `Scaffold` and `NavigationBar` on Android, `CupertinoTabScaffold` and `CupertinoTabBar`
-/// on iOS.
+/// `Scaffold` and `NavigationBar` on Material, `CupertinoTabScaffold` and `CupertinoTabBar`
+/// on Cupertino.
 ///
 /// 2 ways to use it, and [tabBodyBuilder] is what tells them apart. Leave it out and give every [TabDestination]
-/// a `view`, and the scaffold handles selection itself, giving each iOS tab its own `CupertinoTabView`
+/// a `view`, and the scaffold handles selection itself, giving each Cupertino tab its own `CupertinoTabView`
 /// navigator and caching the Material side to match. Pass it, along with [selectedIndex] and [onTabDestinationTap],
 /// and something outside owns selection instead. That's usually `go_router`'s `StatefulShellRoute`,
 /// where the 3 map onto the shell's branch navigators, `currentIndex` and `goBranch`.
@@ -21,7 +21,7 @@ import '/src/models/platform_widget_base.dart';
 ///
 /// Each tab brings its own app bar by default, either a `PlatformScaffold` per tab or whatever [tabBodyBuilder]
 /// returns, which is what both platforms expect. Material will also take a single bar above all the
-/// tabs via [MaterialTabScaffoldData.appBar]. iOS won't, its HIG saying no.
+/// tabs via [MaterialTabScaffoldData.appBar]. Cupertino won't, Apple's HIG saying no.
 ///
 /// Under controlled mode the one [CupertinoTabController] is kept and re-pointed as [selectedIndex]
 /// changes, never rebuilt, so an outside driver doesn't leak controllers or churn rebuilds.
@@ -105,8 +105,8 @@ class const PlatformTabScaffold({
   }
 }
 
-/// The iOS half. Holds one [CupertinoTabController] for its lifetime so an outside driver can move selection
-/// without it being rebuilt underneath.
+/// The Cupertino half. Holds one [CupertinoTabController] for its lifetime so an outside driver can
+/// move selection without it being rebuilt underneath.
 class const _CupertinoTabScaffold({
   required final int selectedIndex,
   required final bool resizeToAvoidBottomInset,
@@ -176,9 +176,9 @@ class _CupertinoTabScaffoldState() extends State<_CupertinoTabScaffold> {
   );
 }
 
-/// The Android half. Keeps its own [ValueNotifier] when it owns selection, and reads [PlatformTabScaffold.selectedIndex]
-/// straight through when it doesn't. [_TabSwitchingView] supplies the keep-alive caching iOS gets for
-/// free and Material's `Scaffold` doesn't.
+/// The Material half. Keeps its own [ValueNotifier] when it owns selection, and reads [PlatformTabScaffold.selectedIndex]
+/// straight through when it doesn't. [_TabSwitchingView] supplies the keep-alive caching Cupertino gets
+/// for free and Material's `Scaffold` doesn't.
 class const _MaterialTabScaffold({
   required final int selectedIndex,
   required final bool resizeToAvoidBottomInset,
@@ -215,7 +215,7 @@ class _MaterialTabScaffoldState() extends State<_MaterialTabScaffold> {
   @override
   Widget build(BuildContext context) => Scaffold(
     key: widget.widgetKey,
-    // Material only. See MaterialTabScaffoldData.appBar for why iOS has none.
+    // Material only. See MaterialTabScaffoldData.appBar for why Cupertino has none.
     appBar: widget.materialTabScaffoldData?.appBar,
     backgroundColor: widget.materialTabScaffoldData?.backgroundColor ?? widget.backgroundColor,
     resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,

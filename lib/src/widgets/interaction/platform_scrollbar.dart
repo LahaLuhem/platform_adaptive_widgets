@@ -6,7 +6,7 @@ import 'package:material_ui/material_ui.dart' show Scrollbar;
 import '/src/models/interaction/platform_scrollbar_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// Material [Scrollbar] on Android, [CupertinoScrollbar] on iOS.
+/// [Scrollbar] on Material, [CupertinoScrollbar] on Cupertino.
 ///
 /// Wraps a [child] scroll view and rides its [ScrollController]. Per-platform tuning lives in [materialScrollbarData]
 /// / [cupertinoScrollbarData]. See `APPENDIX.md#field-classification`.

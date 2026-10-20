@@ -16,9 +16,9 @@ class PlatformWidgetSnippet extends StatelessWidget {
       // #region platform_widget
       PlatformWidget(
         materialBuilder: (_) =>
-            ElevatedButton(onPressed: onSavePressed, child: const Text('Android Button')),
+            ElevatedButton(onPressed: onSavePressed, child: const Text('Material Button')),
         cupertinoBuilder: (_) =>
-            CupertinoButton(onPressed: onSavePressed, child: const Text('iOS Button')),
+            CupertinoButton(onPressed: onSavePressed, child: const Text('Cupertino Button')),
       );
   // #endregion
 }

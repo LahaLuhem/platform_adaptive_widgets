@@ -11,16 +11,16 @@ import 'package:material_ui/material_ui.dart' show ScaffoldMessenger, SnackBar, 
 import '/src/models/dialogs/platform_toast_data.dart';
 import '/src/utils/design_language.dart';
 
-/// Shows a short message with at most one [action], like Undo. A [SnackBar] along the bottom on Android,
-/// and on iOS a banner that slides down from under the status bar. The returned future completes once
-/// it's gone.
+/// Shows a short message with at most one [action], like Undo. A [SnackBar] along the bottom on Material,
+/// and on Cupertino a banner that slides down from under the status bar. The returned future completes
+/// once it's gone.
 ///
 /// Without an action it leaves after [duration]. With one it stays until someone taps the action or
 /// dismisses the toast, since a timer could take the action away before they get to it
 /// ([HIG accessibility](https://developer.apple.com/design/human-interface-guidelines/accessibility#Cognitive)).
 ///
-/// **On iOS, prefer showing the change itself**, like a row that goes away or a label that updates. iOS
-/// has no toast, so the banner is a convenience the package draws, styled through [cupertinoToastData]
+/// **On Cupertino, prefer showing the change itself**, like a row that goes away or a label that updates.
+/// iOS has no toast, so the banner is a convenience the package draws, styled through [cupertinoToastData]
 /// ([HIG feedback](https://developer.apple.com/design/human-interface-guidelines/feedback#Best-practices)).
 ///
 /// Anything that must be acknowledged first wants `showPlatformAcknowledge` and a real dialog.

@@ -6,7 +6,7 @@ import 'package:material_ui/material_ui.dart' show Radio;
 import '/src/models/interaction/platform_radio_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// Material [Radio] on Android, [CupertinoRadio] on iOS.
+/// [Radio] on Material, [CupertinoRadio] on Cupertino.
 ///
 /// Does nothing on its own. It needs a [RadioGroup] ancestor, which owns the selected value and the
 /// `onChanged` callback, and contributes one option to it. For the usual "radios with labels" layout,
@@ -38,9 +38,9 @@ class const PlatformRadio<T extends Object>({
 
   final MouseCursor? mouseCursor,
 
-  /// [Radio.fillColor] on Android, which takes the `WidgetStateProperty` as-is. iOS wants a plain `Color?`,
-  /// so it gets `.resolve({.selected, if (!isEnabled) .disabled})`, a radio mostly showing its fill
-  /// when selected.
+  /// [Radio.fillColor] on Material, which takes the `WidgetStateProperty` as-is. Cupertino wants a plain
+  /// `Color?`, so it gets `.resolve({.selected, if (!isEnabled) .disabled})`, a radio mostly showing
+  /// its fill when selected.
   final WidgetStateProperty<Color?>? fillColor,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.

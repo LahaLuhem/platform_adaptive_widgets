@@ -23,9 +23,9 @@ const kDefaultCupertinoButtonPressedOpacity = 0.4;
 /// Default value for [CupertinoButtonData.alignment]. Matches upstream.
 const kDefaultCupertinoButtonAlignment = Alignment.center;
 
-/// Gap between icon and label in [PlatformButton.icon]. Only the Cupertino branch reads it, since iOS
-/// has no icon-button factory and we lay the 2 out in a [Row] ourselves. Material's factory already
-/// handles its own spacing.
+/// Gap between icon and label in [PlatformButton.icon]. Only the Cupertino branch reads it, since
+/// `CupertinoButton` has no icon factory and we lay the 2 out in a [Row] ourselves. Material's factory
+/// already handles its own spacing.
 const kDefaultButtonIconLabelGap = 8.0;
 
 /// Which Material button class [PlatformButton.materialButtonVariant] renders.

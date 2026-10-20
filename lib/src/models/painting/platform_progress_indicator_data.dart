@@ -20,7 +20,7 @@ abstract class const _PlatformProgressIndicatorData({final Color? color});
 
 /// Material-side settings for [PlatformProgressIndicator], passed as `materialProgressIndicatorData`.
 /// The inherited [color] overrides the widget's flat one on this branch, and everything declared here
-/// has no Cupertino counterpart, iOS's activity indicator being a much plainer thing.
+/// has no Cupertino counterpart, its activity indicator being a much plainer thing.
 final class const MaterialProgressIndicatorData({
   super.color,
 

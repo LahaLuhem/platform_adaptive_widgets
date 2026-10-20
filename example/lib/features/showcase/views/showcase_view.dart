@@ -51,8 +51,8 @@ class ShowcaseView extends StatelessWidget {
                 body:
                     'The library adapts widgets, not routes, so the Navigator entry point '
                     'ships a thin pushPlatformRoute. Each platform gets its own transition: '
-                    'a CupertinoPageRoute on iOS (swipe from the left edge to go back), a '
-                    'MaterialPageRoute on Android.',
+                    'a CupertinoPageRoute on Cupertino (swipe from the left edge to go back), a '
+                    'MaterialPageRoute on Material.',
                 code: 'pushPlatformRoute(context, (_) => const DetailPage())',
                 demo: PlatformButton(
                   onPressed: () => viewModel.onPushPagePressed(large: false),
@@ -127,9 +127,9 @@ class ShowcaseView extends StatelessWidget {
               NuanceCard(
                 title: 'Large titles, where they belong',
                 body:
-                    'iOS has a large navigation title that collapses on scroll. Material has '
+                    'Cupertino has a large navigation title that collapses on scroll. Material has '
                     'no static equivalent. CupertinoNavigationBarData.large opts in, the same '
-                    'PlatformAppBar is just a standard bar on Android.',
+                    'PlatformAppBar is just a standard bar on Material.',
                 code: 'cupertinoNavigationBarData: CupertinoNavigationBarData(large: true)',
                 demo: PlatformButton(
                   onPressed: () => viewModel.onPushPagePressed(large: true),
@@ -152,7 +152,7 @@ class ShowcaseView extends StatelessWidget {
                     'unified app bar above a tab scaffold (the iOS HIG forbids both). Rather '
                     'than fake them everywhere, they live on the Material *Data class with no '
                     'Cupertino counterpart.',
-                code: 'MaterialScaffoldData(floatingActionButton: fab)  // iOS has no FAB',
+                code: 'MaterialScaffoldData(floatingActionButton: fab)  // Cupertino has no FAB',
               ),
               const NuanceCard(
                 title: 'heroTag collisions, handled',

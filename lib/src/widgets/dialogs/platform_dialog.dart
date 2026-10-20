@@ -20,14 +20,14 @@ import '/src/widgets/layout/platform_scaffold.dart';
 
 part 'platform_alert_dialog.dart';
 
-/// Shows a centred modal dialog, wrapping your content in a [Dialog] on Android and a [CupertinoPopupSurface]
-/// on iOS. Want to bring your own surface, or none at all? That's [showPlatformRawDialog].
+/// Shows a centred modal dialog, wrapping your content in a [Dialog] on Material and a [CupertinoPopupSurface]
+/// on Cupertino. Want to bring your own surface, or none at all? That's [showPlatformRawDialog].
 ///
 /// Give it content that sizes itself, a [Column] with `mainAxisSize: .min` say. The Cupertino route
 /// hands the builder the whole screen, so anything unbounded stretches the card to fill it.
 ///
-/// **On iOS, tapping outside does nothing by default.** That matches the HIG, where an alert closes from
-/// a button rather than a tap outside, and there's no system back button to fall back on. So your
+/// **On Cupertino, tapping outside does nothing by default.** That matches the HIG, where an alert closes
+/// from a button rather than a tap outside, and there's no system back button to fall back on. So your
 /// content needs its own way out, or the dialog is a dead end. `barrierDismissible: true` opts out.
 ///
 /// Full-screen is [showPlatformFullscreenDialog].
@@ -35,7 +35,7 @@ part 'platform_alert_dialog.dart';
 /// Either pass [builder] for content shared across both, or pass [materialBuilder] and [cupertinoBuilder]
 /// together. Mixing the 2 trips an assert.
 ///
-/// [materialDialogData] tunes the Android side. There's no Cupertino equivalent, since [showCupertinoDialog]
+/// [materialDialogData] tunes the Material side. There's no Cupertino equivalent, since [showCupertinoDialog]
 /// takes nothing beyond the flat args already here.
 ///
 /// Example:
@@ -107,13 +107,13 @@ Future<T?> showPlatformDialog<T>({
   };
 }
 
-/// Shows a full-screen modal dialog: [Dialog.fullscreen] on Android, a full-screen [CupertinoPageRoute]
-/// on iOS.
+/// Shows a full-screen modal dialog: [Dialog.fullscreen] on Material, a full-screen [CupertinoPageRoute]
+/// on Cupertino.
 ///
 /// You hand over the page's parts, the bar and the body, and the package builds a [PlatformScaffold]
-/// from them. That way the bar gets each platform's close button (M3's X, iOS's Cancel) and the body
-/// sits on a page background. On iOS the bar is the only way out, since a full-screen page can't be
-/// swiped back.
+/// from them. That way the bar gets each platform's close button (M3's X, Cupertino's Cancel) and the
+/// body sits on a page background. On Cupertino the bar is the only way out, since a full-screen page
+/// can't be swiped back.
 ///
 /// [MaterialFullscreenDialogData] only carries the fields [Dialog.fullscreen] honours, so a centred
 /// dialog's knobs can't be passed here and quietly do nothing.
@@ -181,8 +181,8 @@ Future<T?> showPlatformFullscreenDialog<T>({
 /// Worth reaching for when [showPlatformDialog]'s card is in the way, say when you're dropping in your
 /// own [CupertinoAlertDialog] and don't want it double-wrapped, or going edge to edge.
 ///
-/// Builder selection and the iOS dismissal caveat work exactly as in [showPlatformDialog]. No `materialDialogData`
-/// here, since there's no [Dialog] left to configure.
+/// Builder selection and the Cupertino dismissal caveat work exactly as in [showPlatformDialog]. No
+/// `materialDialogData` here, since there's no [Dialog] left to configure.
 Future<T?> showPlatformRawDialog<T>({
   required BuildContext context,
   WidgetBuilder? builder,
@@ -309,7 +309,7 @@ Future<T?> _showCupertinoDialog<T>({
   requestFocus: requestFocus,
 );
 
-/// A page route rather than a dialog one, since that's what iOS's full-screen modal is. See [_showMaterialDialog].
+/// A page route rather than a dialog one, since that's what a Cupertino full-screen modal is. See [_showMaterialDialog].
 Future<T?> _showCupertinoFullscreenDialog<T>({
   required BuildContext context,
   required WidgetBuilder builder,
@@ -325,8 +325,9 @@ Future<T?> _showCupertinoFullscreenDialog<T>({
   ),
 );
 
-/// iOS's answer to the [Dialog] the Android branch wraps on. [showCupertinoDialog]'s route only paints
-/// the barrier and runs the transition, so without this the content floats on the dim with no card.
+/// Cupertino's answer to the [Dialog] the Material branch wraps on. [showCupertinoDialog]'s route only
+/// paints the barrier and runs the transition, so without this the content floats on the dim with no
+/// card.
 ///
 /// Kept out of [_showCupertinoDialog] because [showPlatformAlertDialog] brings its own surface and would
 /// end up double-wrapped.

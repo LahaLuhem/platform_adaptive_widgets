@@ -44,8 +44,8 @@ const kDebugShowMaterialGrid = false;
 /// `home`, `routes`, `locale`, `builder` and the rest) stays flat on the widget.
 ///
 /// Thin, because almost nothing about an app is platform-specific. What's left is the theme, where [ThemeData]
-/// and [CupertinoThemeData] share no ground at all, plus [scaffoldMessengerKey], which iOS has no use
-/// for.
+/// and [CupertinoThemeData] share no ground at all, plus [scaffoldMessengerKey], which Cupertino has
+/// no use for.
 final class const MaterialAppData({
   final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey,
 
