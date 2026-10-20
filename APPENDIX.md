@@ -445,6 +445,8 @@ mismatch.
 - **No runtime override.** One the app could set keeps both looks in every release build (42 KB
   more Cupertino on the Android harness, 2026-10-20). Debug builds already have Flutter's
   `debugDefaultTargetPlatformOverride` for previews.
+- **No `platforms:` block** in `pubspec.yaml`, so pub.dev reads support off the code, which is
+  every platform. A block would only take some away.
 - **A third look** (`macos_ui`, `fluent_ui`) is a new enum value, and the compiler lists every
   switch that needs an arm.
 

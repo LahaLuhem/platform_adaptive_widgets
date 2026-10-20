@@ -4,10 +4,6 @@ version: 2.2.0
 homepage: https://github.com/LahaLuhem/platform_adaptive_widgets?tab=readme-ov-file
 repository: https://github.com/LahaLuhem/platform_adaptive_widgets
 
-platforms:
-  android:
-  ios:
-
 topics:
   - adaptive
   - widget
