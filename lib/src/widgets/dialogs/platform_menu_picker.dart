@@ -215,7 +215,10 @@ final class _MaterialMenuPickerState<T extends Object>() extends State<_Material
     // Finds the open row by value. The default matches labels, and two rows can share one.
     searchCallback: (_, _) => widget.selectedIndex,
     onSelected: (value) {
-      if (value != null) widget.onSelected?.call(value);
+      // Re-picking the current value changes nothing, so there's nothing to report.
+      if (value != null && widget.items.indexOf(value) != widget.selectedIndex) {
+        widget.onSelected?.call(value);
+      }
       // The dropdown writes the picked label in by itself. Undo that, so the field only moves when
       // the app hands over a new value.
       _showSelected();
@@ -258,15 +261,18 @@ final class const _SmallItemCupertinoPicker<T extends Object>({
       useIconButton: useIconButton,
       onTap: () => controller.open(),
     ),
-    menuChildren: [
-      for (var i = 0; i < items.length; i++)
-        CupertinoMenuItem(
-          onPressed: () => onSelected?.call(items[i]),
-          leading: transformed[i].iconData == null ? null : Icon(transformed[i].iconData),
-          trailing: i == selectedIndex ? const Icon(CupertinoIcons.check_mark) : null,
-          child: Text(transformed[i].label ?? ''),
-        ),
-    ],
+    menuChildren: List.generate(
+      items.length,
+      (index) => CupertinoMenuItem(
+        // Not null for the current row, which would grey it out. A tap on it only closes the menu.
+        onPressed: () {
+          if (index != selectedIndex) onSelected?.call(items[index]);
+        },
+        leading: transformed[index].iconData == null ? null : Icon(transformed[index].iconData),
+        trailing: index != selectedIndex ? null : const Icon(CupertinoIcons.check_mark),
+        child: Text(transformed[index].label ?? ''),
+      ),
+    ),
   );
 }
 
