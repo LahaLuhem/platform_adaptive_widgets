@@ -2,6 +2,7 @@
 ### Added
 - \[#52\] `PlatformProgressBar(value:)` for known progress, a bar on both looks
 - \[#61\] `designLanguage`, to switch on when your own code has to match the widgets
+- \[#57\] Menu picker gives lists past 250 items their own page on Cupertino
 
 ### Changed
 - \[#51\] Toast action works on iOS too, and waits to be tapped
@@ -9,9 +10,11 @@
 - **BREAKING** \[#52\] `value`, `semanticsLabel` and `semanticsValue` leave `MaterialProgressIndicatorData`, the label is flat on the widget now
 - \[#61\] Every platform renders, Cupertino on iOS and macOS and Material everywhere else, where it used to throw
 - \[#61\] `buildMaterial` / `buildCupertino` can no longer be called from outside, so nothing skips `designLanguage`
+- \[#57\] Menu picker's wheel reports each stop and follows the app's value
+- \[#57\] Menu picker ignores re-picking the current value
 
 ### Fixed
-- \[#56\] Menu picker behaves the same on both looks, with honest cutoff docs
+- \[#56\] Menu picker behaves the same on both looks
 
 ### Removed
 - **BREAKING** \[#51\] `MaterialToastData.action`, `MaterialToastData.persist` and `PlatformToastClosedReason`, use the flat `action`
