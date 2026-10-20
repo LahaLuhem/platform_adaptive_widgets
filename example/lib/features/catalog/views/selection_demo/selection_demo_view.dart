@@ -1,19 +1,22 @@
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:platform_icons/platform_icons.dart';
 import 'package:pmvvm/pmvvm.dart';
 
+import '/features/catalog/data/enums/menu_picker_length.dart';
 import '/features/catalog/data/extensions/platform_adaptive_icons_extension.dart';
 import '/features/catalog/widgets/demo_card.dart';
 import '/features/catalog/widgets/property_editor/bool_knob.dart';
 import '/features/catalog/widgets/property_editor/color_knob.dart';
 import '/features/catalog/widgets/property_editor/property_editor.dart';
+import '/features/catalog/widgets/property_editor/segment_knob.dart';
 import 'selection_demo_view_model.dart';
 
 /// The Selection-controls section of the Catalog accordion, checkbox / switch / slider playgrounds,
 /// plus a shared-selection showcase (segmented button, radio group and menu picker all bound to one
-/// value).
+/// value) and a menu picker whose length crosses Cupertino's cutoff.
 class SelectionDemoView extends StatelessWidget {
   const SelectionDemoView({super.key});
 
@@ -173,6 +176,36 @@ class SelectionDemoView extends StatelessWidget {
                     .down => context.platformAdaptiveIcons.arrowDownward,
                   },
                 ),
+              ),
+            ],
+          ),
+        ),
+        DemoCard(
+          title: 'PlatformMenuPicker',
+          description:
+              'A dropdown on Material, at any length. On Cupertino, a menu up to '
+              '$kCupertinoMenuPickerSmallItemCountThreshold items and a wheel past that, icons included.',
+          child: PropertyEditor(
+            preview: PlatformMenuPicker(
+              items: List.generate(viewModel.menuPickerLength.itemCount, (index) => index + 1),
+              currentValue: viewModel.pickedItem,
+              onSelected: viewModel.onPickerItemSelected,
+              labelText: 'Item',
+              menuPickerItemTransformer: (item) => MenuPickerItem(
+                label: 'Item $item',
+                iconData: context.platformIcon(
+                  material: Icons.star,
+                  cupertino: CupertinoIcons.star,
+                ),
+              ),
+            ),
+            knobs: const [],
+            cupertinoKnobs: [
+              SegmentKnob(
+                label: 'items',
+                value: viewModel.menuPickerLength,
+                values: MenuPickerLength.values,
+                onChanged: viewModel.onMenuPickerLengthChanged,
               ),
             ],
           ),
