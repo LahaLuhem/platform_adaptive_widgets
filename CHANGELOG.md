@@ -1,7 +1,18 @@
 ## [Unreleased]
+### Added
+- \[#52\] `PlatformProgressBar(value:)` for known progress, a bar on both looks
+- \[#61\] `designLanguage`, to switch on when your own code has to match the widgets
+
 ### Changed
-- Toast action works on iOS too, and waits to be tapped
-- Progress shows on iOS too, as a bar
+- \[#51\] Toast action works on iOS too, and waits to be tapped
+- \[#52\] `PlatformProgressIndicator` is the spinner only, and VoiceOver reads it on iOS
+- **BREAKING** \[#52\] `value`, `semanticsLabel` and `semanticsValue` leave `MaterialProgressIndicatorData`, the label is flat on the widget now
+- \[#61\] Every platform renders, Cupertino on iOS and macOS and Material everywhere else, where it used to throw
+- \[#61\] `buildMaterial` / `buildCupertino` can no longer be called from outside, so nothing skips `designLanguage`
+
+### Removed
+- **BREAKING** \[#51\] `MaterialToastData.action`, `MaterialToastData.persist` and `PlatformToastClosedReason`, use the flat `action`
+- **BREAKING** \[#61\] `isAndroid` and `isIOS`, switch on `designLanguage` or read `defaultTargetPlatform`
 
 ## [2.2.0] - 2026-09-13
 ### Added
