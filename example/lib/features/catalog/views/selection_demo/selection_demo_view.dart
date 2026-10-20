@@ -182,7 +182,8 @@ class SelectionDemoView extends StatelessWidget {
           title: 'PlatformMenuPicker',
           description:
               'A dropdown on Material, at any length. On Cupertino, a menu up to '
-              '$kCupertinoMenuPickerSmallItemCountThreshold items and a wheel past that, icons included.',
+              '$kCupertinoMenuPickerSmallItemCountThreshold items, a wheel up to '
+              '$kCupertinoMenuPickerLargeItemCountThreshold and a page past that, icons included.',
           child: PropertyEditor(
             preview: PlatformMenuPicker(
               items: List.generate(

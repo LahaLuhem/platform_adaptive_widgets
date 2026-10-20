@@ -15,17 +15,13 @@ final class CatalogViewModel extends ViewModel {
   /// The controller for [category]'s section.
   ExpansibleController controllerFor(WidgetCategory category) => _sectionControllers[category]!;
 
-  void onExpandAllPressed() {
-    for (final controller in _sectionControllers.values) {
-      if (!controller.isExpanded) controller.expand();
-    }
-  }
+  void onExpandAllPressed() => _sectionControllers.values
+      .where((controller) => !controller.isExpanded)
+      .forEach((collapsedController) => collapsedController.expand());
 
-  void onCollapseAllPressed() {
-    for (final controller in _sectionControllers.values) {
-      if (controller.isExpanded) controller.collapse();
-    }
-  }
+  void onCollapseAllPressed() => _sectionControllers.values
+      .where((controller) => controller.isExpanded)
+      .forEach((expandedController) => expandedController.collapse());
 
   @override
   void dispose() {

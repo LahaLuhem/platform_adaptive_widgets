@@ -26,6 +26,14 @@ class _Surfaces extends StatelessWidget {
       // PlatformWidgetBase virtual dispatch.
       PlatformButton(onPressed: () {}, child: const Text('platform button')),
       const PlatformProgressBar(value: 0.3),
+      PlatformMenuPicker<int>(
+        items: List.generate(
+          kCupertinoMenuPickerLargeItemCountThreshold + 1,
+          (index) => index,
+          growable: false,
+        ),
+        onSelected: (_) {},
+      ),
 
       // showPlatformDialog, top-level switch dispatch.
       TextButton(

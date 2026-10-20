@@ -38,9 +38,6 @@ const _kCupertinoPickerModalHeight = 216.0;
 /// iOS's own row height on a wheel.
 const _kCupertinoPickerModalItemExtent = 32.0;
 
-/// A [CupertinoListTile]'s own height at the normal text size.
-const _kCupertinoListRowHeight = 44.0;
-
 /// [DropdownMenu] on Material. On Cupertino it depends on how many items there are:
 ///
 /// - up to [kCupertinoMenuPickerSmallItemCountThreshold], a [CupertinoMenuAnchor]
@@ -382,14 +379,16 @@ final class const _CupertinoPickerPage<T extends Object>({
     isEnabled: isEnabled,
     useIconButton: useIconButton,
     onTap: () async {
-      // One height for every row, grown with the text, so the page can work out where a row sits.
-      final rowHeight = MediaQuery.textScalerOf(context).scale(_kCupertinoListRowHeight);
-      final list = ScrollController();
-      // Opens on the current row once the page has laid out and knows where its end is. Starting
-      // further down instead overshoots the end, and the list bounces back.
+      final listScrollController = ScrollController();
+      final firstRow = GlobalKey();
+      // Opens on the current row once the page has laid out. Every row is as tall as the first, which
+      // says where the current one sits, and stopping at the list's end keeps it from bouncing back.
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (list.hasClients) {
-          list.jumpTo(min((selectedIndex ?? 0) * rowHeight, list.position.maxScrollExtent));
+        final rowHeight = firstRow.currentContext?.size?.height;
+        if (rowHeight != null && listScrollController.hasClients) {
+          listScrollController.jumpTo(
+            min((selectedIndex ?? 0) * rowHeight, listScrollController.position.maxScrollExtent),
+          );
         }
       });
 
@@ -401,10 +400,10 @@ final class const _CupertinoPickerPage<T extends Object>({
               middle: labelText == null ? null : Text(labelText!),
             ),
             child: ListView.builder(
-              controller: list,
-              itemExtent: rowHeight,
+              controller: listScrollController,
               itemCount: items.length,
               itemBuilder: (context, index) => DecoratedBox(
+                key: index != 0 ? null : firstRow,
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
@@ -426,7 +425,7 @@ final class const _CupertinoPickerPage<T extends Object>({
           ),
         ),
       );
-      list.dispose();
+      listScrollController.dispose();
 
       if (picked != null && picked != selectedIndex) onSelected?.call(items[picked]);
     },
