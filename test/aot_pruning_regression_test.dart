@@ -55,7 +55,7 @@ void main() {
         final visitor = _HelperCallVisitor(unit.path, unit.parsed.lineInfo);
         unit.parsed.unit.accept(visitor);
 
-        return visitor.offenders;
+        return visitor._offenders;
       });
       check(
         because:
@@ -75,7 +75,7 @@ void main() {
         final visitor = _DispatchHelperVisitor(unit.path, unit.parsed.lineInfo);
         unit.parsed.unit.accept(visitor);
 
-        return visitor.offenders;
+        return visitor._offenders;
       });
       check(
         because:
@@ -126,28 +126,34 @@ void main() {
 
 typedef _Unit = ({String path, String basename, ParseStringResult parsed});
 
-final List<_Unit> _libSrcUnits = [
-  for (final file in Directory('lib/src').listSync(recursive: true).whereType<File>())
-    if (file.path.endsWith('.dart'))
-      (
-        path: file.path,
-        basename: file.uri.pathSegments.last,
-        parsed: parseFile(path: file.absolute.path, featureSet: FeatureSet.latestLanguageVersion()),
+final List<_Unit> _libSrcUnits = Directory('lib/src')
+    .listSync(recursive: true)
+    .whereType<File>()
+    .where((file) => file.path.endsWith('.dart'))
+    .map(
+      (dartFile) => (
+        path: dartFile.path,
+        basename: dartFile.uri.pathSegments.last,
+        parsed: parseFile(
+          path: dartFile.absolute.path,
+          featureSet: FeatureSet.latestLanguageVersion(),
+        ),
       ),
-];
+    )
+    .toList(growable: false);
 
 Iterable<_Unit> _unitsExcept(Set<String> basenames) =>
     _libSrcUnits.where((unit) => !basenames.contains(unit.basename));
 
 class _HelperCallVisitor(final String _filePath, final LineInfo _lineInfo)
     extends RecursiveAstVisitor<void> {
-  final List<String> offenders = [];
+  final List<String> _offenders = [];
 
   @override
   void visitMethodInvocation(MethodInvocation node) {
     if (_forbiddenHelperNames.contains(node.methodName.name)) {
       final loc = _lineInfo.getLocation(node.offset);
-      offenders.add('$_filePath:${loc.lineNumber}: calls ${node.methodName.name}(...)');
+      _offenders.add('$_filePath:${loc.lineNumber}: calls ${node.methodName.name}(...)');
     }
     super.visitMethodInvocation(node);
   }
@@ -155,7 +161,7 @@ class _HelperCallVisitor(final String _filePath, final LineInfo _lineInfo)
 
 class _DispatchHelperVisitor(final String _filePath, final LineInfo _lineInfo)
     extends RecursiveAstVisitor<void> {
-  final List<String> offenders = [];
+  final List<String> _offenders = [];
 
   @override
   void visitFunctionDeclaration(FunctionDeclaration node) {
@@ -186,7 +192,7 @@ class _DispatchHelperVisitor(final String _filePath, final LineInfo _lineInfo)
     final hasCupertino = functionTypedNames.any((paramName) => paramName.startsWith('cupertino'));
     if (hasMaterial && hasCupertino) {
       final loc = _lineInfo.getLocation(offset);
-      offenders.add(
+      _offenders.add(
         '$_filePath:${loc.lineNumber}: private function `$name` takes both '
         'material* and cupertino* function-typed params',
       );

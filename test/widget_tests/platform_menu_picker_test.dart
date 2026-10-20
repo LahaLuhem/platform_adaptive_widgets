@@ -271,6 +271,16 @@ void main() {
       variant: iosOnly,
     );
 
+    scenarioWidgets("lines up a page row's title with its icon", (tester) async {
+      await _pump(tester, const _Picker(count: 300, withIcons: true));
+
+      await _open(tester);
+
+      // Rows build from the top, so row 3's icon is the fourth one.
+      check(tester.getCenter(find.text(_label(3))).dy)
+          .isCloseTo(tester.getCenter(find.byIcon(_icon).at(3)).dy, 0.5);
+    }, variant: iosOnly);
+
     // 300 is past the cutoff for a page of its own.
     scenarioWidgets('gives a very long list a page of its own', (tester) async {
       await _pump(tester, const _Picker(count: 300));
