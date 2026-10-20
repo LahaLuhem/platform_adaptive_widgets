@@ -159,14 +159,15 @@ final class DialogsDemoViewModel extends ViewModel {
       context: context,
       message: 'Draft deleted',
       action: _shouldOfferUndo
-          ? PlatformToastAction(label: 'Undo', onPressed: _onUndoPressed)
+          ? PlatformToastAction(
+              label: 'Undo',
+              onPressed: () {
+                _isUndone = true;
+                notifyListeners();
+              },
+            )
           : null,
     );
-  }
-
-  void _onUndoPressed() {
-    _isUndone = true;
-    notifyListeners();
   }
 
   Future<void> onShowBottomSheetPressed() => _isSheetRaw

@@ -52,10 +52,9 @@ class DialogsDemoView extends StatelessWidget {
               'A full-screen dialog on Material, a page that slides up on Cupertino. Its bar closes it.',
           child: PlatformButton(
             onPressed: viewModel.onShowFullscreenDialogPressed,
-            child: Text(switch (viewModel.savedEvent) {
-              final event? => 'Saved: $event',
-              null => 'New event',
-            }),
+            child: Text(
+              viewModel.savedEvent == null ? 'New event' : 'Saved: ${viewModel.savedEvent}',
+            ),
           ),
         ),
         DemoCard(

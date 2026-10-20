@@ -17,8 +17,6 @@ const _materialDesktop = TargetPlatformVariant({TargetPlatform.windows, TargetPl
 
 String _label(int item) => 'Item $item';
 
-String _sharedLabel(int item) => item == 0 || item == 25 ? 'Alex' : _label(item);
-
 List<int> _items(int count) => List.generate(count, (index) => index);
 
 class const _Picker({
@@ -174,7 +172,11 @@ void main() {
 
     scenarioOutlineWidgets<String Function(int item)>(
       'opens a long list on the current value',
-      examples: {'with unique labels': _label, 'with another row sharing its label': _sharedLabel},
+      examples: {
+        'with unique labels': _label,
+        'with another row sharing its label': (item) =>
+            item == 0 || item == 25 ? 'Alex' : _label(item),
+      },
       outline: (tester, label) async {
         await _pump(tester, _Picker(count: 30, current: 25, label: label));
 
