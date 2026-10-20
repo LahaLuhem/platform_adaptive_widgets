@@ -14,11 +14,6 @@ const _statusBarHeight = 24.0;
 Future<String?> _open(BuildContext context) =>
     showPlatformFullscreenDialog<String>(context: context, appBarData: _bar, builder: (_) => _body);
 
-void _addStatusBar(WidgetTester tester) {
-  tester.view.padding = FakeViewPadding(top: _statusBarHeight * tester.view.devicePixelRatio);
-  addTearDown(tester.view.reset);
-}
-
 Future<int> _seeThroughPixels(WidgetTester tester) async {
   final image = (await tester.runAsync(
     () => captureImage(tester.element(find.byType(PlatformApp))),
@@ -38,7 +33,8 @@ Future<int> _seeThroughPixels(WidgetTester tester) async {
 void main() {
   feature('showPlatformFullscreenDialog', () {
     scenarioWidgets('covers the whole screen, status bar included', (tester) async {
-      _addStatusBar(tester);
+      tester.view.padding = FakeViewPadding(top: _statusBarHeight * tester.view.devicePixelRatio);
+      addTearDown(tester.view.reset);
       final context = await pumpForContext(tester);
       // The bare app paints nothing, so any spot the dialog misses stays see-through.
       check(await _seeThroughPixels(tester)).isGreaterThan(0);

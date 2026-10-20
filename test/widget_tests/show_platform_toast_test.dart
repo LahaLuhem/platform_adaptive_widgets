@@ -29,14 +29,6 @@ void _show(BuildContext context, {VoidCallback? onUndo}) => unawaited(
 
 bool _isShowing(WidgetTester tester) => tester.any(find.text(_message));
 
-bool _inLiveRegion(SemanticsNode node) {
-  for (SemanticsNode? current = node; current != null; current = current.parent) {
-    if (current.getSemanticsData().flagsCollection.isLiveRegion) return true;
-  }
-
-  return false;
-}
-
 void main() {
   feature('showPlatformToast', () {
     scenarioWidgets('runs its action and closes when the action is tapped', (tester) async {
@@ -97,7 +89,11 @@ void main() {
       _show(context);
       await tester.pumpAndSettle();
       // The read-out happens in the engine, so the flag that triggers it is all a test can see.
-      final isReadOut = _inLiveRegion(tester.getSemantics(find.text(_message)));
+      SemanticsNode? node = tester.getSemantics(find.text(_message));
+      while (node != null && !node.getSemanticsData().flagsCollection.isLiveRegion) {
+        node = node.parent;
+      }
+      final isReadOut = node != null;
       semantics.dispose();
 
       check(isReadOut).isTrue();

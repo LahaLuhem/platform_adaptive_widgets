@@ -133,10 +133,12 @@ Future<T?> showPlatformFullscreenDialog<T>({
   bool? requestFocus,
   MaterialFullscreenDialogData? materialDialogData,
 }) {
-  final page = _fullscreenPage(
+  // Built by the package rather than the caller, so the close button and page background can't be
+  // forgotten.
+  Widget page(BuildContext context) => PlatformScaffold(
     appBarData: appBarData,
     backgroundColor: backgroundColor,
-    body: builder,
+    body: builder(context),
   );
 
   return switch (designLanguage) {
@@ -333,16 +335,3 @@ Future<T?> _showCupertinoFullscreenDialog<T>({
 /// end up double-wrapped.
 WidgetBuilder _cupertinoDialogSurface(WidgetBuilder content) =>
     (context) => Center(child: CupertinoPopupSurface(child: content(context)));
-
-/// Built by the package rather than the caller, so the close button and page background can't be
-/// forgotten.
-WidgetBuilder _fullscreenPage({
-  required PlatformAppBarData appBarData,
-  required Color? backgroundColor,
-  required WidgetBuilder body,
-}) =>
-    (context) => PlatformScaffold(
-      appBarData: appBarData,
-      backgroundColor: backgroundColor,
-      body: body(context),
-    );

@@ -1,10 +1,6 @@
-// Per-platform records for PlatformMenuPicker (no shared private base, the
-// inherited `leadingIcon`/`labelText` fields in the v1 wrapper were dead code
-// because the widget reads its own flat copies. They're gone).
+// Named after the widget it serves, not after its first record.
 // ignore_for_file: prefer-match-file-name
 
-/// @docImport 'package:cupertino_ui/cupertino_ui.dart';
-/// @docImport 'package:material_ui/material_ui.dart';
 /// @docImport '/src/widgets/dialogs/platform_menu_picker.dart';
 library;
 
@@ -52,9 +48,6 @@ final class MaterialMenuPickerData {
 }
 
 /// Cupertino-side settings for [PlatformMenuPicker], passed as `cupertinoMenuPickerData`.
-///
-/// What Cupertino draws depends on how many items there are. 5 or fewer get a [CupertinoMenuAnchor],
-/// more than that get a [CupertinoPicker] wheel in a modal popup, which is what Apple's HIG asks for.
 final class CupertinoMenuPickerData {
   /// Behind the picker UI.
   final Color? backgroundColor;
@@ -74,15 +67,7 @@ final class CupertinoMenuPickerData {
 }
 
 /// One entry in the picker's list, built by [PlatformMenuPicker.menuPickerItemTransformer].
-///
-/// Past 5 items Cupertino switches to a wheel, and [CupertinoPicker] draws no per-item icons, so [iconData]
-/// quietly stops showing there. That threshold is Apple's, see <https://developer.apple.com/design/human-interface-guidelines/pickers#Best-practices>.
-final class const MenuPickerItem({
-  final String? label,
-
-  /// Dropped on Cupertino once the list passes 5 items. See above.
-  final IconData? iconData,
-}) {
+final class const MenuPickerItem({final String? label, final IconData? iconData}) {
   /// Creates a menu picker item.
   this;
 }

@@ -14,10 +14,9 @@ const _label = 'Loading inbox';
 
 class const _Indicator({final double? value, final String? label}) extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => switch (value) {
-    final value? => PlatformProgressBar(value: value, semanticsLabel: label),
-    null => PlatformProgressIndicator(semanticsLabel: label),
-  };
+  Widget build(BuildContext context) => value == null
+      ? PlatformProgressIndicator(semanticsLabel: label)
+      : PlatformProgressBar(value: value!, semanticsLabel: label);
 }
 
 Future<void> _pump(WidgetTester tester, Widget indicator) => pumpPlatformWidget(

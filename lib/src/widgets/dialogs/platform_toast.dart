@@ -141,13 +141,6 @@ class _CupertinoToastOverlayState()
     if (widget.action == null) _dismissTimer = Timer(widget.duration, _startDismiss);
   }
 
-  void _runAction() {
-    // Already sliding away, so a second tap can't run the action twice.
-    if (!_controller.isForwardOrCompleted) return;
-    widget.action!.onPressed();
-    unawaited(_startDismiss());
-  }
-
   /// Runs the animation backwards first, then pulls the overlay entry.
   Future<void> _startDismiss() async {
     _dismissTimer?.cancel();
@@ -205,25 +198,29 @@ class _CupertinoToastOverlayState()
                             child: DefaultTextStyle(
                               style: resolvedTextStyle,
                               textAlign: widget.action == null ? TextAlign.center : TextAlign.start,
-                              child: switch (widget.action) {
-                                null => Text(widget.message),
-                                final action => Row(
-                                  children: [
-                                    Expanded(child: Text(widget.message)),
-                                    CupertinoButton(
-                                      padding: const EdgeInsetsDirectional.only(start: 16),
-                                      onPressed: _runAction,
-                                      // The banner's own colour, since iOS blue is too dark to read on it.
-                                      child: Text(
-                                        action.label,
-                                        style: resolvedTextStyle.copyWith(
-                                          fontWeight: FontWeight.w600,
+                              child: widget.action == null
+                                  ? Text(widget.message)
+                                  : Row(
+                                      children: [
+                                        Expanded(child: Text(widget.message)),
+                                        CupertinoButton(
+                                          padding: const EdgeInsetsDirectional.only(start: 16),
+                                          onPressed: () {
+                                            // Already sliding away, so a second tap can't run the action twice.
+                                            if (!_controller.isForwardOrCompleted) return;
+                                            widget.action!.onPressed();
+                                            unawaited(_startDismiss());
+                                          },
+                                          // The banner's own colour, since iOS blue is too dark to read on it.
+                                          child: Text(
+                                            widget.action!.label,
+                                            style: resolvedTextStyle.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
                                         ),
-                                      ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              },
                             ),
                           ),
                         ),
