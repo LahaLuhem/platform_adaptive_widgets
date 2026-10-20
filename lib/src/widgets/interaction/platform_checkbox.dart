@@ -1,4 +1,5 @@
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoCheckbox;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Checkbox;
 
@@ -118,6 +119,8 @@ class PlatformCheckbox extends PlatformWidgetKeyedBase {
       (newValue) => _onChanged!(newValue!);
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildMaterial(BuildContext context) => Checkbox(
     key: widgetKey,
     value: value,
@@ -142,6 +145,8 @@ class PlatformCheckbox extends PlatformWidgetKeyedBase {
   );
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildCupertino(BuildContext context) => CupertinoCheckbox(
     key: widgetKey,
     value: value,

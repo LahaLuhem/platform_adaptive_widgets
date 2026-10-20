@@ -3,6 +3,7 @@
 library;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoApp;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show MaterialApp;
 
@@ -211,6 +212,8 @@ class PlatformApp extends PlatformWidgetKeyedBase {
        navigatorObservers = const [];
 
   @override
+  @protected
+  @visibleForOverriding
   MaterialApp buildMaterial(BuildContext context) => _useRouter
       ? .router(
           key: widgetKey,
@@ -295,6 +298,8 @@ class PlatformApp extends PlatformWidgetKeyedBase {
         );
 
   @override
+  @protected
+  @visibleForOverriding
   CupertinoApp buildCupertino(BuildContext context) => _useRouter
       ? .router(
           key: widgetKey,

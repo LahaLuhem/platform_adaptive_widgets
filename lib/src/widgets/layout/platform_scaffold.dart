@@ -2,6 +2,7 @@
 library;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoPageScaffold;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Scaffold;
 
@@ -40,6 +41,8 @@ class const PlatformScaffold({
   this;
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildMaterial(BuildContext context) {
     // Shared values resolved once, both bottomSheetScrimBuilder branches below pass the identical set.
     final appBar = materialScaffoldData?.appBar ?? appBarData?.materialBuilder(context);
@@ -130,6 +133,8 @@ class const PlatformScaffold({
   }
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildCupertino(BuildContext context) => CupertinoPageScaffold(
     key: widgetKey,
     navigationBar: cupertinoScaffoldData?.navigationBar ?? appBarData?.cupertinoBuilder(context),

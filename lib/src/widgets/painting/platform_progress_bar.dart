@@ -4,6 +4,7 @@ library;
 import 'dart:ui' show SemanticsRole;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoLinearActivityIndicator;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show LinearProgressIndicator;
 
@@ -47,6 +48,8 @@ class const PlatformProgressBar({
   this : assert(value >= 0 && value <= 1, 'value must be between 0 and 1');
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildMaterial(BuildContext context) => LinearProgressIndicator(
     key: widgetKey,
     value: value,
@@ -62,6 +65,8 @@ class const PlatformProgressBar({
   );
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildCupertino(BuildContext context) => Semantics(
     // cupertino_ui's bar has no semantics of its own. Flutter wants the role's 0 to 100 range, but
     // iOS doesn't read it out, so the percent goes into the value too.

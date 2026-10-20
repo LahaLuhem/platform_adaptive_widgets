@@ -1,4 +1,5 @@
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoScrollbar;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Scrollbar;
 
@@ -42,6 +43,8 @@ class const PlatformScrollbar({
   this;
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildMaterial(BuildContext context) => Scrollbar(
     key: widgetKey,
     controller: controller,
@@ -56,6 +59,8 @@ class const PlatformScrollbar({
   );
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildCupertino(BuildContext context) => CupertinoScrollbar(
     key: widgetKey,
     controller: controller,

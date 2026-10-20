@@ -1,4 +1,5 @@
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoSearchTextField;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show SearchBar;
 
@@ -61,6 +62,8 @@ class const PlatformSearchBar({
   this;
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildMaterial(BuildContext context) => SearchBar(
     key: widgetKey,
     controller: controller,
@@ -96,6 +99,8 @@ class const PlatformSearchBar({
   );
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildCupertino(BuildContext context) => CupertinoSearchTextField(
     key: widgetKey,
     controller: controller,

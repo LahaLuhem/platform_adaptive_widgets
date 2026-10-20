@@ -120,6 +120,8 @@ class const PlatformDialogAction({
   this;
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildMaterial(BuildContext context) => TextButton(
     onPressed: onPressed == null ? null : () => onPressed!(context),
     style: !isDestructiveAction
@@ -131,6 +133,8 @@ class const PlatformDialogAction({
   );
 
   @override
+  @protected
+  @visibleForOverriding
   Widget buildCupertino(BuildContext context) => CupertinoDialogAction(
     onPressed: onPressed == null ? null : () => onPressed!(context),
     isDestructiveAction: isDestructiveAction,
