@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart' show AxisDirection, Color;
 import 'package:pmvvm/pmvvm.dart';
 
+import '/features/catalog/data/enums/menu_picker_length.dart';
+
 /// State for the Selection-controls demo.
 ///
 /// The checkbox, switch and slider each back their own playground. The segmented button, radio group
@@ -25,6 +27,9 @@ final class SelectionDemoViewModel extends ViewModel {
   var _sliderThumbColor = const Color(0xFFFFFFFF);
 
   var _selectedDirection = AxisDirection.left;
+
+  var _menuPickerLength = MenuPickerLength.menu;
+  int? _pickedItem = 1;
 
   bool get checkboxValue => _checkboxValue;
 
@@ -55,6 +60,10 @@ final class SelectionDemoViewModel extends ViewModel {
   Color get sliderThumbColor => _sliderThumbColor;
 
   AxisDirection get selectedDirection => _selectedDirection;
+
+  MenuPickerLength get menuPickerLength => _menuPickerLength;
+
+  int? get pickedItem => _pickedItem;
 
   void onCheckboxToggled({required bool value}) {
     _checkboxValue = value;
@@ -128,6 +137,17 @@ final class SelectionDemoViewModel extends ViewModel {
 
   void onDirectionChanged(AxisDirection? direction) {
     _selectedDirection = direction!;
+    notifyListeners();
+  }
+
+  // Keeps the pick, so a shorter list can show its value-outside-the-list state.
+  void onMenuPickerLengthChanged(MenuPickerLength length) {
+    _menuPickerLength = length;
+    notifyListeners();
+  }
+
+  void onPickerItemSelected(int item) {
+    _pickedItem = item;
     notifyListeners();
   }
 }

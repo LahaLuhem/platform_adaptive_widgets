@@ -2,8 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 /// A [PlatformMenuPicker] knob, labelling each option with the value's `name`.
-///
-/// Needs 3 values or more, which Cupertino asserts. Below that reach for `SegmentKnob` or a `BoolKnob`.
 class EnumKnob<T extends Enum> extends StatelessWidget {
   final String label;
 

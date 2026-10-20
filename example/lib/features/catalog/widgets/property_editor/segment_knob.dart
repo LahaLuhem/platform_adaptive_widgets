@@ -1,8 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// A [PlatformSegmentButton] knob, labelling each option with the value's `name`. Takes 2 values or
-/// more, so it covers the small enums `EnumKnob` can't.
+/// A [PlatformSegmentButton] knob, labelling each option with the value's `name`. Takes 2 values or more.
 class SegmentKnob<T extends Enum> extends StatelessWidget {
   final String label;
 
