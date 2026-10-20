@@ -1,6 +1,7 @@
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoTheme;
-import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
+
+import '/src/utils/design_language.dart';
 
 /// Pulls colours off whichever theme the current platform is running, so you don't reach for [Theme]
 /// or [CupertinoTheme] by hand.
@@ -9,37 +10,32 @@ final class const PlatformTheme.of(final BuildContext context) {
   this;
 
   /// Falls back to transparent on Android, where the app bar theme may leave it unset.
-  Color get barBackgroundColor => switch (defaultTargetPlatform) {
-    .android => Theme.of(context).appBarTheme.backgroundColor ?? const Color(0x00000000),
-    .iOS => CupertinoTheme.of(context).barBackgroundColor,
-    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+  Color get barBackgroundColor => switch (designLanguage) {
+    .material => Theme.of(context).appBarTheme.backgroundColor ?? const Color(0x00000000),
+    .cupertino => CupertinoTheme.of(context).barBackgroundColor,
   };
 
   /// The theme's primary colour.
-  Color get primaryColor => switch (defaultTargetPlatform) {
-    .android => Theme.of(context).primaryColor,
-    .iOS => CupertinoTheme.of(context).primaryColor,
-    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+  Color get primaryColor => switch (designLanguage) {
+    .material => Theme.of(context).primaryColor,
+    .cupertino => CupertinoTheme.of(context).primaryColor,
   };
 
   /// Reads against [primaryColor].
-  Color get primaryContrastingColor => switch (defaultTargetPlatform) {
-    .android => Theme.of(context).colorScheme.onPrimary,
-    .iOS => CupertinoTheme.of(context).primaryContrastingColor,
-    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+  Color get primaryContrastingColor => switch (designLanguage) {
+    .material => Theme.of(context).colorScheme.onPrimary,
+    .cupertino => CupertinoTheme.of(context).primaryContrastingColor,
   };
 
   /// The background color of the scaffold.
-  Color get scaffoldBackgroundColor => switch (defaultTargetPlatform) {
-    .android => Theme.of(context).scaffoldBackgroundColor,
-    .iOS => CupertinoTheme.of(context).scaffoldBackgroundColor,
-    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+  Color get scaffoldBackgroundColor => switch (designLanguage) {
+    .material => Theme.of(context).scaffoldBackgroundColor,
+    .cupertino => CupertinoTheme.of(context).scaffoldBackgroundColor,
   };
 
   /// The color of the selection handles.
-  Color get selectionHandleColor => switch (defaultTargetPlatform) {
-    .android => Theme.of(context).colorScheme.onSurface,
-    .iOS => CupertinoTheme.of(context).selectionHandleColor,
-    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+  Color get selectionHandleColor => switch (designLanguage) {
+    .material => Theme.of(context).colorScheme.onSurface,
+    .cupertino => CupertinoTheme.of(context).selectionHandleColor,
   };
 }

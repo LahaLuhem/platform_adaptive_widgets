@@ -2,7 +2,6 @@
 
 import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoColors, CupertinoDatePicker, CupertinoDatePickerMode, showCupertinoModalPopup;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show TimeOfDay, showDatePicker, showTimePicker;
 import 'package:minted_chronology/minted_chronology.dart' show Date;
@@ -11,6 +10,7 @@ import '/src/extensions/time_of_day_extensions.dart';
 import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_date_picker_data.dart';
 import '/src/models/dialogs/platform_time_picker_data.dart';
+import '/src/utils/design_language.dart';
 
 part 'platform_time_picker.dart';
 
@@ -45,8 +45,8 @@ Future<Date?> showPlatformDatePicker({
   final firstDateTime = firstDate.toDateTime();
   final lastDateTime = lastDate.toDateTime();
 
-  return switch (defaultTargetPlatform) {
-    .android => showDatePicker(
+  return switch (designLanguage) {
+    .material => showDatePicker(
       context: context,
       initialDate: initialDateTime,
       firstDate: firstDateTime,
@@ -81,7 +81,7 @@ Future<Date?> showPlatformDatePicker({
       calendarDelegate:
           materialDatePickerData?.calendarDelegate ?? kDefaultMaterialDatePickerCalendarDelegate,
     ).then(_toDate),
-    .iOS => _showCupertinoModePickerPopup(
+    .cupertino => _showCupertinoModePickerPopup(
       context: context,
       mode: CupertinoDatePickerMode.date,
       initialDateTime: initialDateTime,
@@ -96,7 +96,6 @@ Future<Date?> showPlatformDatePicker({
       builder: builder,
       cupertinoDatePickerData: cupertinoDatePickerData,
     ).then(_toDate),
-    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
   };
 }
 

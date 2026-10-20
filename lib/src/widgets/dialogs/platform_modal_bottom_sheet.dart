@@ -1,10 +1,10 @@
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoPopupSurface, showCupertinoModalPopup;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show showModalBottomSheet;
 
 import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
+import '/src/utils/design_language.dart';
 
 /// Shows a modal that slides up from the bottom. [showModalBottomSheet] on Android, [showCupertinoModalPopup]
 /// on iOS, wrapped there in a [CupertinoPopupSurface] because that route only positions and dims where
@@ -37,8 +37,8 @@ Future<T?> showPlatformModalBottomSheet<T>({
     hasCupertinoBuilder: cupertinoBuilder != null,
   );
 
-  return switch (defaultTargetPlatform) {
-    .android => _showMaterialModalBottomSheet(
+  return switch (designLanguage) {
+    .material => _showMaterialModalBottomSheet(
       context: context,
       builder: materialBuilder ?? builder!,
       data: materialModalBottomSheetData,
@@ -47,7 +47,7 @@ Future<T?> showPlatformModalBottomSheet<T>({
       anchorPoint: anchorPoint,
       requestFocus: requestFocus,
     ),
-    .iOS => _showCupertinoModalPopup(
+    .cupertino => _showCupertinoModalPopup(
       context: context,
       // Wrap in a CupertinoPopupSurface, the popup route only positions and dims. It paints no surface,
       // so unwrapped content has no sheet behind it.
@@ -60,7 +60,6 @@ Future<T?> showPlatformModalBottomSheet<T>({
       anchorPoint: anchorPoint,
       requestFocus: requestFocus,
     ),
-    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
   };
 }
 
@@ -90,8 +89,8 @@ Future<T?> showPlatformRawModalBottomSheet<T>({
     hasCupertinoBuilder: cupertinoBuilder != null,
   );
 
-  return switch (defaultTargetPlatform) {
-    .android => _showMaterialModalBottomSheet(
+  return switch (designLanguage) {
+    .material => _showMaterialModalBottomSheet(
       context: context,
       builder: materialBuilder ?? builder!,
       data: materialModalBottomSheetData,
@@ -100,7 +99,7 @@ Future<T?> showPlatformRawModalBottomSheet<T>({
       anchorPoint: anchorPoint,
       requestFocus: requestFocus,
     ),
-    .iOS => _showCupertinoModalPopup(
+    .cupertino => _showCupertinoModalPopup(
       context: context,
       // Raw: no CupertinoPopupSurface wrap, the caller owns the surface.
       builder: cupertinoBuilder ?? builder!,
@@ -110,7 +109,6 @@ Future<T?> showPlatformRawModalBottomSheet<T>({
       anchorPoint: anchorPoint,
       requestFocus: requestFocus,
     ),
-    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
   };
 }
 

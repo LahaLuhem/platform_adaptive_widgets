@@ -23,6 +23,7 @@ library;
 import 'dart:io';
 
 import 'package:analyzer/dart/analysis/features.dart';
+import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
@@ -31,6 +32,9 @@ import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _helperHomeBasename = 'platform_value.dart';
+
+// `isAndroid` / `isIOS` ask about the OS itself, not the look.
+const _platformReaderBasenames = {'design_language.dart', 'is_platform.dart'};
 
 const _forbiddenHelperNames = {
   'platformValue',
@@ -41,14 +45,11 @@ const _forbiddenHelperNames = {
 
 void main() {
   group('AOT pruning regression guard', () {
+    // The helpers' own definitions aren't calls.
     test('no caller of dispatch helpers outside $_helperHomeBasename', () {
-      final offenders = _lintableFiles().expand((file) {
-        final parsed = parseFile(
-          path: file.absolute.path,
-          featureSet: FeatureSet.latestLanguageVersion(),
-        );
-        final visitor = _HelperCallVisitor(file.path, parsed.lineInfo);
-        parsed.unit.accept(visitor);
+      final offenders = _unitsExcept({_helperHomeBasename}).expand((unit) {
+        final visitor = _HelperCallVisitor(unit.path, unit.parsed.lineInfo);
+        unit.parsed.unit.accept(visitor);
 
         return visitor.offenders;
       });
@@ -58,7 +59,7 @@ void main() {
             '($_forbiddenHelperNames). These take both Material and Cupertino '
             'values/closures as parameters, so the unused arm stays lexically '
             'reachable and AOT pruning cannot drop it. Use inline '
-            '`switch (defaultTargetPlatform)` at the call site instead. See '
+            '`switch (designLanguage)` at the call site instead. See '
             'APPENDIX.md#aot-pruning-rules.',
         offenders,
       ).isEmpty();
@@ -66,13 +67,9 @@ void main() {
 
     test('no private helper in lib/src takes both material* and cupertino* '
         'function-typed params', () {
-      final offenders = _lintableFiles().expand((file) {
-        final parsed = parseFile(
-          path: file.absolute.path,
-          featureSet: FeatureSet.latestLanguageVersion(),
-        );
-        final visitor = _DispatchHelperVisitor(file.path, parsed.lineInfo);
-        parsed.unit.accept(visitor);
+      final offenders = _unitsExcept({_helperHomeBasename}).expand((unit) {
+        final visitor = _DispatchHelperVisitor(unit.path, unit.parsed.lineInfo);
+        unit.parsed.unit.accept(visitor);
 
         return visitor.offenders;
       });
@@ -82,7 +79,7 @@ void main() {
             'a cupertino*-named function-typed parameter. This shape '
             'constructs both closures at the call site, defeating AOT '
             'pruning. Dispatch at the public entry point with '
-            '`switch (defaultTargetPlatform)` and call single-platform '
+            '`switch (designLanguage)` and call single-platform '
             'helpers (e.g. `_runMaterialDialog` vs `_runCupertinoDialog`) '
             'that each take only one builder. See '
             'APPENDIX.md#aot-pruning-rules.',
@@ -90,22 +87,37 @@ void main() {
       ).isEmpty();
     });
   });
+
+  group('Look-picking guard', () {
+    test('nothing in lib/src but $_platformReaderBasenames reads defaultTargetPlatform', () {
+      final offenders = _unitsExcept(_platformReaderBasenames).expand((unit) {
+        final visitor = _PlatformReadVisitor(unit.path, unit.parsed.lineInfo);
+        unit.parsed.unit.accept(visitor);
+
+        return visitor.offenders;
+      });
+      check(
+        because: 'Switch on `designLanguage` instead, so every site agrees on the look.',
+        offenders,
+      ).isEmpty();
+    });
+  });
 }
 
-/// The `lib/src/` Dart files both checks lint: every `.dart` except the file that *defines* the dispatch
-/// helpers (their own definitions aren't calls). Lazy, nothing is read until the returned iterable is
-/// iterated.
-Iterable<File> _lintableFiles() =>
-    Directory('lib/src')
-        .listSync(recursive: true)
-        .whereType<File>()
-        .where((file) => file.path.endsWith('.dart') && !_isHelperHome(file));
+typedef _Unit = ({String path, String basename, ParseStringResult parsed});
 
-bool _isHelperHome(File file) {
-  final segments = file.uri.pathSegments;
+final List<_Unit> _libSrcUnits = [
+  for (final file in Directory('lib/src').listSync(recursive: true).whereType<File>())
+    if (file.path.endsWith('.dart'))
+      (
+        path: file.path,
+        basename: file.uri.pathSegments.last,
+        parsed: parseFile(path: file.absolute.path, featureSet: FeatureSet.latestLanguageVersion()),
+      ),
+];
 
-  return segments.isNotEmpty && segments.last == _helperHomeBasename;
-}
+Iterable<_Unit> _unitsExcept(Set<String> basenames) =>
+    _libSrcUnits.where((unit) => !basenames.contains(unit.basename));
 
 class _HelperCallVisitor(final String _filePath, final LineInfo _lineInfo)
     extends RecursiveAstVisitor<void> {
@@ -169,5 +181,20 @@ class _DispatchHelperVisitor(final String _filePath, final LineInfo _lineInfo)
         src.contains('Builder') ||
         src.contains('Callback') ||
         src.contains('Getter');
+  }
+}
+
+class _PlatformReadVisitor(final String _filePath, final LineInfo _lineInfo)
+    extends RecursiveAstVisitor<void> {
+  final List<String> offenders = [];
+
+  @override
+  void visitSimpleIdentifier(SimpleIdentifier node) {
+    // Doc comments may still name it.
+    if (node.name == 'defaultTargetPlatform' && node.thisOrAncestorOfType<Comment>() == null) {
+      final loc = _lineInfo.getLocation(node.offset);
+      offenders.add('$_filePath:${loc.lineNumber}: reads defaultTargetPlatform');
+    }
+    super.visitSimpleIdentifier(node);
   }
 }
