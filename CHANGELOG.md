@@ -10,6 +10,9 @@
 - \[#61\] Every platform renders, Cupertino on iOS and macOS and Material everywhere else, where it used to throw
 - \[#61\] `buildMaterial` / `buildCupertino` can no longer be called from outside, so nothing skips `designLanguage`
 
+### Fixed
+- \[#56\] Menu picker behaves the same on both looks, with honest cutoff docs
+
 ### Removed
 - **BREAKING** \[#51\] `MaterialToastData.action`, `MaterialToastData.persist` and `PlatformToastClosedReason`, use the flat `action`
 - **BREAKING** \[#61\] `isAndroid` and `isIOS`, switch on `designLanguage` or read `defaultTargetPlatform`
