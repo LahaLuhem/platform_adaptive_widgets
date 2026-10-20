@@ -25,6 +25,7 @@ class _Surfaces extends StatelessWidget {
     children: [
       // PlatformWidgetBase virtual dispatch.
       PlatformButton(onPressed: () {}, child: const Text('platform button')),
+      const PlatformProgressBar(value: 0.3),
 
       // showPlatformDialog, top-level switch dispatch.
       TextButton(
