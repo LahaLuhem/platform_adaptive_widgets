@@ -74,47 +74,19 @@ class const PlatformMenuPicker<T extends Object>({
   /// Creates a platform-adaptive menu picker.
   this;
 
-  /// Run once per build and shared across both branches, since an earlier version called the transformer
-  /// 3 times over.
-  List<MenuPickerItem> _transformedItems() => [
-    for (final item in items) menuPickerItemTransformer(item),
-  ];
-
-  // An empty list shows as disabled on both, instead of opening on nothing.
-  bool get _canOpen => isEnabled && items.isNotEmpty;
-
   @override
   @protected
   @visibleForOverriding
-  Widget buildMaterial(BuildContext context) {
-    final transformed = _transformedItems();
-
-    return DropdownMenu<T>(
-      expandedInsets: materialMenuPickerData?.expandedInsets,
-      showTrailingIcon:
-          materialMenuPickerData?.showTrailingIcon ?? kDefaultMaterialMenuPickerShowTrailingIcon,
-      inputDecorationTheme: materialMenuPickerData?.inputDecorationThemeData,
-      enabled: _canOpen,
-      initialSelection: currentValue,
-      leadingIcon: leadingIcon,
-      enableSearch: false,
-      label: labelText == null ? null : Text(labelText!),
-      onSelected: switch (onSelected) {
-        null => null,
-        final callable => (v) {
-          if (v != null) callable(v);
-        },
-      },
-      dropdownMenuEntries: [
-        for (var i = 0; i < items.length; i++)
-          DropdownMenuEntry(
-            value: items[i],
-            label: transformed[i].label ?? '',
-            leadingIcon: transformed[i].iconData == null ? null : Icon(transformed[i].iconData),
-          ),
-      ],
-    );
-  }
+  Widget buildMaterial(BuildContext context) => _MaterialMenuPicker<T>(
+    items: items,
+    transformed: _transformedItems(),
+    selectedIndex: _selectedIndex(),
+    isEnabled: _canOpen,
+    leadingIcon: leadingIcon,
+    labelText: labelText,
+    onSelected: onSelected,
+    data: materialMenuPickerData,
+  );
 
   @override
   @protected
@@ -149,6 +121,107 @@ class const PlatformMenuPicker<T extends Object>({
             onSelected: onSelected,
           );
   }
+
+  /// Run once per build and shared across both branches, since an earlier version called the transformer
+  /// 3 times over.
+  List<MenuPickerItem> _transformedItems() => [
+    for (final item in items) menuPickerItemTransformer(item),
+  ];
+
+  // An empty list shows as disabled on both, instead of opening on nothing.
+  bool get _canOpen => isEnabled && items.isNotEmpty;
+
+  // A value missing from the list counts as nothing picked.
+  int? _selectedIndex() {
+    final currentVal = currentValue;
+    if (currentVal == null) return null;
+
+    return items.indexOf(currentVal);
+  }
+}
+
+/// Owns the field's text, since [DropdownMenu] keeps an old label when the value goes null, leaves the
+/// list or gets renamed.
+final class const _MaterialMenuPicker<T extends Object>({
+  required final List<T> items,
+  required final List<MenuPickerItem> transformed,
+  required final int? selectedIndex,
+  required final bool isEnabled,
+  required final Widget? leadingIcon,
+  required final String? labelText,
+  required final ValueChanged<T>? onSelected,
+  required final MaterialMenuPickerData? data,
+}) extends StatefulWidget {
+  @override
+  State<_MaterialMenuPicker<T>> createState() => _MaterialMenuPickerState<T>();
+}
+
+final class _MaterialMenuPickerState<T extends Object>() extends State<_MaterialMenuPicker<T>> {
+  late final TextEditingController _text;
+
+  String get _selectedLabel {
+    final selectedIndex = widget.selectedIndex;
+    if (selectedIndex == null) return '';
+
+    return widget.transformed[selectedIndex].label ?? '';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _text = TextEditingController(text: _selectedLabel);
+  }
+
+  @override
+  void didUpdateWidget(_MaterialMenuPicker<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    _showSelected();
+  }
+
+  @override
+  void dispose() {
+    _text.dispose();
+
+    super.dispose();
+  }
+
+  void _showSelected() {
+    final label = _selectedLabel;
+    if (_text.text != label) _text.text = label;
+  }
+
+  @override
+  Widget build(BuildContext context) => DropdownMenu<T>(
+    controller: _text,
+    expandedInsets: widget.data?.expandedInsets,
+    showTrailingIcon: widget.data?.showTrailingIcon ?? kDefaultMaterialMenuPickerShowTrailingIcon,
+    inputDecorationTheme: widget.data?.inputDecorationThemeData,
+    enabled: widget.isEnabled,
+    leadingIcon: widget.leadingIcon,
+    label: widget.labelText == null ? null : Text(widget.labelText!),
+    // No typing, which DropdownMenu allows on desktop.
+    selectOnly: true,
+    // Finds the open row by value. The default matches labels, and two rows can share one.
+    searchCallback: (_, _) => widget.selectedIndex,
+    onSelected: (value) {
+      if (value != null) widget.onSelected?.call(value);
+      // The dropdown writes the picked label in by itself. Undo that, so the field only moves when
+      // the app hands over a new value.
+      _showSelected();
+    },
+    dropdownMenuEntries: [
+      for (var i = 0; i < widget.items.length; i++)
+        DropdownMenuEntry(
+          value: widget.items[i],
+          label: widget.transformed[i].label ?? '',
+          leadingIcon: widget.transformed[i].iconData == null
+              ? null
+              : Icon(widget.transformed[i].iconData),
+        ),
+    ],
+  );
 }
 
 /// Cupertino rendering for ≤[kCupertinoMenuPickerSmallItemCountThreshold] items, a [CupertinoMenuAnchor]
