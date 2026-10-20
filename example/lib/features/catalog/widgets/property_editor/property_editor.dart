@@ -30,9 +30,12 @@ class PropertyEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // A ternary, not platformValue, since a List<Widget> through it trips DCM's avoid-returning-widgets.
+    // A switch, not platformValue, since a List<Widget> through it trips DCM's avoid-returning-widgets.
     // The label string below is fine.
-    final platformKnobs = isAndroid ? materialKnobs : cupertinoKnobs;
+    final platformKnobs = switch (designLanguage) {
+      .material => materialKnobs,
+      .cupertino => cupertinoKnobs,
+    };
 
     return Column(
       crossAxisAlignment: .stretch,

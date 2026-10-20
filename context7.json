@@ -2,7 +2,7 @@
   "url": "https://context7.com/lahaluhem/platform_adaptive_widgets",
   "public_key": "pk_zRQqaALefsVNkJ7uS6fVf",
   "projectTitle": "Platform Adaptive Widgets",
-  "description": "Flutter package exposing PlatformXxx widgets that render Material on Android and Cupertino on iOS without app-code branching.",
+  "description": "Flutter package exposing PlatformXxx widgets that render Cupertino on iOS and macOS and Material everywhere else, without app-code branching.",
   "branch": "master",
   "excludeFolders": [
     ".git",
@@ -40,10 +40,10 @@
     ".pubignore"
   ],
   "rules": [
-    "Use the PlatformXxx widgets instead of branching on Theme.of(context).platform or Platform.isIOS; each PlatformXxx renders its Material equivalent on Android and its Cupertino equivalent on iOS automatically.",
+    "Use the PlatformXxx widgets instead of branching on Theme.of(context).platform or Platform.isIOS. Each renders Cupertino on iOS and macOS and Material everywhere else. Where your own code has to match them, switch on designLanguage.",
     "Import only the barrel entry point 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart'; never import from lib/src/ paths directly.",
     "Configure a PlatformXxx widget through its paired *Data classes (e.g. MaterialAppBarData / CupertinoNavigationBarData for PlatformAppBar) to set platform-specific options without per-platform branching in app code.",
-    "Supports Android and iOS only, with the Flutter and Dart floors in pubspec.yaml's environment block."
+    "Runs on every Flutter platform, with the Flutter and Dart floors in pubspec.yaml's environment block."
   ],
   "previousVersions": [
     { "tag": "1.1.0" },

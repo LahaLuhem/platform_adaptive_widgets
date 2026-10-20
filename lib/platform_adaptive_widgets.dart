@@ -30,7 +30,6 @@ export 'src/models/painting/platform_progress_indicator_data.dart';
 export 'src/models/painting/platform_theme.dart';
 export 'src/models/platform_adaptive_icons.dart';
 export 'src/utils/design_language.dart';
-export 'src/utils/is_platform.dart';
 export 'src/utils/platform_value.dart';
 export 'src/widgets/dialogs/platform_acknowledge.dart';
 export 'src/widgets/dialogs/platform_date_picker.dart';

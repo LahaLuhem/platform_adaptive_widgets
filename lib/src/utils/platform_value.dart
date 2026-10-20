@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 
 import '/src/utils/design_language.dart';
 
-/// [material] on Android, [cupertino] on iOS. Both arms are built before the pick happens, so the loser
-/// is built and thrown away. Fine for cheap values, which is what these are for.
+/// [material] or [cupertino], whichever [designLanguage] picks. Both arms are built before the pick
+/// happens, so the loser is built and thrown away. Fine for cheap values, which is what these are for.
 ///
 /// {@template platform_adaptive_widgets.pruning_size_cost}
 /// **Costs binary size, measured.** Passing both values means both are reachable at the call site
@@ -11,11 +11,11 @@ import '/src/utils/design_language.dart';
 /// and every platform class it touches, stays lexically reachable and survives tree-shaking.
 ///
 /// It is not a small effect. `tool/size_harness` puts a `CupertinoDatePicker` dispatched this way at
-/// roughly 27 times the symbol weight of the same thing behind an inline `switch (defaultTargetPlatform)`.
+/// roughly 27 times the symbol weight of the same thing behind an inline `switch (designLanguage)`.
 /// Run the harness for current figures, and see `APPENDIX.md#aot-pruning-rules`.
 ///
-/// **So inline the switch, or `isAndroid ? … : …`, any time an arm builds a platform widget.** Save
-/// these for colours, enums, `IconData` and other values that drag no code behind them.
+/// **So inline a `switch (designLanguage)` any time an arm builds a platform widget.** Save these for
+/// colours, enums, `IconData` and other values that drag no code behind them.
 /// {@endtemplate}
 T platformValue<T extends Object>({required T material, required T cupertino}) =>
     _valueProvider(material: material, cupertino: cupertino);
@@ -26,7 +26,7 @@ T platformValue<T extends Object>({required T material, required T cupertino}) =
 T? platformValueNullable<T extends Object>({T? material, T? cupertino}) =>
     _valueProviderNullable(material: material, cupertino: cupertino);
 
-/// [material] on Android, [cupertino] on iOS, calling only the getter that wins.
+/// [material] or [cupertino] by [designLanguage], calling only the getter that wins.
 ///
 /// Skips *building* the losing arm, which is worth it when that's expensive. It saves no binary size
 /// at all, though. The harness shipped identical Cupertino symbols either way, since a closure keeps

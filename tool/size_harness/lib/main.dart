@@ -96,12 +96,14 @@ class _Surfaces extends StatelessWidget {
         child: const Text('sheet'),
       ),
 
-      // context.platformIcon, extension that uses platformValue internally
-      // (cheap-value usage, safe because IconData doesn't drag platform code).
+      // context.platformIcon, its own inline switch.
       Icon(context.platformIcon(material: Icons.home, cupertino: CupertinoIcons.home)),
 
-      // isAndroid / isIOS, const-folded getters.
-      if (isAndroid) const Text('android') else const Text('ios'),
+      // designLanguage, switched on in app code.
+      switch (designLanguage) {
+        .material => const Text('material'),
+        .cupertino => const Text('cupertino'),
+      },
     ],
   );
 }

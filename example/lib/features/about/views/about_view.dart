@@ -153,9 +153,8 @@ class AboutView extends StatelessWidget {
     .dark => 'Dark',
   };
 
-  String get _platformLabel => switch (defaultTargetPlatform) {
-    .iOS => 'Cupertino widgets (iOS)',
-    .android => 'Material widgets (Android)',
-    _ => 'Unsupported platform',
+  String get _platformLabel => switch (designLanguage) {
+    .cupertino => 'Cupertino widgets',
+    .material => 'Material widgets',
   };
 }

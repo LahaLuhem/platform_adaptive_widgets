@@ -168,9 +168,11 @@ class ShowcaseView extends StatelessWidget {
                 body:
                     'platformValue(material:, cupertino:) evaluates both arms eagerly. '
                     'Fine for cheap values, but when an arm builds a platform-specific widget, '
-                    'an inline switch on defaultTargetPlatform lets the dead arm be '
+                    'an inline switch on designLanguage lets the dead arm be '
                     'tree-shaken, ≈342 KB lighter for one Cupertino widget in our size harness.',
-                code: 'switch (defaultTargetPlatform) { .iOS => CupertinoX(), _ => MaterialX() }',
+                code:
+                    'switch (designLanguage) '
+                    '{ .material => MaterialX(), .cupertino => CupertinoX() }',
               ),
             ],
           ),

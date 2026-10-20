@@ -33,8 +33,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 const _helperHomeBasename = 'platform_value.dart';
 
-// `isAndroid` / `isIOS` ask about the OS itself, not the look.
-const _platformReaderBasenames = {'design_language.dart', 'is_platform.dart'};
+const _designLanguageHomeBasename = 'design_language.dart';
 
 const _halfNames = {'buildMaterial', 'buildCupertino'};
 
@@ -94,8 +93,8 @@ void main() {
   });
 
   group('Look-picking guard', () {
-    test('nothing in lib/src but $_platformReaderBasenames reads defaultTargetPlatform', () {
-      final offenders = _unitsExcept(_platformReaderBasenames).expand((unit) {
+    test('nothing in lib/src but $_designLanguageHomeBasename reads defaultTargetPlatform', () {
+      final offenders = _unitsExcept({_designLanguageHomeBasename}).expand((unit) {
         final visitor = _PlatformReadVisitor(unit.path, unit.parsed.lineInfo);
         unit.parsed.unit.accept(visitor);
 
