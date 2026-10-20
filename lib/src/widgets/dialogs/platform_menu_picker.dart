@@ -80,6 +80,9 @@ class const PlatformMenuPicker<T extends Object>({
     for (final item in items) menuPickerItemTransformer(item),
   ];
 
+  // An empty list shows as disabled on both, instead of opening on nothing.
+  bool get _canOpen => isEnabled && items.isNotEmpty;
+
   @override
   @protected
   @visibleForOverriding
@@ -91,7 +94,7 @@ class const PlatformMenuPicker<T extends Object>({
       showTrailingIcon:
           materialMenuPickerData?.showTrailingIcon ?? kDefaultMaterialMenuPickerShowTrailingIcon,
       inputDecorationTheme: materialMenuPickerData?.inputDecorationThemeData,
-      enabled: isEnabled,
+      enabled: _canOpen,
       initialSelection: currentValue,
       leadingIcon: leadingIcon,
       enableSearch: false,
@@ -127,7 +130,7 @@ class const PlatformMenuPicker<T extends Object>({
             items: items,
             transformed: transformed,
             currentValue: currentValue,
-            isEnabled: isEnabled,
+            isEnabled: _canOpen,
             useIconButton: useIconButton,
             leadingIcon: leadingIcon,
             labelText: labelText,
@@ -138,7 +141,7 @@ class const PlatformMenuPicker<T extends Object>({
             items: items,
             transformed: transformed,
             currentValue: currentValue,
-            isEnabled: isEnabled,
+            isEnabled: _canOpen,
             useIconButton: useIconButton,
             leadingIcon: leadingIcon,
             labelText: labelText,
@@ -161,16 +164,6 @@ final class const _SmallItemCupertinoPicker<T extends Object>({
   required final Color? backgroundColor,
   required final ValueChanged<T>? onSelected,
 }) extends StatelessWidget {
-  /// Per Apple's HIG, this menu style is intended for **at least 3 items** (the 'Balance menu length
-  /// with ease of use' section of <https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons>).
-  /// Below that, prefer a different UI element (segmented control, inline radio group, etc.).
-  this
-    : assert(
-        items.length >= 3,
-        'Cupertino small-item picker is intended for at least 3 items. '
-        'Consider a different UI element for fewer choices.',
-      );
-
   @override
   Widget build(BuildContext context) => CupertinoMenuAnchor(
     builder: (_, controller, _) => _CupertinoPickerField(
@@ -269,17 +262,15 @@ final class const _CupertinoPickerField<T extends Object>({
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Look up the currently-selected item's transformed label for the
-    // CupertinoListTile.additionalInfo slot. Skip the lookup when there's no
-    // current value or the icon-button variant is in use (it doesn't render
-    // a label).
-    final selectedLabel = currentValue == null
-        ? null
-        : transformed[items.indexOf(currentValue!)].label;
+    // A value missing from the list shows nothing, same as Material.
+    final selectedLabel = switch (currentValue == null ? -1 : items.indexOf(currentValue!)) {
+      -1 => null,
+      final index => transformed[index].label,
+    };
 
     if (useIconButton && leadingIcon != null) {
       return CupertinoButton(
-        onPressed: onTap,
+        onPressed: isEnabled ? onTap : null,
         sizeStyle: .medium,
         padding: .zero,
         child: leadingIcon!,
