@@ -1,4 +1,5 @@
 import 'dart:async' show FutureOr;
+import 'dart:math' show min;
 
 import 'package:cupertino_ui/cupertino_ui.dart'
     show
@@ -8,6 +9,9 @@ import 'package:cupertino_ui/cupertino_ui.dart'
         CupertinoListTile,
         CupertinoMenuAnchor,
         CupertinoMenuItem,
+        CupertinoNavigationBar,
+        CupertinoPageRoute,
+        CupertinoPageScaffold,
         CupertinoPicker,
         showCupertinoModalPopup;
 import 'package:flutter/foundation.dart';
@@ -17,25 +21,33 @@ import 'package:material_ui/material_ui.dart' show DropdownMenu, DropdownMenuEnt
 import '/src/models/dialogs/platform_menu_picker_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// Up to this many items Cupertino shows a menu, and past it a wheel. Apple gives no number, so this
-/// one is the package's own: a wheel is about 5 rows tall
+/// Cupertino shows a menu up to this many items, and a wheel past it. The number is ours, not Apple's.
+/// A wheel shows about 5 rows
 /// ([2019 HIG](https://web.archive.org/web/20190609215648/https://developer.apple.com/design/human-interface-guidelines/ios/controls/pickers/)),
-/// so a list that short gains nothing from one.
+/// so a shorter list gains nothing from one.
 const kCupertinoMenuPickerSmallItemCountThreshold = 5;
 
-/// Standard 216pt height for the Cupertino modal-popup wheel ([CupertinoPicker]).
+/// Past this many items Cupertino gives the list its own page instead of a wheel. Also ours: Apple's
+/// biggest wheel example, a list of countries, is about this long
+/// ([HIG pickers](https://developer.apple.com/design/human-interface-guidelines/pickers#Best-practices)).
+const kCupertinoMenuPickerLargeItemCountThreshold = 250;
+
+/// iOS's own wheel height.
 const _kCupertinoPickerModalHeight = 216.0;
 
-/// Standard item extent for the Cupertino modal-popup wheel.
+/// iOS's own row height on a wheel.
 const _kCupertinoPickerModalItemExtent = 32.0;
 
-/// [DropdownMenu] on Material. On Cupertino it depends on how many items there are: up to
-/// [kCupertinoMenuPickerSmallItemCountThreshold] get a [CupertinoMenuAnchor], more than that get a
-/// [CupertinoPicker] wheel in a popup.
+/// A [CupertinoListTile]'s own height at the normal text size.
+const _kCupertinoListRowHeight = 44.0;
+
+/// [DropdownMenu] on Material. On Cupertino it depends on how many items there are:
 ///
-/// Per-platform tuning lives in [materialMenuPickerData] / [cupertinoMenuPickerData]. Both offer an
-/// `.iconButton` constructor that shrinks the whole thing to a button showing just [leadingIcon], with
-/// [labelText] going unused.
+/// - up to [kCupertinoMenuPickerSmallItemCountThreshold], a [CupertinoMenuAnchor]
+/// - up to [kCupertinoMenuPickerLargeItemCountThreshold], a [CupertinoPicker] wheel in a popup
+/// - past that, a page of their own, like a list in iOS Settings
+///
+/// Both data records have an `.iconButton` constructor that shrinks the picker to its [leadingIcon].
 ///
 /// Guidelines: [M3 menus](https://m3.material.io/components/menus/guidelines),
 /// [HIG pickers](https://developer.apple.com/design/human-interface-guidelines/pickers#Best-practices).
@@ -60,15 +72,12 @@ class const PlatformMenuPicker<T extends Object>({
   final ValueChanged<T>? onSelected,
   MenuPickerItem Function(T choice)? menuPickerItemTransformer,
 
-  /// Material-branch overrides.
   final MaterialMenuPickerData? materialMenuPickerData,
-
-  /// Cupertino-branch overrides.
   final CupertinoMenuPickerData? cupertinoMenuPickerData,
   super.widgetKey,
   super.key,
 }) extends PlatformWidgetKeyedBase {
-  /// Turns each item into a [MenuPickerItem]. Left out, items just get `toString()`d.
+  /// Turns each item into a [MenuPickerItem]. Left out, items get `toString()`d.
   // A named param can't be private, so there's no getter to fall back on. Const construction still works.
   // ignore: avoid_field_initializers_in_const_classes
   final MenuPickerItem Function(T choice) menuPickerItemTransformer =
@@ -104,36 +113,45 @@ class const PlatformMenuPicker<T extends Object>({
         cupertinoMenuPickerData?.useIconButtonVariant ??
         kDefaultCupertinoMenuPickerUseIconButtonVariant;
 
-    return items.length <= kCupertinoMenuPickerSmallItemCountThreshold
-        ? _SmallItemCupertinoPicker(
-            items: items,
-            transformed: transformed,
-            selectedIndex: selectedIndex,
-            isEnabled: _canOpen,
-            useIconButton: useIconButton,
-            leadingIcon: leadingIcon,
-            labelText: labelText,
-            backgroundColor: cupertinoMenuPickerData?.backgroundColor,
-            onSelected: onSelected,
-          )
-        : _LargeItemCupertinoPicker(
-            items: items,
-            transformed: transformed,
-            selectedIndex: selectedIndex,
-            isEnabled: _canOpen,
-            useIconButton: useIconButton,
-            leadingIcon: leadingIcon,
-            labelText: labelText,
-            backgroundColor: cupertinoMenuPickerData?.backgroundColor,
-            onSelected: onSelected,
-          );
+    return switch (items.length) {
+      <= kCupertinoMenuPickerSmallItemCountThreshold => _CupertinoPickerMenu(
+        items: items,
+        transformed: transformed,
+        selectedIndex: selectedIndex,
+        isEnabled: _canOpen,
+        useIconButton: useIconButton,
+        leadingIcon: leadingIcon,
+        labelText: labelText,
+        backgroundColor: cupertinoMenuPickerData?.backgroundColor,
+        onSelected: onSelected,
+      ),
+      <= kCupertinoMenuPickerLargeItemCountThreshold => _CupertinoPickerWheel(
+        items: items,
+        transformed: transformed,
+        selectedIndex: selectedIndex,
+        isEnabled: _canOpen,
+        useIconButton: useIconButton,
+        leadingIcon: leadingIcon,
+        labelText: labelText,
+        backgroundColor: cupertinoMenuPickerData?.backgroundColor,
+        onSelected: onSelected,
+      ),
+      _ => _CupertinoPickerPage(
+        items: items,
+        transformed: transformed,
+        selectedIndex: selectedIndex,
+        isEnabled: _canOpen,
+        useIconButton: useIconButton,
+        leadingIcon: leadingIcon,
+        labelText: labelText,
+        backgroundColor: cupertinoMenuPickerData?.backgroundColor,
+        onSelected: onSelected,
+      ),
+    };
   }
 
-  /// Run once per build and shared across both branches, since an earlier version called the transformer
-  /// 3 times over.
-  List<MenuPickerItem> _transformedItems() => [
-    for (final item in items) menuPickerItemTransformer(item),
-  ];
+  List<MenuPickerItem> _transformedItems() =>
+      items.map(menuPickerItemTransformer).toList(growable: false);
 
   // An empty list shows as disabled on both, instead of opening on nothing.
   bool get _canOpen => isEnabled && items.isNotEmpty;
@@ -166,7 +184,7 @@ final class const _MaterialMenuPicker<T extends Object>({
 }
 
 final class _MaterialMenuPickerState<T extends Object>() extends State<_MaterialMenuPicker<T>> {
-  late final TextEditingController _text;
+  late final TextEditingController _controller;
 
   String get _selectedLabel {
     final selectedIndex = widget.selectedIndex;
@@ -179,7 +197,7 @@ final class _MaterialMenuPickerState<T extends Object>() extends State<_Material
   void initState() {
     super.initState();
 
-    _text = TextEditingController(text: _selectedLabel);
+    _controller = TextEditingController(text: _selectedLabel);
   }
 
   @override
@@ -191,19 +209,19 @@ final class _MaterialMenuPickerState<T extends Object>() extends State<_Material
 
   @override
   void dispose() {
-    _text.dispose();
+    _controller.dispose();
 
     super.dispose();
   }
 
   void _showSelected() {
     final label = _selectedLabel;
-    if (_text.text != label) _text.text = label;
+    if (_controller.text != label) _controller.text = label;
   }
 
   @override
   Widget build(BuildContext context) => DropdownMenu<T>(
-    controller: _text,
+    controller: _controller,
     expandedInsets: widget.data?.expandedInsets,
     showTrailingIcon: widget.data?.showTrailingIcon ?? kDefaultMaterialMenuPickerShowTrailingIcon,
     inputDecorationTheme: widget.data?.inputDecorationThemeData,
@@ -215,30 +233,31 @@ final class _MaterialMenuPickerState<T extends Object>() extends State<_Material
     // Finds the open row by value. The default matches labels, and two rows can share one.
     searchCallback: (_, _) => widget.selectedIndex,
     onSelected: (value) {
-      // Re-picking the current value changes nothing, so there's nothing to report.
+      // Re-picking the current value changes nothing.
       if (value != null && widget.items.indexOf(value) != widget.selectedIndex) {
         widget.onSelected?.call(value);
       }
-      // The dropdown writes the picked label in by itself. Undo that, so the field only moves when
-      // the app hands over a new value.
+      // The dropdown writes the pick into the field by itself. Put the app's value back, so only the
+      // app moves it.
       _showSelected();
     },
-    dropdownMenuEntries: [
-      for (var i = 0; i < widget.items.length; i++)
-        DropdownMenuEntry(
-          value: widget.items[i],
-          label: widget.transformed[i].label ?? '',
-          leadingIcon: widget.transformed[i].iconData == null
-              ? null
-              : Icon(widget.transformed[i].iconData),
-        ),
-    ],
+    dropdownMenuEntries: List.generate(
+      widget.items.length,
+      (index) => DropdownMenuEntry(
+        value: widget.items[index],
+        label: widget.transformed[index].label ?? '',
+        leadingIcon: widget.transformed[index].iconData == null
+            ? null
+            : Icon(widget.transformed[index].iconData),
+      ),
+      growable: false,
+    ),
   );
 }
 
-/// Cupertino rendering for ≤[kCupertinoMenuPickerSmallItemCountThreshold] items, a [CupertinoMenuAnchor]
-/// whose menu shows one [CupertinoMenuItem] per choice (each can carry an icon).
-final class const _SmallItemCupertinoPicker<T extends Object>({
+/// Up to [kCupertinoMenuPickerSmallItemCountThreshold] items, a [CupertinoMenuAnchor] whose menu shows
+/// one [CupertinoMenuItem] per choice.
+final class const _CupertinoPickerMenu<T extends Object>({
   required final List<T> items,
   required final List<MenuPickerItem> transformed,
   required final int? selectedIndex,
@@ -272,13 +291,14 @@ final class const _SmallItemCupertinoPicker<T extends Object>({
         trailing: index != selectedIndex ? null : const Icon(CupertinoIcons.check_mark),
         child: Text(transformed[index].label ?? ''),
       ),
+      growable: false,
     ),
   );
 }
 
-/// Cupertino rendering for >[kCupertinoMenuPickerSmallItemCountThreshold] items, a tappable field that
-/// opens a modal-popup [CupertinoPicker] wheel.
-final class const _LargeItemCupertinoPicker<T extends Object>({
+/// Up to [kCupertinoMenuPickerLargeItemCountThreshold] items, a field that opens a [CupertinoPicker]
+/// wheel in a popup.
+final class const _CupertinoPickerWheel<T extends Object>({
   required final List<T> items,
   required final List<MenuPickerItem> transformed,
   required final int? selectedIndex,
@@ -309,7 +329,7 @@ final class const _LargeItemCupertinoPicker<T extends Object>({
         builder: (context) => Container(
           height: _kCupertinoPickerModalHeight,
           padding: const EdgeInsets.only(top: 6),
-          // Bottom margin aligns the popup above the system navigation bar.
+          // Keeps the wheel above the keyboard, if one's up.
           margin: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
           color: CupertinoColors.systemBackground.resolveFrom(context),
           child: SafeArea(
@@ -340,8 +360,80 @@ final class const _LargeItemCupertinoPicker<T extends Object>({
   );
 }
 
-/// The clickable field rendered in the Cupertino branch, either a [CupertinoButton] (icon-button variant)
-/// or a [CupertinoListTile] (standard variant) showing the current selection.
+/// Past [kCupertinoMenuPickerLargeItemCountThreshold] items, a field that pushes a page listing them all.
+final class const _CupertinoPickerPage<T extends Object>({
+  required final List<T> items,
+  required final List<MenuPickerItem> transformed,
+  required final int? selectedIndex,
+  required final bool isEnabled,
+  required final bool useIconButton,
+  required final Widget? leadingIcon,
+  required final String? labelText,
+  required final Color? backgroundColor,
+  required final ValueChanged<T>? onSelected,
+}) extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => _CupertinoPickerField(
+    selectedIndex: selectedIndex,
+    transformed: transformed,
+    labelText: labelText,
+    leadingIcon: leadingIcon,
+    backgroundColor: backgroundColor,
+    isEnabled: isEnabled,
+    useIconButton: useIconButton,
+    onTap: () async {
+      // One height for every row, grown with the text, so the page can work out where a row sits.
+      final rowHeight = MediaQuery.textScalerOf(context).scale(_kCupertinoListRowHeight);
+      final list = ScrollController();
+      // Opens on the current row once the page has laid out and knows where its end is. Starting
+      // further down instead overshoots the end, and the list bounces back.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (list.hasClients) {
+          list.jumpTo(min((selectedIndex ?? 0) * rowHeight, list.position.maxScrollExtent));
+        }
+      });
+
+      final picked = await Navigator.of(context).push(
+        CupertinoPageRoute<int>(
+          builder: (context) => CupertinoPageScaffold(
+            // ignore: prefer-define-hero-tag, the default tag slides this bar out of the one underneath, like any iOS push.
+            navigationBar: CupertinoNavigationBar(
+              middle: labelText == null ? null : Text(labelText!),
+            ),
+            child: ListView.builder(
+              controller: list,
+              itemExtent: rowHeight,
+              itemCount: items.length,
+              itemBuilder: (context, index) => DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: CupertinoColors.separator.resolveFrom(context),
+                      width: 0,
+                    ),
+                  ),
+                ),
+                child: CupertinoListTile(
+                  leading: transformed[index].iconData == null
+                      ? null
+                      : Icon(transformed[index].iconData),
+                  title: Text(transformed[index].label ?? ''),
+                  trailing: index != selectedIndex ? null : const Icon(CupertinoIcons.check_mark),
+                  onTap: () => Navigator.of(context).pop(index),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      list.dispose();
+
+      if (picked != null && picked != selectedIndex) onSelected?.call(items[picked]);
+    },
+  );
+}
+
+/// What each Cupertino look shows until tapped: a row with the current value, or only the icon.
 final class const _CupertinoPickerField({
   required final int? selectedIndex,
   required final List<MenuPickerItem> transformed,

@@ -3,11 +3,8 @@ import 'package:pmvvm/pmvvm.dart';
 
 import '/features/catalog/data/enums/menu_picker_length.dart';
 
-/// State for the Selection-controls demo.
-///
-/// The checkbox, switch and slider each back their own playground. The segmented button, radio group
-/// and menu picker instead all read and write [selectedDirection], so moving any of them moves the other
-/// 2, which is the point of that section.
+/// State for the Selection controls demo. Its segmented button, radio group and first menu picker
+/// share [selectedDirection], so moving one moves the others.
 final class SelectionDemoViewModel extends ViewModel {
   var _checkboxValue = true;
   var _shouldEnableCheckbox = true;

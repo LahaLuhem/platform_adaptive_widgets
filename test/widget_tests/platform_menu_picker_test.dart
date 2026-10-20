@@ -12,7 +12,7 @@ import '../support/support.dart';
 const _icon = Icons.star;
 const _leadingIcon = Icons.sort;
 
-// Material's field only takes typing on desktop, so that's where it could show text that isn't an item.
+// Desktop is where Material's field takes typing.
 const _materialDesktop = TargetPlatformVariant({TargetPlatform.windows, TargetPlatform.linux});
 
 String _label(int item) => 'Item $item';
@@ -46,8 +46,8 @@ class const _Picker({
 Future<void> _pump(WidgetTester tester, _Picker picker) =>
     pumpInPlatformScaffold(tester, Center(child: picker));
 
-// The icon shows in every style. Material lays out a hidden copy too, in the same spot, and a
-// disabled field lets taps through, so this taps a place rather than a widget.
+// Taps the icon's spot, not the widget: Material keeps a hidden copy of it, and a disabled field
+// can't be hit.
 Future<void> _open(WidgetTester tester) async {
   await tester.tapAt(tester.getCenter(find.byIcon(_leadingIcon).first));
   await tester.pumpAndSettle();
@@ -61,8 +61,8 @@ Future<void> _tapOutside(WidgetTester tester) async {
 // An open list of choices is a scroll view, whatever the look. The wheel's is a subclass.
 int _scrollViews() => find.byWidgetPredicate((widget) => widget is Scrollable).evaluate().length;
 
-// The dropdown keeps a hidden copy of its rows to measure itself, which nothing can hit, and the rows
-// of an open list sit in a scroll view. What's left is the field.
+// Skips the open list's rows, which sit in a scroll view, and the dropdown's hidden copy, which
+// nothing can hit.
 bool _fieldShows(String label) =>
     find.text(label).hitTestable().evaluate().any((text) => Scrollable.maybeOf(text) == null);
 
@@ -232,24 +232,28 @@ void main() {
       check(picked).isEmpty();
     });
 
-    scenarioWidgets('reports nothing when the current value is picked again', (tester) async {
-      final picked = <int>[];
-      await _pump(tester, _Picker(count: 4, current: 2, onSelected: picked.add));
-      final closed = _scrollViews();
+    scenarioOutlineWidgets<int>(
+      'reports nothing when the current value is picked again',
+      examples: {'from a menu': 4, 'from a page of its own': 300},
+      outline: (tester, count) async {
+        final picked = <int>[];
+        await _pump(tester, _Picker(count: count, current: 2, onSelected: picked.add));
+        final closed = _scrollViews();
 
-      await _open(tester);
-      // The field shows the value too, so tap its row in the open list.
-      await tester.tap(
-        find.descendant(
-          of: find.byWidgetPredicate((widget) => widget is Scrollable),
-          matching: find.text(_label(2)),
-        ),
-      );
-      await tester.pumpAndSettle();
+        await _open(tester);
+        // The field shows the value too, so tap its row in the open list.
+        await tester.tap(
+          find.descendant(
+            of: find.byWidgetPredicate((widget) => widget is Scrollable),
+            matching: find.text(_label(2)),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      check(_scrollViews()).equals(closed);
-      check(picked).isEmpty();
-    });
+        check(_scrollViews()).equals(closed);
+        check(picked).isEmpty();
+      },
+    );
 
     scenarioOutlineWidgets<int?>(
       "picks the wheel's top row when closed",

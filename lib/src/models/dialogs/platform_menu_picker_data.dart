@@ -7,16 +7,13 @@ library;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show InputBorder, InputDecorationThemeData;
 
-/// Default value for [MaterialMenuPickerData.showTrailingIcon]. Matches upstream `DropdownMenu`'s default
-/// of showing a chevron at the trailing edge.
+/// Matches `DropdownMenu`'s own default.
 const kDefaultMaterialMenuPickerShowTrailingIcon = true;
 
-/// Default value for [CupertinoMenuPickerData.useIconButtonVariant]. The default full-width field variant
-/// is the common case. The icon-button variant is opt-in via the `.iconButton` named ctor.
+/// Off, so the full-width field is what you get unless you ask for `.iconButton`.
 const kDefaultCupertinoMenuPickerUseIconButtonVariant = false;
 
-/// Material-side settings for [PlatformMenuPicker], passed as `materialMenuPickerData`. The content
-/// slots stay flat on the widget, and this is for tweaking how the `DropdownMenu` looks and behaves.
+/// Material-only settings for [PlatformMenuPicker]'s `DropdownMenu`.
 final class MaterialMenuPickerData {
   /// Only read when the dropdown lays out full-width.
   final EdgeInsetsGeometry? expandedInsets;
@@ -34,10 +31,7 @@ final class MaterialMenuPickerData {
     this.inputDecorationThemeData,
   });
 
-  /// Creates Material-side settings that shrink the picker to a 24x24 icon button, by dropping the chevron
-  /// and tightening the input decoration.
-  ///
-  /// The icon comes from the widget's flat [PlatformMenuPicker.leadingIcon]. `labelText` goes unused.
+  /// Shrinks the picker to a 24-wide button showing [PlatformMenuPicker.leadingIcon].
   const new iconButton({this.expandedInsets})
     : showTrailingIcon = false,
       inputDecorationThemeData = const InputDecorationThemeData(
@@ -47,9 +41,9 @@ final class MaterialMenuPickerData {
       );
 }
 
-/// Cupertino-side settings for [PlatformMenuPicker], passed as `cupertinoMenuPickerData`.
+/// Cupertino-only settings for [PlatformMenuPicker].
 final class CupertinoMenuPickerData {
-  /// Behind the picker UI.
+  /// Behind the field.
   final Color? backgroundColor;
 
   /// Shrinks the picker to an icon button. The `.iconButton` constructor turns it on.
@@ -59,10 +53,7 @@ final class CupertinoMenuPickerData {
   const new({this.backgroundColor})
     : useIconButtonVariant = kDefaultCupertinoMenuPickerUseIconButtonVariant;
 
-  /// Creates Cupertino-side settings that swap the `CupertinoListTile` field for a compact `CupertinoButton`
-  /// holding just the icon.
-  ///
-  /// The icon comes from the widget's flat [PlatformMenuPicker.leadingIcon]. `labelText` goes unused.
+  /// Shrinks the picker to a button showing [PlatformMenuPicker.leadingIcon].
   const new iconButton({this.backgroundColor}) : useIconButtonVariant = true;
 }
 
