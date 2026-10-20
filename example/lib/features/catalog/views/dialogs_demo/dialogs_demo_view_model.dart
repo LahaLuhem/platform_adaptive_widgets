@@ -175,7 +175,7 @@ final class DialogsDemoViewModel extends ViewModel {
           builder: (_) => const SafeArea(
             child: Padding(
               padding: .all(24),
-              child: Text('A raw bottom sheet, the package adds no surface on iOS.'),
+              child: Text('A raw bottom sheet, the package adds no surface on Cupertino.'),
             ),
           ),
         )
@@ -185,8 +185,8 @@ final class DialogsDemoViewModel extends ViewModel {
             child: Padding(
               padding: .all(24),
               child: Text(
-                'A modal bottom sheet, a Material sheet on Android, an action-sheet-style '
-                'popup on iOS.',
+                'A modal bottom sheet, a Material sheet, or an action-sheet-style '
+                'popup on Cupertino.',
               ),
             ),
           ),

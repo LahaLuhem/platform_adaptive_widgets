@@ -12,7 +12,7 @@ import 'package:material_ui/material_ui.dart';
 import '/src/models/interaction/platform_text_field_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// Material [TextField] on Android, [CupertinoTextField] on iOS.
+/// [TextField] on Material, [CupertinoTextField] on Cupertino.
 ///
 /// [hintText], [prefix] and [suffix] sit flat on the widget rather than behind a data record, since
 /// those 3 come up constantly and routing them through per-platform records is the boilerplate this
@@ -27,13 +27,13 @@ import '/src/models/platform_widget_base.dart';
 /// {@example /example/lib/snippets/interaction/platform_text_field.dart#platform_text_field}
 class const PlatformTextField({
   // ---- Common content slots (flat shared) ----------------------------------
-  /// Shown while the field is empty. iOS calls it the placeholder.
+  /// Shown while the field is empty. Cupertino calls it the placeholder.
   final String? hintText,
 
-  /// Sits before the input, usually an icon. iOS keeps it visible at all times by default.
+  /// Sits before the input, usually an icon. Cupertino keeps it visible at all times by default.
   final Widget? prefix,
 
-  /// Sits after the input, usually an icon. iOS keeps it visible at all times by default.
+  /// Sits after the input, usually an icon. Cupertino keeps it visible at all times by default.
   final Widget? suffix,
 
   // ---- Controllers / focus / state -----------------------------------------

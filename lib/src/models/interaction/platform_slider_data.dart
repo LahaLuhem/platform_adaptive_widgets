@@ -26,8 +26,8 @@ abstract class const _PlatformSliderData({
   /// Colours the filled part of the track, not the thumb.
   final Color? activeColor,
 
-  /// [Slider.thumbColor] on Android falls through to the theme when `null`. [CupertinoSlider.thumbColor]
-  /// can't be null, so iOS swaps in [kDefaultCupertinoSliderThumbColor]. See `APPENDIX.md#cross-platform-field-mappings`.
+  /// [Slider.thumbColor] on Material falls through to the theme when `null`. [CupertinoSlider.thumbColor]
+  /// can't be null, so Cupertino swaps in [kDefaultCupertinoSliderThumbColor]. See `APPENDIX.md#cross-platform-field-mappings`.
   final Color? thumbColor,
 });
 
@@ -75,7 +75,7 @@ final class const MaterialSliderData({
 /// Cupertino-side settings for [PlatformSlider], passed as `cupertinoSliderData`.
 ///
 /// Looks empty because [CupertinoSlider] has nothing of its own beyond the shared fields. It's here
-/// so you can retune [activeColor] / [thumbColor] on iOS without touching Android.
+/// so you can retune [activeColor] / [thumbColor] on Cupertino without touching Material.
 final class const CupertinoSliderData({super.activeColor, super.thumbColor})
     extends _PlatformSliderData {
   /// Creates Cupertino-side settings for [PlatformSlider].

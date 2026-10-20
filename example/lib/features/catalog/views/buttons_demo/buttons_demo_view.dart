@@ -12,8 +12,8 @@ import '/features/catalog/widgets/property_editor/enum_knob.dart';
 import '/features/catalog/widgets/property_editor/property_editor.dart';
 import 'buttons_demo_view_model.dart';
 
-/// A live `PlatformButton` playground. Only iOS gets a platform panel here, since Material puts its
-/// whole surface behind `ButtonStyle` and there are no individual fields to knob.
+/// A live `PlatformButton` playground. Only Cupertino gets a platform panel here, since Material puts
+/// its whole surface behind `ButtonStyle` and there are no individual fields to knob.
 class ButtonsDemoView extends StatelessWidget {
   const ButtonsDemoView({super.key});
 
@@ -34,7 +34,7 @@ class ButtonsDemoView extends StatelessWidget {
         children: [
           DemoCard(
             title: 'PlatformButton',
-            description: 'Material variants on Android · Cupertino variants on iOS.',
+            description: 'Material or Cupertino variants, whichever look is showing.',
             child: PropertyEditor(
               preview: viewModel.shouldUseIcon
                   ? PlatformButton.icon(

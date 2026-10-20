@@ -14,7 +14,7 @@ abstract class const _PlatformProgressBarData({final Color? color});
 
 /// Material-side settings for [PlatformProgressBar], passed as `materialProgressBarData`. The inherited
 /// [color] overrides the widget's flat one on this branch. The rest has no Cupertino counterpart, since
-/// iOS's bar draws a fixed track.
+/// Cupertino's bar draws a fixed track.
 final class const MaterialProgressBarData({
   super.color,
 

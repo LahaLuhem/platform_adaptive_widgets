@@ -34,9 +34,9 @@ final class const TabDestination({
 /// themselves (selected index, destinations, callbacks, body builder) stay flat on [PlatformTabScaffold].
 ///
 /// `appBar` survives the trim, which makes this lopsided on purpose. Material is happy to put one persistent
-/// bar above every tab, iOS is not: its HIG gives each tab its own navigation stack and nav bar, and
-/// `CupertinoTabScaffold` has no top-bar slot at all. So there's no Cupertino twin of this class. For
-/// something that looks right on both, leave `appBar` alone and give each tab its own [PlatformScaffold]
+/// bar above every tab, Cupertino is not: Apple's HIG gives each tab its own navigation stack and nav
+/// bar, and `CupertinoTabScaffold` has no top-bar slot at all. So there's no Cupertino twin of this
+/// class. For something that looks right on both, leave `appBar` alone and give each tab its own [PlatformScaffold]
 /// and [PlatformAppBar].
 ///
 /// `bottomNavigationBar` doesn't survive it. The tab scaffold builds the `NavigationBar` itself, so

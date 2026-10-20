@@ -22,8 +22,8 @@ abstract class const _PlatformRadioData({
 
   final MouseCursor? mouseCursor,
 
-  /// [Radio.fillColor] on Android, which takes the [WidgetStateProperty] as-is. iOS resolves it down
-  /// to one [Color] first. See `APPENDIX.md#cross-platform-field-mappings`.
+  /// [Radio.fillColor] on Material, which takes the [WidgetStateProperty] as-is. Cupertino resolves
+  /// it down to one [Color] first. See `APPENDIX.md#cross-platform-field-mappings`.
   final WidgetStateProperty<Color?>? fillColor,
 });
 

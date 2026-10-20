@@ -6,7 +6,7 @@ import 'package:material_ui/material_ui.dart' show Checkbox;
 import '/src/models/interaction/platform_checkbox_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// Material [Checkbox] on Android, [CupertinoCheckbox] on iOS.
+/// [Checkbox] on Material, [CupertinoCheckbox] on Cupertino.
 ///
 /// The default constructor covers the ordinary ticked-or-not case, with a non-null `bool` going in and
 /// coming back. Both platforms also do an indeterminate third state, and that's [PlatformCheckbox.tristate],

@@ -7,7 +7,7 @@ import 'package:material_ui/material_ui.dart' show Switch;
 import '/src/models/interaction/platform_switch_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// Material [Switch] on Android, [CupertinoSwitch] on iOS.
+/// [Switch] on Material, [CupertinoSwitch] on Cupertino.
 ///
 /// Per-platform tuning lives in [materialSwitchData] / [cupertinoSwitchData]. See `APPENDIX.md#field-classification`,
 /// and `APPENDIX.md#cross-platform-field-mappings` where a field's name here doesn't match the one underneath.
@@ -33,8 +33,8 @@ class const PlatformSwitch({
 
   final bool autofocus = false,
 
-  /// iOS calls this [CupertinoSwitch.thumbColor], which despite the plain name only covers the switched-on
-  /// thumb. See `APPENDIX.md#cross-platform-field-mappings`.
+  /// Cupertino calls this [CupertinoSwitch.thumbColor], which despite the plain name only covers the
+  /// switched-on thumb. See `APPENDIX.md#cross-platform-field-mappings`.
   final Color? activeThumbColor,
 
   final Color? activeTrackColor,
@@ -59,7 +59,8 @@ class const PlatformSwitch({
 
   final WidgetStateProperty<Icon?>? thumbIcon,
 
-  /// iOS takes the property as-is. Android wants one [MouseCursor] and gets a resolved copy. See `APPENDIX.md#cross-platform-field-mappings`.
+  /// Cupertino takes the property as-is. Material wants one [MouseCursor] and gets a resolved copy.
+  /// See `APPENDIX.md#cross-platform-field-mappings`.
   final WidgetStateProperty<MouseCursor>? mouseCursor,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.

@@ -11,11 +11,11 @@ import 'platform_dialog.dart';
 /// Default value for [showPlatformAcknowledge]'s `okLabel`. Override it to localise.
 const kDefaultPlatformAcknowledgeOkLabel = 'OK';
 
-/// Shows an alert with one OK button, [AlertDialog] on Android and [CupertinoAlertDialog] on iOS. The
-/// returned future completes once it's dismissed.
+/// Shows an alert with one OK button, [AlertDialog] on Material and [CupertinoAlertDialog] on Cupertino.
+/// The returned future completes once it's dismissed.
 ///
 /// For anything the app shouldn't continue past until it's been seen: errors, irreversible confirmations.
-/// Routine feedback wants `showPlatformToast` instead, or on iOS, showing the change itself.
+/// Routine feedback wants `showPlatformToast` instead, or on Cupertino, showing the change itself.
 ///
 /// A thin wrapper over [showPlatformAlertDialog], so the same data classes and flat args apply.
 ///

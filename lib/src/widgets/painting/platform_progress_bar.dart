@@ -11,10 +11,10 @@ import 'package:material_ui/material_ui.dart' show LinearProgressIndicator;
 import '/src/models/painting/platform_progress_bar_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// Shows how far along a task is, as a bar: Material [LinearProgressIndicator] on Android,
-/// [CupertinoLinearActivityIndicator] on iOS. For work with no known end, use [PlatformProgressIndicator].
+/// Shows how far along a task is, as a bar: [LinearProgressIndicator] on Material,
+/// [CupertinoLinearActivityIndicator] on Cupertino. For work with no known end, use [PlatformProgressIndicator].
 ///
-/// A bar on both platforms, since iOS draws known progress only as a bar
+/// A bar on both platforms, since Cupertino draws known progress only as a bar
 /// ([HIG](https://developer.apple.com/design/human-interface-guidelines/progress-indicators#Best-practices)).
 /// It spans its parent's width, so inside a [Row] it wants an [Expanded].
 ///
@@ -69,7 +69,7 @@ class const PlatformProgressBar({
   @visibleForOverriding
   Widget buildCupertino(BuildContext context) => Semantics(
     // cupertino_ui's bar has no semantics of its own. Flutter wants the role's 0 to 100 range, but
-    // iOS doesn't read it out, so the percent goes into the value too.
+    // Cupertino doesn't read it out, so the percent goes into the value too.
     label: semanticsLabel,
     value: semanticsValue ?? '${(value * 100).round()}%',
     minValue: '0',

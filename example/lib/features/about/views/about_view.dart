@@ -50,7 +50,7 @@ class AboutView extends StatelessWidget {
                   style: TextStyle(fontSize: 20, fontWeight: .bold),
                 ),
                 const Text(
-                  'One widget tree. Material on Android, Cupertino on iOS, no app-code branching.',
+                  'One widget tree. Cupertino on iOS and macOS, Material elsewhere, no app-code branching.',
                   textAlign: .center,
                 ),
               ],

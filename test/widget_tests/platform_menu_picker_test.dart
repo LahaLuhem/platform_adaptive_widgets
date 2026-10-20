@@ -10,7 +10,7 @@ void main() {
     // Apple's HIG wants at least 3 choices before a pull-down menu earns its place, so the
     // Cupertino small-item path guards it. Material has no such rule.
     scenarioOutlineWidgets<int>(
-      'iOS refuses fewer than 3 items',
+      'Cupertino refuses fewer than 3 items',
       examples: {'1 item': 1, '2 items': 2},
       outline: (tester, itemCount) async {
         await pumpInPlatformScaffold(tester, PlatformMenuPicker<int>(items: _items(itemCount)));
@@ -24,7 +24,7 @@ void main() {
     );
 
     scenarioOutlineWidgets<int>(
-      'Android takes any count',
+      'Material takes any count',
       examples: {'1 item': 1, '2 items': 2},
       outline: (tester, itemCount) async {
         await pumpInPlatformScaffold(tester, PlatformMenuPicker<int>(items: _items(itemCount)));

@@ -46,12 +46,12 @@ const kDefaultCupertinoModalPopupBarrierDismissible = true;
 const kDefaultCupertinoModalPopupSemanticsDismissible = false;
 
 /// Material-side settings for `showPlatformModalBottomSheet`, passed as `materialModalBottomSheetData`.
-/// None of it reaches iOS, where `showCupertinoModalPopup` is a far plainer thing with its own fields
-/// on [CupertinoModalPopupData].
+/// None of it reaches Cupertino, where `showCupertinoModalPopup` is a far plainer thing with its own
+/// fields on [CupertinoModalPopupData].
 ///
 /// Dismissing is 2 separate ideas here and one over there, so set them per platform. [isDismissible]
 /// covers tapping outside or swiping down, [enableDrag] covers dragging the sheet to resize or throw
-/// it away, and iOS only has [CupertinoModalPopupData.barrierDismissible] for the tap.
+/// it away, and Cupertino only has [CupertinoModalPopupData.barrierDismissible] for the tap.
 final class const MaterialModalBottomSheetData({
   final Color? backgroundColor,
 

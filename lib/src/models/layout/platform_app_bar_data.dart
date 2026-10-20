@@ -12,15 +12,16 @@ import 'package:flutter/widgets.dart';
 // one can't carry the dartdoc public_member_api_docs then demands.
 // ignore: use_primary_constructors
 abstract class PlatformAppBarData {
-  /// Builds the Android bar.
+  /// Builds the Material bar.
   PreferredSizeWidget materialBuilder(BuildContext context);
 
-  /// Builds the iOS bar.
+  /// Builds the Cupertino bar.
   ObstructingPreferredSizeWidget cupertinoBuilder(BuildContext context);
 }
 
 /// Shared-visual base for the 2 app-bar records, holding the one property worth varying per platform.
-/// iOS nav bars lean translucent and Android app bars opaque, so a single colour rarely suits both.
+/// Cupertino nav bars lean translucent and Material app bars opaque, so a single colour rarely suits
+/// both.
 ///
 /// Everything else (title, leading, bottom, `automaticallyImplyLeading`, widgetKey) stays flat on `PlatformAppBar`.
 /// Private, never exported.
@@ -34,7 +35,7 @@ final class const MaterialAppBarData({
   final List<Widget>? actions,
 
   /// Lets the framework guess at actions while [actions] is empty. Set [actions] and this stops mattering.
-  /// iOS has no actions list at all.
+  /// Cupertino has no actions list at all.
   final bool automaticallyImplyActions = kAutomaticallyImplyActions,
 
   /// Sits behind the toolbar and tab bar.
@@ -132,8 +133,8 @@ final class const MaterialAppBarData({
 final class const CupertinoNavigationBarData({
   super.backgroundColor,
 
-  /// Swaps the centred bar for iOS's tall left-aligned one. Android has no such thing and ignores it.
-  /// Turn it on and `PlatformAppBar.title` becomes the large title, with [automaticallyImplyMiddle]
+  /// Swaps the centred bar for Cupertino's tall left-aligned one. Material has no such thing and ignores
+  /// it. Turn it on and `PlatformAppBar.title` becomes the large title, with [automaticallyImplyMiddle]
   /// driving the small one that appears on scroll.
   final bool large = kLarge,
 

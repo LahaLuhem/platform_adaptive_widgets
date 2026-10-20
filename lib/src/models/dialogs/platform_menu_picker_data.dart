@@ -53,8 +53,8 @@ final class MaterialMenuPickerData {
 
 /// Cupertino-side settings for [PlatformMenuPicker], passed as `cupertinoMenuPickerData`.
 ///
-/// What iOS draws depends on how many items there are. 5 or fewer get a [CupertinoMenuAnchor], more
-/// than that get a [CupertinoPicker] wheel in a modal popup, which is what Apple's HIG asks for.
+/// What Cupertino draws depends on how many items there are. 5 or fewer get a [CupertinoMenuAnchor],
+/// more than that get a [CupertinoPicker] wheel in a modal popup, which is what Apple's HIG asks for.
 final class CupertinoMenuPickerData {
   /// Behind the picker UI.
   final Color? backgroundColor;
@@ -75,12 +75,12 @@ final class CupertinoMenuPickerData {
 
 /// One entry in the picker's list, built by [PlatformMenuPicker.menuPickerItemTransformer].
 ///
-/// Past 5 items iOS switches to a wheel, and [CupertinoPicker] draws no per-item icons, so [iconData]
+/// Past 5 items Cupertino switches to a wheel, and [CupertinoPicker] draws no per-item icons, so [iconData]
 /// quietly stops showing there. That threshold is Apple's, see <https://developer.apple.com/design/human-interface-guidelines/pickers#Best-practices>.
 final class const MenuPickerItem({
   final String? label,
 
-  /// Dropped on iOS once the list passes 5 items. See above.
+  /// Dropped on Cupertino once the list passes 5 items. See above.
   final IconData? iconData,
 }) {
   /// Creates a menu picker item.

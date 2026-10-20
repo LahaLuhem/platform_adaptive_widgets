@@ -20,10 +20,10 @@ const kDefaultMaterialTimePickerInitialEntryMode = TimePickerEntryMode.dial;
 const kDefaultMaterialTimePickerEmptyInitialInput = false;
 
 /// Material-side settings for `showPlatformTimePicker`, passed as `materialTimePickerData`. None of
-/// it reaches iOS, which spins a wheel where Material offers a dial or typed input.
+/// it reaches Cupertino, which spins a wheel where Material offers a dial or typed input.
 ///
-/// There's no Cupertino twin of this class. iOS draws its time picker with the same widget as its date
-/// picker, so that side shares `CupertinoDatePickerData` next door.
+/// There's no Cupertino twin of this class. That side draws its time picker with the same widget as
+/// its date picker, so it shares `CupertinoDatePickerData` next door.
 final class const MaterialTimePickerData({
   final String? barrierLabel,
 

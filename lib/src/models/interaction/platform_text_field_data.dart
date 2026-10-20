@@ -80,8 +80,8 @@ final class const MaterialTextFieldData({
 /// here has no Material counterpart at all, which Material folds into [InputDecoration] on [MaterialTextFieldData].
 ///
 /// The everyday slots stay flat on the widget: [PlatformTextField.hintText], `prefix` and `suffix`.
-/// [placeholder], [prefix] and [suffix] here are for when iOS wants something different, shorter copy
-/// say, and they beat the flat ones when set.
+/// [placeholder], [prefix] and [suffix] here are for when Cupertino wants something different, shorter
+/// copy say, and they beat the flat ones when set.
 final class const CupertinoTextFieldData({
   /// Left out, you get Cupertino's rounded rectangle border.
   final BoxDecoration? decoration,
@@ -95,7 +95,7 @@ final class const CupertinoTextFieldData({
 
   final EdgeInsetsGeometry padding = kDefaultCupertinoTextFieldPadding,
 
-  /// iOS's name for the hint text.
+  /// Cupertino's name for the hint text.
   final String? placeholder,
 
   final TextStyle? placeholderStyle,

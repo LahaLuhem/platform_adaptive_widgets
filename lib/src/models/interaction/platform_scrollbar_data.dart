@@ -43,7 +43,7 @@ final class const MaterialScrollbarData({
 /// Cupertino-side settings for [PlatformScrollbar], passed as `cupertinoScrollbarData`. Everything declared
 /// here has no Material counterpart at all.
 ///
-/// The inherited fields come in already set to iOS-idiomatic values, taken straight off [CupertinoScrollbar.defaultThickness]
+/// The inherited fields come in already set to Cupertino-idiomatic values, taken straight off [CupertinoScrollbar.defaultThickness]
 /// and friends so an upstream change carries over on its own.
 final class const CupertinoScrollbarData({
   super.thickness = CupertinoScrollbar.defaultThickness,

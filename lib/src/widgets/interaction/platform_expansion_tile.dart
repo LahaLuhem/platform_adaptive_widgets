@@ -6,15 +6,15 @@ import 'package:material_ui/material_ui.dart' show ExpansionTile;
 import '/src/models/interaction/platform_expansion_tile_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// Material [ExpansionTile] on Android, [CupertinoExpansionTile] on iOS.
+/// [ExpansionTile] on Material, [CupertinoExpansionTile] on Cupertino.
 ///
 /// One child, not a list of them, because [CupertinoExpansionTile] takes exactly one. Wrap it in a `Column`
 /// yourself for Material's multi-child look. Per-platform tuning lives in [materialExpansionTileData]
 /// / [cupertinoExpansionTileData]. See `APPENDIX.md#field-classification`.
 ///
-/// No `isEnabled` here either, since iOS has no disabled state for this. Material's `enabled` sits on
-/// [MaterialExpansionTileData], and on iOS an [IgnorePointer] does the job, with an [Opacity] if you
-/// want it to look the part too.
+/// No `isEnabled` here either, since Cupertino has no disabled state for this. Material's `enabled`
+/// sits on [MaterialExpansionTileData], and on Cupertino an [IgnorePointer] does the job, with an [Opacity]
+/// if you want it to look the part too.
 ///
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_expansion_tile.dart#platform_expansion_tile}

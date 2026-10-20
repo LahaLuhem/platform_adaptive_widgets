@@ -19,7 +19,7 @@ void main() {
         );
 
         // Material's NavigationBar is the half that needs 2. Without this guard a single tab
-        // renders fine on iOS and only blows up when someone runs it on Android.
+        // renders fine on Cupertino and only blows up on Material.
         check(tester.takeException())
             .isA<AssertionError>()
             .has((error) => '${error.message}', 'message')

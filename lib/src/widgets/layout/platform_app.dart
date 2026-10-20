@@ -10,7 +10,7 @@ import 'package:material_ui/material_ui.dart' show MaterialApp;
 import '/src/models/layout/platform_app_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// [MaterialApp] on Android, [CupertinoApp] on iOS.
+/// [MaterialApp] on Material, [CupertinoApp] on Cupertino.
 ///
 /// Almost everything an app takes is the same on both platforms, so it all sits flat here. The theme
 /// is the exception, [ThemeData] and [CupertinoThemeData] having nothing in common, and lives on [materialAppData]

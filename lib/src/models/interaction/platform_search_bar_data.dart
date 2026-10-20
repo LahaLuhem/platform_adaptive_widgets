@@ -76,7 +76,7 @@ const kDefaultCupertinoSearchBarCursorOpacityAnimates = true;
 
 /// Material-side settings for [PlatformSearchBar], passed as `materialSearchBarData`.
 ///
-/// Nothing here is shared, because even where iOS has the same idea it has a different type. Material
+/// Nothing here is shared, because even where Cupertino has the same idea it has a different type. Material
 /// keys these off [WidgetState] and Cupertino takes a plain value, and flattening one into the other
 /// would throw away the hover, pressed and focused tints. See `APPENDIX.md#cross-platform-field-mappings`.
 final class const MaterialSearchBarData({
@@ -101,13 +101,13 @@ final class const MaterialSearchBarData({
 
   final WidgetStateProperty<OutlinedBorder?>? shape,
 
-  /// iOS's flat twin is [CupertinoSearchBarData.padding].
+  /// Cupertino's flat twin is [CupertinoSearchBarData.padding].
   final WidgetStateProperty<EdgeInsetsGeometry?>? padding,
 
-  /// iOS's flat twin is [CupertinoSearchBarData.style].
+  /// Cupertino's flat twin is [CupertinoSearchBarData.style].
   final WidgetStateProperty<TextStyle?>? textStyle,
 
-  /// iOS's flat twin is [CupertinoSearchBarData.placeholderStyle].
+  /// Cupertino's flat twin is [CupertinoSearchBarData.placeholderStyle].
   final WidgetStateProperty<TextStyle?>? hintStyle,
 
   final TextCapitalization? textCapitalization,

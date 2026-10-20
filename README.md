@@ -10,8 +10,8 @@
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/LahaLuhem/platform_adaptive_widgets.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/pulls)
 [![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/LahaLuhem/platform_adaptive_widgets.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/pulls?q=is%3Apr+is%3Aclosed)
 
-One set of widgets that feels native on both phones, **Material** on Android, **Cupertino** on
-iOS, without a single `Platform.isIOS` check in your own code.
+One set of widgets that feels native everywhere, **Cupertino** on iOS and macOS, **Material** on
+everything else, without a single `Platform.isIOS` check in your own code.
 
 You write `PlatformButton` once. Android users get a real Material button, iOS users get a real
 `CupertinoButton`, and neither group feels like they wandered into the other platform's app. When a
@@ -35,7 +35,6 @@ for one.
       + [Other Extensions](#other-extensions)
       + [Models](#models)
 - [Customizing per platform](#customizing-per-platform)
-   * [Base Classes](#base-classes)
 - [Compile-time platform pruning, verified](#compile-time-platform-pruning-verified)
 - [Coming from flutter_platform_widgets?](#coming-from-flutter_platform_widgets)
 - [Contributing](#contributing)
@@ -283,35 +282,23 @@ widget, measured). Prefer an inline `switch (designLanguage)` when an arm builds
 The mental model is short. Whatever both platforms share, your callbacks, values, controllers, plus
 the odd visual that genuinely means the same thing on each side (a tint color, say), lives right on
 the widget, so there's one source of truth and nothing to keep in sync. Whatever is truly
-platform-specific lives in optional typed records: hand a `MaterialXxxData` to the Android branch, a
-`CupertinoXxxData` to the iOS one. For most widgets, most of the time, you'll touch neither, they're
-there for the moments you want one platform to behave a little differently.
+platform-specific lives in optional typed records: hand a `MaterialXxxData` to the Material branch,
+a `CupertinoXxxData` to the Cupertino one. For most widgets, most of the time, you'll touch neither,
+they're there for the moments you want one platform to behave a little differently.
 
 ```dart
 PlatformButton.icon(
   onPressed: _add,
   icon: const Icon(Icons.add),
   label: const Text('Add'),
-  materialButtonVariant: .filled,   // Android: FilledButton.icon
-  cupertinoButtonVariant: .filled,  // iOS: CupertinoButton.filled
-  cupertinoButtonData: const CupertinoButtonData(pressedOpacity: 0.6), // iOS-only tuning
+  materialButtonVariant: .filled,   // Material: FilledButton.icon
+  cupertinoButtonVariant: .filled,  // Cupertino: CupertinoButton.filled
+  cupertinoButtonData: const CupertinoButtonData(pressedOpacity: 0.6), // Cupertino-only tuning
 )
 ```
 
 If you're ever unsure where a given property belongs,
 [`APPENDIX.md`](./APPENDIX.md#field-classification) spells out the rule the package follows.
-
-### Base Classes
-
-All platform widgets extend one of these base classes, which pick a half by
-`designLanguage`, folded at compile time:
-
-| Base Class                       | Description                                                                    |
-|----------------------------------|--------------------------------------------------------------------------------|
-| `PlatformWidgetBase`             | Core abstract `StatelessWidget` with `buildMaterial()` and `buildCupertino()`. |
-| `PlatformWidgetKeyedBase`        | Adds an optional `widgetKey` for the underlying platform widget.               |
-| `PlatformWidgetBuilderBase`      | Adds a required `child` widget passed through to the platform builder.         |
-| `PlatformWidgetKeyedBuilderBase` | Combines both `widgetKey` and `child`.                                         |
 
 ---
 

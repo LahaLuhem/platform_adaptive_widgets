@@ -8,16 +8,16 @@ import 'package:material_ui/material_ui.dart' show ListTile;
 import '/src/models/painting/platform_list_tile_data.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// Material [ListTile] on Android, [CupertinoListTile] on iOS.
+/// [ListTile] on Material, [CupertinoListTile] on Cupertino.
 ///
-/// Per-platform tuning lives in [materialListTileData] / [cupertinoListTileData], and iOS's notched
+/// Per-platform tuning lives in [materialListTileData] / [cupertinoListTileData], and Cupertino's notched
 /// variant is [CupertinoListTileData.isNotched]. See `APPENDIX.md#field-classification`, and `APPENDIX.md#cross-platform-field-mappings`
 /// for the fields named differently underneath.
 ///
 /// Example:
 /// {@example /example/lib/snippets/painting/platform_list_tile.dart#platform_list_tile}
 class const PlatformListTile({
-  /// Required, because iOS's is.
+  /// Required, because Cupertino's is.
   required final Widget title,
 
   /// Below the title.
@@ -35,18 +35,18 @@ class const PlatformListTile({
   // ignore: avoid_futureor_void
   final FutureOr<void> Function()? onTap,
 
-  /// The way to disable a tile, leaving [onTap] non-null. Material greys the content out, iOS just stops
-  /// the tap flicker and long-press feedback, having no disabled look of its own.
+  /// The way to disable a tile, leaving [onTap] non-null. Material greys the content out, Cupertino
+  /// just stops the tap flicker and long-press feedback, having no disabled look of its own.
   final bool isEnabled = true,
 
-  /// [ListTile.minLeadingWidth] on Android, [CupertinoListTile.leadingSize] on iOS, where it can't be
-  /// null and the default depends on the variant.
+  /// [ListTile.minLeadingWidth] on Material, [CupertinoListTile.leadingSize] on Cupertino, where it
+  /// can't be null and the default depends on the variant.
   final double? leadingWidth,
 
-  /// [ListTile.tileColor] on Android, [CupertinoListTile.backgroundColor] on iOS.
+  /// [ListTile.tileColor] on Material, [CupertinoListTile.backgroundColor] on Cupertino.
   final Color? color,
 
-  /// [ListTile.contentPadding] on Android, [CupertinoListTile.padding] on iOS.
+  /// [ListTile.contentPadding] on Material, [CupertinoListTile.padding] on Cupertino.
   final EdgeInsetsGeometry? padding,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.

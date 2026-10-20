@@ -25,8 +25,8 @@ class DialogsDemoView extends StatelessWidget {
         DemoCard(
           title: 'Dialog',
           description:
-              'A centered modal, showDialog on Android, showCupertinoDialog on iOS. Raw leaves out '
-              'the card around the content.',
+              'A centered modal, showDialog on Material, showCupertinoDialog on Cupertino. '
+              'Raw leaves out the card around the content.',
           child: PropertyEditor(
             preview: PlatformButton(
               onPressed: viewModel.onShowDialogPressed,
@@ -49,7 +49,7 @@ class DialogsDemoView extends StatelessWidget {
         DemoCard(
           title: 'Full-screen dialog',
           description:
-              'A full-screen dialog on Android, a page that slides up on iOS. Its bar closes it.',
+              'A full-screen dialog on Material, a page that slides up on Cupertino. Its bar closes it.',
           child: PlatformButton(
             onPressed: viewModel.onShowFullscreenDialogPressed,
             child: Text(switch (viewModel.savedEvent) {
@@ -89,7 +89,7 @@ class DialogsDemoView extends StatelessWidget {
         DemoCard(
           title: 'Toast',
           description:
-              'A snackbar on Android, a banner on iOS. With an action, it waits to be tapped.',
+              'A snackbar on Material, a banner on Cupertino. With an action, it waits to be tapped.',
           child: PropertyEditor(
             preview: PlatformButton(
               onPressed: viewModel.onShowToastPressed,
@@ -107,8 +107,8 @@ class DialogsDemoView extends StatelessWidget {
         DemoCard(
           title: 'Modal bottom sheet',
           description:
-              'Slides up from the bottom of the screen. Raw leaves out the surface on iOS, Android '
-              'keeps its native sheet.',
+              'Slides up from the bottom of the screen. Raw leaves out the surface on Cupertino, '
+              'Material keeps its native sheet.',
           child: PropertyEditor(
             preview: PlatformButton(
               onPressed: viewModel.onShowBottomSheetPressed,
@@ -125,7 +125,7 @@ class DialogsDemoView extends StatelessWidget {
         ),
         DemoCard(
           title: 'Date & time pickers',
-          description: 'A calendar or clock dialog on Android, wheels on iOS.',
+          description: 'A calendar or clock dialog on Material, wheels on Cupertino.',
           child: Row(
             spacing: 8,
             children: [

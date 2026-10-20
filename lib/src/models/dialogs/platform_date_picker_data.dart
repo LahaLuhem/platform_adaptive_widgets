@@ -28,8 +28,9 @@ const kDefaultMaterialDatePickerInitialDatePickerMode = DatePickerMode.day;
 /// default.
 const kDefaultMaterialDatePickerCalendarDelegate = GregorianCalendarDelegate();
 
-/// Barrier colour the iOS popup falls back to when the show function's `barrierColor` is left out. Shared
-/// by `showPlatformDatePicker` and `showPlatformTimePicker`, and matching iOS's own translucent black.
+/// Barrier colour the Cupertino popup falls back to when the show function's `barrierColor` is left
+/// out. Shared by `showPlatformDatePicker` and `showPlatformTimePicker`, and matching iOS's own translucent
+/// black.
 const kDefaultCupertinoDatePickerBarrierColor = CupertinoDynamicColor.withBrightness(
   color: Color(0x33000000),
   darkColor: Color(0x7A000000),
@@ -67,8 +68,8 @@ const kDefaultCupertinoDatePickerShowTimeSeparator = false;
 const kDefaultCupertinoDatePickerUse24hFormat = false;
 
 /// Material-side settings for `showPlatformDatePicker`, passed as `materialDatePickerData`. None of
-/// it reaches iOS, whose spinning wheel has no answer for Material's entry modes, error text or keyboard
-/// handling.
+/// it reaches Cupertino, whose spinning wheel has no answer for Material's entry modes, error text or
+/// keyboard handling.
 final class const MaterialDatePickerData({
   /// Which day gets the "today" highlight, separately from which one is selected.
   final DateTime? currentDate,
@@ -121,8 +122,8 @@ final class const MaterialDatePickerData({
 /// Cupertino-side settings for the [CupertinoDatePicker] behind both `showPlatformDatePicker` and `showPlatformTimePicker`,
 /// passed as `cupertinoDatePickerData` on either.
 ///
-/// One record covers both because iOS draws both from the same widget and only changes its `mode`. So
-/// a date-only field like [showDayOfWeek] is still accepted by the time picker, it just does nothing
+/// One record covers both because Cupertino draws both from the same widget and only changes its `mode`.
+/// So a date-only field like [showDayOfWeek] is still accepted by the time picker, it just does nothing
 /// there, and the same goes the other way.
 final class const CupertinoDatePickerData({
   /// Usually a Gaussian blur, for the frosted glass look iOS goes in for.
@@ -168,6 +169,6 @@ final class const CupertinoDatePickerData({
   /// Time mode only.
   final bool use24hFormat = kDefaultCupertinoDatePickerUse24hFormat,
 }) {
-  /// Creates Cupertino-side settings for the iOS date and time picker.
+  /// Creates settings for the Cupertino date and time picker.
   this;
 }

@@ -2,7 +2,7 @@
 
 part of 'platform_dialog.dart';
 
-/// Shows an alert dialog, Material [AlertDialog] on Android and [CupertinoAlertDialog] on iOS: an optional
+/// Shows an alert dialog, [AlertDialog] on Material and [CupertinoAlertDialog] on Cupertino: an optional
 /// [title] over an optional [content], with [actions] underneath, usually [PlatformDialogAction]s.
 ///
 /// The content slots are flat here and used on both platforms. Styling goes in [materialAlertDialogData]
@@ -99,8 +99,8 @@ Future<T?> showPlatformAlertDialog<T>({
   ),
 };
 
-/// A button for [showPlatformAlertDialog]'s `actions` list. [TextButton] on Android, [CupertinoDialogAction]
-/// on iOS.
+/// A button for [showPlatformAlertDialog]'s `actions` list. [TextButton] on Material, [CupertinoDialogAction]
+/// on Cupertino.
 class const PlatformDialogAction({
   required super.child,
 
@@ -111,7 +111,7 @@ class const PlatformDialogAction({
   /// Turns the label red on both platforms, via [ButtonTheme]'s `colorScheme.error` on Material.
   final bool isDestructiveAction = false,
 
-  /// Bolds the label on iOS. Material has no notion of a default action, so nothing happens there.
+  /// Bolds the label on Cupertino. Material has no notion of a default action, so nothing happens there.
   final bool isDefaultAction = false,
   super.widgetKey,
   super.key,
