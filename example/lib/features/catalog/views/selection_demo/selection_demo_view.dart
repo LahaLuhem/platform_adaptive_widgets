@@ -14,9 +14,7 @@ import '/features/catalog/widgets/property_editor/property_editor.dart';
 import '/features/catalog/widgets/property_editor/segment_knob.dart';
 import 'selection_demo_view_model.dart';
 
-/// The Selection-controls section of the Catalog accordion, checkbox / switch / slider playgrounds,
-/// plus a shared-selection showcase (segmented button, radio group and menu picker all bound to one
-/// value) and a menu picker whose length crosses Cupertino's cutoff.
+/// The Catalog's Selection controls section.
 class SelectionDemoView extends StatelessWidget {
   const SelectionDemoView({super.key});
 
@@ -187,7 +185,11 @@ class SelectionDemoView extends StatelessWidget {
               '$kCupertinoMenuPickerSmallItemCountThreshold items and a wheel past that, icons included.',
           child: PropertyEditor(
             preview: PlatformMenuPicker(
-              items: List.generate(viewModel.menuPickerLength.itemCount, (index) => index + 1),
+              items: List.generate(
+                viewModel.menuPickerLength.itemCount,
+                (index) => index + 1,
+                growable: false,
+              ),
               currentValue: viewModel.pickedItem,
               onSelected: viewModel.onPickerItemSelected,
               labelText: 'Item',
