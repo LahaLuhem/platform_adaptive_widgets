@@ -66,6 +66,20 @@ int _scrollViews() => find.byWidgetPredicate((widget) => widget is Scrollable).e
 bool _fieldShows(String label) =>
     find.text(label).hitTestable().evaluate().any((text) => Scrollable.maybeOf(text) == null);
 
+Finder _listRow(String label) => find.descendant(
+  of: find.byWidgetPredicate((widget) => widget is Scrollable),
+  matching: find.text(label),
+);
+
+// The row in the middle of the open wheel.
+int _wheelRow(WidgetTester tester) => tester
+    .stateList<ScrollableState>(find.byWidgetPredicate((widget) => widget is Scrollable))
+    // As metrics, since the wheel's position is a private subclass that also implements these ones.
+    .map<ScrollMetrics>((list) => list.position)
+    .whereType<FixedExtentMetrics>()
+    .single
+    .itemIndex;
+
 bool _rowInView(String label) => find.text(label).evaluate().any((text) {
   final list = Scrollable.maybeOf(text);
 
@@ -219,18 +233,98 @@ void main() {
       },
     );
 
-    scenarioWidgets('keeps a set value when closed without picking', (tester) async {
+    scenarioOutlineWidgets<int?>(
+      'reports nothing when closed without picking',
+      examples: {
+        'with a value set': 5,
+        'with no value set': null,
+        'with a value outside the list': 99,
+      },
+      outline: (tester, current) async {
+        final picked = <int>[];
+        // Long enough for Cupertino's wheel.
+        await _pump(tester, _Picker(count: 8, current: current, onSelected: picked.add));
+        final closed = _scrollViews();
+        await _open(tester);
+        check(_scrollViews()).isGreaterThan(closed);
+
+        await _tapOutside(tester);
+
+        check(picked).isEmpty();
+      },
+    );
+
+    scenarioWidgets('reports the row the wheel stops on while it stays open', (tester) async {
       final picked = <int>[];
-      // Long enough for Cupertino's wheel.
-      await _pump(tester, _Picker(count: 8, current: 5, onSelected: picked.add));
+      await _pump(tester, _Picker(count: 8, current: 2, onSelected: picked.add));
       final closed = _scrollViews();
       await _open(tester);
+
+      // Slowly past several rows, so a wheel reporting each row it passes would report more than once.
+      await tester.timedDrag(
+        _listRow(_label(2)),
+        const Offset(0, -120),
+        const Duration(milliseconds: 300),
+      );
+      await tester.pumpAndSettle();
+
       check(_scrollViews()).isGreaterThan(closed);
+      check(picked).length.equals(1);
+      check(picked.single).not((row) => row.equals(2));
+    }, variant: iosOnly);
 
-      await _tapOutside(tester);
+    // The test's app never takes a pick, so its value stays put.
+    scenarioOutlineWidgets<int?>(
+      "moves the wheel back when the app doesn't take the pick",
+      examples: {'with a value set': 2, 'with no value set': null},
+      outline: (tester, current) async {
+        final picked = <int>[];
+        await _pump(tester, _Picker(count: 8, current: current, onSelected: picked.add));
+        await _open(tester);
 
+        await tester.timedDrag(
+          _listRow(_label(current ?? 0)),
+          const Offset(0, -100),
+          const Duration(milliseconds: 300),
+        );
+        await tester.pumpAndSettle();
+
+        // Reported once: going back isn't a pick.
+        check(picked).length.equals(1);
+        check(_wheelRow(tester)).equals(current ?? 0);
+      },
+      variant: iosOnly,
+    );
+
+    scenarioWidgets("follows the app's value while the wheel is open", (tester) async {
+      final picked = <int>[];
+      await _pump(tester, _Picker(count: 8, current: 2, onSelected: picked.add));
+      await _open(tester);
+
+      await _pump(tester, _Picker(count: 8, current: 6, onSelected: picked.add));
+      await tester.pumpAndSettle();
+
+      check(_wheelRow(tester)).equals(6);
       check(picked).isEmpty();
-    });
+    }, variant: iosOnly);
+
+    scenarioWidgets("picks the wheel's top row when no value is set", (tester) async {
+      final picked = <int>[];
+      await _pump(tester, _Picker(count: 8, onSelected: picked.add));
+      await _open(tester);
+
+      // Away and back in one slow drag, so the wheel stops on the row it opened on.
+      final drag = await tester.startGesture(tester.getCenter(_listRow(_label(0))));
+      await drag.moveBy(const Offset(0, -64));
+      await tester.pump(const Duration(milliseconds: 100));
+      await drag.moveBy(const Offset(0, 64));
+      await tester.pump(const Duration(milliseconds: 300));
+      await drag.up();
+      await tester.pumpAndSettle();
+
+      check(_wheelRow(tester)).equals(0);
+      check(picked).deepEquals([0]);
+    }, variant: iosOnly);
 
     scenarioOutlineWidgets<int>(
       'reports nothing when the current value is picked again',
@@ -242,33 +336,12 @@ void main() {
 
         await _open(tester);
         // The field shows the value too, so tap its row in the open list.
-        await tester.tap(
-          find.descendant(
-            of: find.byWidgetPredicate((widget) => widget is Scrollable),
-            matching: find.text(_label(2)),
-          ),
-        );
+        await tester.tap(_listRow(_label(2)));
         await tester.pumpAndSettle();
 
         check(_scrollViews()).equals(closed);
         check(picked).isEmpty();
       },
-    );
-
-    scenarioOutlineWidgets<int?>(
-      "picks the wheel's top row when closed",
-      examples: {'with no value set': null, 'with a value outside the list': 99},
-      outline: (tester, current) async {
-        final picked = <int>[];
-        await _pump(tester, _Picker(count: 8, current: current, onSelected: picked.add));
-
-        await _open(tester);
-        await _tapOutside(tester);
-
-        // A wheel always shows a row, and the top one when it has no value to show.
-        check(picked).deepEquals([0]);
-      },
-      variant: iosOnly,
     );
 
     scenarioWidgets("lines up a page row's title with its icon", (tester) async {

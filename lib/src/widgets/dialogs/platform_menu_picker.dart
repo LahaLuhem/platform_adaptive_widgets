@@ -1,4 +1,4 @@
-import 'dart:async' show FutureOr;
+import 'dart:async' show FutureOr, unawaited;
 import 'dart:math' show min;
 
 import 'package:cupertino_ui/cupertino_ui.dart'
@@ -38,6 +38,9 @@ const _kCupertinoPickerModalHeight = 216.0;
 /// iOS's own row height on a wheel.
 const _kCupertinoPickerModalItemExtent = 32.0;
 
+/// As long as the wheel takes to scroll to a tapped row.
+const _kCupertinoPickerFollowDuration = Duration(milliseconds: 300);
+
 /// [DropdownMenu] on Material. On Cupertino it depends on how many items there are:
 ///
 /// - up to [kCupertinoMenuPickerSmallItemCountThreshold], a [CupertinoMenuAnchor]
@@ -66,6 +69,8 @@ class const PlatformMenuPicker<T extends Object>({
   /// Above the picker on Material, the field title on Cupertino. Unused by the `.iconButton` variants.
   final String? labelText,
 
+  /// Cupertino's wheel calls this each time it stops on a row other than [currentValue], while it's still
+  /// open. It goes back to [currentValue] if the app doesn't take the pick.
   final ValueChanged<T>? onSelected,
   MenuPickerItem Function(T choice)? menuPickerItemTransformer,
 
@@ -305,55 +310,145 @@ final class const _CupertinoPickerWheel<T extends Object>({
   required final String? labelText,
   required final Color? backgroundColor,
   required final ValueChanged<T>? onSelected,
-}) extends StatelessWidget {
+}) extends StatefulWidget {
+  @override
+  State<_CupertinoPickerWheel<T>> createState() => _CupertinoPickerWheelState<T>();
+}
+
+/// Hands the app's value to the open wheel, which the field's rebuilds don't reach.
+final class _CupertinoPickerWheelState<T extends Object>() extends State<_CupertinoPickerWheel<T>> {
+  late final ValueNotifier<int?> _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _selectedIndex = ValueNotifier(widget.selectedIndex);
+  }
+
+  @override
+  void didUpdateWidget(_CupertinoPickerWheel<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    _selectedIndex.value = widget.selectedIndex;
+  }
+
+  @override
+  void dispose() {
+    _selectedIndex.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) => _CupertinoPickerField(
-    selectedIndex: selectedIndex,
-    transformed: transformed,
-    labelText: labelText,
-    leadingIcon: leadingIcon,
-    backgroundColor: backgroundColor,
-    isEnabled: isEnabled,
-    useIconButton: useIconButton,
-    onTap: () async {
-      // With nothing picked the wheel starts at the top, and closing it picks that row.
-      var shown = selectedIndex ?? 0;
-      // Made outside the builder, so there's one to dispose once the wheel closes.
-      final wheel = FixedExtentScrollController(initialItem: shown);
+    selectedIndex: widget.selectedIndex,
+    transformed: widget.transformed,
+    labelText: widget.labelText,
+    leadingIcon: widget.leadingIcon,
+    backgroundColor: widget.backgroundColor,
+    isEnabled: widget.isEnabled,
+    useIconButton: widget.useIconButton,
+    onTap: () => showCupertinoModalPopup<void>(
+      context: context,
+      builder: (_) => _CupertinoWheelPopup(
+        transformed: widget.transformed,
+        selectedIndex: _selectedIndex,
+        onStopped: (index) => widget.onSelected?.call(widget.items[index]),
+      ),
+    ),
+  );
+}
 
-      await showCupertinoModalPopup<void>(
-        context: context,
-        builder: (context) => Container(
-          height: _kCupertinoPickerModalHeight,
-          padding: const EdgeInsets.only(top: 6),
-          // Keeps the wheel above the keyboard, if one's up.
-          margin: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
-          color: CupertinoColors.systemBackground.resolveFrom(context),
-          child: SafeArea(
-            top: false,
-            child: CupertinoPicker(
-              itemExtent: _kCupertinoPickerModalItemExtent,
-              scrollController: wheel,
-              onSelectedItemChanged: (index) => shown = index,
-              children: [
-                for (final item in transformed)
-                  Row(
-                    mainAxisSize: .min,
-                    spacing: 8,
-                    children: [
-                      if (item.iconData != null) Icon(item.iconData),
-                      Text(item.label ?? ''),
-                    ],
-                  ),
-              ],
-            ),
-          ),
+/// Always shows the app's value, like SwiftUI's wheel.
+final class const _CupertinoWheelPopup({
+  required final List<MenuPickerItem> transformed,
+  required final ValueListenable<int?> selectedIndex,
+  required final ValueChanged<int> onStopped,
+}) extends StatefulWidget {
+  @override
+  State<_CupertinoWheelPopup> createState() => _CupertinoWheelPopupState();
+}
+
+final class _CupertinoWheelPopupState() extends State<_CupertinoWheelPopup> {
+  late final FixedExtentScrollController _wheel;
+
+  // Moving to the app's value isn't a pick.
+  var _isFollowing = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // With nothing picked the wheel shows the top row.
+    _wheel = FixedExtentScrollController(initialItem: widget.selectedIndex.value ?? 0);
+    widget.selectedIndex.addListener(_followAfterFrame);
+  }
+
+  @override
+  void dispose() {
+    widget.selectedIndex.removeListener(_followAfterFrame);
+    _wheel.dispose();
+
+    super.dispose();
+  }
+
+  // The app's value changes while the app builds, so the wheel moves once that's done.
+  void _followAfterFrame() =>
+      WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_follow()));
+
+  Future<void> _follow() async {
+    final row = widget.selectedIndex.value ?? 0;
+    if (!mounted || _wheel.selectedItem == row) return;
+
+    _isFollowing = true;
+    await _wheel.animateToItem(
+      row,
+      duration: _kCupertinoPickerFollowDuration,
+      curve: Curves.easeInOut,
+    );
+    _isFollowing = false;
+  }
+
+  // Not onSelectedItemChanged, which skips the row the wheel opened on. With nothing picked, that row is
+  // still a pick.
+  bool _onStop(ScrollEndNotification notification) {
+    final row = (notification.metrics as FixedExtentMetrics).itemIndex;
+    if (!_isFollowing && row != widget.selectedIndex.value) {
+      widget.onStopped(row);
+      // An app that doesn't take the pick keeps its value, and the wheel goes back to it.
+      _followAfterFrame();
+    }
+
+    return false;
+  }
+
+  @override
+  Widget build(BuildContext context) => Container(
+    height: _kCupertinoPickerModalHeight,
+    padding: const EdgeInsets.only(top: 6),
+    // Keeps the wheel above the keyboard, if one's up.
+    margin: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+    color: CupertinoColors.systemBackground.resolveFrom(context),
+    child: SafeArea(
+      top: false,
+      child: NotificationListener<ScrollEndNotification>(
+        onNotification: _onStop,
+        child: CupertinoPicker(
+          itemExtent: _kCupertinoPickerModalItemExtent,
+          scrollController: _wheel,
+          onSelectedItemChanged: null,
+          children: [
+            for (final item in widget.transformed)
+              Row(
+                mainAxisSize: .min,
+                spacing: 8,
+                children: [if (item.iconData != null) Icon(item.iconData), Text(item.label ?? '')],
+              ),
+          ],
         ),
-      );
-      wheel.dispose();
-
-      if (shown != selectedIndex) onSelected?.call(items[shown]);
-    },
+      ),
+    ),
   );
 }
 
