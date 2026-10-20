@@ -27,8 +27,8 @@ Future<T?> showPlatformAlertDialog<T>({
   bool? requestFocus,
   MaterialAlertDialogData? materialAlertDialogData,
   CupertinoAlertDialogData? cupertinoAlertDialogData,
-}) => switch (defaultTargetPlatform) {
-  .android => _showMaterialDialog(
+}) => switch (designLanguage) {
+  .material => _showMaterialDialog(
     context: context,
     // AlertDialog is itself a Dialog under the hood, no wrapping needed.
     builder: (_) => AlertDialog(
@@ -73,7 +73,7 @@ Future<T?> showPlatformAlertDialog<T>({
     traversalEdgeBehavior: null,
     useSafeArea: kDefaultMaterialDialogUseSafeArea,
   ),
-  .iOS => _showCupertinoDialog(
+  .cupertino => _showCupertinoDialog(
     context: context,
     builder: (_) => CupertinoAlertDialog(
       key: widgetKey,
@@ -97,7 +97,6 @@ Future<T?> showPlatformAlertDialog<T>({
     useRootNavigator: useRootNavigator,
     requestFocus: requestFocus,
   ),
-  _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
 };
 
 /// A button for [showPlatformAlertDialog]'s `actions` list. [TextButton] on Android, [CupertinoDialogAction]

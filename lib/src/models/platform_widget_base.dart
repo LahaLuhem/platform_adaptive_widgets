@@ -4,10 +4,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
+import '/src/utils/design_language.dart';
+
 /// Base class for every platform-adaptive widget here.
 ///
-/// Override [buildMaterial] and [buildCupertino], never [build]. That one reads [defaultTargetPlatform]
-/// and picks for you, throwing an [UnsupportedError] on anything that isn't Android or iOS.
+/// Override [buildMaterial] and [buildCupertino], never [build], which picks one by [designLanguage].
 @protected
 abstract class const PlatformWidgetBase({super.key}) extends StatelessWidget {
   /// Creates a platform-adaptive widget.
@@ -16,10 +17,9 @@ abstract class const PlatformWidgetBase({super.key}) extends StatelessWidget {
   @override
   @protected
   @nonVirtual
-  Widget build(BuildContext context) => switch (defaultTargetPlatform) {
-    .android => buildMaterial(context),
-    .iOS => buildCupertino(context),
-    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+  Widget build(BuildContext context) => switch (designLanguage) {
+    .material => buildMaterial(context),
+    .cupertino => buildCupertino(context),
   };
 
   /// Builds the Android half.

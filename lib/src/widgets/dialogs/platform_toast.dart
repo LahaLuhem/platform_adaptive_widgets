@@ -5,11 +5,11 @@ import 'dart:async' show Completer, Timer, unawaited;
 import 'dart:ui' show ImageFilter;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoButton, CupertinoDynamicColor;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show ScaffoldMessenger, SnackBar, SnackBarAction;
 
 import '/src/models/dialogs/platform_toast_data.dart';
+import '/src/utils/design_language.dart';
 
 /// Shows a short message with at most one [action], like Undo. A [SnackBar] along the bottom on Android,
 /// and on iOS a banner that slides down from under the status bar. The returned future completes once
@@ -37,8 +37,8 @@ Future<void> showPlatformToast({
   PlatformToastAction? action,
   MaterialToastData? materialToastData,
   CupertinoToastData? cupertinoToastData,
-}) => switch (defaultTargetPlatform) {
-  .android =>
+}) => switch (designLanguage) {
+  .material =>
     ScaffoldMessenger.of(context)
         .showSnackBar(
           SnackBar(
@@ -65,14 +65,13 @@ Future<void> showPlatformToast({
           ),
         )
         .closed,
-  .iOS => _showCupertinoToast(
+  .cupertino => _showCupertinoToast(
     context: context,
     message: message,
     duration: duration,
     action: action,
     data: cupertinoToastData ?? const CupertinoToastData(),
   ),
-  _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
 };
 
 /// Completes when the banner goes away: its timer ran out, someone tapped it, or its action ran.

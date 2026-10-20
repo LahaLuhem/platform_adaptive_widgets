@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import '/src/utils/design_language.dart';
+
 /// [material] on Android, [cupertino] on iOS. Both arms are built before the pick happens, so the loser
 /// is built and thrown away. Fine for cheap values, which is what these are for.
 ///
@@ -43,15 +45,13 @@ T? platformLazyNullable<T extends Object>({ValueGetter<T>? material, ValueGetter
     _valueProviderNullable(material: material, cupertino: cupertino)?.call();
 
 T _valueProvider<T extends Object>({required T material, required T cupertino}) =>
-    switch (defaultTargetPlatform) {
-      .android => material,
-      .iOS => cupertino,
-      _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+    switch (designLanguage) {
+      .material => material,
+      .cupertino => cupertino,
     };
 
 T? _valueProviderNullable<T extends Object>({T? material, T? cupertino}) =>
-    switch (defaultTargetPlatform) {
-      .android => material,
-      .iOS => cupertino,
-      _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+    switch (designLanguage) {
+      .material => material,
+      .cupertino => cupertino,
     };

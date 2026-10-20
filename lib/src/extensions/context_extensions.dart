@@ -1,6 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
+import '/src/utils/design_language.dart';
 import '../models/platform_adaptive_icons.dart';
 
 /// Icon helpers hung off [BuildContext]. The value selectors in `platform_value.dart` are top-level
@@ -15,9 +15,8 @@ extension PlatformAdaptiveContextExtensions on BuildContext {
   /// [IconData] drags no platform code along anyway. The receiver goes unused today and is here for
   /// the call-site reads and for icons that may want the theme later.
   IconData platformIcon({required IconData material, required IconData cupertino}) =>
-      switch (defaultTargetPlatform) {
-        .android => material,
-        .iOS => cupertino,
-        _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
+      switch (designLanguage) {
+        .material => material,
+        .cupertino => cupertino,
       };
 }

@@ -5,7 +5,6 @@ import 'package:cupertino_ui/cupertino_ui.dart'
         CupertinoPageRoute,
         CupertinoPopupSurface,
         showCupertinoDialog;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart'
     show AlertDialog, ButtonTheme, Colors, Dialog, TextButton, showDialog;
@@ -15,6 +14,7 @@ import '/src/models/dialogs/platform_alert_dialog_data.dart';
 import '/src/models/dialogs/platform_dialog_data.dart';
 import '/src/models/layout/platform_app_bar_data.dart';
 import '/src/models/platform_widget_base.dart';
+import '/src/utils/design_language.dart';
 import '/src/widgets/layout/platform_scaffold.dart';
 
 part 'platform_alert_dialog.dart';
@@ -59,8 +59,8 @@ Future<T?> showPlatformDialog<T>({
     hasCupertinoBuilder: cupertinoBuilder != null,
   );
 
-  return switch (defaultTargetPlatform) {
-    .android => _showMaterialDialog(
+  return switch (designLanguage) {
+    .material => _showMaterialDialog(
       context: context,
       builder: (context) => Dialog(
         backgroundColor: materialDialogData?.backgroundColor,
@@ -92,7 +92,7 @@ Future<T?> showPlatformDialog<T>({
       traversalEdgeBehavior: materialDialogData?.traversalEdgeBehavior,
       useSafeArea: materialDialogData?.useSafeArea ?? kDefaultMaterialDialogUseSafeArea,
     ),
-    .iOS => _showCupertinoDialog(
+    .cupertino => _showCupertinoDialog(
       context: context,
       builder: _cupertinoDialogSurface(cupertinoBuilder ?? builder!),
       anchorPoint: anchorPoint,
@@ -103,7 +103,6 @@ Future<T?> showPlatformDialog<T>({
       useRootNavigator: useRootNavigator,
       requestFocus: requestFocus,
     ),
-    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
   };
 }
 
@@ -139,8 +138,8 @@ Future<T?> showPlatformFullscreenDialog<T>({
     body: builder,
   );
 
-  return switch (defaultTargetPlatform) {
-    .android => _showMaterialDialog(
+  return switch (designLanguage) {
+    .material => _showMaterialDialog(
       context: context,
       builder: (context) => Dialog.fullscreen(
         insetAnimationDuration:
@@ -164,14 +163,13 @@ Future<T?> showPlatformFullscreenDialog<T>({
       animationStyle: materialDialogData?.animationStyle,
       traversalEdgeBehavior: materialDialogData?.traversalEdgeBehavior,
     ),
-    .iOS => _showCupertinoFullscreenDialog(
+    .cupertino => _showCupertinoFullscreenDialog(
       context: context,
       builder: page,
       routeSettings: routeSettings,
       useRootNavigator: useRootNavigator,
       requestFocus: requestFocus,
     ),
-    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
   };
 }
 
@@ -203,8 +201,8 @@ Future<T?> showPlatformRawDialog<T>({
     hasCupertinoBuilder: cupertinoBuilder != null,
   );
 
-  return switch (defaultTargetPlatform) {
-    .android => _showMaterialDialog(
+  return switch (designLanguage) {
+    .material => _showMaterialDialog(
       context: context,
       // No Dialog wrap, the caller owns the surface.
       builder: materialBuilder ?? builder!,
@@ -220,7 +218,7 @@ Future<T?> showPlatformRawDialog<T>({
       traversalEdgeBehavior: null,
       useSafeArea: kDefaultMaterialDialogUseSafeArea,
     ),
-    .iOS => _showCupertinoDialog(
+    .cupertino => _showCupertinoDialog(
       context: context,
       // No CupertinoPopupSurface wrap, the caller owns the surface.
       builder: cupertinoBuilder ?? builder!,
@@ -232,7 +230,6 @@ Future<T?> showPlatformRawDialog<T>({
       useRootNavigator: useRootNavigator,
       requestFocus: requestFocus,
     ),
-    _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
   };
 }
 

@@ -23,8 +23,8 @@ Future<TimeOfDay?> showPlatformTimePicker({
   TransitionBuilder? builder,
   MaterialTimePickerData? materialTimePickerData,
   CupertinoDatePickerData? cupertinoTimePickerData,
-}) => switch (defaultTargetPlatform) {
-  .android => showTimePicker(
+}) => switch (designLanguage) {
+  .material => showTimePicker(
     context: context,
     initialTime: initialTime,
     anchorPoint: anchorPoint,
@@ -49,7 +49,7 @@ Future<TimeOfDay?> showPlatformTimePicker({
     emptyInitialInput:
         materialTimePickerData?.emptyInitialInput ?? kDefaultMaterialTimePickerEmptyInitialInput,
   ),
-  .iOS => _showCupertinoModePickerPopup(
+  .cupertino => _showCupertinoModePickerPopup(
     context: context,
     mode: CupertinoDatePickerMode.time,
     initialDateTime: initialTime.toDateTime(),
@@ -62,5 +62,4 @@ Future<TimeOfDay?> showPlatformTimePicker({
     builder: builder,
     cupertinoDatePickerData: cupertinoTimePickerData,
   ).then((dateTime) => dateTime == null ? null : TimeOfDay.fromDateTime(dateTime)),
-  _ => throw UnsupportedError('This platform is not supported: $defaultTargetPlatform'),
 };
