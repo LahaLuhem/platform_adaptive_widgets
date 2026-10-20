@@ -11,9 +11,9 @@ extension PlatformAdaptiveContextExtensions on BuildContext {
   /// The right icon set for the platform.
   PlatformAdaptiveIcons get platformAdaptiveIcons => PlatformAdaptiveIcons(this);
 
-  /// [material] on Android, [cupertino] on iOS. Inlines its switch, so AOT prunes the losing arm, and
-  /// [IconData] drags no platform code along anyway. The receiver goes unused today and is here for
-  /// the call-site reads and for icons that may want the theme later.
+  /// [material] or [cupertino], whichever [designLanguage] picks. Inlines its switch, so AOT prunes
+  /// the losing arm, and [IconData] drags no platform code along anyway. The receiver goes unused
+  /// today and is here for the call-site reads and for icons that may want the theme later.
   IconData platformIcon({required IconData material, required IconData cupertino}) =>
       switch (designLanguage) {
         .material => material,

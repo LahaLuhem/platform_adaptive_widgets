@@ -56,36 +56,22 @@ heading, keep the anchor stable or grep-and-update every caller.
 <a id="platform-widget-base-hierarchy"></a>
 ## `PlatformWidgetBase` is an abstract base, not a function or mixin
 
-- **Chosen:** every `PlatformXxx` widget subclasses one of 4 abstract base classes
-  in [`lib/src/models/platform_widget_base.dart`](./lib/src/models/platform_widget_base.dart):
-  `PlatformWidgetBase`, `PlatformWidgetKeyedBase` (adds an inner-widget `widgetKey`),
-  `PlatformWidgetBuilderBase` (adds a required `child`),
-  `PlatformWidgetKeyedBuilderBase` (both). The base's `build` is `@nonVirtual`,
-  subclasses override `buildMaterial(context)` and `buildCupertino(context)`.
-- **Why an abstract base?** The dispatch (`switch (defaultTargetPlatform) { .android => …,
-  .iOS => …, _ => throw UnsupportedError(…) }`) is a load-bearing invariant, every
-  platform-adaptive widget in the package must use exactly the same dispatch logic,
-  or the package's promise ("write app code that doesn't branch on platform")
-  silently degrades. An abstract base with `@nonVirtual` `build` makes that
-  impossible-to-fork at the type system: subclasses *cannot* override `build`, only
-  the 2 builders. The throw-on-unsupported is centralised in one place.
-- **Why not a function or mixin?**
-  - A free function (`Widget platformWidget({material, cupertino})`) loses the
-    `StatelessWidget` identity, the resulting widget can't be a const-constructed,
-    keyed, named widget that shows up in the widget tree as its own type. Devtools
-    would see `Builder` everywhere instead of `PlatformButton`.
-  - A mixin can't enforce non-virtuality the same way. It also couldn't carry the
-    `@protected` / `@visibleForOverriding` annotations that signal intent to readers
-    of `lib/src/widgets/`.
-- **4 base classes, not one with optional fields.** `widgetKey` and `child` are
-  positional in the inheritance chain, making them optional on a single base would
-  mean every subclass declares both even when it uses neither, and would forfeit the
-  `super.key` / `super.widgetKey` / `super.child` shorthand at construction. The 4
-  bases each pin exactly the shape their leaf needs.
-- **What this rules out:** declaring a new `PlatformXxx` widget that extends
-  `StatelessWidget` directly. If you find yourself reaching for that, the dispatch
-  invariant has been forked, go back through the 4 base classes and pick the
-  right one.
+- **Chosen:** every `PlatformXxx` extends one of the 4 bases in
+  [`platform_widget_base.dart`](./lib/src/models/platform_widget_base.dart). Their `build` is
+  `@nonVirtual` and switches on `designLanguage`, so subclasses only fill in `buildMaterial` and
+  `buildCupertino`.
+- **Why?** Every widget has to pick its look the same way, or "app code doesn't branch on
+  platform" quietly stops being true. A non-virtual `build` makes forking that a compile error.
+- **Locked from outside.** The bases are `@internal`, and every half repeats the base's
+  `@protected @visibleForOverriding`, since the analyzer doesn't carry them to overrides.
+  Otherwise a caller could build one half directly and skip `designLanguage`. The look-picking
+  guard in [`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart)
+  catches a half that drops them.
+- **Not a function:** it'd lose the widget's own type, so it can't be const or keyed, and DevTools
+  shows `Builder` instead of `PlatformButton`.
+- **Not a mixin:** it can't enforce `@nonVirtual` the same way.
+- **4 bases, not 1 with optional fields:** each pins exactly the `widgetKey` / `child` shape its
+  widgets need, and keeps the `super.widgetKey` / `super.child` shorthand.
 
 ---
 
@@ -449,145 +435,72 @@ mismatch.
 ---
 
 <a id="android-ios-only"></a>
-## Android + iOS only (`platforms:` restriction)
+## Cupertino on iOS and macOS, Material everywhere else
 
-- **Chosen:** `pubspec.yaml`'s `platforms:` block declares only `android` and `ios`.
-  The `PlatformWidgetBase.build` switch falls through to
-  `throw UnsupportedError('This platform is not supported: $defaultTargetPlatform')` for
-  anything else.
-- **Why?** The package's value proposition is "Material on Android, Cupertino on iOS,
-  zero app-code branching". Web / Linux / macOS / Windows do not have a single
-  authoritative design language to map onto, `defaultTargetPlatform` falls through
-  to `TargetPlatform.fuchsia` / `linux` / `macOS` / `windows` and the dispatch would
-  have to invent a third (and fourth, …) builder per widget. The current dispatch is
-  load-bearing precisely because it's binary. Expanding it would compound the surface
-  area of every widget in the package.
-- **Throw, don't silently render Material as a fallback.** A silent Material fallback
-  would mask the unsupported case at the type system (`PlatformSwitch` looks like it
-  works on web, until the user notices it doesn't follow Cupertino on iOS Safari).
-  The throw surfaces the limit at runtime, the first time a desktop / web build is
-  attempted. Callers who want a web-capable adaptive widget should compose
-  `PlatformWidget` (the standalone helper) with their own web branch, explicit
-  rather than implicit.
-- **If platform support ever expands**, the change is breaking by definition: every
-  subclass of `PlatformWidgetBase` must grow its dispatch, and the package's promise
-  shifts. Don't add a platform to `pubspec.yaml`'s `platforms:` block without a
-  matching major-version bump.
+- **Chosen:** [`designLanguage`](./lib/src/utils/design_language.dart) makes the call, and a guard
+  fails any other read of `defaultTargetPlatform` in `lib/src/`. On the web it goes by the
+  browser's OS.
+- **Why?** It's the split Flutter's own `.adaptive` widgets use. Cupertino is opt-in, so a platform
+  Flutter adds later gets Material until someone moves it.
+- **No runtime override.** One the app could set keeps both looks in every release build (42 KB
+  more Cupertino on the Android harness, 2026-10-20). Debug builds already have Flutter's
+  `debugDefaultTargetPlatformOverride` for previews.
+- **A third look** (`macos_ui`, `fluent_ui`) is a new enum value, and the compiler lists every
+  switch that needs an arm.
 
 ---
 
 <a id="aot-pruning-rules"></a>
 ## AOT pruning: which patterns prune, which leak
 
-The package's value proposition includes shipping a smaller Android binary by
-keeping Cupertino code out of Android builds (and vice-versa). Flutter's
-`defaultTargetPlatform` is annotated with `@pragma('vm:platform-const-if',
-!kDebugMode)`, which lets the AOT compiler const-fold `switch
-(defaultTargetPlatform) { … }` in release builds. Whether the unused branch's
-lexical references actually get pruned depends on **how** the dispatch is shaped:
+Release builds should carry only the look they show. `defaultTargetPlatform` is
+`@pragma('vm:platform-const-if', !kDebugMode)`, so AOT folds a switch on it, or on
+`designLanguage`, down to one arm. Whether the other arm's code drops out depends on the
+dispatch's shape:
 
 | Pattern | Prunes? | Why |
 |---|---|---|
-| Inline `switch (defaultTargetPlatform)` at the construction site | ✓ | The unused arm becomes dead code. Its lexical refs are unreachable. |
-| `PlatformWidgetBase.build` virtual dispatch to `buildMaterial` / `buildCupertino` (small subclass count) | ✓ | Const-folded switch in the base's `build`. Subclass methods are devirtualized when the compiler can prove monomorphic call sites. |
-| `PlatformWidgetBase.build` with many concrete subclasses in the binary | partial | Vtable entries for `buildCupertino` remain on each class. Method bodies are usually pruned, but class names linger as strings (~30 bytes/class). Real code shrinks. Symbol lists do not. |
-| Helper that takes both platform values/closures as args (top-level `platformValue` / `platformValueNullable` / `platformLazyValue` / `platformLazyNullable`) | ✗ | Both args are evaluated at the call site, *before* the helper's internal switch picks one. The unused arg's expression, including any closure construction with lexical refs, stays compiled. **Measured: lazy and eager ship byte-identical Cupertino symbols (49,913 B), a `CupertinoDatePicker` so routed cost ≈342 KB an inline switch pruned.** |
-| `cupertinoBuilder: (ctx) => CupertinoXxx(...)` passed as an argument | ✗ | Same as above, the closure literal is constructed at the call site regardless of whether the receiving function ever invokes it. |
+| Inline `switch (designLanguage)` | ✓ | The other arm is dead code. |
+| `PlatformWidgetBase.build` calling `buildMaterial` / `buildCupertino` | ✓ | The base's switch folds and the halves devirtualize. With many subclasses, each keeps a `buildCupertino` vtable slot and its name (~30 B), but the bodies go. |
+| Value selectors (`platformValue` and co) | ✗ | Both values are built at the call site, before the selector picks one. |
+| A builder closure passed as an argument | ✗ | The closure exists whether or not it's called. |
 
 ### Internal rules the package follows
 
-1. **All `showPlatformXxx` functions switch on `defaultTargetPlatform` *first*,
-   then construct only the matching-platform builder closure / call only the
-   matching-platform private helper.** See
-   [`platform_dialog.dart`](./lib/src/widgets/dialogs/platform_dialog.dart),
-   [`platform_alert_dialog.dart`](./lib/src/widgets/dialogs/platform_alert_dialog.dart),
-   [`platform_date_picker.dart`](./lib/src/widgets/dialogs/platform_date_picker.dart),
-   etc., each ends with a top-level `switch (defaultTargetPlatform) { .android
-   => _runMaterialXxx(…), .iOS => _runCupertinoXxx(…), _ => throw … }`. The
-   per-platform helpers (`_runMaterialDialog`, `_showCupertinoDatePicker`, …)
-   are private top-level functions so the unused one becomes unreachable on the
-   other platform and is tree-shaken.
-2. **`PlatformXxx` widgets keep using `PlatformWidgetBase`'s virtual `buildMaterial`
-   / `buildCupertino` dispatch.** It prunes correctly for the per-class code
-   bodies. The residual symbol-table entries are negligible. The base class
-   remains the dispatch invariant. See
+1. **`showPlatformXxx` functions switch on `designLanguage` first**, and each arm calls a private
+   helper for one look, so the other helper is unreachable.
+2. **Widgets dispatch through `PlatformWidgetBase`.** See
    [`#platform-widget-base-hierarchy`](#platform-widget-base-hierarchy).
-3. **`*Data` classes' `static const` defaults referencing Cupertino types do
-   not leak code**: verified empirically. The AOT compiler treats them as
-   metadata and prunes when unreferenced.
+3. **`static const` defaults in `*Data` classes that name Cupertino types don't leak code.** AOT
+   keeps them as metadata and drops them when unused (measured).
 
 ### Public value selectors in [`platform_value.dart`](./lib/src/utils/platform_value.dart)
-`platformValue`, `platformValueNullable`, `platformLazyValue`, `platformLazyNullable`
-are top-level functions (no `BuildContext`), kept for ergonomic use with the
-size-cost spelled out in their dartdoc. The package does not use the lazy
-variants internally. Eager `platformValue` is used only for cheap primitives.
-The `context.platformIcon` extension in
-[`context_extensions.dart`](./lib/src/extensions/context_extensions.dart) selects
-`IconData` via an inline `switch`: `IconData` drags no platform code, so it has
-no size cost.
 
-**Empirically measured** (`tool/size_harness`, `android-arm64` release): routing a
-`CupertinoDatePicker` through any of these selectors instead of an inline
-`switch (defaultTargetPlatform)` left it in the Android binary, ≈48.7 KB of
-cupertino-pathed symbols (≈342 KB once transitive dependencies are counted),
-versus ≈1.8 KB when inlined. The eager and lazy forms produced **byte-identical**
-Cupertino symbols (49,913 B): laziness defers the runtime build, never the
-binary size. This is why the helpers are lint-banned inside `lib/src/`
-(see below).
+They're kept for cheap values (colours, enums, `IconData`), with the cost in their dartdoc, and
+lint-banned inside `lib/src/`. On the harness, a `CupertinoDatePicker` routed through one stayed in
+the Android build (≈342 KB with what it pulls in), where an inline switch dropped it. The lazy
+forms ship the same bytes, since a closure keeps its body reachable too. `context.platformIcon`
+has its own inline switch.
 
 ### Why the `targetPlatform` shim was removed (v2.0.0 breaking change)
-The old `lib/src/utils/target_platform.dart` used to provide a `targetPlatform`
-re-export *plus* `isAndroid` / `isIOS` boolean getters. The original rationale
-for `targetPlatform` (test seams, search affordance, forward-compat) turned out
-not to be load-bearing in practice, and the indirection added one layer between
-callers and the platform-const-folding pragma. Empirical builds (2026-05-30)
-confirmed direct `defaultTargetPlatform` usage produced byte-identical Android
-`libapp.so` to the shim version, so the `targetPlatform` final was deleted and
-all internal dispatch sites switched to `defaultTargetPlatform` directly.
 
-The `isAndroid` and `isIOS` getters were preserved (moved to
-[`lib/src/utils/is_platform.dart`](./lib/src/utils/is_platform.dart) and
-rewritten to `defaultTargetPlatform == .android` / `.iOS` directly). Empirical
-verification confirmed `if (isAndroid) { … } else { … }` const-folds and prunes
-identically to an inline `switch (defaultTargetPlatform)` (byte-identical AOT
-output), the trivial getter body inlines and propagates the pragma's
-const-ness.
-
-Callers who relied on the public `targetPlatform` symbol should import
-`defaultTargetPlatform` from `package:flutter/foundation.dart`. `isAndroid` /
-`isIOS` continue to be exported from
-`package:platform_adaptive_widgets/platform_adaptive_widgets.dart`.
+It re-exported `defaultTargetPlatform` for test seams and forward-compat nobody used, and put a
+layer between callers and the folding pragma. Direct use built a byte-identical Android `libapp.so`
+(2026-05-30), so import `defaultTargetPlatform` from `package:flutter/foundation.dart` instead. Its
+`isAndroid` / `isIOS` getters later went for [`designLanguage`](#android-ios-only), since app code
+branches on the look, and `isIOS` picked the wrong one on macOS.
 
 ### Enforcement: regression guards on every PR
 
-2 complementary CI checks defend the pruning contract. Both run on every PR, the AST
-lint in CI's Tests job (`ci / Tests`) and the size benchmark in
-`.github/workflows/size-regression.yml`.
+1. **AST lint**, [`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart),
+   in `ci / Tests`. Fails if `lib/src/` calls a value selector, or a private helper takes both a
+   `material*` and a `cupertino*` builder, the 2 usual ways dispatch slips.
+2. **Size benchmark**, [`tool/check_size_regression.dart`](./tool/check_size_regression.dart) over
+   [`tool/size_harness/`](./tool/size_harness/), in `size-regression.yml`. Builds the harness for
+   Android and fails once Cupertino-named bytes pass the budget at the top of the script. The
+   harness touches every dispatch surface, so a leak the lint misses still trips it.
 
-1. **Static AST lint**: [`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart).
-   Walks `lib/src/` and fails if any file (other than
-   [`platform_value.dart`](./lib/src/utils/platform_value.dart),
-   where they're defined) calls `platformValue` / `platformLazyValue` /
-   `platformValueNullable` / `platformLazyNullable`, or if any private helper
-   declares both a `material*`- and a `cupertino*`-named function-typed
-   parameter. Catches the dominant regression modes, re-using the
-   closure-arg helpers, or factoring dispatch into a sub-helper, in
-   sub-second wall time, locally and in CI.
-2. **AOT size benchmark**: [`tool/check_size_regression.dart`](./tool/check_size_regression.dart)
-   over [`tool/size_harness/`](./tool/size_harness/). CI builds the harness
-   for `android-arm64` with `--analyze-size`, walks the symbol JSON, and
-   fails if the total bytes whose path contains "cupertino" exceed the
-   budget set at the top of the parser. The harness exercises every
-   `showPlatformXxx`, one `PlatformWidgetBase` subclass, the
-   `context.platformIcon` extension, and the `isAndroid` getter, so a
-   pruning failure on any of those surfaces fails the build empirically,
-   even if it slips past the static lint.
-
-Necessary-but-not-sufficient (static) plus empirical (size) is the 2-layer
-contract. When the size budget needs raising because a Flutter SDK update
-genuinely grew the Cupertino baseline, retune the constant in
-`check_size_regression.dart`: never to silence a real leak, only to
-re-baseline noise.
+Raise the budget only when an SDK update grows the Cupertino baseline, never to quiet a leak.
 
 ---
 

@@ -296,11 +296,8 @@ style.
   see violated during development (negative number where non-negative is required,
   empty list where non-empty is expected, etc.) belong in `assert`: stripped in
   release mode, zero runtime cost. Reserve `throw` and `Exception` for genuine runtime
-  conditions the caller cannot guarantee at compile/dev time (unsupported platform at
-  runtime, missing required platform channel, etc.). The
-  `PlatformWidgetBase.build`-throws-`UnsupportedError` pattern is the legitimate
-  example: at compile time we can't know what platform the user runs on, so the
-  unsupported-platform case is a runtime condition.
+  conditions the caller cannot guarantee at compile/dev time, like a missing platform
+  channel.
 - **Enforce constructor invariants with `assert(condition, message)` in the
   initializer list, not by silently accepting params and ignoring them downstream.**
   When 2 parameters are mutually exclusive (only one of `child` / `icon`+`label`

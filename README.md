@@ -139,8 +139,8 @@ class MyApp extends StatelessWidget {
 Run that on an Android phone, and it's Material from top to bottom. Run the exact same code on an
 iPhone and it's Cupertino. That's the whole trick.
 
-> **Heads up:** this one's for **Android and iOS**. Web and desktop are out of scope on purpose,
-> [`APPENDIX.md`](./APPENDIX.md#android-ios-only) has the reasoning.
+> **Heads up:** iOS and macOS get Cupertino, every other platform gets Material, and on the web it
+> goes by the browser's OS. [`APPENDIX.md`](./APPENDIX.md#android-ios-only) has the reasoning.
 
 ---
 
@@ -249,14 +249,12 @@ column shows what you can pass to tune each side. See
 
 #### Platform value selectors
 
-The value selectors are top-level functions (no `BuildContext`), where `platformIcon`
-is a `BuildContext` extension. The selectors evaluate the unused-platform arm
-too, so its code is **not** tree-shaken from release builds (empirically
-≈342 KB for one Cupertino widget). Prefer an inline `switch
-(defaultTargetPlatform)` when an arm builds a platform-specific widget:
+These build both arms, so the unused one stays in release builds (≈342 KB for one Cupertino
+widget, measured). Prefer an inline `switch (designLanguage)` when an arm builds a widget:
 
 | Helper                                            | Description                                                  |
 |---------------------------------------------------|--------------------------------------------------------------|
+| `designLanguage`                                  | Which look the widgets use. Switch on it to match them.      |
 | `platformValue<T>(material:, cupertino:)`         | Returns the value matching the current platform.             |
 | `platformValueNullable<T>(material:, cupertino:)` | Nullable variant of `platformValue`.                         |
 | `platformLazyValue<T>(material:, cupertino:)`     | Lazily evaluates only the callback for the current platform. |
@@ -305,8 +303,8 @@ If you're ever unsure where a given property belongs,
 
 ### Base Classes
 
-All platform widgets extend one of these base classes, which use compile-time
-`defaultTargetPlatform` resolution:
+All platform widgets extend one of these base classes, which pick a half by
+`designLanguage`, folded at compile time:
 
 | Base Class                       | Description                                                                    |
 |----------------------------------|--------------------------------------------------------------------------------|
@@ -345,7 +343,7 @@ You'll feel right at home. This package is a spiritual continuation of
 [flutter_platform_widgets](https://pub.dev/packages/flutter_platform_widgets), and the `PlatformXxx`
 naming carries straight over. What's changed is mostly under the hood: per-platform tweaks now go
 through typed `MaterialXxxData` / `CupertinoXxxData` records (see
-[Customizing per platform](#customizing-per-platform)), the scope is intentionally Android + iOS, and
+[Customizing per platform](#customizing-per-platform)), the scope is intentionally Material and Cupertino only, and
 the AOT-pruning promise is checked by CI rather than taken on faith. Skim the
 [widget catalog](#widget-catalog) to find the equivalent of whatever you're using today.
 

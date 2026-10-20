@@ -86,7 +86,7 @@ final class DialogsDemoViewModel extends ViewModel {
       : showPlatformDialog(
           context: context,
           barrierDismissible: _shouldDismissDialogOnBarrierTap,
-          // On iOS, custom content needs its own way out: by default tapping outside doesn't close a
+          // On Cupertino, custom content needs its own way out: by default tapping outside doesn't close a
           // centred dialog (HIG), and there's no back button.
           builder: (context) => Padding(
             padding: const .all(24),
@@ -95,7 +95,7 @@ final class DialogsDemoViewModel extends ViewModel {
               spacing: 16,
               children: [
                 const Text('A centered platform dialog.'),
-                if (isIOS)
+                if (designLanguage == .cupertino)
                   PlatformButton(
                     onPressed: () => Navigator.maybeOf(context)?.pop(),
                     materialButtonVariant: .text,

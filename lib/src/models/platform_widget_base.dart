@@ -22,12 +22,12 @@ abstract class const PlatformWidgetBase({super.key}) extends StatelessWidget {
     .cupertino => buildCupertino(context),
   };
 
-  /// Builds the Android half.
+  /// Builds the Material half.
   @protected
   @visibleForOverriding
   Widget buildMaterial(BuildContext context);
 
-  /// Builds the iOS half.
+  /// Builds the Cupertino half.
   @protected
   @visibleForOverriding
   Widget buildCupertino(BuildContext context);

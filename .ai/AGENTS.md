@@ -6,8 +6,8 @@ in this package. Claude-Code-specific guidance lives in [CLAUDE.md](./CLAUDE.md)
 ## Project goal
 A Flutter package providing **platform-adaptive widgets**: a spiritual continuation of
 [`flutter_platform_widgets`](https://pub.dev/packages/flutter_platform_widgets). Each
-`PlatformXxx` widget automatically renders **Material** on Android and **Cupertino** on
-iOS, so app code never needs explicit `Platform.isAndroid` / `Platform.isIOS` branching.
+`PlatformXxx` widget automatically renders **Cupertino** on iOS and macOS and **Material**
+everywhere else, so app code never needs explicit `Platform.isAndroid` / `Platform.isIOS` branching.
 
 The public API is stable: `PlatformXxx` widgets + per-platform `MaterialXxxData` /
 `CupertinoXxxData` tuning records + cross-platform `PlatformXxxData` unified params. See
@@ -35,8 +35,8 @@ README for the full widget catalogue. APPENDIX for design rationale.
   [dartender's default configs](https://github.com/LahaLuhem/dartender/tree/main/actions/lint/defaults)
   as `.rumdl.toml` and `.yamllint.yaml`, since this repo has neither. Copy them in for a local
   rumdl or ryl run too. Don't reintroduce `brew` / `pip` / `uv` linter installs.
-- **Android + iOS only.** `platforms:` in `pubspec.yaml` declares the supported set. The
-  `PlatformWidgetBase.build` switch throws `UnsupportedError` for anything else.
+- **Cupertino on iOS and macOS, Material everywhere else.** One getter,
+  [`designLanguage`](../lib/src/utils/design_language.dart), makes that call for every dispatch.
 - **Published to pub.dev.** `.pubignore` controls what ships in the tarball. The
   `.github/workflows/publish.yml` workflow fires on a pushed semver tag
   (`{{version}}`) and hands off to dartender's `publish.yml`, which publishes via OIDC
@@ -66,7 +66,8 @@ platform_adaptive_widgets/
 │       │   └── painting/                       Per-painting-widget *Data classes
 │       │       └── platform_theme.dart         Cross-platform theme accessor
 │       ├── utils/
-│       │   └── is_platform.dart                `isAndroid` / `isIOS`, folded at AOT
+│       │   ├── design_language.dart            `designLanguage`, which look a platform gets
+│       │   └── platform_value.dart             `platformValue` family, size cost in their docs
 │       └── widgets/                            Concrete widget impls (mirrors models/)
 │           ├── platform_widget.dart            Standalone `PlatformWidget` helper
 │           ├── dialogs/                        `showPlatformXxx` + `PlatformXxx` dialogs
@@ -98,12 +99,11 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
 
 **The widget pattern (every `PlatformXxx`):**
 
-1. Extends one of `PlatformWidgetBase` / `PlatformWidgetKeyedBase` /
-   `PlatformWidgetBuilderBase` / `PlatformWidgetKeyedBuilderBase` from
+1. Extends one of the 4 bases in
    [`lib/src/models/platform_widget_base.dart`](../lib/src/models/platform_widget_base.dart).
-2. Overrides `buildMaterial(context)` and `buildCupertino(context)`. The abstract base's
-   `build` is `@nonVirtual`: it switches on `defaultTargetPlatform` and delegates. Don't
-   override `build` directly.
+2. Overrides `buildMaterial` and `buildCupertino`, never `build`, each marked
+   `@protected @visibleForOverriding` (the analyzer doesn't carry the base's over, so a guard
+   checks).
 3. Constructor shape, every field falls into one of 3 buckets:
    - **Functional + shared visual**: flat `const` params on the widget itself
      (callbacks, value, controllers, state-gating, plus visual fields that
@@ -149,33 +149,18 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    widget's constructor signature, a public `*Data` field, a deletion, or a behavioural
    change of a documented contract is breaking. Surface the implication before the diff
    lands.
-6. **Android + iOS only.** Don't add `web`, `linux`, `macos`, or `windows` platform
-   support without an explicit conversation, the `PlatformWidgetBase` dispatcher throws
-   on unsupported platforms by design (see
-   [`APPENDIX.md#android-ios-only`](../APPENDIX.md#android-ios-only)).
-7. **Subclass `PlatformWidgetBase` (or one of its `Keyed` / `Builder` variants) for
-   every new `PlatformXxx` widget.** Do not override `build`. Override `buildMaterial`
-   and `buildCupertino`. The base hierarchy enforces the dispatch invariant. See
+6. **Switch on `designLanguage`, never `defaultTargetPlatform`.** A guard fails any other read
+   in `lib/src/`. Moving a platform between looks, or adding a third, needs a conversation first
+   (see [`APPENDIX.md#android-ios-only`](../APPENDIX.md#android-ios-only)).
+7. **Every new `PlatformXxx` follows the widget pattern above.** See
    [`APPENDIX.md#platform-widget-base-hierarchy`](../APPENDIX.md#platform-widget-base-hierarchy).
-8. **Inline `switch (defaultTargetPlatform)` for platform dispatch outside
-   `PlatformWidgetBase`.** For top-level helpers like `showPlatformXxx`, route the
-   switch directly at the construction site and call only the matching-platform
-   private helper from each arm, do not pass both platforms' values/closures into
-   `platformLazyValue(material: …, cupertino: …)` or any other
-   argument-taking helper from internal code. Closure args are evaluated at the
-   call site before the helper's switch runs, which defeats AOT pruning of the
-   unused-platform branch (verified empirically, recovering pruning shaved
-   ~192 KB from the example's Android `libapp.so` on 2026-05-30). The public
-   `platform*` value selectors stay around for callers who knowingly accept
-   the size cost. Internally we always inline. See
-   [`APPENDIX.md#aot-pruning-rules`](../APPENDIX.md#aot-pruning-rules).
-   **Enforced on every PR** by 2 CI guards:
-   [`test/aot_pruning_regression_test.dart`](../test/aot_pruning_regression_test.dart)
-   (static AST lint over `lib/src/`) and
-   [`tool/check_size_regression.dart`](../tool/check_size_regression.dart)
-   (size benchmark over an Android build of `tool/size_harness/`). A regression
-   trips at least one of them. Don't disable or weaken either without an
-   explicit conversation.
+8. **Inside `lib/src/`, dispatch with an inline `switch (designLanguage)`**, each arm calling a
+   helper for one look. Never hand both looks to `platformValue` and co, or to a helper taking
+   both builders: the loser gets compiled in anyway (about 192 KB of the example's Android build,
+   2026-05-30). The selectors stay public for callers who accept that. The AST lint in
+   [`test/aot_pruning_regression_test.dart`](../test/aot_pruning_regression_test.dart) and the
+   size benchmark over `tool/size_harness/` enforce it on every PR, so don't weaken either without
+   a conversation. See [`APPENDIX.md#aot-pruning-rules`](../APPENDIX.md#aot-pruning-rules).
 9. **`CHANGELOG.md` and `version:` move together with the release tag, in the Release
    run.** Routine CHANGELOG lines come from `changelog.yml` + `cider`. The Release run
    bumps `version:`, dates `[Unreleased]`, commits, and pushes the commit with its `X.Y.Z`

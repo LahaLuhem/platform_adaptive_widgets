@@ -9,7 +9,7 @@ final class const PlatformTheme.of(final BuildContext context) {
   /// Creates a [PlatformTheme] with the given [context].
   this;
 
-  /// Falls back to transparent on Android, where the app bar theme may leave it unset.
+  /// Falls back to transparent on Material, where the app bar theme may leave it unset.
   Color get barBackgroundColor => switch (designLanguage) {
     .material => Theme.of(context).appBarTheme.backgroundColor ?? const Color(0x00000000),
     .cupertino => CupertinoTheme.of(context).barBackgroundColor,

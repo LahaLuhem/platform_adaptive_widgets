@@ -3,8 +3,8 @@ import 'package:flutter/widgets.dart';
 
 import '/src/models/platform_widget_base.dart';
 
-/// Builds one thing on Android and a different thing on iOS, when the 2 have nothing in common. Only
-/// wrapping the same widget differently? [PlatformWidgetBuilder] is the lighter option.
+/// Builds one thing for Material and a different thing for Cupertino, when the 2 have nothing in
+/// common. Only wrapping the same widget differently? [PlatformWidgetBuilder] is the lighter option.
 ///
 /// Example:
 /// {@example /example/lib/snippets/platform_widget.dart#platform_widget}

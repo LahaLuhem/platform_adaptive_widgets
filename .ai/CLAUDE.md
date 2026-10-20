@@ -7,8 +7,8 @@ guidelines live in [AGENTS.md](./AGENTS.md), the full code-style guide lives in
 
 ## Role & context
 You're assisting with **platform_adaptive_widgets**: a Flutter package that exposes
-`PlatformXxx` widgets which render Material on Android and Cupertino on iOS without app
-code branching. Treat the user as technical and direct. The package is published on
+`PlatformXxx` widgets which render Cupertino on iOS and macOS and Material everywhere
+else, without app code branching. Treat the user as technical and direct. The package is published on
 pub.dev, changes are visible to every downstream user, so breakage is expensive and
 slow to walk back (pub.dev never unpublishes a version, it only lets you retract one within
 7 days of publishing, and a tag push triggers an automated publish).
