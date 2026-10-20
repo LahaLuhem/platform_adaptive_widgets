@@ -170,20 +170,24 @@ void main() {
       check(_fieldShows(_label(3))).isFalse();
     });
 
-    scenarioOutlineWidgets<String Function(int item)>(
+    scenarioOutlineWidgets<({int count, int current, String Function(int item) label})>(
       'opens a long list on the current value',
       examples: {
-        'with unique labels': _label,
-        'with another row sharing its label': (item) =>
-            item == 0 || item == 25 ? 'Alex' : _label(item),
+        'with unique labels': (count: 30, current: 25, label: _label),
+        'with another row sharing its label': (
+          count: 30,
+          current: 25,
+          label: (item) => item == 0 || item == 25 ? 'Alex' : _label(item),
+        ),
+        'on a page of its own': (count: 300, current: 295, label: _label),
       },
-      outline: (tester, label) async {
-        await _pump(tester, _Picker(count: 30, current: 25, label: label));
+      outline: (tester, row) async {
+        await _pump(tester, _Picker(count: row.count, current: row.current, label: row.label));
 
         await _open(tester);
 
-        // Row 25 can share its label with row 0, so its neighbour tells them apart.
-        check(_rowInView(_label(26))).isTrue();
+        // The current row can share its label with row 0, so its neighbour tells them apart.
+        check(_rowInView(_label(row.current + 1))).isTrue();
         check(_rowInView(_label(1))).isFalse();
       },
     );
@@ -200,7 +204,11 @@ void main() {
 
     scenarioOutlineWidgets<int>(
       'shows row icons',
-      examples: {'in a short list': 4, 'in a list long enough for a wheel': 8},
+      examples: {
+        'in a short list': 4,
+        'in a list long enough for a wheel': 8,
+        'in a list long enough for its own page': 300,
+      },
       outline: (tester, count) async {
         await _pump(tester, _Picker(count: count, withIcons: true));
 
@@ -239,5 +247,41 @@ void main() {
       },
       variant: iosOnly,
     );
+
+    // 300 is past the cutoff for a page of its own.
+    scenarioWidgets('gives a very long list a page of its own', (tester) async {
+      await _pump(tester, const _Picker(count: 300));
+
+      await _open(tester);
+
+      // The page covers the screen the picker sits on.
+      check(find.byType(PlatformMenuPicker<int>).evaluate()).isEmpty();
+    }, variant: iosOnly);
+
+    scenarioWidgets("picks from a very long list's page and goes back", (tester) async {
+      final picked = <int>[];
+      await _pump(tester, _Picker(count: 300, onSelected: picked.add));
+
+      await _open(tester);
+      await tester.tap(find.text(_label(7)).hitTestable());
+      await tester.pumpAndSettle();
+
+      check(picked).deepEquals([7]);
+      check(find.byType(PlatformMenuPicker<int>).evaluate()).isNotEmpty();
+    }, variant: iosOnly);
+
+    scenarioWidgets("leaves a very long list's page without a pick", (tester) async {
+      final picked = <int>[];
+      final semantics = tester.ensureSemantics();
+      await _pump(tester, _Picker(count: 300, current: 5, onSelected: picked.add));
+
+      await _open(tester);
+      await tester.tap(find.bySemanticsLabel('Back'));
+      await tester.pumpAndSettle();
+      semantics.dispose();
+
+      check(picked).isEmpty();
+      check(find.byType(PlatformMenuPicker<int>).evaluate()).isNotEmpty();
+    }, variant: iosOnly);
   });
 }
