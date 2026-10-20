@@ -232,6 +232,25 @@ void main() {
       check(picked).isEmpty();
     });
 
+    scenarioWidgets('reports nothing when the current value is picked again', (tester) async {
+      final picked = <int>[];
+      await _pump(tester, _Picker(count: 4, current: 2, onSelected: picked.add));
+      final closed = _scrollViews();
+
+      await _open(tester);
+      // The field shows the value too, so tap its row in the open list.
+      await tester.tap(
+        find.descendant(
+          of: find.byWidgetPredicate((widget) => widget is Scrollable),
+          matching: find.text(_label(2)),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      check(_scrollViews()).equals(closed);
+      check(picked).isEmpty();
+    });
+
     scenarioOutlineWidgets<int?>(
       "picks the wheel's top row when closed",
       examples: {'with no value set': null, 'with a value outside the list': 99},
