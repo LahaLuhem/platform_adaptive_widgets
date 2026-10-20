@@ -159,6 +159,19 @@ void main() {
       check(_fieldShows('Élément 2')).isTrue();
     });
 
+    scenarioWidgets('keeps showing the value until the app takes a pick', (tester) async {
+      final picked = <int>[];
+      await _pump(tester, _Picker(count: 4, current: 2, onSelected: picked.add));
+
+      await _open(tester);
+      await tester.tap(find.text(_label(3)).hitTestable());
+      await tester.pumpAndSettle();
+
+      check(picked).deepEquals([3]);
+      check(_fieldShows(_label(2))).isTrue();
+      check(_fieldShows(_label(3))).isFalse();
+    });
+
     scenarioOutlineWidgets<String Function(int item)>(
       'opens a long list on the current value',
       examples: {'with unique labels': _label, 'with another row sharing its label': _sharedLabel},
