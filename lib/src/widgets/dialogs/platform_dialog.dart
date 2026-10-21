@@ -7,8 +7,7 @@ import 'package:cupertino_ui/cupertino_ui.dart'
         showCupertinoDialog;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart'
-    show AlertDialog, ButtonTheme, Colors, Dialog, TextButton, showDialog;
+import 'package:material_ui/material_ui.dart' show AlertDialog, Dialog, TextButton, showDialog;
 
 import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_alert_dialog_data.dart';
