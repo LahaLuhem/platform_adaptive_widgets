@@ -46,7 +46,9 @@ Future<T?> showPlatformAlertDialog<T>({
       actionsPadding: materialAlertDialogData?.actionsPadding,
       actionsAlignment: materialAlertDialogData?.actionsAlignment,
       actionsOverflowAlignment: materialAlertDialogData?.actionsOverflowAlignment,
-      actionsOverflowDirection: materialAlertDialogData?.actionsOverflowDirection,
+      actionsOverflowDirection:
+          materialAlertDialogData?.actionsOverflowDirection ??
+          kDefaultMaterialAlertDialogActionsOverflowDirection,
       actionsOverflowButtonSpacing: materialAlertDialogData?.actionsOverflowButtonSpacing,
       buttonPadding: materialAlertDialogData?.buttonPadding,
       backgroundColor: materialAlertDialogData?.backgroundColor,
@@ -108,7 +110,7 @@ class const PlatformDialogAction({
   /// it dismisses the dialog and hands back a result.
   final ValueChanged<BuildContext>? onPressed,
 
-  /// Turns the label red on both platforms, via [ButtonTheme]'s `colorScheme.error` on Material.
+  /// Turns the label red on Cupertino. Material has no destructive style.
   final bool isDestructiveAction = false,
 
   /// Bolds the label on Cupertino. Material has no notion of a default action, so nothing happens there.
@@ -122,15 +124,8 @@ class const PlatformDialogAction({
   @override
   @protected
   @visibleForOverriding
-  Widget buildMaterial(BuildContext context) => TextButton(
-    onPressed: onPressed == null ? null : () => onPressed!(context),
-    style: !isDestructiveAction
-        ? null
-        : TextButton.styleFrom(
-            foregroundColor: ButtonTheme.of(context).colorScheme?.error ?? Colors.red,
-          ),
-    child: child,
-  );
+  Widget buildMaterial(BuildContext context) =>
+      TextButton(onPressed: onPressed == null ? null : () => onPressed!(context), child: child);
 
   @override
   @protected

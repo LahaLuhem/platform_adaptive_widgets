@@ -14,6 +14,10 @@ import 'package:flutter/widgets.dart';
 /// default.
 const kDefaultMaterialAlertDialogScrollable = false;
 
+/// Default value for [MaterialAlertDialogData.actionsOverflowDirection]. Up, unlike upstream, so a
+/// stack puts the confirming action on top as M3 asks.
+const kDefaultMaterialAlertDialogActionsOverflowDirection = VerticalDirection.up;
+
 /// Default value for [CupertinoAlertDialogData.insetAnimationDuration]. Matches upstream `CupertinoAlertDialog`'s
 /// default.
 const kDefaultCupertinoAlertDialogInsetAnimationDuration = Duration(milliseconds: 100);
@@ -52,7 +56,8 @@ final class const MaterialAlertDialogData({
   /// The 3 `actionsOverflow*` fields only bite once the buttons stop fitting on one row and stack.
   final OverflowBarAlignment? actionsOverflowAlignment,
 
-  final VerticalDirection? actionsOverflowDirection,
+  final VerticalDirection actionsOverflowDirection =
+      kDefaultMaterialAlertDialogActionsOverflowDirection,
 
   final double? actionsOverflowButtonSpacing,
 
