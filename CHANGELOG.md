@@ -3,6 +3,7 @@
 - \[#52\] `PlatformProgressBar(value:)` for known progress, a bar on both looks
 - \[#61\] `designLanguage`, to switch on when your own code has to match the widgets
 - \[#57\] Menu picker gives lists past 250 items their own page on Cupertino
+- \[#58\] `showPlatformConfirm`, Cancel included, styled per platform by `PlatformConfirmKind`
 
 ### Changed
 - \[#51\] Toast action works on iOS too, and waits to be tapped
@@ -12,6 +13,7 @@
 - \[#61\] `buildMaterial` / `buildCupertino` can no longer be called from outside, so nothing skips `designLanguage`
 - \[#57\] Menu picker's wheel reports each stop and follows the app's value
 - \[#57\] Menu picker ignores re-picking the current value
+- **BREAKING** \[#58\] `MaterialAlertDialogData.actionsOverflowDirection` is non-null, defaulting to `up`
 
 ### Fixed
 - \[#56\] Menu picker behaves the same on both looks
@@ -19,6 +21,7 @@
 ### Removed
 - **BREAKING** \[#51\] `MaterialToastData.action`, `MaterialToastData.persist` and `PlatformToastClosedReason`, use the flat `action`
 - **BREAKING** \[#61\] `isAndroid` and `isIOS`, switch on `designLanguage` or read `defaultTargetPlatform`
+- **BREAKING** \[#58\] `showPlatformAlertDialog` and `PlatformDialogAction`, use `showPlatformConfirm` or `showPlatformAcknowledge`
 
 ## [2.2.0] - 2026-09-13
 ### Added
