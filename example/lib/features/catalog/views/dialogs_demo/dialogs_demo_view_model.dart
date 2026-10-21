@@ -8,9 +8,11 @@ import '/features/catalog/data/enums/alert_actions.dart';
 /// Triggers for the dialog, sheet and picker showcase, plus the args their knobs set. The full-screen
 /// dialog, toast, date and time buttons keep the last result they got, so it can be shown on them.
 final class DialogsDemoViewModel extends ViewModel {
-  var _alertTitle = 'Alert';
-  var _alertMessage = 'Actions adapt their layout and styling to the platform.';
-  var _alertActions = AlertActions.destructive;
+  var _alertTitle = 'Discard changes?';
+  var _alertMessage = 'Your edits will be lost.';
+  var _alertActions = AlertActions.confirm;
+  var _confirmLabel = 'Discard';
+  var _confirmKind = PlatformConfirmKind.discard;
   var _isDialogRaw = false;
   var _shouldDismissDialogOnBarrierTap = true;
   var _isSheetRaw = false;
@@ -25,6 +27,10 @@ final class DialogsDemoViewModel extends ViewModel {
   String get alertMessage => _alertMessage;
 
   AlertActions get alertActions => _alertActions;
+
+  String get confirmLabel => _confirmLabel;
+
+  PlatformConfirmKind get confirmKind => _confirmKind;
 
   bool get isDialogRaw => _isDialogRaw;
 
@@ -54,6 +60,16 @@ final class DialogsDemoViewModel extends ViewModel {
 
   void onAlertActionsChanged(AlertActions value) {
     _alertActions = value;
+    notifyListeners();
+  }
+
+  void onConfirmLabelChanged(String value) {
+    _confirmLabel = value;
+    notifyListeners();
+  }
+
+  void onConfirmKindChanged(PlatformConfirmKind value) {
+    _confirmKind = value;
     notifyListeners();
   }
 
@@ -127,27 +143,12 @@ final class DialogsDemoViewModel extends ViewModel {
       title: _alertTitle,
       message: _alertMessage,
     ),
-    .confirm || .destructive => showPlatformAlertDialog(
+    .confirm => showPlatformConfirm(
       context: context,
-      title: Text(_alertTitle),
-      content: Text(_alertMessage),
-      actions: [
-        PlatformDialogAction(
-          isDefaultAction: true,
-          onPressed: (context) => Navigator.maybeOf(context)?.pop(),
-          child: const Text('OK'),
-        ),
-        if (_alertActions == .destructive)
-          PlatformDialogAction(
-            isDestructiveAction: true,
-            onPressed: (context) => Navigator.maybeOf(context)?.pop(),
-            child: const Text('Delete'),
-          ),
-        PlatformDialogAction(
-          onPressed: (context) => Navigator.maybeOf(context)?.pop(),
-          child: const Text('Cancel'),
-        ),
-      ],
+      title: _alertTitle,
+      message: _alertMessage,
+      confirmLabel: _confirmLabel,
+      kind: _confirmKind,
     ),
   };
 

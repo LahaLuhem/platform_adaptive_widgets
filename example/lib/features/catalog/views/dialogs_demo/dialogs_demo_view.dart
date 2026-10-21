@@ -59,7 +59,8 @@ class DialogsDemoView extends StatelessWidget {
         ),
         DemoCard(
           title: 'Alert dialog',
-          description: 'Title, message and actions, from a lone OK up to a destructive choice.',
+          description:
+              'OK alone, or Cancel and a named action whose kind sets its look on Cupertino.',
           child: PropertyEditor(
             preview: PlatformButton(
               onPressed: viewModel.onShowAlertDialogPressed,
@@ -82,6 +83,21 @@ class DialogsDemoView extends StatelessWidget {
                 values: AlertActions.values,
                 onChanged: viewModel.onAlertActionsChanged,
               ),
+              if (viewModel.alertActions == .confirm)
+                StringKnob(
+                  label: 'confirmLabel',
+                  value: viewModel.confirmLabel,
+                  onChanged: viewModel.onConfirmLabelChanged,
+                ),
+            ],
+            cupertinoKnobs: [
+              if (viewModel.alertActions == .confirm)
+                SegmentKnob<PlatformConfirmKind>(
+                  label: 'kind',
+                  value: viewModel.confirmKind,
+                  values: PlatformConfirmKind.values,
+                  onChanged: viewModel.onConfirmKindChanged,
+                ),
             ],
           ),
         ),
