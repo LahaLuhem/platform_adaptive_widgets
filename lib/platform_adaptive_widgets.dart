@@ -35,7 +35,9 @@ export 'src/utils/platform_value.dart';
 export 'src/widgets/dialogs/platform_acknowledge.dart';
 export 'src/widgets/dialogs/platform_confirm.dart';
 export 'src/widgets/dialogs/platform_date_picker.dart';
-export 'src/widgets/dialogs/platform_dialog.dart';
+// Machinery under acknowledge and confirm, not an entry point.
+export 'src/widgets/dialogs/platform_dialog.dart'
+    hide PlatformDialogAction, showPlatformAlertDialog;
 export 'src/widgets/dialogs/platform_menu_picker.dart';
 export 'src/widgets/dialogs/platform_modal_bottom_sheet.dart';
 export 'src/widgets/dialogs/platform_toast.dart';

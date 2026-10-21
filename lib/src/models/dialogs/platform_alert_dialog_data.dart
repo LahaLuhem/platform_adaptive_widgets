@@ -1,6 +1,6 @@
-// Per-platform records for showPlatformAlertDialog (no shared private base,
-// the title/content/actions content slots are flat on the show function. The
-// Material and Cupertino visual surfaces don't overlap in type).
+// Per-platform records for showPlatformAcknowledge and showPlatformConfirm (no shared private base,
+// the title and message are flat on the show function. The Material and Cupertino visual surfaces
+// don't overlap in type).
 // ignore_for_file: prefer-match-file-name
 
 /// @docImport 'package:cupertino_ui/cupertino_ui.dart';
@@ -26,8 +26,8 @@ const kDefaultCupertinoAlertDialogInsetAnimationDuration = Duration(milliseconds
 /// default.
 const kDefaultCupertinoAlertDialogInsetAnimationCurve = Curves.decelerate;
 
-/// Material-side settings for `showPlatformAlertDialog`, passed as `materialAlertDialogData`. The content
-/// itself (title, content, actions, widgetKey) stays flat on the show function.
+/// Material-side settings for `showPlatformAcknowledge` and `showPlatformConfirm`, passed as
+/// `materialAlertDialogData`.
 ///
 /// Not the same thing as `MaterialDialogData`, which styles the [Dialog] that `showPlatformDialog` wraps
 /// around your content. [AlertDialog] already is a Dialog, so nothing wraps it and that surface never
@@ -86,12 +86,12 @@ final class const MaterialAlertDialogData({
 
   final bool scrollable = kDefaultMaterialAlertDialogScrollable,
 }) {
-  /// Creates Material-side settings for `showPlatformAlertDialog`.
+  /// Creates Material-side settings for an alert.
   this;
 }
 
-/// Cupertino-side settings for `showPlatformAlertDialog`, passed as `cupertinoAlertDialogData`. The
-/// content itself (title, content, actions, widgetKey) stays flat on the show function.
+/// Cupertino-side settings for `showPlatformAcknowledge` and `showPlatformConfirm`, passed as
+/// `cupertinoAlertDialogData`.
 final class const CupertinoAlertDialogData({
   /// Rarely needed. Cupertino already puts oversized content in a scroll view for you.
   final ScrollController? scrollController,
@@ -103,6 +103,6 @@ final class const CupertinoAlertDialogData({
 
   final Curve insetAnimationCurve = kDefaultCupertinoAlertDialogInsetAnimationCurve,
 }) {
-  /// Creates Cupertino-side settings for `showPlatformAlertDialog`.
+  /// Creates Cupertino-side settings for an alert.
   this;
 }

@@ -17,8 +17,6 @@ const kDefaultPlatformAcknowledgeOkLabel = 'OK';
 /// For anything the app shouldn't continue past until it's been seen: errors, irreversible confirmations.
 /// Routine feedback wants `showPlatformToast` instead, or on Cupertino, showing the change itself.
 ///
-/// A thin wrapper over [showPlatformAlertDialog], so the same data classes and flat args apply.
-///
 /// Guidelines: [M3 dialogs](https://m3.material.io/components/dialogs/guidelines),
 /// [HIG alerts](https://developer.apple.com/design/human-interface-guidelines/alerts#Best-practices).
 ///
