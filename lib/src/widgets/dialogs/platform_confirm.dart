@@ -20,6 +20,9 @@ import 'platform_dialog.dart';
 ///
 /// Guidelines: [M3 dialogs](https://m3.material.io/components/dialogs/guidelines),
 /// [HIG alerts](https://developer.apple.com/design/human-interface-guidelines/alerts).
+///
+/// Example:
+/// {@example /example/lib/snippets/dialogs/platform_confirm.dart#platform_confirm}
 Future<bool> showPlatformConfirm({
   required BuildContext context,
   required String title,

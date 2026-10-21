@@ -2,16 +2,8 @@
 
 part of 'platform_dialog.dart';
 
-/// Shows an alert dialog, [AlertDialog] on Material and [CupertinoAlertDialog] on Cupertino: an optional
-/// [title] over an optional [content], with [actions] underneath, usually [PlatformDialogAction]s.
-///
-/// The content slots are flat here and used on both platforms. Styling goes in [materialAlertDialogData]
-/// / [cupertinoAlertDialogData].
-///
-/// No `materialDialogData` knob, because [AlertDialog] already is a [Dialog] and nothing wraps it.
-///
-/// Example:
-/// {@example /example/lib/snippets/dialogs/platform_alert_dialog.dart#platform_alert_dialog}
+/// The alert under `showPlatformAcknowledge` and `showPlatformConfirm`, [AlertDialog] on Material and
+/// [CupertinoAlertDialog] on Cupertino. Not exported, so only those jobs pick its actions.
 Future<T?> showPlatformAlertDialog<T>({
   required BuildContext context,
   Widget? title,

@@ -55,14 +55,16 @@ class _Surfaces extends StatelessWidget {
         child: const Text('fullscreen dialog'),
       ),
 
-      // showPlatformAlertDialog, top-level switch dispatch.
+      // showPlatformConfirm, through the alert's top-level switch dispatch.
       TextButton(
-        onPressed: () => showPlatformAlertDialog<void>(
+        onPressed: () => showPlatformConfirm(
           context: context,
-          title: const Text('title'),
-          content: const Text('content'),
+          title: 'title',
+          message: 'message',
+          confirmLabel: 'confirm',
+          kind: .discard,
         ),
-        child: const Text('alert'),
+        child: const Text('confirm'),
       ),
 
       // showPlatformToast, single inline switch.

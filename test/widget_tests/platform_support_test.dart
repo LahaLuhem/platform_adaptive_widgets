@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoAlertDialog, CupertinoSwitch;
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart' show AlertDialog, Switch;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
@@ -27,7 +26,7 @@ void main() {
     scenarioWidgets('dialogs open on every platform', (tester) async {
       final context = await pumpForContext(tester);
 
-      unawaited(showPlatformAlertDialog<void>(context: context, content: const Text('Saved')));
+      unawaited(showPlatformAcknowledge(context: context, message: 'Saved'));
       await tester.pumpAndSettle();
 
       check(tester.any(find.byType(_isApple ? CupertinoAlertDialog : AlertDialog))).isTrue();
