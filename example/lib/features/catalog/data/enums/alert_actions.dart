@@ -1,11 +1,8 @@
-/// What the Alert dialog card's alert offers, from a lone OK up to a destructive choice.
+/// What the Alert dialog card's alert asks for.
 enum AlertActions {
   /// OK only, through `showPlatformAcknowledge`.
   acknowledge,
 
-  /// OK and Cancel.
+  /// Cancel and a named action, through `showPlatformConfirm`.
   confirm,
-
-  /// OK, Delete and Cancel.
-  destructive,
 }
