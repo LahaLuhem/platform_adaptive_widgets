@@ -1,6 +1,17 @@
-// ignore_for_file: prefer-match-file-name
+/// @docImport 'package:cupertino_ui/cupertino_ui.dart';
+/// @docImport '/src/widgets/dialogs/platform_date_picker.dart';
+library;
 
-part of 'platform_date_picker.dart';
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoDatePickerMode;
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show TimeOfDay, showTimePicker;
+
+import '/src/extensions/time_of_day_extensions.dart';
+import '/src/models/dialogs/const_values.dart';
+import '/src/models/dialogs/platform_date_picker_data.dart';
+import '/src/models/dialogs/platform_time_picker_data.dart';
+import '/src/utils/design_language.dart';
+import 'cupertino_picker_popup.dart';
 
 /// Shows a time picker. [showTimePicker] on Material, a [CupertinoDatePicker] in a bottom
 /// popup on Cupertino.
@@ -49,7 +60,7 @@ Future<TimeOfDay?> showPlatformTimePicker({
     emptyInitialInput:
         materialTimePickerData?.emptyInitialInput ?? kDefaultMaterialTimePickerEmptyInitialInput,
   ),
-  .cupertino => _showCupertinoModePickerPopup(
+  .cupertino => showCupertinoPickerPopup(
     context: context,
     mode: CupertinoDatePickerMode.time,
     initialDateTime: initialTime.toDateTime(),

@@ -1,6 +1,17 @@
+// The alert's own action button lives with the alert.
 // ignore_for_file: prefer-match-file-name
 
-part of 'platform_dialog.dart';
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoAlertDialog, CupertinoDialogAction;
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show AlertDialog, TextButton;
+
+import '/src/models/dialogs/const_values.dart';
+import '/src/models/dialogs/platform_alert_dialog_data.dart';
+import '/src/models/dialogs/platform_dialog_data.dart';
+import '/src/models/platform_widget_base.dart';
+import '/src/utils/design_language.dart';
+import 'dialog_routes.dart';
 
 /// The alert under `showPlatformAcknowledge` and `showPlatformConfirm`, [AlertDialog] on Material and
 /// [CupertinoAlertDialog] on Cupertino. Not exported, so only those jobs pick its actions.
@@ -20,7 +31,7 @@ Future<T?> showPlatformAlertDialog<T>({
   MaterialAlertDialogData? materialAlertDialogData,
   CupertinoAlertDialogData? cupertinoAlertDialogData,
 }) => switch (designLanguage) {
-  .material => _showMaterialDialog(
+  .material => showMaterialDialogRoute(
     context: context,
     // AlertDialog is itself a Dialog under the hood, no wrapping needed.
     builder: (_) => AlertDialog(
@@ -67,7 +78,7 @@ Future<T?> showPlatformAlertDialog<T>({
     traversalEdgeBehavior: null,
     useSafeArea: kDefaultMaterialDialogUseSafeArea,
   ),
-  .cupertino => _showCupertinoDialog(
+  .cupertino => showCupertinoDialogRoute(
     context: context,
     builder: (_) => CupertinoAlertDialog(
       key: widgetKey,

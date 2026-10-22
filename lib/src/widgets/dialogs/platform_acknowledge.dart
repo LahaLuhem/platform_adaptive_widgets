@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 
 import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_alert_dialog_data.dart';
-import 'platform_dialog.dart';
+import 'platform_alert_dialog.dart';
 
 /// Default value for [showPlatformAcknowledge]'s `okLabel`. Override it to localise.
 const kDefaultPlatformAcknowledgeOkLabel = 'OK';

@@ -10,7 +10,7 @@ import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_action_kind.dart';
 import '/src/models/dialogs/platform_alert_dialog_data.dart';
 import '/src/utils/design_language.dart';
-import 'platform_dialog.dart';
+import 'platform_alert_dialog.dart';
 
 /// Asks before an action and answers whether the person confirmed. Closing it any other way answers
 /// `false`. [AlertDialog] on Material, [CupertinoAlertDialog] on Cupertino.
