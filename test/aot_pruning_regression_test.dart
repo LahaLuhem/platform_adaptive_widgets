@@ -7,7 +7,8 @@
 //      and Cupertino arms as values/closures. The unused arm stays lexically
 //      reachable and defeats AOT pruning.
 //
-//   2. No private helper takes both a `material*`-named and a `cupertino*`-named
+//   2. No internal helper (a `_` name, or anything in a file the barrel doesn't
+//      export) takes both a `material*`-named and a `cupertino*`-named
 //      function-typed parameter. That shape is the deferred-dispatch trap
 //      (`_showBasePlatformDialog`-style) that constructs both closures at the
 //      call site and prevents the AOT compiler from folding the unused arm.
@@ -69,22 +70,26 @@ void main() {
       ).isEmpty();
     });
 
-    test('no private helper in lib/src takes both material* and cupertino* '
+    test('no internal helper in lib/src takes both material* and cupertino* '
         'function-typed params', () {
       final offenders = _unitsExcept({_helperHomeBasename}).expand((unit) {
-        final visitor = _DispatchHelperVisitor(unit.path, unit.parsed.lineInfo);
+        final visitor = _DispatchHelperVisitor(
+          unit.path,
+          unit.parsed.lineInfo,
+          isExported: _exportedPaths.contains(unit.path),
+        );
         unit.parsed.unit.accept(visitor);
 
         return visitor._offenders;
       });
       check(
         because:
-            'Found private function(s) that take both a material*-named and '
+            'Found internal function(s) that take both a material*-named and '
             'a cupertino*-named function-typed parameter. This shape '
             'constructs both closures at the call site, defeating AOT '
             'pruning. Dispatch at the public entry point with '
             '`switch (designLanguage)` and call single-platform '
-            'helpers (e.g. `_runMaterialDialog` vs `_runCupertinoDialog`) '
+            'helpers (e.g. `showMaterialDialogRoute` vs `showCupertinoDialogRoute`) '
             'that each take only one builder. See '
             'APPENDIX.md#aot-pruning-rules.',
         offenders,
@@ -142,6 +147,15 @@ final List<_Unit> _libSrcUnits = Directory('lib/src')
     )
     .toList(growable: false);
 
+final Set<String> _exportedPaths =
+    parseFile(
+          path: File('lib/platform_adaptive_widgets.dart').absolute.path,
+          featureSet: FeatureSet.latestLanguageVersion(),
+        ).unit.directives
+        .whereType<ExportDirective>()
+        .map((export) => 'lib/${export.uri.stringValue}')
+        .toSet();
+
 Iterable<_Unit> _unitsExcept(Set<String> basenames) =>
     _libSrcUnits.where((unit) => !basenames.contains(unit.basename));
 
@@ -159,14 +173,17 @@ class _HelperCallVisitor(final String _filePath, final LineInfo _lineInfo)
   }
 }
 
-class _DispatchHelperVisitor(final String _filePath, final LineInfo _lineInfo)
-    extends RecursiveAstVisitor<void> {
+class _DispatchHelperVisitor(
+  final String _filePath,
+  final LineInfo _lineInfo, {
+  required final bool isExported,
+}) extends RecursiveAstVisitor<void> {
   final List<String> _offenders = [];
 
   @override
   void visitFunctionDeclaration(FunctionDeclaration node) {
     final name = node.name.lexeme;
-    if (name.startsWith('_')) {
+    if (!isExported || name.startsWith('_')) {
       _check(name, node.functionExpression.parameters, node.offset);
     }
     super.visitFunctionDeclaration(node);
@@ -175,7 +192,7 @@ class _DispatchHelperVisitor(final String _filePath, final LineInfo _lineInfo)
   @override
   void visitMethodDeclaration(MethodDeclaration node) {
     final name = node.name.lexeme;
-    if (name.startsWith('_')) {
+    if (!isExported || name.startsWith('_')) {
       _check(name, node.parameters, node.offset);
     }
     super.visitMethodDeclaration(node);
@@ -193,7 +210,7 @@ class _DispatchHelperVisitor(final String _filePath, final LineInfo _lineInfo)
     if (hasMaterial && hasCupertino) {
       final loc = _lineInfo.getLocation(offset);
       _offenders.add(
-        '$_filePath:${loc.lineNumber}: private function `$name` takes both '
+        '$_filePath:${loc.lineNumber}: internal function `$name` takes both '
         'material* and cupertino* function-typed params',
       );
     }

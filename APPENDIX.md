@@ -469,7 +469,7 @@ dispatch's shape:
 
 ### Internal rules the package follows
 
-1. **`showPlatformXxx` functions switch on `designLanguage` first**, and each arm calls a private
+1. **`showPlatformXxx` functions switch on `designLanguage` first**, and each arm calls an internal
    helper for one look, so the other helper is unreachable.
 2. **Widgets dispatch through `PlatformWidgetBase`.** See
    [`#platform-widget-base-hierarchy`](#platform-widget-base-hierarchy).
@@ -495,8 +495,9 @@ branches on the look, and `isIOS` picked the wrong one on macOS.
 ### Enforcement: regression guards on every PR
 
 1. **AST lint**, [`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart),
-   in `ci / Tests`. Fails if `lib/src/` calls a value selector, or a private helper takes both a
-   `material*` and a `cupertino*` builder, the 2 usual ways dispatch slips.
+   in `ci / Tests`. Fails if `lib/src/` calls a value selector, or an internal helper (a `_` name, or anything in a
+   file the barrel doesn't export) takes both a `material*` and a `cupertino*` builder, the 2 usual
+   ways dispatch slips.
 2. **Size benchmark**, [`tool/check_size_regression.dart`](./tool/check_size_regression.dart) over
    [`tool/size_harness/`](./tool/size_harness/), in `size-regression.yml`. Builds the harness for
    Android and fails once Cupertino-named bytes pass the budget at the top of the script. The
