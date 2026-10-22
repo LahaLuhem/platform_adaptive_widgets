@@ -92,10 +92,10 @@ class DialogsDemoView extends StatelessWidget {
             ],
             cupertinoKnobs: [
               if (viewModel.alertActions == .confirm)
-                SegmentKnob<PlatformConfirmKind>(
+                SegmentKnob<PlatformActionKind>(
                   label: 'kind',
                   value: viewModel.confirmKind,
-                  values: PlatformConfirmKind.values,
+                  values: PlatformActionKind.values,
                   onChanged: viewModel.onConfirmKindChanged,
                 ),
             ],
