@@ -14,6 +14,7 @@
 - \[#57\] Menu picker's wheel reports each stop and follows the app's value
 - \[#57\] Menu picker ignores re-picking the current value
 - **BREAKING** \[#58\] `MaterialAlertDialogData.actionsOverflowDirection` is non-null, defaulting to `up`
+- Choices ask: an action sheet on iOS, a sheet of rows on Android
 
 ### Fixed
 - \[#56\] Menu picker behaves the same on both looks
