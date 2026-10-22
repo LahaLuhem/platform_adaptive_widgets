@@ -30,7 +30,7 @@ Future<BuildContext> _pumpPage(WidgetTester tester) async {
 
 Future<bool> _show(
   BuildContext context, {
-  PlatformConfirmKind kind = .discard,
+  PlatformActionKind kind = .discard,
   String confirmLabel = _confirm,
 }) => showPlatformConfirm(
   context: context,
@@ -129,10 +129,10 @@ void main() {
       check(tester.any(find.text('Abbrechen'))).isTrue();
     });
 
-    scenarioOutlineWidgets<PlatformConfirmKind>(
+    scenarioOutlineWidgets<PlatformActionKind>(
       'keeps the confirming button as plain as Cancel on Material',
       examples: {
-        'when it proceeds': .proceed,
+        "when it's harmless": .normal,
         'when it deletes': .delete,
         'when it discards': .discard,
       },
@@ -149,10 +149,10 @@ void main() {
       variant: androidOnly,
     );
 
-    scenarioOutlineWidgets<({PlatformConfirmKind kind, _Look look})>(
+    scenarioOutlineWidgets<({PlatformActionKind kind, _Look look})>(
       'shows what confirming does on Cupertino',
       examples: {
-        'something harmless leads': (kind: .proceed, look: .primary),
+        'something harmless leads': (kind: .normal, look: .primary),
         'a delete the person asked for stays plain': (kind: .delete, look: .plain),
         "a loss they didn't ask for turns red": (kind: .discard, look: .red),
       },
