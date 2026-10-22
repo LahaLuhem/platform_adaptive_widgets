@@ -18,7 +18,8 @@ const _kMaterialChoicesHeaderPadding = EdgeInsetsDirectional.fromSTEB(16, 16, 24
 /// person backs out. An action sheet on Cupertino, a bottom sheet of rows on Material.
 ///
 /// Leave Cancel out of [choices], the package handles backing out. For a single choice, use
-/// [showPlatformConfirm]. Keep the list short.
+/// [showPlatformConfirm]. Keep it short. Choices show in the set's order, except that iOS moves
+/// destructive ones to the top.
 ///
 /// Known Flutter gaps:
 ///
@@ -38,7 +39,7 @@ const _kMaterialChoicesHeaderPadding = EdgeInsetsDirectional.fromSTEB(16, 16, 24
 /// {@example /example/lib/snippets/dialogs/platform_choices.dart#platform_choices}
 Future<T?> showPlatformChoices<T extends Object>({
   required BuildContext context,
-  required List<PlatformChoice<T>> choices,
+  required Set<PlatformChoice<T>> choices,
   String? title,
   String? message,
   Offset? anchorPoint,
@@ -53,6 +54,10 @@ Future<T?> showPlatformChoices<T extends Object>({
   assert(
     choices.length >= 2,
     'Pass at least 2 choices. For a single one, use showPlatformConfirm.',
+  );
+  assert(
+    choices.map((choice) => choice.value).toSet().length == choices.length,
+    'Give each choice its own value, or the answer cannot tell them apart.',
   );
 
   return switch (designLanguage) {
@@ -87,7 +92,7 @@ Future<T?> showPlatformChoices<T extends Object>({
 
 Future<T?> _showMaterialChoices<T extends Object>({
   required BuildContext context,
-  required List<PlatformChoice<T>> choices,
+  required Set<PlatformChoice<T>> choices,
   required String? title,
   required String? message,
   required ScrollController? scrollController,

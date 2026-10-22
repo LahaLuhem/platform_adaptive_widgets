@@ -18,10 +18,10 @@ class PlatformChoicesSnippet extends StatelessWidget {
     final draftAction = await showPlatformChoices(
       context: context,
       title: 'Unsent draft',
-      choices: const [
+      choices: const {
         PlatformChoice(value: DraftAction.save, label: 'Save Draft', actionKind: .normal),
         PlatformChoice(value: DraftAction.delete, label: 'Delete Draft', actionKind: .delete),
-      ],
+      },
     );
     // #endregion
     debugPrint('$draftAction'); // #hide

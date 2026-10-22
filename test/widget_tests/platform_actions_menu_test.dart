@@ -201,6 +201,8 @@ void main() {
           _actions([], withIcons: true).first,
           ..._actions([]).skip(1),
         },
+        // 2 separate Share actions, which a person couldn't tell apart.
+        'with 2 actions sharing a label': {_actions([]).first, _actions([]).first},
       },
       outline: (tester, actions) async {
         await _pump(tester, _Page(actions: actions));

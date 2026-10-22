@@ -212,6 +212,20 @@ void main() {
       },
     );
 
+    scenarioWidgets('refuses 2 choices with the same value', (tester) async {
+      final context = await pumpForContext(tester);
+
+      check(
+        () => _show(
+          context,
+          choices: {
+            _save,
+            PlatformChoice(value: _save.value, label: 'Keep Draft', actionKind: .normal),
+          },
+        ),
+      ).throws<AssertionError>();
+    });
+
     scenarioWidgets('scrolls the choices with scrollController', (tester) async {
       final choices = {
         for (var value = 1; value <= 30; value++)

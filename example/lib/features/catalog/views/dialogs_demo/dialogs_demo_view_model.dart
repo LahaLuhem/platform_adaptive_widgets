@@ -201,10 +201,10 @@ final class DialogsDemoViewModel extends ViewModel {
     _draftOutcome = await showPlatformChoices(
       context: context,
       title: 'Unsent draft',
-      choices: const [
+      choices: const {
         PlatformChoice(value: 'saved', label: 'Save Draft', actionKind: .normal),
         PlatformChoice(value: 'deleted', label: 'Delete Draft', actionKind: .delete),
-      ],
+      },
     );
     notifyListeners();
   }

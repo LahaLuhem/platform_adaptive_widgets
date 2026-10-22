@@ -24,7 +24,7 @@ Future<bool> showPlatformDestructiveConfirm({
   ),
   .cupertino => showCupertinoChoicesSheet(
     context: context,
-    choices: [PlatformChoice(value: true, label: confirmLabel, actionKind: .delete)],
+    choices: {PlatformChoice(value: true, label: confirmLabel, actionKind: .delete)},
     title: null,
     message: message,
     scrollController: null,
