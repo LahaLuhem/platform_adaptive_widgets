@@ -158,12 +158,8 @@ class DialogsDemoView extends StatelessWidget {
               'A pull-down menu on Cupertino, an M3 menu on Material. Delete asks first, and is red on '
               'Cupertino.',
           child: PlatformActionsMenu(
-            builder: (_, onPressed) => PlatformButton(
-              onPressed: onPressed,
-              child: Text(
-                viewModel.listOutcome == null ? 'Grocery list' : 'List ${viewModel.listOutcome}',
-              ),
-            ),
+            builder: (_, onPressed) =>
+                PlatformButton(onPressed: onPressed, child: const Text('Grocery list')),
             actions: {
               PlatformMenuAction.normal(
                 label: 'Share List',

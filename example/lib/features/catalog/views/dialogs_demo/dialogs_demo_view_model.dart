@@ -6,8 +6,7 @@ import 'package:pmvvm/pmvvm.dart';
 import '/features/catalog/data/enums/alert_actions.dart';
 
 /// Triggers for the dialog, sheet and picker showcase, plus the args their knobs set. The full-screen
-/// dialog, toast, choices, actions menu, date and time buttons keep the last result they got, so it can
-/// be shown on them.
+/// dialog, toast, choices, date and time buttons keep the last result they got, so it can be shown on them.
 final class DialogsDemoViewModel extends ViewModel {
   var _alertTitle = 'Discard changes?';
   var _alertMessage = 'Your edits will be lost.';
@@ -21,7 +20,6 @@ final class DialogsDemoViewModel extends ViewModel {
   var _isUndone = false;
   String? _savedEvent;
   String? _draftOutcome;
-  String? _listOutcome;
   Date? _selectedDate;
   TimeOfDay? _selectedTime;
 
@@ -48,8 +46,6 @@ final class DialogsDemoViewModel extends ViewModel {
   String? get savedEvent => _savedEvent;
 
   String? get draftOutcome => _draftOutcome;
-
-  String? get listOutcome => _listOutcome;
 
   Date? get selectedDate => _selectedDate;
 
@@ -213,20 +209,12 @@ final class DialogsDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
-  void onShareListPressed() {
-    _listOutcome = 'shared';
-    notifyListeners();
-  }
+  Future<void> onShareListPressed() => showPlatformToast(context: context, message: 'List shared');
 
-  void onPrintPressed() {
-    _listOutcome = 'printed';
-    notifyListeners();
-  }
+  Future<void> onPrintPressed() => showPlatformToast(context: context, message: 'List printed');
 
-  void onDeleteListPressed() {
-    _listOutcome = 'deleted';
-    notifyListeners();
-  }
+  Future<void> onDeleteListPressed() =>
+      showPlatformToast(context: context, message: 'List deleted');
 
   Future<void> onShowDatePickerPressed() async {
     final picked = await showPlatformDatePicker(
