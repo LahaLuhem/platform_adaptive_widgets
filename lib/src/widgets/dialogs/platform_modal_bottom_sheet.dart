@@ -1,4 +1,5 @@
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoPopupSurface, showCupertinoModalPopup;
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show CupertinoPopupSurface, kCupertinoModalBarrierColor, showCupertinoModalPopup;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show showModalBottomSheet;
 
@@ -11,8 +12,8 @@ import '/src/utils/design_language.dart';
 /// where Material's paints a sheet. Skip the wrap with [showPlatformRawModalBottomSheet].
 ///
 /// Same idea on both platforms, barely overlapping parameters. Material brings a pile of sheet-shape,
-/// drag and safe-area knobs, Cupertino brings a filter and a barrier. So almost everything lives per-platform
-/// on [materialModalBottomSheetData] / [cupertinoModalPopupData].
+/// drag and safe-area knobs, Cupertino little more than a filter. Those live per-platform on
+/// [materialModalBottomSheetData] / [cupertinoModalPopupData].
 ///
 /// Either pass [builder] for content shared across both, or pass [materialBuilder] and [cupertinoBuilder]
 /// together. Mixing the 2 trips an assert.
@@ -24,9 +25,11 @@ Future<T?> showPlatformModalBottomSheet<T>({
   WidgetBuilder? builder,
   WidgetBuilder? materialBuilder,
   WidgetBuilder? cupertinoBuilder,
+  Offset? anchorPoint,
+  Color? barrierColor,
+  bool barrierDismissible = kDefaultModalBottomSheetBarrierDismissible,
   RouteSettings? routeSettings,
   bool useRootNavigator = kDefaultUseRootNavigator,
-  Offset? anchorPoint,
   bool? requestFocus,
   MaterialModalBottomSheetData? materialModalBottomSheetData,
   CupertinoModalPopupData? cupertinoModalPopupData,
@@ -42,9 +45,11 @@ Future<T?> showPlatformModalBottomSheet<T>({
       context: context,
       builder: materialBuilder ?? builder!,
       data: materialModalBottomSheetData,
+      anchorPoint: anchorPoint,
+      barrierColor: barrierColor,
+      barrierDismissible: barrierDismissible,
       routeSettings: routeSettings,
       useRootNavigator: useRootNavigator,
-      anchorPoint: anchorPoint,
       requestFocus: requestFocus,
     ),
     .cupertino => _showCupertinoModalPopup(
@@ -55,9 +60,11 @@ Future<T?> showPlatformModalBottomSheet<T>({
       builder: (context) =>
           CupertinoPopupSurface(child: (cupertinoBuilder ?? builder!).call(context)),
       data: cupertinoModalPopupData,
+      anchorPoint: anchorPoint,
+      barrierColor: barrierColor,
+      barrierDismissible: barrierDismissible,
       routeSettings: routeSettings,
       useRootNavigator: useRootNavigator,
-      anchorPoint: anchorPoint,
       requestFocus: requestFocus,
     ),
   };
@@ -76,9 +83,11 @@ Future<T?> showPlatformRawModalBottomSheet<T>({
   WidgetBuilder? builder,
   WidgetBuilder? materialBuilder,
   WidgetBuilder? cupertinoBuilder,
+  Offset? anchorPoint,
+  Color? barrierColor,
+  bool barrierDismissible = kDefaultModalBottomSheetBarrierDismissible,
   RouteSettings? routeSettings,
   bool useRootNavigator = kDefaultUseRootNavigator,
-  Offset? anchorPoint,
   bool? requestFocus,
   MaterialModalBottomSheetData? materialModalBottomSheetData,
   CupertinoModalPopupData? cupertinoModalPopupData,
@@ -94,9 +103,11 @@ Future<T?> showPlatformRawModalBottomSheet<T>({
       context: context,
       builder: materialBuilder ?? builder!,
       data: materialModalBottomSheetData,
+      anchorPoint: anchorPoint,
+      barrierColor: barrierColor,
+      barrierDismissible: barrierDismissible,
       routeSettings: routeSettings,
       useRootNavigator: useRootNavigator,
-      anchorPoint: anchorPoint,
       requestFocus: requestFocus,
     ),
     .cupertino => _showCupertinoModalPopup(
@@ -104,9 +115,11 @@ Future<T?> showPlatformRawModalBottomSheet<T>({
       // Raw: no CupertinoPopupSurface wrap, the caller owns the surface.
       builder: cupertinoBuilder ?? builder!,
       data: cupertinoModalPopupData,
+      anchorPoint: anchorPoint,
+      barrierColor: barrierColor,
+      barrierDismissible: barrierDismissible,
       routeSettings: routeSettings,
       useRootNavigator: useRootNavigator,
-      anchorPoint: anchorPoint,
       requestFocus: requestFocus,
     ),
   };
@@ -137,9 +150,11 @@ Future<T?> _showMaterialModalBottomSheet<T>({
   required BuildContext context,
   required WidgetBuilder builder,
   required MaterialModalBottomSheetData? data,
+  required Offset? anchorPoint,
+  required Color? barrierColor,
+  required bool barrierDismissible,
   required RouteSettings? routeSettings,
   required bool useRootNavigator,
-  required Offset? anchorPoint,
   required bool? requestFocus,
 }) => showModalBottomSheet(
   context: context,
@@ -150,15 +165,14 @@ Future<T?> _showMaterialModalBottomSheet<T>({
   shape: data?.shape,
   clipBehavior: data?.clipBehavior,
   constraints: data?.constraints,
-  // No barrierColor: tinting a sheet's barrier is rare and the theme-derived default nearly always
-  // right. Surface it if a real case turns up.
+  barrierColor: barrierColor,
   isScrollControlled:
       data?.isScrollControlled ?? kDefaultMaterialModalBottomSheetIsScrollControlled,
   scrollControlDisabledMaxHeightRatio:
       data?.scrollControlDisabledMaxHeightRatio ??
       kDefaultMaterialModalBottomSheetScrollControlDisabledMaxHeightRatio,
   useRootNavigator: useRootNavigator,
-  isDismissible: data?.isDismissible ?? kDefaultMaterialModalBottomSheetIsDismissible,
+  isDismissible: barrierDismissible,
   enableDrag: data?.enableDrag ?? kDefaultMaterialModalBottomSheetEnableDrag,
   showDragHandle: data?.showDragHandle,
   useSafeArea: data?.useSafeArea ?? kDefaultMaterialModalBottomSheetUseSafeArea,
@@ -175,16 +189,18 @@ Future<T?> _showCupertinoModalPopup<T>({
   required BuildContext context,
   required WidgetBuilder builder,
   required CupertinoModalPopupData? data,
+  required Offset? anchorPoint,
+  required Color? barrierColor,
+  required bool barrierDismissible,
   required RouteSettings? routeSettings,
   required bool useRootNavigator,
-  required Offset? anchorPoint,
   required bool? requestFocus,
 }) => showCupertinoModalPopup(
   context: context,
   builder: builder,
   filter: data?.filter,
-  barrierColor: data?.barrierColor ?? kDefaultCupertinoModalPopupBarrierColor,
-  barrierDismissible: data?.barrierDismissible ?? kDefaultCupertinoModalPopupBarrierDismissible,
+  barrierColor: barrierColor ?? kCupertinoModalBarrierColor,
+  barrierDismissible: barrierDismissible,
   useRootNavigator: useRootNavigator,
   semanticsDismissible:
       data?.semanticsDismissible ?? kDefaultCupertinoModalPopupSemanticsDismissible,

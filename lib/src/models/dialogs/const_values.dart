@@ -6,3 +6,6 @@ const kMaterialBarrierDismissible = true;
 
 /// Default barrier dismissibility for Cupertino dialogs.
 const kCupertinoBarrierDismissible = false;
+
+/// Default barrier dismissibility for modal bottom sheets, the same on both platforms.
+const kDefaultModalBottomSheetBarrierDismissible = true;
