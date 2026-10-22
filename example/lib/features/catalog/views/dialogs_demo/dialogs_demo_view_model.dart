@@ -6,7 +6,8 @@ import 'package:pmvvm/pmvvm.dart';
 import '/features/catalog/data/enums/alert_actions.dart';
 
 /// Triggers for the dialog, sheet and picker showcase, plus the args their knobs set. The full-screen
-/// dialog, toast, choices, date and time buttons keep the last result they got, so it can be shown on them.
+/// dialog, toast, choices, actions menu, date and time buttons keep the last result they got, so it can
+/// be shown on them.
 final class DialogsDemoViewModel extends ViewModel {
   var _alertTitle = 'Discard changes?';
   var _alertMessage = 'Your edits will be lost.';
@@ -20,6 +21,7 @@ final class DialogsDemoViewModel extends ViewModel {
   var _isUndone = false;
   String? _savedEvent;
   String? _draftOutcome;
+  String? _listOutcome;
   Date? _selectedDate;
   TimeOfDay? _selectedTime;
 
@@ -46,6 +48,8 @@ final class DialogsDemoViewModel extends ViewModel {
   String? get savedEvent => _savedEvent;
 
   String? get draftOutcome => _draftOutcome;
+
+  String? get listOutcome => _listOutcome;
 
   Date? get selectedDate => _selectedDate;
 
@@ -206,6 +210,21 @@ final class DialogsDemoViewModel extends ViewModel {
         PlatformChoice(value: 'deleted', label: 'Delete Draft', actionKind: .delete),
       },
     );
+    notifyListeners();
+  }
+
+  void onShareListPressed() {
+    _listOutcome = 'shared';
+    notifyListeners();
+  }
+
+  void onPrintPressed() {
+    _listOutcome = 'printed';
+    notifyListeners();
+  }
+
+  void onDeleteListPressed() {
+    _listOutcome = 'deleted';
     notifyListeners();
   }
 
