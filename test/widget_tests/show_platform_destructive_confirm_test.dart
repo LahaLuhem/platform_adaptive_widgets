@@ -91,5 +91,16 @@ void main() {
       check(_center(tester, 'Cancel').dx).isLessThan(_center(tester, _confirm).dx);
       check(argbOf(labelStyle(tester, _confirm))).equals(argbOf(labelStyle(tester, 'Cancel')));
     }, variant: androidOnly);
+
+    scenarioWidgets('keeps its untitled message as far from the top as from the side on Android', (
+      tester,
+    ) async {
+      final context = await pumpForContext(tester);
+      unawaited(_show(context));
+      await tester.pumpAndSettle();
+
+      final insets = messageInsets(tester, _message);
+      check(insets.top).equals(insets.side);
+    }, variant: androidOnly);
   });
 }

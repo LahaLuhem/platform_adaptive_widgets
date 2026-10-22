@@ -3,5 +3,6 @@
 library;
 
 export 'bdd.dart';
+export 'dialog_insets.dart';
 export 'label_style.dart';
 export 'platform_harness.dart';
