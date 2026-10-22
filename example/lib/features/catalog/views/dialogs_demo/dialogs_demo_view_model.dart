@@ -12,7 +12,7 @@ final class DialogsDemoViewModel extends ViewModel {
   var _alertMessage = 'Your edits will be lost.';
   var _alertActions = AlertActions.confirm;
   var _confirmLabel = 'Discard';
-  var _confirmKind = PlatformActionKind.discard;
+  var _confirmActionKind = PlatformActionKind.discard;
   var _isDialogRaw = false;
   var _shouldDismissDialogOnBarrierTap = true;
   var _isSheetRaw = false;
@@ -30,7 +30,7 @@ final class DialogsDemoViewModel extends ViewModel {
 
   String get confirmLabel => _confirmLabel;
 
-  PlatformActionKind get confirmKind => _confirmKind;
+  PlatformActionKind get confirmActionKind => _confirmActionKind;
 
   bool get isDialogRaw => _isDialogRaw;
 
@@ -68,8 +68,8 @@ final class DialogsDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
-  void onConfirmKindChanged(PlatformActionKind value) {
-    _confirmKind = value;
+  void onConfirmActionKindChanged(PlatformActionKind value) {
+    _confirmActionKind = value;
     notifyListeners();
   }
 
@@ -148,7 +148,7 @@ final class DialogsDemoViewModel extends ViewModel {
       title: _alertTitle,
       message: _alertMessage,
       confirmLabel: _confirmLabel,
-      kind: _confirmKind,
+      actionKind: _confirmActionKind,
     ),
   };
 

@@ -57,7 +57,7 @@ final class const MaterialModalBottomSheetData({
   final double scrollControlDisabledMaxHeightRatio =
       kDefaultMaterialModalBottomSheetScrollControlDisabledMaxHeightRatio,
 
-  /// Lets a swipe down close the sheet, even with the show function's `barrierDismissible` off.
+  /// A swipe down still closes the sheet when `barrierDismissible` is off.
   final bool enableDrag = kDefaultMaterialModalBottomSheetEnableDrag,
 
   /// The little grab bar above the content. Left out, the theme decides.
@@ -79,7 +79,7 @@ final class const CupertinoModalPopupData({
   /// Usually a Gaussian blur, for the frosted glass look iOS goes in for.
   final ImageFilter? filter,
 
-  /// Offers the barrier's dismiss action to screen readers too.
+  /// Lets a screen reader close the popup from outside it too.
   final bool semanticsDismissible = kDefaultCupertinoModalPopupSemanticsDismissible,
 }) {
   /// Creates Cupertino-side settings for `showPlatformModalBottomSheet`.
