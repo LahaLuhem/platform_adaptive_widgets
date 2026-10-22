@@ -28,15 +28,21 @@ class const _Page({
   final VoidCallback? onUnderPressed,
 }) extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Column(
+  // A Stack, not a Column, so a refused menu's error box has room to lay out.
+  Widget build(BuildContext context) => Stack(
     children: [
-      PlatformActionsMenu(
-        builder: (_, onPressed) => PlatformButton(onPressed: onPressed, child: const Text(_more)),
-        actions: actions,
+      Align(
+        alignment: .topCenter,
+        child: PlatformActionsMenu(
+          builder: (_, onPressed) => PlatformButton(onPressed: onPressed, child: const Text(_more)),
+          actions: actions,
+        ),
       ),
-      const Spacer(),
       if (onUnderPressed case final onPressed?)
-        PlatformButton(onPressed: onPressed, child: const Text(_under)),
+        Align(
+          alignment: .bottomCenter,
+          child: PlatformButton(onPressed: onPressed, child: const Text(_under)),
+        ),
     ],
   );
 }

@@ -2,7 +2,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/LahaLuhem/platform_adaptive_widgets/badge.svg?branch=master)](https://coveralls.io/github/LahaLuhem/platform_adaptive_widgets?branch=master)
 [![Pub Version](https://img.shields.io/pub/v/platform_adaptive_widgets.svg)](https://pub.dev/packages/platform_adaptive_widgets)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/pulls)
-[![Pub Package](https://img.shields.io/pub/v/platform_adaptive_widgets.svg)](https://pub.dev/packages/platform_adaptive_widgets)
 [![Pub Points](https://img.shields.io/pub/points/platform_adaptive_widgets?logo=dart)](https://pub.dev/packages/platform_adaptive_widgets/score)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/LahaLuhem/platform_adaptive_widgets.svg)](https://github.com/LahaLuhem/platform_adaptive_widgets/issues)
@@ -181,6 +180,7 @@ column shows what you can pass to tune each side. See
 | `showPlatformDatePicker()`                              | `showDatePicker`                                      | `CupertinoDatePicker` + `showCupertinoModalPopup`                                                                  | `MaterialDatePickerData`, `CupertinoDatePickerData`       |
 | `showPlatformTimePicker()`                              | `showTimePicker`                                      | `CupertinoDatePicker` (time mode) + `showCupertinoModalPopup`                                                      | `MaterialTimePickerData`, `CupertinoDatePickerData`       |
 | `PlatformMenuPicker<T>`                                 | `DropdownMenu` + `DropdownMenuEntry`                  | `CupertinoMenuAnchor` (≤5 items), `CupertinoPicker` in a popup (≤250) or a `CupertinoPageRoute` list (>250)        | `MaterialMenuPickerData`, `CupertinoMenuPickerData`       |
+| `PlatformActionsMenu` + `PlatformMenuAction`            | `MenuAnchor`, icons first, a dialog to confirm        | `CupertinoMenuAnchor`, icons last, delete and discard in red and confirmed in an action sheet                      | N/A                                                       |
 | `showPlatformDialog<T>()`                               | `showDialog` + `Dialog`                               | `showCupertinoDialog` + `CupertinoPopupSurface`                                                                    | `MaterialDialogData`                                      |
 | `showPlatformFullscreenDialog<T>()`                     | `showDialog` + `Dialog.fullscreen` + `Scaffold`       | `CupertinoPageRoute` (`fullscreenDialog: true`) + `CupertinoPageScaffold`                                          | `MaterialFullscreenDialogData`                            |
 | `showPlatformConfirm()` + `PlatformActionKind`          | `AlertDialog`, Cancel + a confirming action           | `CupertinoAlertDialog`, Cancel + a confirming action styled by `actionKind`                                        | `MaterialAlertDialogData`, `CupertinoAlertDialogData`     |
