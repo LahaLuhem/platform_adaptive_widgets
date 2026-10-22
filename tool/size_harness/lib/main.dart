@@ -34,13 +34,24 @@ class _Surfaces extends StatelessWidget {
         ),
         onSelected: (_) {},
       ),
+      // The delete reaches the confirm's own top-level switch.
+      PlatformActionsMenu(
+        builder: (_, onPressed) =>
+            TextButton(onPressed: onPressed, child: const Text('actions menu')),
+        actions: {
+          PlatformMenuAction.normal(label: 'share', onPressed: () {}),
+          PlatformMenuAction.delete(label: 'delete', confirmMessage: 'sure?', onPressed: () {}),
+        },
+      ),
 
       // showPlatformDialog, top-level switch dispatch.
       TextButton(
         onPressed: () => showPlatformDialog<void>(
           context: context,
           materialBuilder: (_) => const AlertDialog(content: Text('m')),
-          cupertinoBuilder: (_) => const CupertinoAlertDialog(content: Text('c')),
+          // Not a Cupertino widget: one in a closure stays in the Android build and hides a leak of the
+          // same widgets.
+          cupertinoBuilder: (_) => const Text('c'),
         ),
         child: const Text('dialog'),
       ),

@@ -5,12 +5,10 @@ import 'dart:io';
 
 /// Budget for Cupertino-pathed bytes in the harness's Android build.
 ///
-/// The harness measured ~107 KB on 2026-06-08, nearly all of it SDK-internal Cupertino nothing outside
-/// the SDK can prune. This sits ~33 KB above that, which is the point: one leaked `CupertinoDatePicker`
-/// costs ~61 KB and so trips it, where the old 200 KB budget had enough headroom to swallow that
-/// silently. The remaining margin covers SDK drift about threefold. Raise it only for SDK growth, never
-/// for a leak: APPENDIX.md#aot-pruning-rules.
-const int _maxCupertinoBytes = 140 * 1024;
+/// The harness keeps only the Cupertino that the SDK's own Material widgets hold, so this sits just above
+/// that: a leaked sheet trips it, SDK drift doesn't. Raise it only for SDK growth, never for a leak:
+/// APPENDIX.md#aot-pruning-rules.
+const int _maxCupertinoBytes = 100 * 1024;
 
 /// Number of top offenders to print on failure.
 const _maxOffendersShown = 30;
