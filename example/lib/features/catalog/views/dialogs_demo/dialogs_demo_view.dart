@@ -139,6 +139,18 @@ class DialogsDemoView extends StatelessWidget {
           ),
         ),
         DemoCard(
+          title: 'Choices',
+          description:
+              'An action sheet on Cupertino, a sheet of rows on Material. Cupertino puts the delete on '
+              'top, in red.',
+          child: PlatformButton(
+            onPressed: viewModel.onShowChoicesPressed,
+            child: Text(
+              viewModel.draftOutcome == null ? 'Unsent draft' : 'Draft ${viewModel.draftOutcome}',
+            ),
+          ),
+        ),
+        DemoCard(
           title: 'Date & time pickers',
           description: 'A calendar or clock dialog on Material, wheels on Cupertino.',
           child: Row(

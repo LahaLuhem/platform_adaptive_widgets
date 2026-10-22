@@ -6,7 +6,7 @@ import 'package:pmvvm/pmvvm.dart';
 import '/features/catalog/data/enums/alert_actions.dart';
 
 /// Triggers for the dialog, sheet and picker showcase, plus the args their knobs set. The full-screen
-/// dialog, toast, date and time buttons keep the last result they got, so it can be shown on them.
+/// dialog, toast, choices, date and time buttons keep the last result they got, so it can be shown on them.
 final class DialogsDemoViewModel extends ViewModel {
   var _alertTitle = 'Discard changes?';
   var _alertMessage = 'Your edits will be lost.';
@@ -19,6 +19,7 @@ final class DialogsDemoViewModel extends ViewModel {
   var _shouldOfferUndo = true;
   var _isUndone = false;
   String? _savedEvent;
+  String? _draftOutcome;
   Date? _selectedDate;
   TimeOfDay? _selectedTime;
 
@@ -43,6 +44,8 @@ final class DialogsDemoViewModel extends ViewModel {
   bool get isUndone => _isUndone;
 
   String? get savedEvent => _savedEvent;
+
+  String? get draftOutcome => _draftOutcome;
 
   Date? get selectedDate => _selectedDate;
 
@@ -193,6 +196,18 @@ final class DialogsDemoViewModel extends ViewModel {
             ),
           ),
         );
+
+  Future<void> onShowChoicesPressed() async {
+    _draftOutcome = await showPlatformChoices(
+      context: context,
+      title: 'Unsent draft',
+      choices: const [
+        PlatformChoice(value: 'saved', label: 'Save Draft', actionKind: .normal),
+        PlatformChoice(value: 'deleted', label: 'Delete Draft', actionKind: .delete),
+      ],
+    );
+    notifyListeners();
+  }
 
   Future<void> onShowDatePickerPressed() async {
     final picked = await showPlatformDatePicker(
