@@ -289,8 +289,9 @@ final class const _CupertinoPickerMenu<T extends Object>({
         onPressed: () {
           if (index != selectedIndex) onSelected?.call(items[index]);
         },
-        leading: transformed[index].iconData == null ? null : Icon(transformed[index].iconData),
-        trailing: index != selectedIndex ? null : const Icon(CupertinoIcons.check_mark),
+        // iOS's slots. Only the trailing one hides at accessibility text sizes, so the checkmark leads.
+        leading: index != selectedIndex ? null : const Icon(CupertinoIcons.check_mark),
+        trailing: transformed[index].iconData == null ? null : Icon(transformed[index].iconData),
         child: Text(transformed[index].label ?? ''),
       ),
       growable: false,

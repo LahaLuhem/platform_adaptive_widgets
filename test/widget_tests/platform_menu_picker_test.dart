@@ -2,6 +2,7 @@
 // ignore_for_file: prefer-match-file-name
 
 import 'package:checks/checks.dart';
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoMenuItem;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
@@ -91,6 +92,15 @@ Rect _globalRect(BuildContext context) {
 
   return box.localToGlobal(Offset.zero) & box.size;
 }
+
+// The open menu's row only. The field shows the picked label too.
+int _iconsInMenuRow(String label) => find
+    .descendant(
+      of: find.ancestor(of: find.text(label), matching: find.byType(CupertinoMenuItem)),
+      matching: find.byType(Icon),
+    )
+    .evaluate()
+    .length;
 
 void main() {
   feature('PlatformMenuPicker', () {
@@ -231,6 +241,23 @@ void main() {
         check(find.byIcon(_icon).evaluate().where((icon) => Scrollable.maybeOf(icon) != null))
             .isNotEmpty();
       },
+    );
+
+    scenarioOutlineWidgets<double>(
+      "marks a short list's picked row at any text size",
+      // iOS's smallest accessibility size sets body text at 28 pt instead of 17.
+      examples: {'at the default text size': 1, 'at an accessibility text size': 28 / 17},
+      outline: (tester, textScaleFactor) async {
+        tester.platformDispatcher.textScaleFactorTestValue = textScaleFactor;
+        addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+        await _pump(tester, const _Picker(count: 3, current: 1, withIcons: true));
+
+        await _open(tester);
+
+        // The checkmark is the one icon its neighbour lacks, whether or not the rows' own icons show.
+        check(_iconsInMenuRow(_label(1))).equals(_iconsInMenuRow(_label(0)) + 1);
+      },
+      variant: iosOnly,
     );
 
     scenarioOutlineWidgets<int?>(
