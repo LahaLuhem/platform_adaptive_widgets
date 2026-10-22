@@ -12,7 +12,7 @@ import 'sheet_routes.dart';
 /// [showPlatformChoices]'s action sheet, in a file of its own so the destructive confirm can share it.
 Future<T?> showCupertinoChoicesSheet<T extends Object>({
   required BuildContext context,
-  required List<PlatformChoice<T>> choices,
+  required Set<PlatformChoice<T>> choices,
   required String? title,
   required String? message,
   required ScrollController? scrollController,

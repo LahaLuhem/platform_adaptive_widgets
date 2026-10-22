@@ -110,10 +110,10 @@ class _Surfaces extends StatelessWidget {
       TextButton(
         onPressed: () => showPlatformChoices(
           context: context,
-          choices: const [
+          choices: const {
             PlatformChoice(value: 1, label: 'save', actionKind: .normal),
             PlatformChoice(value: 2, label: 'delete', actionKind: .delete),
-          ],
+          },
         ),
         child: const Text('choices'),
       ),
