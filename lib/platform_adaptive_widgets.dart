@@ -37,14 +37,11 @@ export 'src/widgets/dialogs/platform_acknowledge.dart';
 export 'src/widgets/dialogs/platform_choices.dart';
 export 'src/widgets/dialogs/platform_confirm.dart';
 export 'src/widgets/dialogs/platform_date_picker.dart';
-// Machinery under acknowledge and confirm, not an entry point.
-export 'src/widgets/dialogs/platform_dialog.dart'
-    hide PlatformDialogAction, showPlatformAlertDialog;
+export 'src/widgets/dialogs/platform_dialog.dart';
 export 'src/widgets/dialogs/platform_menu_picker.dart';
 export 'src/widgets/dialogs/platform_modal_bottom_sheet.dart';
+export 'src/widgets/dialogs/platform_time_picker.dart';
 export 'src/widgets/dialogs/platform_toast.dart';
-// platform_time_picker.dart is a `part of 'platform_date_picker.dart'`,
-// exported transitively via the date_picker export above.
 export 'src/widgets/interaction/platform_button.dart';
 export 'src/widgets/interaction/platform_checkbox.dart';
 export 'src/widgets/interaction/platform_expansion_tile.dart';

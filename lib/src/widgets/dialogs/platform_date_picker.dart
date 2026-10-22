@@ -1,18 +1,16 @@
-// ignore_for_file: prefer-match-file-name
+/// @docImport 'package:cupertino_ui/cupertino_ui.dart';
+/// @docImport '/src/widgets/dialogs/platform_time_picker.dart';
+library;
 
-import 'package:cupertino_ui/cupertino_ui.dart'
-    show CupertinoColors, CupertinoDatePicker, CupertinoDatePickerMode, showCupertinoModalPopup;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoDatePickerMode;
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart' show TimeOfDay, showDatePicker, showTimePicker;
+import 'package:material_ui/material_ui.dart' show showDatePicker;
 import 'package:minted_chronology/minted_chronology.dart' show Date;
 
-import '/src/extensions/time_of_day_extensions.dart';
 import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_date_picker_data.dart';
-import '/src/models/dialogs/platform_time_picker_data.dart';
 import '/src/utils/design_language.dart';
-
-part 'platform_time_picker.dart';
+import 'cupertino_picker_popup.dart';
 
 /// Shows a date picker. [showDatePicker] on Material, a [CupertinoDatePicker] in a bottom
 /// popup on Cupertino.
@@ -81,7 +79,7 @@ Future<Date?> showPlatformDatePicker({
       calendarDelegate:
           materialDatePickerData?.calendarDelegate ?? kDefaultMaterialDatePickerCalendarDelegate,
     ).then(_toDate),
-    .cupertino => _showCupertinoModePickerPopup(
+    .cupertino => showCupertinoPickerPopup(
       context: context,
       mode: CupertinoDatePickerMode.date,
       initialDateTime: initialDateTime,
@@ -102,82 +100,3 @@ Future<Date?> showPlatformDatePicker({
 // The picker clamps to [firstDate, lastDate], so the null arm is unreachable. Null beats throwing.
 Date? _toDate(DateTime? dateTime) =>
     dateTime == null ? null : Date.fromDateTime(dateTime).getOrNull();
-
-/// One popup for both pickers, since Cupertino only changes the [CupertinoDatePicker]'s `mode` between
-/// them. Callers slice the [DateTime] down to a [Date] or a [TimeOfDay] afterwards.
-Future<DateTime?> _showCupertinoModePickerPopup({
-  required BuildContext context,
-  required CupertinoDatePickerMode mode,
-  required DateTime? initialDateTime,
-  required Offset? anchorPoint,
-  required Color? barrierColor,
-  required bool? barrierDismissible,
-  required RouteSettings? routeSettings,
-  required bool useRootNavigator,
-  required bool? requestFocus,
-  required TransitionBuilder? builder,
-  required CupertinoDatePickerData? cupertinoDatePickerData,
-  DateTime? firstDateTime,
-  DateTime? lastDateTime,
-}) async {
-  var selectedDateTime = initialDateTime ?? DateTime.now();
-
-  final pickerWidget = CupertinoDatePicker(
-    mode: mode,
-    initialDateTime: initialDateTime,
-    minimumDate: firstDateTime,
-    maximumDate: lastDateTime,
-    selectableDayPredicate: cupertinoDatePickerData?.selectableDayPredicate,
-    onDateTimeChanged: (dateTime) => selectedDateTime = dateTime,
-    backgroundColor: cupertinoDatePickerData?.backgroundColor,
-    changeReportingBehavior:
-        cupertinoDatePickerData?.changeReportingBehavior ??
-        kDefaultCupertinoDatePickerChangeReportingBehavior,
-    dateOrder: cupertinoDatePickerData?.dateOrder,
-    itemExtent: cupertinoDatePickerData?.itemExtent ?? kDefaultCupertinoDatePickerItemExtent,
-    maximumYear: cupertinoDatePickerData?.maximumYear,
-    minimumYear: cupertinoDatePickerData?.minimumYear ?? kDefaultCupertinoDatePickerMinimumYear,
-    minuteInterval:
-        cupertinoDatePickerData?.minuteInterval ?? kDefaultCupertinoDatePickerMinuteInterval,
-    selectionOverlayBuilder: cupertinoDatePickerData?.selectionOverlayBuilder,
-    showDayOfWeek:
-        cupertinoDatePickerData?.showDayOfWeek ?? kDefaultCupertinoDatePickerShowDayOfWeek,
-    showTimeSeparator:
-        cupertinoDatePickerData?.showTimeSeparator ?? kDefaultCupertinoDatePickerShowTimeSeparator,
-    use24hFormat: cupertinoDatePickerData?.use24hFormat ?? kDefaultCupertinoDatePickerUse24hFormat,
-  );
-
-  await showCupertinoModalPopup<void>(
-    context: context,
-    anchorPoint: anchorPoint,
-    barrierColor: barrierColor ?? kDefaultCupertinoDatePickerBarrierColor,
-    barrierDismissible: barrierDismissible ?? kCupertinoBarrierDismissible,
-    routeSettings: routeSettings,
-    useRootNavigator: useRootNavigator,
-    filter: cupertinoDatePickerData?.filter,
-    requestFocus: requestFocus,
-    semanticsDismissible:
-        cupertinoDatePickerData?.semanticsDismissible ??
-        kDefaultCupertinoDatePickerSemanticsDismissible,
-    builder: (context) =>
-        builder?.call(context, pickerWidget) ??
-        _CupertinoPickerContainer(pickerWidget: pickerWidget),
-  );
-
-  return selectedDateTime;
-}
-
-/// The standard 216pt shell around the wheel: background, a little top padding, and room for the system
-/// navigation bar.
-class const _CupertinoPickerContainer({required final CupertinoDatePicker pickerWidget})
-    extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => Container(
-    height: 216,
-    padding: const EdgeInsets.only(top: 6),
-    // Bottom margin aligns the popup above the system navigation bar.
-    margin: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
-    color: CupertinoColors.systemBackground.resolveFrom(context),
-    child: SafeArea(top: false, child: pickerWidget),
-  );
-}
