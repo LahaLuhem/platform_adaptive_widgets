@@ -62,7 +62,7 @@ class _Surfaces extends StatelessWidget {
           title: 'title',
           message: 'message',
           confirmLabel: 'confirm',
-          kind: .discard,
+          actionKind: .discard,
         ),
         child: const Text('confirm'),
       ),
@@ -104,6 +104,18 @@ class _Surfaces extends StatelessWidget {
           builder: (_) => const Text('sheet'),
         ),
         child: const Text('sheet'),
+      ),
+
+      // showPlatformChoices, top-level switch dispatch.
+      TextButton(
+        onPressed: () => showPlatformChoices(
+          context: context,
+          choices: const [
+            PlatformChoice(value: 1, label: 'save', actionKind: .normal),
+            PlatformChoice(value: 2, label: 'delete', actionKind: .delete),
+          ],
+        ),
+        child: const Text('choices'),
       ),
 
       // context.platformIcon, its own inline switch.
