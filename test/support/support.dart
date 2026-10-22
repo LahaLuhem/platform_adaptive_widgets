@@ -1,6 +1,7 @@
-/// One-stop widget-test support: the Gherkin vocabulary and the platform harness. Import this
-/// instead of the individual pieces.
+/// One-stop widget-test support: the Gherkin vocabulary, the platform harness and label styles. Import
+/// this instead of the individual pieces.
 library;
 
 export 'bdd.dart';
+export 'label_style.dart';
 export 'platform_harness.dart';

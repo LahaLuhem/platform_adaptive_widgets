@@ -44,15 +44,6 @@ bool _isShowing(WidgetTester tester) => tester.any(find.text(_title));
 
 Offset _center(WidgetTester tester, String label) => tester.getCenter(find.text(label).last);
 
-TextStyle _labelStyle(WidgetTester tester, String label) => tester
-    .widget<RichText>(find.descendant(of: find.text(label).last, matching: find.byType(RichText)))
-    .text
-    .style!;
-
-int _argb(TextStyle style) => style.color!.toARGB32();
-
-int _weight(TextStyle style) => (style.fontWeight ?? FontWeight.normal).value;
-
 void main() {
   feature('showPlatformConfirm', () {
     scenarioOutlineWidgets<({String button, bool answer})>(
@@ -141,10 +132,10 @@ void main() {
         unawaited(_show(context, kind: kind));
         await tester.pumpAndSettle();
 
-        final confirm = _labelStyle(tester, _confirm);
-        final cancel = _labelStyle(tester, 'Cancel');
-        check(_argb(confirm)).equals(_argb(cancel));
-        check(_weight(confirm)).equals(_weight(cancel));
+        final confirm = labelStyle(tester, _confirm);
+        final cancel = labelStyle(tester, 'Cancel');
+        check(argbOf(confirm)).equals(argbOf(cancel));
+        check(weightOf(confirm)).equals(weightOf(cancel));
       },
       variant: androidOnly,
     );
@@ -161,18 +152,18 @@ void main() {
         unawaited(_show(context, kind: row.kind));
         await tester.pumpAndSettle();
 
-        final confirm = _labelStyle(tester, _confirm);
-        final cancel = _labelStyle(tester, 'Cancel');
+        final confirm = labelStyle(tester, _confirm);
+        final cancel = labelStyle(tester, 'Cancel');
         switch (row.look) {
           case .plain:
-            check(_argb(confirm)).equals(_argb(cancel));
-            check(_weight(confirm)).equals(_weight(cancel));
+            check(argbOf(confirm)).equals(argbOf(cancel));
+            check(weightOf(confirm)).equals(weightOf(cancel));
           case .red:
-            check(_argb(confirm)).equals(CupertinoColors.systemRed.color.toARGB32());
+            check(argbOf(confirm)).equals(CupertinoColors.systemRed.color.toARGB32());
             // Never the primary look as well, which the HIG keeps off destructive buttons.
-            check(_weight(confirm)).equals(_weight(cancel));
+            check(weightOf(confirm)).equals(weightOf(cancel));
           case .primary:
-            check(_weight(confirm)).isGreaterThan(_weight(cancel));
+            check(weightOf(confirm)).isGreaterThan(weightOf(cancel));
         }
       },
       variant: iosOnly,
