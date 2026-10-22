@@ -13,6 +13,10 @@ import '/src/models/platform_widget_base.dart';
 import '/src/utils/design_language.dart';
 import 'dialog_routes.dart';
 
+/// M3 pads a dialog 24 on every side, where Flutter leaves only its under-title gap of 16 above an
+/// untitled message ([flutter/flutter#195096](https://github.com/flutter/flutter/issues/195096)).
+const _kMaterialUntitledContentPadding = EdgeInsets.all(24);
+
 /// The alert under `showPlatformAcknowledge` and `showPlatformConfirm`, [AlertDialog] on Material and
 /// [CupertinoAlertDialog] on Cupertino. Not exported, so only those jobs pick its actions.
 Future<T?> showPlatformAlertDialog<T>({
@@ -44,7 +48,12 @@ Future<T?> showPlatformAlertDialog<T>({
       iconColor: materialAlertDialogData?.iconColor,
       titlePadding: materialAlertDialogData?.titlePadding,
       titleTextStyle: materialAlertDialogData?.titleTextStyle,
-      contentPadding: materialAlertDialogData?.contentPadding,
+      contentPadding:
+          materialAlertDialogData?.contentPadding ??
+          // An icon keeps M3's gap of 16 under it, which Flutter already gets right.
+          (title == null && materialAlertDialogData?.icon == null
+              ? _kMaterialUntitledContentPadding
+              : null),
       contentTextStyle: materialAlertDialogData?.contentTextStyle,
       actionsPadding: materialAlertDialogData?.actionsPadding,
       actionsAlignment: materialAlertDialogData?.actionsAlignment,
