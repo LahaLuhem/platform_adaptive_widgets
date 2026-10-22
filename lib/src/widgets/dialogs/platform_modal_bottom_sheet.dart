@@ -1,11 +1,14 @@
-import 'package:cupertino_ui/cupertino_ui.dart'
-    show CupertinoPopupSurface, kCupertinoModalBarrierColor, showCupertinoModalPopup;
+/// @docImport 'package:cupertino_ui/cupertino_ui.dart';
+/// @docImport 'package:material_ui/material_ui.dart';
+library;
+
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoPopupSurface;
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart' show showModalBottomSheet;
 
 import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 import '/src/utils/design_language.dart';
+import 'sheet_routes.dart';
 
 /// Shows a modal that slides up from the bottom. [showModalBottomSheet] on Material, [showCupertinoModalPopup]
 /// on Cupertino, wrapped there in a [CupertinoPopupSurface] because that route only positions and dims
@@ -41,10 +44,10 @@ Future<T?> showPlatformModalBottomSheet<T>({
   );
 
   return switch (designLanguage) {
-    .material => _showMaterialModalBottomSheet(
+    .material => showMaterialSheetRoute(
       context: context,
       builder: materialBuilder ?? builder!,
-      data: materialModalBottomSheetData,
+      materialModalBottomSheetData: materialModalBottomSheetData,
       anchorPoint: anchorPoint,
       barrierColor: barrierColor,
       barrierDismissible: barrierDismissible,
@@ -52,14 +55,14 @@ Future<T?> showPlatformModalBottomSheet<T>({
       useRootNavigator: useRootNavigator,
       requestFocus: requestFocus,
     ),
-    .cupertino => _showCupertinoModalPopup(
+    .cupertino => showCupertinoPopupRoute(
       context: context,
       // Wrap in a CupertinoPopupSurface, the popup route only positions and dims. It paints no surface,
       // so unwrapped content has no sheet behind it.
       // (The route bottom-aligns the child, so no Center is needed here.)
       builder: (context) =>
           CupertinoPopupSurface(child: (cupertinoBuilder ?? builder!).call(context)),
-      data: cupertinoModalPopupData,
+      cupertinoModalPopupData: cupertinoModalPopupData,
       anchorPoint: anchorPoint,
       barrierColor: barrierColor,
       barrierDismissible: barrierDismissible,
@@ -99,10 +102,10 @@ Future<T?> showPlatformRawModalBottomSheet<T>({
   );
 
   return switch (designLanguage) {
-    .material => _showMaterialModalBottomSheet(
+    .material => showMaterialSheetRoute(
       context: context,
       builder: materialBuilder ?? builder!,
-      data: materialModalBottomSheetData,
+      materialModalBottomSheetData: materialModalBottomSheetData,
       anchorPoint: anchorPoint,
       barrierColor: barrierColor,
       barrierDismissible: barrierDismissible,
@@ -110,11 +113,11 @@ Future<T?> showPlatformRawModalBottomSheet<T>({
       useRootNavigator: useRootNavigator,
       requestFocus: requestFocus,
     ),
-    .cupertino => _showCupertinoModalPopup(
+    .cupertino => showCupertinoPopupRoute(
       context: context,
       // Raw: no CupertinoPopupSurface wrap, the caller owns the surface.
       builder: cupertinoBuilder ?? builder!,
-      data: cupertinoModalPopupData,
+      cupertinoModalPopupData: cupertinoModalPopupData,
       anchorPoint: anchorPoint,
       barrierColor: barrierColor,
       barrierDismissible: barrierDismissible,
@@ -143,68 +146,3 @@ void _assertBuilderInvariant({
     '`cupertinoBuilder`.',
   );
 }
-
-/// Marshals [showModalBottomSheet]'s args out of [data]. One builder, not 2, so the AOT compiler can
-/// fold the unused arm. See `test/aot_pruning_regression_test.dart`.
-Future<T?> _showMaterialModalBottomSheet<T>({
-  required BuildContext context,
-  required WidgetBuilder builder,
-  required MaterialModalBottomSheetData? data,
-  required Offset? anchorPoint,
-  required Color? barrierColor,
-  required bool barrierDismissible,
-  required RouteSettings? routeSettings,
-  required bool useRootNavigator,
-  required bool? requestFocus,
-}) => showModalBottomSheet(
-  context: context,
-  builder: builder,
-  backgroundColor: data?.backgroundColor,
-  barrierLabel: data?.barrierLabel,
-  elevation: data?.elevation,
-  shape: data?.shape,
-  clipBehavior: data?.clipBehavior,
-  constraints: data?.constraints,
-  barrierColor: barrierColor,
-  isScrollControlled:
-      data?.isScrollControlled ?? kDefaultMaterialModalBottomSheetIsScrollControlled,
-  scrollControlDisabledMaxHeightRatio:
-      data?.scrollControlDisabledMaxHeightRatio ??
-      kDefaultMaterialModalBottomSheetScrollControlDisabledMaxHeightRatio,
-  useRootNavigator: useRootNavigator,
-  isDismissible: barrierDismissible,
-  enableDrag: data?.enableDrag ?? kDefaultMaterialModalBottomSheetEnableDrag,
-  showDragHandle: data?.showDragHandle,
-  useSafeArea: data?.useSafeArea ?? kDefaultMaterialModalBottomSheetUseSafeArea,
-  routeSettings: routeSettings,
-  transitionAnimationController: data?.transitionAnimationController,
-  anchorPoint: anchorPoint,
-  sheetAnimationStyle: data?.sheetAnimationStyle,
-  requestFocus: requestFocus,
-);
-
-/// The Cupertino half of [_showMaterialModalBottomSheet]. Takes an already-wrapped [builder], surfaced
-/// or bare depending on which entry point called it.
-Future<T?> _showCupertinoModalPopup<T>({
-  required BuildContext context,
-  required WidgetBuilder builder,
-  required CupertinoModalPopupData? data,
-  required Offset? anchorPoint,
-  required Color? barrierColor,
-  required bool barrierDismissible,
-  required RouteSettings? routeSettings,
-  required bool useRootNavigator,
-  required bool? requestFocus,
-}) => showCupertinoModalPopup(
-  context: context,
-  builder: builder,
-  filter: data?.filter,
-  barrierColor: barrierColor ?? kCupertinoModalBarrierColor,
-  barrierDismissible: barrierDismissible,
-  useRootNavigator: useRootNavigator,
-  semanticsDismissible:
-      data?.semanticsDismissible ?? kDefaultCupertinoModalPopupSemanticsDismissible,
-  routeSettings: routeSettings,
-  anchorPoint: anchorPoint,
-  requestFocus: requestFocus,
-);

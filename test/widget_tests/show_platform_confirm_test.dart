@@ -30,14 +30,14 @@ Future<BuildContext> _pumpPage(WidgetTester tester) async {
 
 Future<bool> _show(
   BuildContext context, {
-  PlatformActionKind kind = .discard,
+  PlatformActionKind actionKind = .discard,
   String confirmLabel = _confirm,
 }) => showPlatformConfirm(
   context: context,
   title: _title,
   message: 'Your edits will be lost.',
   confirmLabel: confirmLabel,
-  kind: kind,
+  actionKind: actionKind,
 );
 
 bool _isShowing(WidgetTester tester) => tester.any(find.text(_title));
@@ -54,27 +54,27 @@ void main() {
       },
       outline: (tester, row) async {
         final context = await _pumpPage(tester);
-        final answer = _show(context);
+        final answerFuture = _show(context);
         await tester.pumpAndSettle();
 
         await tester.tap(find.text(row.button).last);
         await tester.pumpAndSettle();
 
         check(_isShowing(tester)).isFalse();
-        check(await answer).equals(row.answer);
+        check(await answerFuture).equals(row.answer);
       },
     );
 
     scenarioWidgets('answers no when closed from outside', (tester) async {
       final context = await _pumpPage(tester);
-      final answer = _show(context);
+      final answerFuture = _show(context);
       await tester.pumpAndSettle();
 
       await tester.tapAt(const Offset(4, 4));
       await tester.pumpAndSettle();
 
       check(_isShowing(tester)).isFalse();
-      check(await answer).isFalse();
+      check(await answerFuture).isFalse();
     }, variant: androidOnly);
 
     scenarioWidgets('puts Cancel before the confirming button', (tester) async {
@@ -127,43 +127,43 @@ void main() {
         'when it deletes': .delete,
         'when it discards': .discard,
       },
-      outline: (tester, kind) async {
+      outline: (tester, actionKind) async {
         final context = await _pumpPage(tester);
-        unawaited(_show(context, kind: kind));
+        unawaited(_show(context, actionKind: actionKind));
         await tester.pumpAndSettle();
 
-        final confirm = labelStyle(tester, _confirm);
-        final cancel = labelStyle(tester, 'Cancel');
-        check(argbOf(confirm)).equals(argbOf(cancel));
-        check(weightOf(confirm)).equals(weightOf(cancel));
+        final confirmTextStyle = labelStyle(tester, _confirm);
+        final cancelTextStyle = labelStyle(tester, 'Cancel');
+        check(argbOf(confirmTextStyle)).equals(argbOf(cancelTextStyle));
+        check(weightOf(confirmTextStyle)).equals(weightOf(cancelTextStyle));
       },
       variant: androidOnly,
     );
 
-    scenarioOutlineWidgets<({PlatformActionKind kind, _Look look})>(
+    scenarioOutlineWidgets<({PlatformActionKind actionKind, _Look look})>(
       'shows what confirming does on Cupertino',
       examples: {
-        'something harmless leads': (kind: .normal, look: .primary),
-        'a delete the person asked for stays plain': (kind: .delete, look: .plain),
-        "a loss they didn't ask for turns red": (kind: .discard, look: .red),
+        'something harmless leads': (actionKind: .normal, look: .primary),
+        'a delete the person asked for stays plain': (actionKind: .delete, look: .plain),
+        "a loss they didn't ask for turns red": (actionKind: .discard, look: .red),
       },
       outline: (tester, row) async {
         final context = await _pumpPage(tester);
-        unawaited(_show(context, kind: row.kind));
+        unawaited(_show(context, actionKind: row.actionKind));
         await tester.pumpAndSettle();
 
-        final confirm = labelStyle(tester, _confirm);
-        final cancel = labelStyle(tester, 'Cancel');
+        final confirmTextStyle = labelStyle(tester, _confirm);
+        final cancelTextStyle = labelStyle(tester, 'Cancel');
         switch (row.look) {
           case .plain:
-            check(argbOf(confirm)).equals(argbOf(cancel));
-            check(weightOf(confirm)).equals(weightOf(cancel));
+            check(argbOf(confirmTextStyle)).equals(argbOf(cancelTextStyle));
+            check(weightOf(confirmTextStyle)).equals(weightOf(cancelTextStyle));
           case .red:
-            check(argbOf(confirm)).equals(CupertinoColors.systemRed.color.toARGB32());
+            check(argbOf(confirmTextStyle)).equals(CupertinoColors.systemRed.color.toARGB32());
             // Never the primary look as well, which the HIG keeps off destructive buttons.
-            check(weightOf(confirm)).equals(weightOf(cancel));
+            check(weightOf(confirmTextStyle)).equals(weightOf(cancelTextStyle));
           case .primary:
-            check(weightOf(confirm)).isGreaterThan(weightOf(cancel));
+            check(weightOf(confirmTextStyle)).isGreaterThan(weightOf(cancelTextStyle));
         }
       },
       variant: iosOnly,

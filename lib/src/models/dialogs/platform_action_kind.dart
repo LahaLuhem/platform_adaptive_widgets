@@ -1,9 +1,4 @@
-/// @docImport '/src/widgets/dialogs/platform_confirm.dart';
-library;
-
-/// What an action does. The entry point it goes to sets the action's look from it, like
-/// [showPlatformConfirm] does. Only Cupertino turns it into a look today, since Material's guidelines
-/// keep every kind plain.
+/// What an action does, so the package can pick its look. Material's guidelines keep every kind plain.
 enum PlatformActionKind() {
   /// Harmless, like Send.
   normal,

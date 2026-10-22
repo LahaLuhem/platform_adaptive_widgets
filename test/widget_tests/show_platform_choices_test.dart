@@ -10,10 +10,10 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 import '../support/support.dart';
 
-const _save = PlatformChoice(value: 1, label: 'Save Draft', kind: .normal);
-const _delete = PlatformChoice(value: 2, label: 'Delete Draft', kind: .delete);
-const _keep = PlatformChoice(value: 3, label: 'Keep Editing', kind: .normal);
-const _discard = PlatformChoice(value: 4, label: 'Discard Changes', kind: .discard);
+const _save = PlatformChoice(value: 1, label: 'Save Draft', actionKind: .normal);
+const _delete = PlatformChoice(value: 2, label: 'Delete Draft', actionKind: .delete);
+const _keep = PlatformChoice(value: 3, label: 'Keep Editing', actionKind: .normal);
+const _discard = PlatformChoice(value: 4, label: 'Discard Changes', actionKind: .discard);
 const _choices = [_save, _delete, _keep, _discard];
 
 const _tint = Color(0xFF123456);
@@ -49,14 +49,14 @@ void main() {
       examples: {'something harmless': _save, 'something destructive': _discard},
       outline: (tester, choice) async {
         final context = await pumpForContext(tester);
-        final answer = _show(context);
+        final answerFuture = _show(context);
         await tester.pumpAndSettle();
 
         await tester.tap(find.text(choice.label));
         await tester.pumpAndSettle();
 
         check(_isShowing(tester)).isFalse();
-        check(await answer).equals(choice.value);
+        check(await answerFuture).equals(choice.value);
       },
     );
 
@@ -68,7 +68,7 @@ void main() {
       },
       outline: (tester, leave) async {
         final context = await pumpForContext(tester);
-        final answer = _show(context);
+        final answerFuture = _show(context);
         await tester.pumpAndSettle();
         check(_isShowing(tester)).isTrue();
 
@@ -76,20 +76,20 @@ void main() {
         await tester.pumpAndSettle();
 
         check(_isShowing(tester)).isFalse();
-        check(await answer).isNull();
+        check(await answerFuture).isNull();
       },
     );
 
     scenarioWidgets('answers null on Cancel', (tester) async {
       final context = await pumpForContext(tester);
-      final answer = _show(context);
+      final answerFuture = _show(context);
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();
 
       check(_isShowing(tester)).isFalse();
-      check(await answer).isNull();
+      check(await answerFuture).isNull();
     }, variant: iosOnly);
 
     scenarioWidgets('puts delete and discard choices on top on iOS', (tester) async {
@@ -143,12 +143,12 @@ void main() {
       check(tester.any(find.text('Cancel'))).isFalse();
     }, variant: androidOnly);
 
-    scenarioOutlineWidgets<({PlatformActionKind kind, bool isRed})>(
+    scenarioOutlineWidgets<({PlatformActionKind actionKind, bool isRed})>(
       'shows what each choice does on iOS',
       examples: {
-        'something harmless stays plain': (kind: .normal, isRed: false),
-        'a delete turns red': (kind: .delete, isRed: true),
-        'a discard turns red': (kind: .discard, isRed: true),
+        'something harmless stays plain': (actionKind: .normal, isRed: false),
+        'a delete turns red': (actionKind: .delete, isRed: true),
+        'a discard turns red': (actionKind: .discard, isRed: true),
       },
       outline: (tester, row) async {
         final context = await pumpForContext(tester);
@@ -156,19 +156,20 @@ void main() {
           _show(
             context,
             choices: [
-              PlatformChoice(value: 1, label: 'Choice', kind: row.kind),
+              PlatformChoice(value: 1, label: 'Choice', actionKind: row.actionKind),
               _keep,
             ],
           ),
         );
         await tester.pumpAndSettle();
 
-        final choice = labelStyle(tester, 'Choice');
-        final cancel = labelStyle(tester, 'Cancel');
-        check(argbOf(choice))
-            .equals(row.isRed ? CupertinoColors.systemRed.color.toARGB32() : argbOf(cancel));
+        final choiceTextStyle = labelStyle(tester, 'Choice');
+        final cancelTextStyle = labelStyle(tester, 'Cancel');
+        check(
+          argbOf(choiceTextStyle),
+        ).equals(row.isRed ? CupertinoColors.systemRed.color.toARGB32() : argbOf(cancelTextStyle));
         // Only Cancel gets the bold look, which the HIG keeps off destructive buttons.
-        check(weightOf(choice)).isLessThan(weightOf(cancel));
+        check(weightOf(choiceTextStyle)).isLessThan(weightOf(cancelTextStyle));
       },
       variant: iosOnly,
     );
@@ -178,10 +179,10 @@ void main() {
       unawaited(_show(context));
       await tester.pumpAndSettle();
 
-      final plain = labelStyle(tester, _save.label);
+      final plainTextStyle = labelStyle(tester, _save.label);
       for (final label in [_delete.label, _discard.label]) {
-        check(argbOf(labelStyle(tester, label))).equals(argbOf(plain));
-        check(weightOf(labelStyle(tester, label))).equals(weightOf(plain));
+        check(argbOf(labelStyle(tester, label))).equals(argbOf(plainTextStyle));
+        check(weightOf(labelStyle(tester, label))).equals(weightOf(plainTextStyle));
       }
     }, variant: androidOnly);
 
@@ -214,16 +215,16 @@ void main() {
     scenarioWidgets('scrolls the choices with scrollController', (tester) async {
       final choices = [
         for (var value = 1; value <= 30; value++)
-          PlatformChoice(value: value, label: 'Choice $value', kind: .normal),
+          PlatformChoice(value: value, label: 'Choice $value', actionKind: .normal),
       ];
-      final controller = ScrollController();
-      addTearDown(controller.dispose);
+      final scrollController = ScrollController();
+      addTearDown(scrollController.dispose);
       final context = await pumpForContext(tester);
-      unawaited(_show(context, choices: choices, scrollController: controller));
+      unawaited(_show(context, choices: choices, scrollController: scrollController));
       await tester.pumpAndSettle();
       check(tester.any(find.text('Choice 30').hitTestable())).isFalse();
 
-      controller.jumpTo(controller.position.maxScrollExtent);
+      scrollController.jumpTo(scrollController.position.maxScrollExtent);
       await tester.pumpAndSettle();
 
       check(tester.any(find.text('Choice 30').hitTestable())).isTrue();

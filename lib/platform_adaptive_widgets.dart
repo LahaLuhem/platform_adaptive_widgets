@@ -5,6 +5,7 @@ export 'src/extensions/context_extensions.dart';
 export 'src/extensions/time_of_day_extensions.dart';
 export 'src/models/dialogs/platform_action_kind.dart';
 export 'src/models/dialogs/platform_alert_dialog_data.dart';
+export 'src/models/dialogs/platform_choice.dart';
 export 'src/models/dialogs/platform_date_picker_data.dart';
 export 'src/models/dialogs/platform_dialog_data.dart';
 export 'src/models/dialogs/platform_menu_picker_data.dart';
@@ -33,6 +34,7 @@ export 'src/models/platform_adaptive_icons.dart';
 export 'src/utils/design_language.dart';
 export 'src/utils/platform_value.dart';
 export 'src/widgets/dialogs/platform_acknowledge.dart';
+export 'src/widgets/dialogs/platform_choices.dart';
 export 'src/widgets/dialogs/platform_confirm.dart';
 export 'src/widgets/dialogs/platform_date_picker.dart';
 // Machinery under acknowledge and confirm, not an entry point.

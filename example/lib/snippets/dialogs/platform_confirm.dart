@@ -18,7 +18,7 @@ class PlatformConfirmSnippet extends StatelessWidget {
       title: 'Discard changes?',
       message: 'Your edits will be lost.',
       confirmLabel: 'Discard',
-      kind: .discard,
+      actionKind: .discard,
     );
     // #endregion
     debugPrint('$shouldDiscard'); // #hide

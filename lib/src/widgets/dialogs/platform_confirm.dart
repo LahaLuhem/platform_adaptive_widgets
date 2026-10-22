@@ -18,9 +18,6 @@ import 'platform_dialog.dart';
 /// Cancel comes translated and placed per platform. Name the action in [confirmLabel], like Delete,
 /// not OK.
 ///
-/// [kind] sets the confirming button's look on Cupertino: [PlatformActionKind.normal] is the primary
-/// button, a delete stays plain and a discard turns red. Material keeps all 3 plain.
-///
 /// Guidelines: [M3 dialogs](https://m3.material.io/components/dialogs/guidelines),
 /// [HIG alerts](https://developer.apple.com/design/human-interface-guidelines/alerts).
 ///
@@ -31,7 +28,7 @@ Future<bool> showPlatformConfirm({
   required String title,
   required String message,
   required String confirmLabel,
-  required PlatformActionKind kind,
+  required PlatformActionKind actionKind,
   Offset? anchorPoint,
   Color? barrierColor,
   bool? barrierDismissible,
@@ -57,8 +54,9 @@ Future<bool> showPlatformConfirm({
         child: Text(cancelLabel),
       ),
       PlatformDialogAction(
-        isDefaultAction: kind == .normal,
-        isDestructiveAction: kind == .discard,
+        isDefaultAction: actionKind == .normal,
+        // The person asked for the delete, so only a discard warns.
+        isDestructiveAction: actionKind == .discard,
         onPressed: (context) => Navigator.maybeOf(context)?.pop(true),
         child: Text(confirmLabel),
       ),
