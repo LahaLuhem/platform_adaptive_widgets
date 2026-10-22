@@ -1,4 +1,6 @@
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
@@ -148,6 +150,47 @@ class DialogsDemoView extends StatelessWidget {
             child: Text(
               viewModel.draftOutcome == null ? 'Unsent draft' : 'Draft ${viewModel.draftOutcome}',
             ),
+          ),
+        ),
+        DemoCard(
+          title: 'Actions menu',
+          description:
+              'A pull-down menu on Cupertino, an M3 menu on Material. Delete asks first, and is red on '
+              'Cupertino.',
+          child: PlatformActionsMenu(
+            builder: (_, onPressed) => PlatformButton(
+              onPressed: onPressed,
+              child: Text(
+                viewModel.listOutcome == null ? 'Grocery list' : 'List ${viewModel.listOutcome}',
+              ),
+            ),
+            actions: {
+              PlatformMenuAction.normal(
+                label: 'Share List',
+                iconData: context.platformIcon(
+                  material: Icons.share_outlined,
+                  cupertino: CupertinoIcons.square_arrow_up,
+                ),
+                onPressed: viewModel.onShareListPressed,
+              ),
+              PlatformMenuAction.normal(
+                label: 'Print',
+                iconData: context.platformIcon(
+                  material: Icons.print_outlined,
+                  cupertino: CupertinoIcons.printer,
+                ),
+                onPressed: viewModel.onPrintPressed,
+              ),
+              PlatformMenuAction.delete(
+                label: 'Delete List',
+                confirmMessage: 'This deletes the list and its reminders.',
+                iconData: context.platformIcon(
+                  material: Icons.delete_outline,
+                  cupertino: CupertinoIcons.trash,
+                ),
+                onPressed: viewModel.onDeleteListPressed,
+              ),
+            },
           ),
         ),
         DemoCard(

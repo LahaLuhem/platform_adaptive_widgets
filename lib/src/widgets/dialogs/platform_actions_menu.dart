@@ -21,6 +21,9 @@ import 'platform_destructive_confirm.dart';
 ///
 /// Guidelines: [M3 menus](https://m3.material.io/components/menus/guidelines),
 /// [HIG pull-down buttons](https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons#Best-practices).
+///
+/// Example:
+/// {@example /example/lib/snippets/dialogs/platform_actions_menu.dart#platform_actions_menu}
 class const PlatformActionsMenu({
   /// Builds the button. Give it the `onPressed` passed in, which opens the menu or closes an open one.
   required final Widget Function(BuildContext context, VoidCallback onPressed) builder,

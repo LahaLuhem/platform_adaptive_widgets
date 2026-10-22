@@ -17,7 +17,7 @@ enum WidgetCategory {
   /// List tile, expansion tile, scrollbar, progress indicator.
   containers(label: 'Lists & containers'),
 
-  /// Dialogs, alerts, toast, bottom sheet, date & time pickers.
+  /// Dialogs, alerts, toast, bottom sheet, choices, actions menu, date & time pickers.
   dialogs(label: 'Dialogs & pickers');
 
   /// Shown on the section header.
