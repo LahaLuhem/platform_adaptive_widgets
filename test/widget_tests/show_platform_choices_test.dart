@@ -14,13 +14,13 @@ const _save = PlatformChoice(value: 1, label: 'Save Draft', actionKind: .normal)
 const _delete = PlatformChoice(value: 2, label: 'Delete Draft', actionKind: .delete);
 const _keep = PlatformChoice(value: 3, label: 'Keep Editing', actionKind: .normal);
 const _discard = PlatformChoice(value: 4, label: 'Discard Changes', actionKind: .discard);
-const _choices = [_save, _delete, _keep, _discard];
+const _choices = {_save, _delete, _keep, _discard};
 
 const _tint = Color(0xFF123456);
 
 Future<int?> _show(
   BuildContext context, {
-  List<PlatformChoice<int>> choices = _choices,
+  Set<PlatformChoice<int>> choices = _choices,
   String? title,
   String? message,
   Color? barrierColor,
@@ -155,10 +155,10 @@ void main() {
         unawaited(
           _show(
             context,
-            choices: [
+            choices: {
               PlatformChoice(value: 1, label: 'Choice', actionKind: row.actionKind),
               _keep,
-            ],
+            },
           ),
         );
         await tester.pumpAndSettle();
@@ -199,11 +199,11 @@ void main() {
       }
     });
 
-    scenarioOutlineWidgets<List<PlatformChoice<int>>>(
+    scenarioOutlineWidgets<Set<PlatformChoice<int>>>(
       'refuses fewer than 2 choices',
       examples: {
-        'none': [],
-        'one': [_save],
+        'none': {},
+        'one': {_save},
       },
       outline: (tester, choices) async {
         final context = await pumpForContext(tester);
@@ -213,10 +213,10 @@ void main() {
     );
 
     scenarioWidgets('scrolls the choices with scrollController', (tester) async {
-      final choices = [
+      final choices = {
         for (var value = 1; value <= 30; value++)
           PlatformChoice(value: value, label: 'Choice $value', actionKind: .normal),
-      ];
+      };
       final scrollController = ScrollController();
       addTearDown(scrollController.dispose);
       final context = await pumpForContext(tester);
