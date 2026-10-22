@@ -1,5 +1,6 @@
 /// @docImport 'package:cupertino_ui/cupertino_ui.dart';
 /// @docImport 'package:material_ui/material_ui.dart';
+/// @docImport '/src/widgets/dialogs/platform_choices.dart';
 library;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoPopupSurface;
@@ -20,6 +21,9 @@ import 'sheet_routes.dart';
 ///
 /// Either pass [builder] for content shared across both, or pass [materialBuilder] and [cupertinoBuilder]
 /// together. Mixing the 2 trips an assert.
+///
+/// Guidelines: [M3 bottom sheets](https://m3.material.io/components/bottom-sheets/guidelines),
+/// [HIG sheets](https://developer.apple.com/design/human-interface-guidelines/sheets#Best-practices).
 ///
 /// Example:
 /// {@example /example/lib/snippets/dialogs/platform_modal_bottom_sheet.dart#platform_modal_bottom_sheet}
@@ -74,13 +78,15 @@ Future<T?> showPlatformModalBottomSheet<T>({
 }
 
 /// Same as [showPlatformModalBottomSheet] minus the [CupertinoPopupSurface], so content there is
-/// bare unless you bring your own. Handy for a `CupertinoActionSheet`, which already has one and would
-/// otherwise end up double-chromed.
+/// bare unless you bring your own. For an action sheet, use [showPlatformChoices].
 ///
 /// The asymmetry is upstream's, not ours: Material's [showModalBottomSheet] always paints a sheet, which
 /// you can flatten with a transparent `backgroundColor` on [materialModalBottomSheetData], while Cupertino's
 /// route paints nothing. What you still get over calling the 2 directly is the dispatch and each platform's
 /// own transition.
+///
+/// Guidelines: [M3 bottom sheets](https://m3.material.io/components/bottom-sheets/guidelines),
+/// [HIG sheets](https://developer.apple.com/design/human-interface-guidelines/sheets#Best-practices).
 Future<T?> showPlatformRawModalBottomSheet<T>({
   required BuildContext context,
   WidgetBuilder? builder,

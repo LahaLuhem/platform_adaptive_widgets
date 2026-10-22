@@ -49,13 +49,13 @@ for one.
 
 ## Why you'd want it
 
-Flutter ships both Material and Cupertino widgets, but it leaves the choosing to you. So apps tend to
-drift one of 2 ways: all-Material everywhere (which looks a little off on iOS), or a slowly growing
-tangle of `if (Platform.isIOS)` branches you'll be maintaining for years.
+Flutter ships both Material and Cupertino widgets, but it leaves the choosing to you. So apps tend
+to drift one of 2 ways: all-Material everywhere (which looks a little off on iOS), or a slowly
+growing tangle of `if (Platform.isIOS)` branches you'll be maintaining for years.
 
-This package makes that call for you, one widget at a time. Each `PlatformXxx` checks the platform and
-builds the right native widget underneath, so your tree stays readable and the branching lives in one
-tested place instead of sprinkled across the codebase.
+This package makes that call for you, one widget at a time. Each `PlatformXxx` checks the platform
+and builds the right native widget underneath, so your tree stays readable and the branching lives
+in one tested place instead of sprinkled across the codebase.
 
 2 things it goes out of its way to avoid:
 
@@ -83,21 +83,20 @@ PlatformButton(onPressed: _save, child: const Text('Save'));
 
 ## How it compares
 
-Flutter ships Material *and* Cupertino but won't pick between them for you, and the packages
-that fill that gap fall into 2 camps. **Pure-Dart dispatch** renders Flutter's own
-Material/Cupertino widgets per platform. **Native bridging** embeds real platform UI through
-platform views and method channels. This package is firmly pure-Dart.
+Flutter ships Material *and* Cupertino but won't pick between them for you, and the packages that
+fill that gap fall into 2 camps. **Pure-Dart dispatch** renders Flutter's own Material/Cupertino
+widgets per platform. **Native bridging** embeds real platform UI through platform views and method
+channels. This package is firmly pure-Dart.
 
-The trade is architectural rather than better-or-worse. Bridging gets you pixel-authentic
-native chrome that Flutter's Cupertino widgets can't reproduce, and pays for it with
-platform-view compositing, channel round-trips, an OS-version gate, native setup, and a
-dependency that can't be tree-shaken. This package takes the other side: Flutter's Cupertino
-rather than real UIKit, no channels, no native setup, and the unused platform pruned out of
-your binary.
+The trade is architectural rather than better-or-worse. Bridging gets you pixel-authentic native
+chrome that Flutter's Cupertino widgets can't reproduce, and pays for it with platform-view
+compositing, channel round-trips, an OS-version gate, native setup, and a dependency that can't be
+tree-shaken. This package takes the other side: Flutter's Cupertino rather than real UIKit, no
+channels, no native setup, and the unused platform pruned out of your binary.
 
-Want the latest *native* iOS chrome? Go native. Want a light, no-bridge, prunable adaptive
-layer across a broad widget set? That's this. For who's active in either camp right now,
-search [pub.dev](https://pub.dev/packages?q=platform+adaptive).
+Want the latest *native* iOS chrome? Go native. Want a light, no-bridge, prunable adaptive layer
+across a broad widget set? That's this. For who's active in either camp right now, search
+[pub.dev](https://pub.dev/packages?q=platform+adaptive).
 
 ---
 
@@ -145,8 +144,8 @@ iPhone and it's Cupertino. That's the whole trick.
 
 ## See it live
 
-Honestly, the quickest way to get a feel for it is to play with it. The [`example/`](./example) app is
-a little interactive catalog: every widget gets its own card, and most come with a built-in
+Honestly, the quickest way to get a feel for it is to play with it. The [`example/`](./example) app
+is a little interactive catalog: every widget gets its own card, and most come with a built-in
 **property editor** so you can flip `isEnabled`, drag a slider, or pick a color and watch the widget
 react right there on the device. There's also an **About** tab that swaps the rendered platform and
 theme on the fly, which makes it easy to hold Material and Cupertino up next to each other without
@@ -184,10 +183,11 @@ column shows what you can pass to tune each side. See
 | `PlatformMenuPicker<T>`                                 | `DropdownMenu` + `DropdownMenuEntry`                  | `CupertinoMenuAnchor` (≤5 items), `CupertinoPicker` in a popup (≤250) or a `CupertinoPageRoute` list (>250)        | `MaterialMenuPickerData`, `CupertinoMenuPickerData`       |
 | `showPlatformDialog<T>()`                               | `showDialog` + `Dialog`                               | `showCupertinoDialog` + `CupertinoPopupSurface`                                                                    | `MaterialDialogData`                                      |
 | `showPlatformFullscreenDialog<T>()`                     | `showDialog` + `Dialog.fullscreen` + `Scaffold`       | `CupertinoPageRoute` (`fullscreenDialog: true`) + `CupertinoPageScaffold`                                          | `MaterialFullscreenDialogData`                            |
-| `showPlatformConfirm()` + `PlatformActionKind`          | `AlertDialog`, Cancel + a confirming action           | `CupertinoAlertDialog`, Cancel + a confirming action styled by `actionKind`                                              | `MaterialAlertDialogData`, `CupertinoAlertDialogData`     |
+| `showPlatformConfirm()` + `PlatformActionKind`          | `AlertDialog`, Cancel + a confirming action           | `CupertinoAlertDialog`, Cancel + a confirming action styled by `actionKind`                                        | `MaterialAlertDialogData`, `CupertinoAlertDialogData`     |
 | `showPlatformRawDialog<T>()`                            | `showDialog` (no surface wrap)                        | `showCupertinoDialog` (no surface wrap)                                                                            | N/A (caller owns the surface)                             |
 | `showPlatformModalBottomSheet<T>()`                     | `showModalBottomSheet`                                | `showCupertinoModalPopup` + `CupertinoPopupSurface`                                                                | `MaterialModalBottomSheetData`, `CupertinoModalPopupData` |
 | `showPlatformRawModalBottomSheet<T>()`                  | `showModalBottomSheet` (native Material)              | `showCupertinoModalPopup` (no surface wrap)                                                                        | `MaterialModalBottomSheetData`, `CupertinoModalPopupData` |
+| `showPlatformChoices<T>()` + `PlatformChoice`           | `showModalBottomSheet`, a `ListTile` per choice       | `CupertinoActionSheet`, delete and discard on top in red, Cancel added                                             | `MaterialModalBottomSheetData`, `CupertinoModalPopupData` |
 | `showPlatformToast()` + `PlatformToastAction`           | `SnackBar` + `SnackBarAction` via `ScaffoldMessenger` | A banner the package draws, since iOS has no toast. Prefer showing the change itself there                         | `MaterialToastData`, `CupertinoToastData`                 |
 | `showPlatformAcknowledge()`                             | `AlertDialog` + single OK action                      | `CupertinoAlertDialog` + single OK action                                                                          | `MaterialAlertDialogData`, `CupertinoAlertDialogData`     |
 
@@ -248,8 +248,8 @@ column shows what you can pass to tune each side. See
 
 #### Platform value selectors
 
-These build both arms, so the unused one stays in release builds (≈342 KB for one Cupertino
-widget, measured). Prefer an inline `switch (designLanguage)` when an arm builds a widget:
+These build both arms, so the unused one stays in release builds (≈342 KB for one Cupertino widget,
+measured). Prefer an inline `switch (designLanguage)` when an arm builds a widget:
 
 | Helper                                            | Description                                                  |
 |---------------------------------------------------|--------------------------------------------------------------|
@@ -305,19 +305,18 @@ If you're ever unsure where a given property belongs,
 ## Compile-time platform pruning, verified
 
 This is the part people tend not to believe at first: the platform you're not on actually disappears
-from your release build. Under AOT, `defaultTargetPlatform` is a compile-time constant, so on Android
-the Cupertino branches are simply dead code that the compiler tree-shakes away, and the same in
-reverse on iOS.
+from your release build. Under AOT, `defaultTargetPlatform` is a compile-time constant, so on
+Android the Cupertino branches are simply dead code that the compiler tree-shakes away, and the same
+in reverse on iOS.
 
 Since "trust me" is a weak engineering argument, 2 CI checks keep it honest on every PR:
 
 - a **static AST guard**
-  ([`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart)) that fails the
-  build if anyone reintroduces the closure-style dispatch that quietly defeats pruning, and
-- a **real size benchmark**
-  ([`tool/check_size_regression.dart`](./tool/check_size_regression.dart)) that compiles an
-  Android-only app with `--analyze-size` and trips if any Cupertino-pathed bytes slip past a
-  calibrated budget.
+  ([`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart)) that fails
+  the build if anyone reintroduces the closure-style dispatch that quietly defeats pruning, and
+- a **real size benchmark** ([`tool/check_size_regression.dart`](./tool/check_size_regression.dart))
+  that compiles an Android-only app with `--analyze-size` and trips if any Cupertino-pathed bytes
+  slip past a calibrated budget.
 
 Want the full mechanism and the actual byte counts? They're in
 [`APPENDIX.md#aot-pruning-rules`](./APPENDIX.md#aot-pruning-rules).
@@ -330,28 +329,26 @@ You'll feel right at home. This package is a spiritual continuation of
 [flutter_platform_widgets](https://pub.dev/packages/flutter_platform_widgets), and the `PlatformXxx`
 naming carries straight over. What's changed is mostly under the hood: per-platform tweaks now go
 through typed `MaterialXxxData` / `CupertinoXxxData` records (see
-[Customizing per platform](#customizing-per-platform)), the scope is intentionally Material and Cupertino only, and
-the AOT-pruning promise is checked by CI rather than taken on faith. Skim the
+[Customizing per platform](#customizing-per-platform)), the scope is intentionally Material and
+Cupertino only, and the AOT-pruning promise is checked by CI rather than taken on faith. Skim the
 [widget catalog](#widget-catalog) to find the equivalent of whatever you're using today.
 
 ---
 
 ## Contributing
 
-Issues and PRs welcome at
-<https://github.com/LahaLuhem/platform_adaptive_widgets>. Before sending a
+Issues and PRs welcome at <https://github.com/LahaLuhem/platform_adaptive_widgets>. Before sending a
 non-trivial change, read [`CODESTYLE.md`](./CODESTYLE.md) for the house style,
-[`.ai/AGENTS.md`](./.ai/AGENTS.md) for the hard rules and contributor / AI-agent
-guidelines, and [`APPENDIX.md`](./APPENDIX.md) for the design rationale.
+[`.ai/AGENTS.md`](./.ai/AGENTS.md) for the hard rules and contributor / AI-agent guidelines, and
+[`APPENDIX.md`](./APPENDIX.md) for the design rationale.
 
 ### Optional: AI-agent discovery symlinks
 
-The canonical text for `AGENTS.md` and `CLAUDE.md` lives under `.ai/`. The repo root
-holds **gitignored symlinks** (`AGENTS.md → .ai/AGENTS.md`,
-`CLAUDE.md → .ai/CLAUDE.md`, `example/AGENTS.md → example/.ai/AGENTS.md`) so coding
-agents that auto-discover root-level guidance files (Claude Code, Codex, Cursor,
-Copilot, …) find them without polluting the file tree with 2 extra Markdown files at
-each level. The arrangement is opt-in per contributor:
+The canonical text for `AGENTS.md` and `CLAUDE.md` lives under `.ai/`. The repo root holds
+**gitignored symlinks** (`AGENTS.md → .ai/AGENTS.md`, `CLAUDE.md → .ai/CLAUDE.md`,
+`example/AGENTS.md → example/.ai/AGENTS.md`) so coding agents that auto-discover root-level guidance
+files (Claude Code, Codex, Cursor, Copilot, …) find them without polluting the file tree with 2
+extra Markdown files at each level. The arrangement is opt-in per contributor:
 
 - **If you use a coding agent**, set the symlinks up once from the repo root:
 
@@ -361,19 +358,16 @@ each level. The arrangement is opt-in per contributor:
   ln -s .ai/AGENTS.md example/AGENTS.md
   ```
 
-- **If you don't use one**, skip the step entirely. The canonical files under `.ai/`
-  are committed. Nothing in the build, lint, or test pipeline depends on the symlinks
-  existing.
-- **If you want different agent guidance for your own workflow**, drop a real
-  `AGENTS.md` or `CLAUDE.md` at the repo root. A real file beats the symlink
-  convention, your agent reads the root file you put there instead of the canonical
-  one under `.ai/`. The committed `.ai/` copies remain the project default for
-  everyone else.
+- **If you don't use one**, skip the step entirely. The canonical files under `.ai/` are committed.
+  Nothing in the build, lint, or test pipeline depends on the symlinks existing.
+- **If you want different agent guidance for your own workflow**, drop a real `AGENTS.md` or
+  `CLAUDE.md` at the repo root. A real file beats the symlink convention, your agent reads the root
+  file you put there instead of the canonical one under `.ai/`. The committed `.ai/` copies remain
+  the project default for everyone else.
 
-The `CODESTYLE.md` files are not symlinked, they sit directly at the repo root and at
-`example/`, since style serves humans and agents alike and is not AI-specific. See
-[`APPENDIX.md`](./APPENDIX.md#ai-files-symlinked) for the rationale
-behind the `.ai/` arrangement.
+The `CODESTYLE.md` files are not symlinked, they sit directly at the repo root and at `example/`,
+since style serves humans and agents alike and is not AI-specific. See
+[`APPENDIX.md`](./APPENDIX.md#ai-files-symlinked) for the rationale behind the `.ai/` arrangement.
 
 ## Contributors
 
