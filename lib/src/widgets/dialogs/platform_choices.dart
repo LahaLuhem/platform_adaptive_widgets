@@ -20,6 +20,23 @@ const _kMaterialChoicesHeaderPadding = EdgeInsetsDirectional.fromSTEB(16, 16, 24
 ///
 /// Leave Cancel out of [choices], the package handles backing out. For a single choice, use
 /// [showPlatformConfirm]. Keep the list short.
+///
+/// Known Flutter gaps:
+///
+/// - Desktop gets a bottom sheet, since Flutter has no side sheet yet
+///   ([flutter/flutter#119328](https://github.com/flutter/flutter/issues/119328)).
+/// - On Material a long list stops at 9/16 of the screen, where M3 opens at half and pulls to full
+///   ([flutter/flutter#195041](https://github.com/flutter/flutter/issues/195041)).
+/// - On iPad and Mac the action sheet spans the window
+///   ([flutter/flutter#195042](https://github.com/flutter/flutter/issues/195042)).
+/// - Screen readers hear "Alert", untranslated
+///   ([flutter/flutter#195019](https://github.com/flutter/flutter/issues/195019)).
+///
+/// Guidelines: [M3 bottom sheets](https://m3.material.io/components/bottom-sheets/guidelines),
+/// [HIG action sheets](https://developer.apple.com/design/human-interface-guidelines/action-sheets#Best-practices).
+///
+/// Example:
+/// {@example /example/lib/snippets/dialogs/platform_choices.dart#platform_choices}
 Future<T?> showPlatformChoices<T extends Object>({
   required BuildContext context,
   required List<PlatformChoice<T>> choices,

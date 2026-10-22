@@ -1,17 +1,16 @@
 # CLAUDE.md, `platform_adaptive_widgets`
 
-Claude-Code-specific guidance. Project facts, stack, hard rules, and AI-agent
-guidelines live in [AGENTS.md](./AGENTS.md), the full code-style guide lives in
-[`CODESTYLE.md`](../CODESTYLE.md), design rationale lives in
-[`APPENDIX.md`](../APPENDIX.md). Read AGENTS.md and CODESTYLE.md first.
+Claude-Code-specific guidance. Project facts, stack, hard rules, and AI-agent guidelines live in
+[AGENTS.md](./AGENTS.md), the full code-style guide lives in [`CODESTYLE.md`](../CODESTYLE.md),
+design rationale lives in [`APPENDIX.md`](../APPENDIX.md). Read AGENTS.md and CODESTYLE.md first.
 
 ## Role & context
-You're assisting with **platform_adaptive_widgets**: a Flutter package that exposes
-`PlatformXxx` widgets which render Cupertino on iOS and macOS and Material everywhere
-else, without app code branching. Treat the user as technical and direct. The package is published on
-pub.dev, changes are visible to every downstream user, so breakage is expensive and
-slow to walk back (pub.dev never unpublishes a version, it only lets you retract one within
-7 days of publishing, and a tag push triggers an automated publish).
+You're assisting with **platform_adaptive_widgets**: a Flutter package that exposes `PlatformXxx`
+widgets which render Cupertino on iOS and macOS and Material everywhere else, without app code
+branching. Treat the user as technical and direct. The package is published on pub.dev, changes are
+visible to every downstream user, so breakage is expensive and slow to walk back (pub.dev never
+unpublishes a version, it only lets you retract one within 7 days of publishing, and a tag push
+triggers an automated publish).
 
 ## Communication
 
@@ -22,141 +21,132 @@ slow to walk back (pub.dev never unpublishes a version, it only lets you retract
 
 ## Technical choices, always ask first
 
-- **Do not silently pick between reasonable alternatives.** Whenever a task admits more
-  than one defensible approach (which Cupertino primitive to wrap, whether a new field
-  is functional / shared-visual / platform-only per
-  [`APPENDIX.md#field-classification`](../APPENDIX.md#field-classification), whether a
-  symbol belongs in the public re-exports or stays under `lib/src/`, function-vs-class
-  API shape, whether to add a dependency, etc.), **stop and ask**. Recommendations in
-  the question are expected, list the options with trade-offs, say which you'd pick
-  and why, then wait.
-- **"Small" choices count.** The bar isn't "is this architecturally significant", it's
-  "could a reasonable maintainer disagree with my pick". If yes, ask.
-- **Mark your recommendation with `★`.** When presenting options, prefix your preferred
-  pick(s) with `★` so the user can scan and reply by echoing or overriding (e.g. "go
-  with ★ for 1-4, change 5 to B").
-- **Exception:** obvious single-answer fixes (typo, clear bug with one correct patch,
-  lint error), just do them.
+- **Do not silently pick between reasonable alternatives.** Whenever a task admits more than one
+  defensible approach (which Cupertino primitive to wrap, whether a new field is functional /
+  shared-visual / platform-only per
+  [`APPENDIX.md#field-classification`](../APPENDIX.md#field-classification), whether a symbol
+  belongs in the public re-exports or stays under `lib/src/`, function-vs-class API shape, whether
+  to add a dependency, etc.), **stop and ask**. Recommendations in the question are expected, list
+  the options with trade-offs, say which you'd pick and why, then wait.
+- **"Small" choices count.** The bar isn't "is this architecturally significant", it's "could a
+  reasonable maintainer disagree with my pick". If yes, ask.
+- **Mark your recommendation with `★`.** When presenting options, prefix your preferred pick(s) with
+  `★` so the user can scan and reply by echoing or overriding (e.g. "go with ★ for 1-4, change 5 to
+  B").
+- **Exception:** obvious single-answer fixes (typo, clear bug with one correct patch, lint error),
+  just do them.
 
 ## Tool preferences
 
 - **Read / Edit / Grep / Glob** over `cat` / `sed` / `grep` / `find`. Always.
-- **Bash** only for things without a dedicated tool: `flutter`, `dart`, `git`. The
-  user's shell aliases `flutter` / `dart` to whatever toolchain manager serves the
-  `.fvmrc`-pinned channel, invoke plain `flutter` / `dart`, not the manager directly.
+- **Bash** only for things without a dedicated tool: `flutter`, `dart`, `git`. The user's shell
+  aliases `flutter` / `dart` to whatever toolchain manager serves the `.fvmrc`-pinned channel,
+  invoke plain `flutter` / `dart`, not the manager directly.
 - **Lint with `dart analyze --fatal-infos --fatal-warnings .`**, as CI runs it. The shared lints
   promote many lints to `error:`: those are the contract, not suggestions.
-- **Agent tool** for wide / open-ended searches or to keep large outputs out of main
-  context. Not for trivial lookups.
+- **Agent tool** for wide / open-ended searches or to keep large outputs out of main context. Not
+  for trivial lookups.
 
 ## Scope awareness
 
-- **Public-API edits** (anything in `lib/platform_adaptive_widgets.dart`, or anything
-  re-exported from it, every `PlatformXxx` widget, every `*Data` class, every
-  extension, every typedef) are pub.dev-visible. Treat them with care. Flag whether the
-  change is patch / minor / major under semver before landing.
-- **`lib/src/` edits** are private. Refactor freely as long as the public re-exports
-  stay stable. Moving a file *within* `lib/src/` requires updating the export path in
+- **Public-API edits** (anything in `lib/platform_adaptive_widgets.dart`, or anything re-exported
+  from it, every `PlatformXxx` widget, every `*Data` class, every extension, every typedef) are
+  pub.dev-visible. Treat them with care. Flag whether the change is patch / minor / major under
+  semver before landing.
+- **`lib/src/` edits** are private. Refactor freely as long as the public re-exports stay stable.
+  Moving a file *within* `lib/src/` requires updating the export path in
   `lib/platform_adaptive_widgets.dart`.
-- **`example/` edits** are local, no publish impact. The demo app is the living usage
-  reference. Keep it building and runnable on both Android and iOS. See
+- **`example/` edits** are local, no publish impact. The demo app is the living usage reference.
+  Keep it building and runnable on both Android and iOS. See
   [`example/.ai/AGENTS.md`](../example/.ai/AGENTS.md) for sub-scope conventions.
 - **`analysis_options.yaml` edits** override dartender's shared lints, which every repo gets.
   Surface them loudly and add a written reason in `APPENDIX.md`.
-- **`pubspec.yaml` edits** that touch `dependencies` add to every downstream user's
-  transitive closure. Treat as public-API-class. Adding or removing `topics:` or
-  `platforms:` entries is also pub.dev-visible.
+- **`pubspec.yaml` edits** that touch `dependencies` add to every downstream user's transitive
+  closure. Treat as public-API-class. Adding or removing `topics:` or `platforms:` entries is also
+  pub.dev-visible.
 
 ## Auto-memory conventions for this project
 
-- **`project` memories**: scope/constraints the user states aloud (e.g. "we're cutting
-  v1.1 before Friday", "minimum Flutter bumps to 3.40 on date Y", "Y feature is on hold
-  until Z lands upstream"). Convert relative dates to absolute.
-- **`feedback` memories**: corrections AND validated non-obvious choices. Include
-  **Why** and **How to apply** lines.
-- **`reference` memories**: external pointers (the pub.dev page, related upstream
-  issues in `flutter/flutter`, `material_ui` / `cupertino_ui` / `pull_down_button`
-  upstream discussions). Not internal code paths, those live in AGENTS.md or are
-  derivable from the repo.
-- **Do NOT save** Dart file paths, lint-rule lists, widget catalogue, or API surface,
-  all derivable from the repo or APPENDIX.md. Re-deriving is safer than acting on a
-  stale memory.
+- **`project` memories**: scope/constraints the user states aloud (e.g. "we're cutting v1.1 before
+  Friday", "minimum Flutter bumps to 3.40 on date Y", "Y feature is on hold until Z lands
+  upstream"). Convert relative dates to absolute.
+- **`feedback` memories**: corrections AND validated non-obvious choices. Include **Why** and
+  **How to apply** lines.
+- **`reference` memories**: external pointers (the pub.dev page, related upstream issues in
+  `flutter/flutter`, `material_ui` / `cupertino_ui` / `pull_down_button` upstream discussions). Not
+  internal code paths, those live in AGENTS.md or are derivable from the repo.
+- **Do NOT save** Dart file paths, lint-rule lists, widget catalogue, or API surface, all derivable
+  from the repo or APPENDIX.md. Re-deriving is safer than acting on a stale memory.
 - **Before acting on a memory**, verify the named file / widget / symbol still exists.
 
 ## Plan before editing when
 
 - The change touches the public API (anything re-exported from
-  `lib/platform_adaptive_widgets.dart`). Even adding a new public widget or `*Data`
-  field affects semver and downstream users.
-- You're adding or removing a dependency in `pubspec.yaml`. Each dep expands the
-  user-facing surface area and constrains downstream resolution.
+  `lib/platform_adaptive_widgets.dart`). Even adding a new public widget or `*Data` field affects
+  semver and downstream users.
+- You're adding or removing a dependency in `pubspec.yaml`. Each dep expands the user-facing surface
+  area and constrains downstream resolution.
 - You're overriding a shared lint in `analysis_options.yaml`. Lint posture is project-wide. Any
   toggle deserves a written reason in APPENDIX.
-- You're adding a new `PlatformXxx` widget. The pattern is load-bearing
-  (`PlatformWidgetBase` subclass + paired `*Data` classes + matching `models/` ↔
-  `widgets/` location). Plan the shape against the existing pattern before writing
-  code.
-- You're touching anything in `lib/src/models/platform_widget_base.dart`. The abstract
-  base hierarchy is the dispatch invariant for every widget in the package. See
+- You're adding a new `PlatformXxx` widget. The pattern is load-bearing (`PlatformWidgetBase`
+  subclass + paired `*Data` classes + matching `models/` ↔ `widgets/` location). Plan the shape
+  against the existing pattern before writing code.
+- You're touching anything in `lib/src/models/platform_widget_base.dart`. The abstract base
+  hierarchy is the dispatch invariant for every widget in the package. See
   [`APPENDIX.md#platform-widget-base-hierarchy`](../APPENDIX.md#platform-widget-base-hierarchy).
 
 For single-file, single-concern fixes inside `lib/src/`: just do it.
 
-The release flow, `CHANGELOG.md`, `version:` in `pubspec.yaml`, and the matching git
-tag, is **not** in the routine-edit list. All 3 move together only when the user
-explicitly says "cut a release". See *Forbidden / confirm-first actions* below.
+The release flow, `CHANGELOG.md`, `version:` in `pubspec.yaml`, and the matching git tag, is **not**
+in the routine-edit list. All 3 move together only when the user explicitly says "cut a release".
+See *Forbidden / confirm-first actions* below.
 
 ## Commit / PR etiquette
 
 - **Never commit without being asked.** Not after a fix, not as a "checkpoint".
-- **Never push without being asked.** Especially not to `master`, and especially not a
-  semver tag (which triggers pub.dev publish via
-  `.github/workflows/publish.yml`).
+- **Never push without being asked.** Especially not to `master`, and especially not a semver tag
+  (which triggers pub.dev publish via `.github/workflows/publish.yml`).
 - **Never `--amend`** unless the user asked, create a new commit instead.
 - **Never `--no-verify`**, **never `git add -A`**: stage named paths.
-- Commit subjects follow AGENTS.md's PR conventions (Conventional Commits with a scope and the
-  issue key). No Claude-authored footer unless asked.
-- When asked for a commit: show `git status` + `git diff`, draft the message, wait for
-  approval.
+- Commit subjects follow AGENTS.md's PR conventions (Conventional Commits with a scope and the issue
+  key). No Claude-authored footer unless asked.
+- When asked for a commit: show `git status` + `git diff`, draft the message, wait for approval.
 
 ## Forbidden / confirm-first actions
 
-- **Never** `flutter pub publish` or `dart pub publish`. Publishing is one-way, since
-  pub.dev never unpublishes a version and only lets you retract one within 7 days. Releases
-  go through the Release run, whose tag push starts `.github/workflows/publish.yml`. Pushing
-  a matching `X.Y.Z` git tag by hand starts it too, so that's a confirm-first action.
-- **Never** push a semver tag (`git push origin <tag>` or `git push --tags`) without
-  explicit instruction. The tag triggers `.github/workflows/publish.yml`, which
-  authenticates to pub.dev via OIDC (configured by `dart-lang/setup-dart`). There is
-  no manual confirmation step on the pub.dev side.
-- **Never** edit `CHANGELOG.md`, the `version:` field in `pubspec.yaml`, or
-  `example/pubspec.lock` by hand. The Release run moves the 3 together, `changelog.yml`
-  writes each PR's line on merge, and Dependabot bumps `example/pubspec.lock` too. After
-  changing `example/pubspec.yaml`, run `flutter pub get` in `example/`. When the user authorises a
-  release, start **Release** from the Actions tab, or `gh workflow run release.yml -f bump=<bump>`.
-- **Never** edit `pubspec.lock` directly (root or `example/`). It's `flutter pub get`'s
-  output.
-- **Never** delete files under `.fvm/`, `.dart_tool/`, or `pubspec.lock` without
-  approval. These are tooling state. Deleting them forces a re-resolve.
-- **Destructive git** (`reset --hard`, `push --force`, `branch -D`, `clean -fd`) → ask
-  first.
+- **Never** `flutter pub publish` or `dart pub publish`. Publishing is one-way, since pub.dev never
+  unpublishes a version and only lets you retract one within 7 days. Releases go through the Release
+  run, whose tag push starts `.github/workflows/publish.yml`. Pushing a matching `X.Y.Z` git tag by
+  hand starts it too, so that's a confirm-first action.
+- **Never** push a semver tag (`git push origin <tag>` or `git push --tags`) without explicit
+  instruction. The tag triggers `.github/workflows/publish.yml`, which authenticates to pub.dev via
+  OIDC (configured by `dart-lang/setup-dart`). There is no manual confirmation step on the pub.dev
+  side.
+- **Never** edit `CHANGELOG.md`, the `version:` field in `pubspec.yaml`, or `example/pubspec.lock`
+  by hand. The Release run moves the 3 together, `changelog.yml` writes each PR's line on merge, and
+  Dependabot bumps `example/pubspec.lock` too. After changing `example/pubspec.yaml`, run
+  `flutter pub get` in `example/`. When the user authorises a release, start **Release** from the
+  Actions tab, or `gh workflow run release.yml -f bump=<bump>`.
+- **Never** edit `pubspec.lock` directly (root or `example/`). It's `flutter pub get`'s output.
+- **Never** delete files under `.fvm/`, `.dart_tool/`, or `pubspec.lock` without approval. These are
+  tooling state. Deleting them forces a re-resolve.
+- **Destructive git** (`reset --hard`, `push --force`, `branch -D`, `clean -fd`) → ask first.
 
 ## Definition of done
 
 - Every check `ci / ok` waits on passes on your tree: the `needs:` of the `ok` job in
   [dartender's `ci.yml`](https://github.com/LahaLuhem/dartender/blob/main/.github/workflows/ci.yml),
-  run with this repo's inputs from [`ci.yml`](../.github/workflows/ci.yml). So does this repo's
-  own [`size-regression.yml`](../.github/workflows/size-regression.yml).
-- `dcm analyze` clean, the `dart_code_metrics` rules (e.g. `avoid-returning-widgets`)
-  are **not** surfaced by `dart analyze`, and CI runs no DCM, so they need their own pass via
-  the `dcm` CLI (`dcm analyze <dir>`). Treat it as a separate, required lint gate.
-- `flutter pub publish --dry-run` clean if the change is publish-relevant, apart from its
-  warning about uncommitted files, which fails it until you commit. Do **not** bump the version
-  or add a CHANGELOG entry to make the dry-run happy. Those are release-time edits.
-- Public widget / `*Data` additions documented with `///` dartdoc, reflected in the
-  appropriate `README.md` widget-catalogue table, and exported from
-  `lib/platform_adaptive_widgets.dart`.
+  run with this repo's inputs from [`ci.yml`](../.github/workflows/ci.yml). So does this repo's own
+  [`size-regression.yml`](../.github/workflows/size-regression.yml).
+- `dcm analyze` clean, the `dart_code_metrics` rules (e.g. `avoid-returning-widgets`) are **not**
+  surfaced by `dart analyze`, and CI runs no DCM, so they need their own pass via the `dcm` CLI
+  (`dcm analyze <dir>`). Treat it as a separate, required lint gate.
+- `flutter pub publish --dry-run` clean if the change is publish-relevant, apart from its warning
+  about uncommitted files, which fails it until you commit. Do **not** bump the version or add a
+  CHANGELOG entry to make the dry-run happy. Those are release-time edits.
+- Public widget / `*Data` additions documented with `///` dartdoc, reflected in the appropriate
+  `README.md` widget-catalogue table, and exported from `lib/platform_adaptive_widgets.dart`.
 - When a widget change could affect both navigation styles, verified by running
-  `example/lib/main.dart` *and* `example/lib/main_go_router.dart` on both Android and
-  iOS, or, if you can't, explicitly call out what you did NOT verify (e.g. "didn't
-  exercise on iOS, only ran the Android emulator").
+  `example/lib/main.dart` *and* `example/lib/main_go_router.dart` on both Android and iOS, or, if
+  you can't, explicitly call out what you did NOT verify (e.g. "didn't exercise on iOS, only ran the
+  Android emulator").

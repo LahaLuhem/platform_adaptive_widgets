@@ -1,53 +1,52 @@
 # AGENTS.md, `platform_adaptive_widgets`
 
-Tool-agnostic brief for any coding agent (Copilot, Cursor, Codex, Claude Code, …) working
-in this package. Claude-Code-specific guidance lives in [CLAUDE.md](./CLAUDE.md).
+Tool-agnostic brief for any coding agent (Copilot, Cursor, Codex, Claude Code, …) working in this
+package. Claude-Code-specific guidance lives in [CLAUDE.md](./CLAUDE.md).
 
 ## Project goal
 A Flutter package providing **platform-adaptive widgets**: a spiritual continuation of
-[`flutter_platform_widgets`](https://pub.dev/packages/flutter_platform_widgets). Each
-`PlatformXxx` widget automatically renders **Cupertino** on iOS and macOS and **Material**
-everywhere else, so app code never needs explicit `Platform.isAndroid` / `Platform.isIOS` branching.
+[`flutter_platform_widgets`](https://pub.dev/packages/flutter_platform_widgets). Each `PlatformXxx`
+widget automatically renders **Cupertino** on iOS and macOS and **Material** everywhere else, so app
+code never needs explicit `Platform.isAndroid` / `Platform.isIOS` branching.
 
 The public API is stable: `PlatformXxx` widgets + per-platform `MaterialXxxData` /
-`CupertinoXxxData` tuning records + cross-platform `PlatformXxxData` unified params. See
-README for the full widget catalogue. APPENDIX for design rationale.
+`CupertinoXxxData` tuning records + cross-platform `PlatformXxxData` unified params. See README for
+the full widget catalogue. APPENDIX for design rationale.
 
 ## Stack
 
-- **Flutter and Dart floors live in `pubspec.yaml`'s `environment:` block.** Read them
-  there, they are not repeated here. Raise them only when a new language feature is
-  actually consumed. `.fvmrc` pins the Flutter channel to `stable` for local use,
-  whatever toolchain manager serves it (FVM, asdf, plain `flutter`) is a local
-  implementation detail.
-- **`dart analyze --fatal-infos --fatal-warnings .`**, as CI runs it, for pedantic static
-  analysis. The lint posture is deliberately strict. See
+- **Flutter and Dart floors live in `pubspec.yaml`'s `environment:` block.** Read them there, they
+  are not repeated here. Raise them only when a new language feature is actually consumed. `.fvmrc`
+  pins the Flutter channel to `stable` for local use, whatever toolchain manager serves it (FVM,
+  asdf, plain `flutter`) is a local implementation detail.
+- **`dart analyze --fatal-infos --fatal-warnings .`**, as CI runs it, for pedantic static analysis.
+  The lint posture is deliberately strict. See
   [dartender's shared lints](https://github.com/LahaLuhem/dartender/blob/main/lints/lib/analysis_options.yaml),
-  which `analysis_options.yaml` includes, for
-  `strict-casts`, `strict-inference`, `strict-raw-types`, plus the
-  `errors:`-promoted rules. Pedantic mode is intentional, not negotiable.
+  which `analysis_options.yaml` includes, for `strict-casts`, `strict-inference`,
+  `strict-raw-types`, plus the `errors:`-promoted rules. Pedantic mode is intentional, not
+  negotiable.
 - **`flutter_test`** for widget / unit tests.
-- **CLI linting via the [linterpol](https://github.com/LahaLuhem/linterpol) Docker image.**
-  GitHub workflows (`actionlint`), Markdown (`rumdl`) and YAML (`ryl`) are linted by running
-  the public, multi-arch `ghcr.io/lahaluhem/linterpol:latest` image
+- **CLI linting via the [linterpol](https://github.com/LahaLuhem/linterpol) Docker image.** GitHub
+  workflows (`actionlint`), Markdown (`rumdl`) and YAML (`ryl`) are linted by running the public,
+  multi-arch `ghcr.io/lahaluhem/linterpol:latest` image
   (`docker run --rm -v "$PWD:/work:ro" ghcr.io/lahaluhem/linterpol:latest <tool>`), not
   hand-installed tools. CI runs the checks in `.github/lint-checks.json`, after copying in
   [dartender's default configs](https://github.com/LahaLuhem/dartender/tree/main/actions/lint/defaults)
-  as `.rumdl.toml` and `.yamllint.yaml`, since this repo has neither. Copy them in for a local
-  rumdl or ryl run too. Don't reintroduce `brew` / `pip` / `uv` linter installs.
+  as `.rumdl.toml` and `.yamllint.yaml`, since this repo has neither. Copy them in for a local rumdl
+  or ryl run too. Don't reintroduce `brew` / `pip` / `uv` linter installs.
 - **Cupertino on iOS and macOS, Material everywhere else.** One getter,
   [`designLanguage`](../lib/src/utils/design_language.dart), makes that call for every dispatch.
 - **Published to pub.dev.** `.pubignore` controls what ships in the tarball. The
-  `.github/workflows/publish.yml` workflow fires on a pushed semver tag
-  (`{{version}}`) and hands off to dartender's `publish.yml`, which publishes via OIDC
-  (configured by `dart-lang/setup-dart`) and runs no `pub get`, so `example/pubspec.lock`
-  stays byte-identical through the publish dry-run. No manual `flutter pub publish` invocation.
-- **`CHANGELOG.md`, the `version:` field in `pubspec.yaml`, and the release tag** move
-  together in the Release run, which the user starts from the Actions tab (see
+  `.github/workflows/publish.yml` workflow fires on a pushed semver tag (`{{version}}`) and hands
+  off to dartender's `publish.yml`, which publishes via OIDC (configured by `dart-lang/setup-dart`)
+  and runs no `pub get`, so `example/pubspec.lock` stays byte-identical through the publish dry-run.
+  No manual `flutter pub publish` invocation.
+- **`CHANGELOG.md`, the `version:` field in `pubspec.yaml`, and the release tag** move together in
+  the Release run, which the user starts from the Actions tab (see
   [dartender's Releasing](https://github.com/LahaLuhem/dartender#releasing)). It also adds
-  Dependabot's CHANGELOG lines. Every other line comes from `.github/workflows/changelog.yml`,
-  one per merged PR with a `sem-*` label other than `sem-skip`, so routine PR work appends
-  nothing by hand.
+  Dependabot's CHANGELOG lines. Every other line comes from `.github/workflows/changelog.yml`, one
+  per merged PR with a `sem-*` label other than `sem-skip`, so routine PR work appends nothing by
+  hand.
 
 ## Repo layout
 
@@ -91,11 +90,11 @@ platform_adaptive_widgets/
 ```
 
 **`models/` and `widgets/` mirror each other.** Every concrete widget under
-`lib/src/widgets/<category>/platform_xxx.dart` has a matching data class (or family of
-data classes) under `lib/src/models/<category>/platform_xxx_data.dart`. The same
-sub-categories, `dialogs/`, `interaction/`, `layout/`, `painting/`: appear in both
-trees. When adding a new widget, add its `*Data` siblings under the same category in
-`models/` (see [`APPENDIX.md#models-widgets-mirror-layout`](../APPENDIX.md#models-widgets-mirror-layout)).
+`lib/src/widgets/<category>/platform_xxx.dart` has a matching data class (or family of data classes)
+under `lib/src/models/<category>/platform_xxx_data.dart`. The same sub-categories, `dialogs/`,
+`interaction/`, `layout/`, `painting/`: appear in both trees. When adding a new widget, add its
+`*Data` siblings under the same category in `models/` (see
+[`APPENDIX.md#models-widgets-mirror-layout`](../APPENDIX.md#models-widgets-mirror-layout)).
 
 **The widget pattern (every `PlatformXxx`):**
 
@@ -105,80 +104,74 @@ trees. When adding a new widget, add its `*Data` siblings under the same categor
    `@protected @visibleForOverriding` (the analyzer doesn't carry the base's over, so a guard
    checks).
 3. Constructor shape, every field falls into one of 3 buckets:
-   - **Functional + shared visual**: flat `const` params on the widget itself
-     (callbacks, value, controllers, state-gating, plus visual fields that
-     exist on both platforms with possible per-platform override).
+   - **Functional + shared visual**: flat `const` params on the widget itself (callbacks, value,
+     controllers, state-gating, plus visual fields that exist on both platforms with possible
+     per-platform override).
    - **Material-only visual**: pass via `materialXxxData: MaterialXxxData(…)`.
    - **Cupertino-only visual**: pass via `cupertinoXxxData: CupertinoXxxData(…)`.
 
-   Per-platform records carry **only** visual fields, never callbacks,
-   controllers, value, or state-gating. The legacy v1.x shape (public
-   `PlatformXxxData` taking functional fields) is being migrated out
-   widget-by-widget as part of the v2 restructure. See
+   Per-platform records carry **only** visual fields, never callbacks, controllers, value, or
+   state-gating. The legacy v1.x shape (public `PlatformXxxData` taking functional fields) is being
+   migrated out widget-by-widget as part of the v2 restructure. See
    [`APPENDIX.md#field-classification`](../APPENDIX.md#field-classification)
    for the full rule and
    [`APPENDIX.md#cross-platform-field-mappings`](../APPENDIX.md#cross-platform-field-mappings)
    for shared-visual fields whose native names or types diverge.
 
-   A new shared-visual field must be added in **both** places, flat on the
-   widget *and* on the `_PlatformXxxData` base, and merged with `??` in both
-   `buildMaterial` and `buildCupertino`. The
-   [data ↔ widget parity guard](../test/data_widget_parity_test.dart) fails the
-   PR if either edge drifts (these 2 edges are the ones the Dart compiler does
-   not catch, unlike `super.x` forwarding base → records). See
+   A new shared-visual field must be added in **both** places, flat on the widget *and* on the
+   `_PlatformXxxData` base, and merged with `??` in both `buildMaterial` and `buildCupertino`. The
+   [data ↔ widget parity guard](../test/data_widget_parity_test.dart) fails the PR if either edge
+   drifts (these 2 edges are the ones the Dart compiler does not catch, unlike `super.x` forwarding
+   base → records). See
    [`APPENDIX.md#field-classification`](../APPENDIX.md#field-classification)
    (*Enforcement*).
 
 ## Hard rules
 
-1. **The public API lives only in `lib/platform_adaptive_widgets.dart`.** That file
-   re-exports from `lib/src/`. Don't make users import from
-   `package:platform_adaptive_widgets/src/…`: the `src/` subtree is private by
-   convention. Anything callers need goes through an explicit `export`. See
+1. **The public API lives only in `lib/platform_adaptive_widgets.dart`.** That file re-exports from
+   `lib/src/`. Don't make users import from `package:platform_adaptive_widgets/src/…`: the `src/`
+   subtree is private by convention. Anything callers need goes through an explicit `export`. See
    [`APPENDIX.md#public-api-via-single-export-file`](../APPENDIX.md#public-api-via-single-export-file).
-2. **No `print()` in library code.** Diagnostic output is the caller's responsibility
-   (loggers, callbacks, the example app). `avoid_print` is already a warning in
-   the shared lints.
-3. **No `dynamic` escape hatches.** `strict-casts`, `strict-inference`, and
-   `strict-raw-types` are all on in the shared lints. If you reach for `dynamic`
-   or unconstrained `Object?`, stop and reconsider.
-4. **Public symbols carry dartdoc.** Every public class / widget / function / getter /
-   extension needs a `///` comment that explains *why*, not *what*, types already carry
-   the *what*.
-5. **Semver, strictly.** Breaking changes only on a major bump. Any change to a public
-   widget's constructor signature, a public `*Data` field, a deletion, or a behavioural
-   change of a documented contract is breaking. Surface the implication before the diff
-   lands.
-6. **Switch on `designLanguage`, never `defaultTargetPlatform`.** A guard fails any other read
-   in `lib/src/`. Moving a platform between looks, or adding a third, needs a conversation first
-   (see [`APPENDIX.md#android-ios-only`](../APPENDIX.md#android-ios-only)).
+2. **No `print()` in library code.** Diagnostic output is the caller's responsibility (loggers,
+   callbacks, the example app). `avoid_print` is already a warning in the shared lints.
+3. **No `dynamic` escape hatches.** `strict-casts`, `strict-inference`, and `strict-raw-types` are
+   all on in the shared lints. If you reach for `dynamic` or unconstrained `Object?`, stop and
+   reconsider.
+4. **Public symbols carry dartdoc.** Every public class / widget / function / getter / extension
+   needs a `///` comment that explains *why*, not *what*, types already carry the *what*.
+5. **Semver, strictly.** Breaking changes only on a major bump. Any change to a public widget's
+   constructor signature, a public `*Data` field, a deletion, or a behavioural change of a
+   documented contract is breaking. Surface the implication before the diff lands.
+6. **Switch on `designLanguage`, never `defaultTargetPlatform`.** A guard fails any other read in
+   `lib/src/`. Moving a platform between looks, or adding a third, needs a conversation first (see
+   [`APPENDIX.md#android-ios-only`](../APPENDIX.md#android-ios-only)).
 7. **Every new `PlatformXxx` follows the widget pattern above.** See
    [`APPENDIX.md#platform-widget-base-hierarchy`](../APPENDIX.md#platform-widget-base-hierarchy).
 8. **Inside `lib/src/`, dispatch with an inline `switch (designLanguage)`**, each arm calling a
-   helper for one look. Never hand both looks to `platformValue` and co, or to a helper taking
-   both builders: the loser gets compiled in anyway (about 192 KB of the example's Android build,
+   helper for one look. Never hand both looks to `platformValue` and co, or to a helper taking both
+   builders: the loser gets compiled in anyway (about 192 KB of the example's Android build,
    2026-05-30). The selectors stay public for callers who accept that. The AST lint in
-   [`test/aot_pruning_regression_test.dart`](../test/aot_pruning_regression_test.dart) and the
-   size benchmark over `tool/size_harness/` enforce it on every PR, so don't weaken either without
-   a conversation. See [`APPENDIX.md#aot-pruning-rules`](../APPENDIX.md#aot-pruning-rules).
-9. **`CHANGELOG.md` and `version:` move together with the release tag, in the Release
-   run.** Routine CHANGELOG lines come from `changelog.yml` + `cider`. The Release run
-   bumps `version:`, dates `[Unreleased]`, commits, and pushes the commit with its `X.Y.Z`
-   tag (see *PR conventions* below). So don't edit either file by hand. See
+   [`test/aot_pruning_regression_test.dart`](../test/aot_pruning_regression_test.dart) and the size
+   benchmark over `tool/size_harness/` enforce it on every PR, so don't weaken either without a
+   conversation. See [`APPENDIX.md#aot-pruning-rules`](../APPENDIX.md#aot-pruning-rules).
+9. **`CHANGELOG.md` and `version:` move together with the release tag, in the Release run.** Routine
+   CHANGELOG lines come from `changelog.yml` + `cider`. The Release run bumps `version:`, dates
+   `[Unreleased]`, commits, and pushes the commit with its `X.Y.Z` tag (see *PR conventions* below).
+   So don't edit either file by hand. See
    [*Forbidden / confirm-first actions* in CLAUDE.md](./CLAUDE.md#forbidden--confirm-first-actions).
-10. **`.idea/` is deliberately part-tracked.** Only [`.idea/.gitignore`](../.idea/.gitignore)
-    and [`.idea/runConfigurations/`](../.idea/runConfigurations/) are committed. `/.idea/*`
-    in `.gitignore` drops the rest. The run configs are shared tooling, so don't let a
-    cleanliness sweep untrack `.idea/` wholesale. Extend the negations to share a new path.
+10. **`.idea/` is deliberately part-tracked.** Only [`.idea/.gitignore`](../.idea/.gitignore) and
+    [`.idea/runConfigurations/`](../.idea/runConfigurations/) are committed. `/.idea/*` in
+    `.gitignore` drops the rest. The run configs are shared tooling, so don't let a cleanliness
+    sweep untrack `.idea/` wholesale. Extend the negations to share a new path.
 
 ## PR conventions
-The `.github/workflows/conventions.yml` workflow enforces branch-name, PR-label,
-and commit-subject rules on every PR. On merge, `.github/workflows/changelog.yml`
-auto-appends to `CHANGELOG.md` based on the PR's `sem-*` label (via `cider log`).
-**PRs that don't comply will be blocked by CI.** The conventions:
+The `.github/workflows/conventions.yml` workflow enforces branch-name, PR-label, and commit-subject
+rules on every PR. On merge, `.github/workflows/changelog.yml` auto-appends to `CHANGELOG.md` based
+on the PR's `sem-*` label (via `cider log`). **PRs that don't comply will be blocked by CI.** The
+conventions:
 
-- **Branch name**: `<type>/#<issue>-<slug>`, where `<type>` is one of
-  `feature`, `bugfix`, `chore` or `refactor`. Example: `chore/#12-tidy-readme`.
+- **Branch name**: `<type>/#<issue>-<slug>`, where `<type>` is one of `feature`, `bugfix`, `chore`
+  or `refactor`. Example: `chore/#12-tidy-readme`.
 - **Commit subject**: [Conventional Commits](https://www.conventionalcommits.org/) with a scope,
   then the issue key, then a lowercase subject: `<type>(<scope>)[!]: [#<issue>] <subject>`. The
   scope names the area (`dialogs`, `example`, `readme`, `deps`), `!` marks a public-API break, and
@@ -197,80 +190,73 @@ auto-appends to `CHANGELOG.md` based on the PR's `sem-*` label (via `cider log`)
   | `sem-security`  | `### Security`    | Security-relevant fix                          |
   | `sem-skip`      | (skip)            | Internal-only change (CI, docs, tests, …)      |
 
-  The PR title becomes the CHANGELOG line verbatim, write it as a release-note
-  bullet.
-- **PR body must not be empty**, **no merge commits in the PR range** (rebase to
-  integrate `master`), and **commit subjects ≤ 82 characters**.
+  The PR title becomes the CHANGELOG line verbatim, write it as a release-note bullet.
+- **PR body must not be empty**, **no merge commits in the PR range** (rebase to integrate
+  `master`), and **commit subjects ≤ 82 characters**.
 
-Cutting a release is one run: **Release** in the Actions tab, then the bump. It runs CI, moves
-the version, the CHANGELOG and `example/pubspec.lock` together, and pushes the tag `publish.yml`
-picks up. [dartender's Releasing](https://github.com/LahaLuhem/dartender#releasing) has the rest.
+Cutting a release is one run: **Release** in the Actions tab, then the bump. It runs CI, moves the
+version, the CHANGELOG and `example/pubspec.lock` together, and pushes the tag `publish.yml` picks
+up. [dartender's Releasing](https://github.com/LahaLuhem/dartender#releasing) has the rest.
 
 ## Style
-Full guide: [`../CODESTYLE.md`](../CODESTYLE.md). The lint posture is deliberately strict
-(see the shared lints), the explicit `errors:` block promotes a long list of
-lints to errors. Top-level rules to keep in working memory:
+Full guide: [`../CODESTYLE.md`](../CODESTYLE.md). The lint posture is deliberately strict (see the
+shared lints), the explicit `errors:` block promotes a long list of lints to errors. Top-level rules
+to keep in working memory:
 
 - Type-annotate every public symbol. `final` by default for fields and locals.
 - Nullability is explicit (no `as T` on `T?`).
 - 100-column line width (`formatter.page_width: 100` in the shared lints).
 - No magic numbers in `lib/` code, pull to named `static const`s.
-- Public symbols carry `///` dartdoc explaining *why*, not *what*. Aim for 1 or 2 lines, and
-  leave a field bare where the name and type already say it.
+- Public symbols carry `///` dartdoc explaining *why*, not *what*. Aim for 1 or 2 lines, and leave a
+  field bare where the name and type already say it.
 - Prose of any kind follows [Prose & voice](../CODESTYLE.md#prose), which opens with
   <https://noslopgrenade.com/>. Read that page before writing any.
-- Prefer static dot shorthands (`.android`, `.iOS`, `.all(16)`, `.symmetric(...)`,
-  `.start`, `.min`), the codebase relies on them heavily.
+- Prefer static dot shorthands (`.android`, `.iOS`, `.all(16)`, `.symmetric(...)`, `.start`,
+  `.min`), the codebase relies on them heavily.
 
-For everything else, naming, idioms, class structure, DCM rules, markdown conventions,
-go to [`../CODESTYLE.md`](../CODESTYLE.md).
+For everything else, naming, idioms, class structure, DCM rules, markdown conventions, go to
+[`../CODESTYLE.md`](../CODESTYLE.md).
 
 ## Guidelines for any AI agent
 
-- **Always ask before making technical choices.** When the task admits more than one
-  reasonable approach (which platform-specific widget to wrap on the Cupertino side,
-  whether to add a new `*Data` field vs reuse an existing one, whether to expose a
-  helper as a top-level function or a class member, whether to introduce a dependency,
-  etc.), stop and ask. Present the options with trade-offs, say which you'd pick and
-  why, then wait. Don't silently pick one and build. This applies even when a choice
-  feels small, small choices compound.
-- **Mark recommendations with `★`.** Prefix your preferred option in every set with `★`,
-  in tables, bullet lists, headings, inline, so the user can scan and reply by
-  echoing or overriding (e.g. "★ for 1-4, change 5 to B"). Exactly one star per option
-  set in most cases. Occasionally a combined choice warrants more.
-- **Refactor first when the change needs it.** Before building a feature, check whether
-  the current structure fits it. If you catch yourself adding a special case, threading a
-  flag through layers, duplicating a block, or working around an abstraction, do the
-  enabling refactor *first* as its own behaviour-preserving step (separate commit,
-  verified green), then build the new behaviour on the clean shape. Long-term
-  maintainability of the package outranks shipping the immediate change faster. 2
-  repo-specific teeth: a preparatory refactor that touches the public surface (a
-  re-export, a `PlatformXxx` constructor, a `*Data` field) is itself a semver event, so
-  classify it (patch / minor / major) and surface that before doing it, like any
-  public-API change. And because the package is published and breakage is slow to walk
-  back, baking a feature onto a mismatched structure is expensive here, which lowers the
-  bar for restructuring first. The in-flight v2 `*Data` restructure (migrating the legacy
-  public `PlatformXxxData` shape out widget-by-widget before new per-platform-record
-  features land) is the worked example. Keep the refactor minimal and tied to a change
-  you can actually see coming, not speculative architecture.
-- **Document new public widgets in the README's widget catalogue.** Any new
-  `PlatformXxx` widget, `showPlatformXxx` function, or public `*Data` class must be
-  added to the appropriate table in `README.md` in the same change. Rationale + design
-  trade-offs still belong in `APPENDIX.md`. The README is the user-facing entry point
-  and must reflect what the package actually offers.
+- **Always ask before making technical choices.** When the task admits more than one reasonable
+  approach (which platform-specific widget to wrap on the Cupertino side, whether to add a new
+  `*Data` field vs reuse an existing one, whether to expose a helper as a top-level function or a
+  class member, whether to introduce a dependency, etc.), stop and ask. Present the options with
+  trade-offs, say which you'd pick and why, then wait. Don't silently pick one and build. This
+  applies even when a choice feels small, small choices compound.
+- **Mark recommendations with `★`.** Prefix your preferred option in every set with `★`, in tables,
+  bullet lists, headings, inline, so the user can scan and reply by echoing or overriding (e.g. "★
+  for 1-4, change 5 to B"). Exactly one star per option set in most cases. Occasionally a combined
+  choice warrants more.
+- **Refactor first when the change needs it.** Before building a feature, check whether the current
+  structure fits it. If you catch yourself adding a special case, threading a flag through layers,
+  duplicating a block, or working around an abstraction, do the enabling refactor *first* as its own
+  behaviour-preserving step (separate commit, verified green), then build the new behaviour on the
+  clean shape. Long-term maintainability of the package outranks shipping the immediate change
+  faster. 2 repo-specific teeth: a preparatory refactor that touches the public surface (a
+  re-export, a `PlatformXxx` constructor, a `*Data` field) is itself a semver event, so classify it
+  (patch / minor / major) and surface that before doing it, like any public-API change. And because
+  the package is published and breakage is slow to walk back, baking a feature onto a mismatched
+  structure is expensive here, which lowers the bar for restructuring first. The in-flight v2
+  `*Data` restructure (migrating the legacy public `PlatformXxxData` shape out widget-by-widget
+  before new per-platform-record features land) is the worked example. Keep the refactor minimal and
+  tied to a change you can actually see coming, not speculative architecture.
+- **Document new public widgets in the README's widget catalogue.** Any new `PlatformXxx` widget,
+  `showPlatformXxx` function, or public `*Data` class must be added to the appropriate table in
+  `README.md` in the same change. Rationale + design trade-offs still belong in `APPENDIX.md`. The
+  README is the user-facing entry point and must reflect what the package actually offers.
 - **Read <https://noslopgrenade.com/> before writing any prose.** Dartdoc, comments, commit
   messages, PR bodies. Fetch the page, don't cite it from memory: it is the intent behind
   [Prose & voice](../CODESTYLE.md#prose), and skipping it is how the wall of text gets written.
-- **Read the shared lints before writing code.** The `errors:` block promotes
-  many lints to errors. The lint posture is far stricter than the Dart default, code
-  that fails lint won't pass review.
+- **Read the shared lints before writing code.** The `errors:` block promotes many lints to errors.
+  The lint posture is far stricter than the Dart default, code that fails lint won't pass review.
 - **Surface semver implications loudly.** If a change touches anything re-exported from
-  `lib/platform_adaptive_widgets.dart`, call out whether it's patch / minor / major
-  before the diff lands.
-- **Test changes in `example/` when feasible.** The demo app under `example/` is the
-  living usage reference, running it (`cd example && flutter run`) and watching the
-  feature work on both an Android emulator and an iOS simulator is the most reliable
-  verification path for any widget change. The 2 entry points
-  (`lib/main.dart` and `lib/main_go_router.dart`) exercise different navigation
-  strategies. Touch both when a change could affect either (see
+  `lib/platform_adaptive_widgets.dart`, call out whether it's patch / minor / major before the diff
+  lands.
+- **Test changes in `example/` when feasible.** The demo app under `example/` is the living usage
+  reference, running it (`cd example && flutter run`) and watching the feature work on both an
+  Android emulator and an iOS simulator is the most reliable verification path for any widget
+  change. The 2 entry points (`lib/main.dart` and `lib/main_go_router.dart`) exercise different
+  navigation strategies. Touch both when a change could affect either (see
   [`APPENDIX.md#two-entry-point-example`](../APPENDIX.md#two-entry-point-example)).
