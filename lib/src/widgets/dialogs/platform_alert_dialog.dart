@@ -21,7 +21,8 @@ const _kMaterialUntitledContentPadding = EdgeInsets.all(24);
 /// [CupertinoAlertDialog] on Cupertino. Not exported, so only those jobs pick its actions.
 Future<T?> showPlatformAlertDialog<T>({
   required BuildContext context,
-  Widget? title,
+  // The HIG gives every alert one.
+  required Widget title,
   Widget? content,
   List<Widget> actions = const <Widget>[],
   Key? widgetKey,
@@ -40,8 +41,9 @@ Future<T?> showPlatformAlertDialog<T>({
     // AlertDialog is itself a Dialog under the hood, no wrapping needed.
     builder: (_) => AlertDialog(
       key: widgetKey,
-      title: title,
-      content: content,
+      // M3 needs text but not a headline, so a lone title becomes the text.
+      title: content == null ? null : title,
+      content: content ?? title,
       actions: actions,
       icon: materialAlertDialogData?.icon,
       iconPadding: materialAlertDialogData?.iconPadding,
@@ -51,7 +53,7 @@ Future<T?> showPlatformAlertDialog<T>({
       contentPadding:
           materialAlertDialogData?.contentPadding ??
           // An icon keeps M3's gap of 16 under it, which Flutter already gets right.
-          (title == null && materialAlertDialogData?.icon == null
+          (content == null && materialAlertDialogData?.icon == null
               ? _kMaterialUntitledContentPadding
               : null),
       contentTextStyle: materialAlertDialogData?.contentTextStyle,

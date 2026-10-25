@@ -18,7 +18,8 @@ Future<bool> showPlatformDestructiveConfirm({
   // Delete and discard look the same in both, so .delete stands in for either.
   .material => showPlatformConfirmAlert(
     context: context,
-    message: message,
+    // Its one sentence is the alert's title, which Material shows as the text.
+    title: message,
     confirmLabel: confirmLabel,
     actionKind: .delete,
   ),

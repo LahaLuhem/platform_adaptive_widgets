@@ -26,7 +26,7 @@ void main() {
     scenarioWidgets('dialogs open on every platform', (tester) async {
       final context = await pumpForContext(tester);
 
-      unawaited(showPlatformAcknowledge(context: context, message: 'Saved'));
+      unawaited(showPlatformAcknowledge(context: context, title: 'Saved'));
       await tester.pumpAndSettle();
 
       check(tester.any(find.byType(_isApple ? CupertinoAlertDialog : AlertDialog))).isTrue();

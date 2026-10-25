@@ -15,11 +15,10 @@ import 'platform_alert_dialog.dart';
 /// Material dialog.
 Future<bool> showPlatformConfirmAlert({
   required BuildContext context,
-  required String message,
+  required String title,
   required String confirmLabel,
   required PlatformActionKind actionKind,
-  // Only the destructive confirm leaves it out, on Material, where M3 makes the headline optional.
-  String? title,
+  String? message,
   Offset? anchorPoint,
   Color? barrierColor,
   bool? barrierDismissible,
@@ -36,8 +35,8 @@ Future<bool> showPlatformConfirmAlert({
   };
   final confirmed = await showPlatformAlertDialog<bool>(
     context: context,
-    title: title == null ? null : Text(title),
-    content: Text(message),
+    title: Text(title),
+    content: message == null ? null : Text(message),
     // Cancel first: it leads a row, and ends a Material stack.
     actions: [
       PlatformDialogAction(

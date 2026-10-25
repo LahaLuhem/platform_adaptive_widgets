@@ -17,6 +17,9 @@ const kDefaultPlatformAcknowledgeOkLabel = 'OK';
 /// For anything the app shouldn't continue past until it's been seen: errors, irreversible confirmations.
 /// Routine feedback wants `showPlatformToast` instead, or on Cupertino, showing the change itself.
 ///
+/// Add a [message] only if it adds something, as the HIG asks. Without one, Material shows [title] as
+/// the alert's text, since M3 needs text but not a headline.
+///
 /// Guidelines: [M3 dialogs](https://m3.material.io/components/dialogs/guidelines),
 /// [HIG alerts](https://developer.apple.com/design/human-interface-guidelines/alerts#Best-practices).
 ///
@@ -24,8 +27,8 @@ const kDefaultPlatformAcknowledgeOkLabel = 'OK';
 /// {@example /example/lib/snippets/dialogs/platform_acknowledge.dart#platform_acknowledge}
 Future<void> showPlatformAcknowledge({
   required BuildContext context,
-  required String message,
-  String? title,
+  required String title,
+  String? message,
   String okLabel = kDefaultPlatformAcknowledgeOkLabel,
   Offset? anchorPoint,
   Color? barrierColor,
@@ -38,8 +41,8 @@ Future<void> showPlatformAcknowledge({
   CupertinoAlertDialogData? cupertinoAlertDialogData,
 }) => showPlatformAlertDialog(
   context: context,
-  title: title == null ? null : Text(title),
-  content: Text(message),
+  title: Text(title),
+  content: message == null ? null : Text(message),
   actions: [
     PlatformDialogAction(
       isDefaultAction: true,

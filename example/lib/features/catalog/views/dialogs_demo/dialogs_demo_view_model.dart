@@ -144,7 +144,7 @@ final class DialogsDemoViewModel extends ViewModel {
     .acknowledge => showPlatformAcknowledge(
       context: context,
       title: _alertTitle,
-      message: _alertMessage,
+      message: _alertMessage.isEmpty ? null : _alertMessage,
     ),
     .confirm => showPlatformConfirm(
       context: context,
