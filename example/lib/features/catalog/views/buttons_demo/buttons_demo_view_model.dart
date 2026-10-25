@@ -9,8 +9,8 @@ final class ButtonsDemoViewModel extends ViewModel {
   var _shouldUseIcon = false;
   var _emphasis = PlatformButtonEmphasis.high;
 
-  var _cupertinoColor = const Color(0xFF2196F3);
-  var _cupertinoForegroundColor = const Color(0xFFFFFFFF);
+  Color? _cupertinoColor;
+  Color? _cupertinoForegroundColor;
   var _cupertinoPressedOpacity = 0.4;
   var _cupertinoSizeStyle = CupertinoButtonSize.large;
 
@@ -20,9 +20,9 @@ final class ButtonsDemoViewModel extends ViewModel {
 
   PlatformButtonEmphasis get emphasis => _emphasis;
 
-  Color get cupertinoColor => _cupertinoColor;
+  Color? get cupertinoColor => _cupertinoColor;
 
-  Color get cupertinoForegroundColor => _cupertinoForegroundColor;
+  Color? get cupertinoForegroundColor => _cupertinoForegroundColor;
 
   double get cupertinoPressedOpacity => _cupertinoPressedOpacity;
 
@@ -46,12 +46,12 @@ final class ButtonsDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
-  void onCupertinoColorSelected(Color color) {
+  void onCupertinoColorSelected(Color? color) {
     _cupertinoColor = color;
     notifyListeners();
   }
 
-  void onCupertinoForegroundColorSelected(Color color) {
+  void onCupertinoForegroundColorSelected(Color? color) {
     _cupertinoForegroundColor = color;
     notifyListeners();
   }
