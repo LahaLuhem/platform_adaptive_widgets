@@ -1,28 +1,36 @@
 ## [Unreleased]
 ### Added
-- \[#52\] `PlatformProgressBar(value:)` for known progress, a bar on both looks
-- \[#61\] `designLanguage`, to switch on when your own code has to match the widgets
-- \[#57\] Menu picker gives lists past 250 items their own page on Cupertino
-- \[#58\] `showPlatformConfirm`, Cancel included, styled per platform by `PlatformConfirmKind`
+- \[#52\] `PlatformProgressBar(value:)`: determinate bar, both looks
+- \[#61\] `designLanguage`, to match your own code to the widgets
+- \[#57\] Menu picker: own page past 250 items on Cupertino
+- \[#58\] `showPlatformConfirm`, Cancel included, styled by `PlatformActionKind`
+- \[#48\] `showPlatformChoices`: action sheet on iOS, sheet of rows on Android
+- \[#49\] `PlatformActionsMenu`: pull-down on iOS, M3 menu on Android, confirms destructive items
 
 ### Changed
-- \[#51\] Toast action works on iOS too, and waits to be tapped
-- \[#52\] `PlatformProgressIndicator` is the spinner only, and VoiceOver reads it on iOS
-- **BREAKING** \[#52\] `value`, `semanticsLabel` and `semanticsValue` leave `MaterialProgressIndicatorData`, the label is flat on the widget now
-- \[#61\] Every platform renders, Cupertino on iOS and macOS and Material everywhere else, where it used to throw
-- \[#61\] `buildMaterial` / `buildCupertino` can no longer be called from outside, so nothing skips `designLanguage`
-- \[#57\] Menu picker's wheel reports each stop and follows the app's value
+- \[#46\] Full-screen dialog: slide-up page on iOS, edge to edge on Android
+- **BREAKING** \[#46\] `showPlatformFullscreenDialog` takes `appBarData` + body `builder`. `backgroundColor` flat, `anchorPoint` into `MaterialFullscreenDialogData`
+- \[#51\] Toast action on iOS too, waits for a tap
+- \[#52\] `PlatformProgressIndicator`: spinner only, read by VoiceOver
+- **BREAKING** \[#52\] `value`, `semanticsLabel`, `semanticsValue` out of `MaterialProgressIndicatorData`, label flat on the widget
+- \[#61\] Renders on every platform: Cupertino on iOS and macOS, Material elsewhere (used to throw)
+- \[#61\] `buildMaterial` / `buildCupertino` no longer callable from outside
+- \[#57\] Menu picker's wheel reports each stop, follows the app's value
 - \[#57\] Menu picker ignores re-picking the current value
-- **BREAKING** \[#58\] `MaterialAlertDialogData.actionsOverflowDirection` is non-null, defaulting to `up`
-- Choices ask: an action sheet on iOS, a sheet of rows on Android
+- **BREAKING** \[#58\] `MaterialAlertDialogData.actionsOverflowDirection` non-null, default `up`
+- **BREAKING** \[#48\] Modal bottom sheets: flat `barrierDismissible` and `barrierColor`
 
 ### Fixed
-- \[#56\] Menu picker behaves the same on both looks
+- \[#56\] Menu picker: same behaviour on both looks
+- \[#49\] Menu picker keeps its checkmark at accessibility text sizes (Cupertino)
+- \[#49\] Untitled alert: M3's top padding (Material)
 
 ### Removed
-- **BREAKING** \[#51\] `MaterialToastData.action`, `MaterialToastData.persist` and `PlatformToastClosedReason`, use the flat `action`
-- **BREAKING** \[#61\] `isAndroid` and `isIOS`, switch on `designLanguage` or read `defaultTargetPlatform`
-- **BREAKING** \[#58\] `showPlatformAlertDialog` and `PlatformDialogAction`, use `showPlatformConfirm` or `showPlatformAcknowledge`
+- **BREAKING** \[#51\] `MaterialToastData.action`, `.persist`, `PlatformToastClosedReason`: use flat `action`
+- **BREAKING** \[#61\] `isAndroid`, `isIOS`: use `designLanguage` or `defaultTargetPlatform`
+- **BREAKING** \[#58\] `showPlatformAlertDialog`, `PlatformDialogAction`: use `showPlatformConfirm` or `showPlatformAcknowledge`
+- **BREAKING** \[#46\] `showPlatformFullscreenDialog`'s `materialBuilder`, `cupertinoBuilder`, `barrier*`, and `MaterialFullscreenDialogData.useSafeArea`
+- **BREAKING** \[#48\] `MaterialModalBottomSheetData.isDismissible`, `CupertinoModalPopupData.barrierColor` / `.barrierDismissible`, their 3 `kDefault*` constants
 
 ## [2.2.0] - 2026-09-13
 ### Added
