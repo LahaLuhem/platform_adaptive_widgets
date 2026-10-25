@@ -6,6 +6,7 @@ import 'dart:math' as math;
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoButton, CupertinoColors, CupertinoThemeData;
+import 'package:flutter/semantics.dart' show SemanticsNode;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart' show Icons, Material;
@@ -14,6 +15,8 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import '../support/support.dart';
 
 const _label = 'Save';
+
+const _icon = Icons.save;
 
 // Below this, a fill or an outline reads as gray. M3's grays keep a trace of the theme's hue.
 const _grayChromaLimit = 0.07;
@@ -30,11 +33,18 @@ enum _Backdrop() {
   none,
 }
 
-typedef _Drawn = ({Color? fill, Color? outline, Color label});
+// The 3 ways to build one. Material builds each from its own class or factory.
+enum _Shape() {
+  child,
+  iconAndLabel,
+  iconOnly,
+}
+
+typedef _Drawn = ({Color? fill, Color? outline, Color content});
 
 class const _Button(
   final PlatformButtonEmphasis emphasis, {
-  final bool withIcon = false,
+  final _Shape shape = .child,
   final PlatformActionKind actionKind = .normal,
 }) extends StatelessWidget {
   @override
@@ -42,20 +52,28 @@ class const _Button(
     // ignore: no-empty-block, only how it looks matters here.
     void onPressed() {}
 
-    return withIcon
-        ? PlatformButton.icon(
-            onPressed: onPressed,
-            emphasis: emphasis,
-            actionKind: actionKind,
-            icon: const Icon(Icons.save),
-            label: const Text(_label),
-          )
-        : PlatformButton(
-            onPressed: onPressed,
-            emphasis: emphasis,
-            actionKind: actionKind,
-            child: const Text(_label),
-          );
+    return switch (shape) {
+      .child => PlatformButton(
+        onPressed: onPressed,
+        emphasis: emphasis,
+        actionKind: actionKind,
+        child: const Text(_label),
+      ),
+      .iconAndLabel => PlatformButton.icon(
+        onPressed: onPressed,
+        emphasis: emphasis,
+        actionKind: actionKind,
+        icon: const Icon(_icon),
+        label: const Text(_label),
+      ),
+      .iconOnly => PlatformButton.iconOnly(
+        onPressed: onPressed,
+        emphasis: emphasis,
+        actionKind: actionKind,
+        icon: const Icon(_icon),
+        label: _label,
+      ),
+    };
   }
 }
 
@@ -81,7 +99,7 @@ Color _plain(Color color) => Color(color.toARGB32());
   switch (designLanguage) {
     case .material:
       final material = tester.widget<Material>(
-        find.ancestor(of: find.text(_label), matching: find.byType(Material)).first,
+        find.descendant(of: find.byType(PlatformButton), matching: find.byType(Material)).first,
       );
 
       return (color: material.color, shape: material.shape);
@@ -106,9 +124,25 @@ _Drawn _drawn(WidgetTester tester) {
   return (
     fill: shown(surface.color),
     outline: shown(outline),
-    label: _plain(labelStyle(tester, _label).color!),
+    // The first glyph on it: the icon where there is one, or else the label.
+    content: _plain(
+      tester
+          .widget<RichText>(
+            find.descendant(of: find.byType(PlatformButton), matching: find.byType(RichText)).first,
+          )
+          .text
+          .style!
+          .color!,
+    ),
   );
 }
+
+// The buttons a screen reader would read out as [name], as a label or a tooltip.
+FinderBase<SemanticsNode> _buttonsNamed(String name) => find.semantics.byPredicate((node) {
+  final data = node.getSemanticsData();
+
+  return data.flagsCollection.isButton && (data.label == name || data.tooltip == name);
+});
 
 // How much color it adds over a white page.
 double _chroma(Color color) {
@@ -119,7 +153,7 @@ double _chroma(Color color) {
 
 _Backdrop _backdrop(WidgetTester tester) {
   final drawn = _drawn(tester);
-  final accent = _plain(PlatformTheme.of(tester.element(find.text(_label))).primaryColor);
+  final accent = _plain(PlatformTheme.of(tester.element(find.byType(PlatformButton))).primaryColor);
 
   return switch (drawn.fill ?? drawn.outline) {
     null => .none,
@@ -140,14 +174,10 @@ void main() {
         'low: nothing': (emphasis: .low, backdrop: .none),
       },
       outline: (tester, row) async {
-        // Material builds the icon kind through its own factories.
-        for (final withIcon in [false, true]) {
-          await _pump(tester, _Button(row.emphasis, withIcon: withIcon));
+        for (final shape in _Shape.values) {
+          await _pump(tester, _Button(row.emphasis, shape: shape));
 
-          check(
-            because: withIcon ? 'with an icon' : 'with a child',
-            _backdrop(tester),
-          ).equals(row.backdrop);
+          check(because: shape.name, _backdrop(tester)).equals(row.backdrop);
         }
       },
     );
@@ -156,17 +186,22 @@ void main() {
       'draws a destructive action as if the accent were red on iOS',
       examples: _emphases,
       outline: (tester, emphasis) async {
-        await _pump(
-          tester,
-          _Button(emphasis),
-          cupertinoTheme: const CupertinoThemeData(primaryColor: CupertinoColors.systemRed),
-        );
-        final harmlessInRed = _drawn(tester);
+        for (final shape in _Shape.values) {
+          await _pump(
+            tester,
+            _Button(emphasis, shape: shape),
+            cupertinoTheme: const CupertinoThemeData(primaryColor: CupertinoColors.systemRed),
+          );
+          final harmlessInRed = _drawn(tester);
 
-        for (final actionKind in _destructiveKinds) {
-          await _pump(tester, _Button(emphasis, actionKind: actionKind));
+          for (final actionKind in _destructiveKinds) {
+            await _pump(tester, _Button(emphasis, shape: shape, actionKind: actionKind));
 
-          check(because: actionKind.name, _drawn(tester)).equals(harmlessInRed);
+            check(
+              because: '${shape.name}, ${actionKind.name}',
+              _drawn(tester),
+            ).equals(harmlessInRed);
+          }
         }
       },
       variant: iosOnly,
@@ -176,16 +211,30 @@ void main() {
       'keeps a destructive action plain on Android',
       examples: _emphases,
       outline: (tester, emphasis) async {
-        await _pump(tester, _Button(emphasis));
-        final harmless = _drawn(tester);
+        for (final shape in _Shape.values) {
+          await _pump(tester, _Button(emphasis, shape: shape));
+          final harmless = _drawn(tester);
 
-        for (final actionKind in _destructiveKinds) {
-          await _pump(tester, _Button(emphasis, actionKind: actionKind));
+          for (final actionKind in _destructiveKinds) {
+            await _pump(tester, _Button(emphasis, shape: shape, actionKind: actionKind));
 
-          check(because: actionKind.name, _drawn(tester)).equals(harmless);
+            check(because: '${shape.name}, ${actionKind.name}', _drawn(tester)).equals(harmless);
+          }
         }
       },
       variant: androidOnly,
+    );
+
+    scenarioOutlineWidgets<PlatformButtonEmphasis>(
+      'names an icon-only button for screen readers on both platforms',
+      examples: _emphases,
+      outline: (tester, emphasis) async {
+        final semantics = tester.ensureSemantics();
+        await _pump(tester, _Button(emphasis, shape: .iconOnly));
+
+        check(_buttonsNamed(_label).evaluate()).isNotEmpty();
+        semantics.dispose();
+      },
     );
   });
 }
