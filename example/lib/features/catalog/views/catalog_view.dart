@@ -32,12 +32,12 @@ class CatalogView extends StatelessWidget {
                 children: [
                   PlatformButton(
                     onPressed: viewModel.onExpandAllPressed,
-                    materialButtonVariant: .text,
+                    emphasis: .low,
                     child: const Text('Expand all'),
                   ),
                   PlatformButton(
                     onPressed: viewModel.onCollapseAllPressed,
-                    materialButtonVariant: .text,
+                    emphasis: .low,
                     child: const Text('Collapse all'),
                   ),
                 ],

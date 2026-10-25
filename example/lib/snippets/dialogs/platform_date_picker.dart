@@ -8,8 +8,11 @@ class PlatformDatePickerSnippet extends StatelessWidget {
   const PlatformDatePickerSnippet({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      PlatformButton(onPressed: () => _pickPressed(context), child: const Text('Pick a date'));
+  Widget build(BuildContext context) => PlatformButton(
+    onPressed: () => _pickPressed(context),
+    emphasis: .medium,
+    child: const Text('Pick a date'),
+  );
 
   Future<void> _pickPressed(BuildContext context) async {
     // #region platform_date_picker

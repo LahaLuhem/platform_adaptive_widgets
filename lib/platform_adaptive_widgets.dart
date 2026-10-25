@@ -14,6 +14,7 @@ export 'src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 export 'src/models/dialogs/platform_time_picker_data.dart';
 export 'src/models/dialogs/platform_toast_data.dart';
 export 'src/models/interaction/platform_button_data.dart';
+export 'src/models/interaction/platform_button_emphasis.dart';
 export 'src/models/interaction/platform_checkbox_data.dart';
 export 'src/models/interaction/platform_expansion_tile_data.dart';
 export 'src/models/interaction/platform_radio_data.dart';

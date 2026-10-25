@@ -132,6 +132,7 @@ class AboutView extends StatelessWidget {
                     PlatformButton(
                       // Deliberately unmatched: no AppRoute case, so errorBuilder takes over.
                       onPressed: () => context.go('/no-such-route'),
+                      emphasis: .medium,
                       child: const Text('Open a broken link'),
                     ),
                     const Text(

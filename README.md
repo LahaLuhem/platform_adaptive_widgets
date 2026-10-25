@@ -69,13 +69,13 @@ in one tested place instead of sprinkled across the codebase.
 // The usual way: branch by hand, and remember to do it everywhere.
 Widget build(BuildContext context) {
   if (defaultTargetPlatform == TargetPlatform.iOS) {
-    return CupertinoButton(onPressed: _save, child: const Text('Save'));
+    return CupertinoButton.filled(onPressed: _save, child: const Text('Save'));
   }
-  return ElevatedButton(onPressed: _save, child: const Text('Save'));
+  return FilledButton(onPressed: _save, child: const Text('Save'));
 }
 
 // With this package: one widget, the right look on each platform.
-PlatformButton(onPressed: _save, child: const Text('Save'));
+PlatformButton(onPressed: _save, emphasis: .high, child: const Text('Save'));
 ```
 
 ---
@@ -125,6 +125,7 @@ class MyApp extends StatelessWidget {
       body: Center(
         child: PlatformButton(
           onPressed: () {},
+          emphasis: .high,
           child: const Text('Tap me'),
         ),
       ),
@@ -289,10 +290,9 @@ they're there for the moments you want one platform to behave a little different
 ```dart
 PlatformButton.icon(
   onPressed: _add,
+  emphasis: .high, // FilledButton.icon on Material, CupertinoButton.filled on Cupertino
   icon: const Icon(Icons.add),
   label: const Text('Add'),
-  materialButtonVariant: .filled,   // Material: FilledButton.icon
-  cupertinoButtonVariant: .filled,  // Cupertino: CupertinoButton.filled
   cupertinoButtonData: const CupertinoButtonData(pressedOpacity: 0.6), // Cupertino-only tuning
 )
 ```

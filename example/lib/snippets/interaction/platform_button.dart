@@ -13,6 +13,7 @@ class PlatformButtonSnippet extends StatelessWidget {
       // #region platform_button
       PlatformButton(
         onPressed: () => Navigator.maybeOf(context)?.pop(),
+        emphasis: .low,
         child: const Text('Dismiss'),
       );
   // #endregion
@@ -28,10 +29,9 @@ class PlatformButtonIconSnippet extends StatelessWidget {
       // #region platform_button_icon
       PlatformButton.icon(
         onPressed: onAddPressed,
+        emphasis: .high,
         icon: const Icon(Icons.add),
         label: const Text('Add'),
-        materialButtonVariant: .filled,
-        cupertinoButtonVariant: .filled,
       );
   // #endregion
 }

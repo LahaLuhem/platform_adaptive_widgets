@@ -2,20 +2,20 @@
 // assigned in the initializer list instead.
 // ignore_for_file: prefer_initializing_formals
 
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoButton;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoButton, CupertinoColors;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart'
-    show ElevatedButton, FilledButton, IconAlignment, OutlinedButton, TextButton;
+    show FilledButton, IconAlignment, OutlinedButton, TextButton;
 
 import '/src/models/interaction/platform_button_data.dart';
+import '/src/models/interaction/platform_button_emphasis.dart';
 import '/src/models/platform_widget_base.dart';
 
-/// One of Material's buttons or one of Cupertino's, picked by [materialButtonVariant]
-/// and [cupertinoButtonVariant].
+/// One of Material's buttons or one of Cupertino's, at the rank [emphasis] asks for.
 ///
 /// 2 shapes to build one. [PlatformButton.new] takes a free-form `child`. [PlatformButton.icon] takes
-/// an icon and a label, which Material renders through each variant's `.icon` factory and Cupertino,
+/// an icon and a label, which Material renders through each button's icon factory and Cupertino,
 /// having none, renders as a [Row] spaced by [kDefaultButtonIconLabelGap].
 ///
 /// Per-platform tuning lives in [materialButtonData] / [cupertinoButtonData]. See `APPENDIX.md#field-classification`.
@@ -23,7 +23,7 @@ import '/src/models/platform_widget_base.dart';
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_button.dart#platform_button}
 ///
-/// The icon variant:
+/// With an icon:
 /// {@example /example/lib/snippets/interaction/platform_button.dart#platform_button_icon}
 class PlatformButton extends PlatformWidgetKeyedBase {
   /// Stays required and non-null even for a disabled button. That's [isEnabled]'s job, not a null callback's.
@@ -46,11 +46,8 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   /// Fires on focus gained and lost.
   final ValueChanged<bool>? onFocusChange;
 
-  /// Which Material button class to render.
-  final MaterialButtonVariant materialButtonVariant;
-
-  /// Which Cupertino button constructor to call.
-  final CupertinoButtonVariant cupertinoButtonVariant;
+  /// How much attention the button asks for, the same on both platforms.
+  final PlatformButtonEmphasis emphasis;
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialButtonData? materialButtonData;
@@ -70,14 +67,13 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   /// Creates a button around a free-form [child].
   const new({
     required this.onPressed,
+    required this.emphasis,
     required Widget child,
     this.onLongPress,
     this.isEnabled = true,
     this.focusNode,
     this.autofocus = false,
     this.onFocusChange,
-    this.materialButtonVariant = .elevated,
-    this.cupertinoButtonVariant = .normal,
     this.materialButtonData,
     this.cupertinoButtonData,
     super.widgetKey,
@@ -87,11 +83,12 @@ class PlatformButton extends PlatformWidgetKeyedBase {
        _label = null,
        _iconAlignment = null;
 
-  /// Creates a button holding an icon next to a label, which Material renders through the variant's
-  /// `.icon` factory and Cupertino, having none, renders as a [Row]. [iconAlignment] sets the order,
+  /// Creates a button holding an icon next to a label, which Material renders through its button's
+  /// icon factory and Cupertino, having none, renders as a [Row]. [iconAlignment] sets the order,
   /// `.start` putting the icon first and `.end` the label.
   const new icon({
     required this.onPressed,
+    required this.emphasis,
     required Widget icon,
     required Widget label,
     IconAlignment iconAlignment = .start,
@@ -100,8 +97,6 @@ class PlatformButton extends PlatformWidgetKeyedBase {
     this.focusNode,
     this.autofocus = false,
     this.onFocusChange,
-    this.materialButtonVariant = .elevated,
-    this.cupertinoButtonVariant = .normal,
     this.materialButtonData,
     this.cupertinoButtonData,
     super.widgetKey,
@@ -122,8 +117,94 @@ class PlatformButton extends PlatformWidgetKeyedBase {
     final clipBehavior = materialButtonData?.clipBehavior;
     final statesController = materialButtonData?.statesController;
 
-    return switch ((materialButtonVariant, _hasIconChild)) {
-      (.text, false) => TextButton(
+    return switch ((emphasis, _hasIconChild)) {
+      (.high, false) => FilledButton(
+        key: widgetKey,
+        onPressed: pressed,
+        onLongPress: long,
+        onHover: onHover,
+        onFocusChange: onFocusChange,
+        style: style,
+        focusNode: focusNode,
+        autofocus: autofocus,
+        clipBehavior: clipBehavior,
+        statesController: statesController,
+        // No bang, since this one's `required super.child` is still nullable upstream. Same for
+        // tonal and outlined. Only TextButton narrows it to non-null.
+        child: _child,
+      ),
+      (.high, true) => FilledButton.icon(
+        key: widgetKey,
+        onPressed: pressed,
+        onLongPress: long,
+        onHover: onHover,
+        onFocusChange: onFocusChange,
+        style: style,
+        focusNode: focusNode,
+        autofocus: autofocus,
+        clipBehavior: clipBehavior,
+        statesController: statesController,
+        icon: _icon,
+        label: _label!,
+        iconAlignment: _iconAlignment,
+      ),
+      (.medium, false) => FilledButton.tonal(
+        key: widgetKey,
+        onPressed: pressed,
+        onLongPress: long,
+        onHover: onHover,
+        onFocusChange: onFocusChange,
+        style: style,
+        focusNode: focusNode,
+        autofocus: autofocus,
+        clipBehavior: clipBehavior,
+        statesController: statesController,
+        child: _child,
+      ),
+      (.medium, true) => FilledButton.tonalIcon(
+        key: widgetKey,
+        onPressed: pressed,
+        onLongPress: long,
+        onHover: onHover,
+        onFocusChange: onFocusChange,
+        style: style,
+        focusNode: focusNode,
+        autofocus: autofocus,
+        clipBehavior: clipBehavior,
+        statesController: statesController,
+        icon: _icon,
+        label: _label!,
+        iconAlignment: _iconAlignment,
+      ),
+      (.mediumNeutral, false) => OutlinedButton(
+        key: widgetKey,
+        onPressed: pressed,
+        onLongPress: long,
+        onHover: onHover,
+        onFocusChange: onFocusChange,
+        style: style,
+        focusNode: focusNode,
+        autofocus: autofocus,
+        clipBehavior: clipBehavior,
+        statesController: statesController,
+        child: _child,
+      ),
+      (.mediumNeutral, true) => OutlinedButton.icon(
+        key: widgetKey,
+        onPressed: pressed,
+        onLongPress: long,
+        onHover: onHover,
+        onFocusChange: onFocusChange,
+        style: style,
+        focusNode: focusNode,
+        autofocus: autofocus,
+        clipBehavior: clipBehavior,
+        statesController: statesController,
+        icon: _icon,
+        label: _label!,
+        iconAlignment: _iconAlignment,
+      ),
+      (.low, false) => TextButton(
         key: widgetKey,
         onPressed: pressed,
         onLongPress: long,
@@ -137,121 +218,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         isSemanticButton: materialButtonData?.isSemanticButton,
         child: _child!,
       ),
-      (.text, true) => TextButton.icon(
-        key: widgetKey,
-        onPressed: pressed,
-        onLongPress: long,
-        onHover: onHover,
-        onFocusChange: onFocusChange,
-        style: style,
-        focusNode: focusNode,
-        autofocus: autofocus,
-        clipBehavior: clipBehavior,
-        statesController: statesController,
-        icon: _icon,
-        label: _label!,
-        iconAlignment: _iconAlignment,
-      ),
-      (.elevated, false) => ElevatedButton(
-        key: widgetKey,
-        onPressed: pressed,
-        onLongPress: long,
-        onHover: onHover,
-        onFocusChange: onFocusChange,
-        style: style,
-        focusNode: focusNode,
-        autofocus: autofocus,
-        clipBehavior: clipBehavior,
-        statesController: statesController,
-        // No bang, since this one's `required super.child` is still nullable upstream. Same for
-        // outlined, filled and tonal. Only TextButton narrows it to non-null.
-        child: _child,
-      ),
-      (.elevated, true) => ElevatedButton.icon(
-        key: widgetKey,
-        onPressed: pressed,
-        onLongPress: long,
-        onHover: onHover,
-        onFocusChange: onFocusChange,
-        style: style,
-        focusNode: focusNode,
-        autofocus: autofocus,
-        clipBehavior: clipBehavior,
-        statesController: statesController,
-        icon: _icon,
-        label: _label!,
-        iconAlignment: _iconAlignment,
-      ),
-      (.outlined, false) => OutlinedButton(
-        key: widgetKey,
-        onPressed: pressed,
-        onLongPress: long,
-        onHover: onHover,
-        onFocusChange: onFocusChange,
-        style: style,
-        focusNode: focusNode,
-        autofocus: autofocus,
-        clipBehavior: clipBehavior,
-        statesController: statesController,
-        child: _child,
-      ),
-      (.outlined, true) => OutlinedButton.icon(
-        key: widgetKey,
-        onPressed: pressed,
-        onLongPress: long,
-        onHover: onHover,
-        onFocusChange: onFocusChange,
-        style: style,
-        focusNode: focusNode,
-        autofocus: autofocus,
-        clipBehavior: clipBehavior,
-        statesController: statesController,
-        icon: _icon,
-        label: _label!,
-        iconAlignment: _iconAlignment,
-      ),
-      (.filled, false) => FilledButton(
-        key: widgetKey,
-        onPressed: pressed,
-        onLongPress: long,
-        onHover: onHover,
-        onFocusChange: onFocusChange,
-        style: style,
-        focusNode: focusNode,
-        autofocus: autofocus,
-        clipBehavior: clipBehavior,
-        statesController: statesController,
-        child: _child,
-      ),
-      (.filled, true) => FilledButton.icon(
-        key: widgetKey,
-        onPressed: pressed,
-        onLongPress: long,
-        onHover: onHover,
-        onFocusChange: onFocusChange,
-        style: style,
-        focusNode: focusNode,
-        autofocus: autofocus,
-        clipBehavior: clipBehavior,
-        statesController: statesController,
-        icon: _icon,
-        label: _label!,
-        iconAlignment: _iconAlignment,
-      ),
-      (.tonal, false) => FilledButton.tonal(
-        key: widgetKey,
-        onPressed: pressed,
-        onLongPress: long,
-        onHover: onHover,
-        onFocusChange: onFocusChange,
-        style: style,
-        focusNode: focusNode,
-        autofocus: autofocus,
-        clipBehavior: clipBehavior,
-        statesController: statesController,
-        child: _child,
-      ),
-      (.tonal, true) => FilledButton.tonalIcon(
+      (.low, true) => TextButton.icon(
         key: widgetKey,
         onPressed: pressed,
         onLongPress: long,
@@ -275,8 +242,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   Widget buildCupertino(BuildContext context) {
     final pressed = isEnabled ? onPressed : null;
     final long = isEnabled ? onLongPress : null;
-    // For the icon constructor, synthesise the Cupertino child as a Row
-    // Cupertino has no native icon-button factory. [iconAlignment] picks element order
+    // Cupertino has no icon factory, so the icon and the label share a Row, ordered by `iconAlignment`.
     final child = _hasIconChild
         ? Row(
             mainAxisSize: .min,
@@ -286,9 +252,18 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         : _child!;
     final sizeStyle = cupertinoButtonData?.sizeStyle ?? kDefaultCupertinoButtonSizeStyle;
     final padding = cupertinoButtonData?.padding;
-    final color = cupertinoButtonData?.color;
+    // cupertino_ui's recipe for iOS's gray button.
+    final color =
+        cupertinoButtonData?.color ??
+        (emphasis == .mediumNeutral ? CupertinoColors.systemGrey : null);
     final foregroundColor = cupertinoButtonData?.foregroundColor;
-    final disabledColor = cupertinoButtonData?.disabledColor;
+    // cupertino_ui won't take a null here, so each constructor gets its own default back.
+    final disabledColor =
+        cupertinoButtonData?.disabledColor ??
+        switch (emphasis) {
+          .low => CupertinoColors.quaternarySystemFill,
+          .high || .medium || .mediumNeutral => CupertinoColors.tertiarySystemFill,
+        };
     final minimumSize = cupertinoButtonData?.minimumSize;
     final pressedOpacity =
         cupertinoButtonData?.pressedOpacity ?? kDefaultCupertinoButtonPressedOpacity;
@@ -297,8 +272,8 @@ class PlatformButton extends PlatformWidgetKeyedBase {
     final focusColor = cupertinoButtonData?.focusColor;
     final mouseCursor = cupertinoButtonData?.mouseCursor;
 
-    return switch (cupertinoButtonVariant) {
-      .normal => CupertinoButton(
+    return switch (emphasis) {
+      .high => CupertinoButton.filled(
         key: widgetKey,
         onPressed: pressed,
         onLongPress: long,
@@ -310,7 +285,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         padding: padding,
         color: color,
         foregroundColor: foregroundColor,
-        disabledColor: disabledColor ?? cupertinoButtonVariant.defaultDisabledColor,
+        disabledColor: disabledColor,
         minimumSize: minimumSize,
         pressedOpacity: pressedOpacity,
         borderRadius: borderRadius,
@@ -318,7 +293,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         focusColor: focusColor,
         child: child,
       ),
-      .filled => CupertinoButton.filled(
+      .medium || .mediumNeutral => CupertinoButton.tinted(
         key: widgetKey,
         onPressed: pressed,
         onLongPress: long,
@@ -330,7 +305,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         padding: padding,
         color: color,
         foregroundColor: foregroundColor,
-        disabledColor: disabledColor ?? cupertinoButtonVariant.defaultDisabledColor,
+        disabledColor: disabledColor,
         minimumSize: minimumSize,
         pressedOpacity: pressedOpacity,
         borderRadius: borderRadius,
@@ -338,7 +313,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         focusColor: focusColor,
         child: child,
       ),
-      .tinted => CupertinoButton.tinted(
+      .low => CupertinoButton(
         key: widgetKey,
         onPressed: pressed,
         onLongPress: long,
@@ -350,7 +325,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         padding: padding,
         color: color,
         foregroundColor: foregroundColor,
-        disabledColor: disabledColor ?? cupertinoButtonVariant.defaultDisabledColor,
+        disabledColor: disabledColor,
         minimumSize: minimumSize,
         pressedOpacity: pressedOpacity,
         borderRadius: borderRadius,

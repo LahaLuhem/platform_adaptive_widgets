@@ -8,8 +8,11 @@ class PlatformModalBottomSheetSnippet extends StatelessWidget {
   const PlatformModalBottomSheetSnippet({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      PlatformButton(onPressed: () => _openPressed(context), child: const Text('Open sheet'));
+  Widget build(BuildContext context) => PlatformButton(
+    onPressed: () => _openPressed(context),
+    emphasis: .medium,
+    child: const Text('Open sheet'),
+  );
 
   Future<void> _openPressed(BuildContext context) async {
     // #region platform_modal_bottom_sheet

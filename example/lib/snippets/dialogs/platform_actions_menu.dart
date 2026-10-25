@@ -20,7 +20,8 @@ class PlatformActionsMenuSnippet extends StatelessWidget {
   Widget build(BuildContext context) =>
       // #region platform_actions_menu
       PlatformActionsMenu(
-        builder: (_, onPressed) => PlatformButton(onPressed: onPressed, child: const Text('More')),
+        builder: (_, onPressed) =>
+            PlatformButton(onPressed: onPressed, emphasis: .medium, child: const Text('More')),
         actions: {
           PlatformMenuAction.normal(label: 'Share List', onPressed: onShareListPressed),
           PlatformMenuAction.normal(label: 'Print', onPressed: onPrintPressed),

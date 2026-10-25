@@ -10,8 +10,11 @@ class PlatformChoicesSnippet extends StatelessWidget {
   const PlatformChoicesSnippet({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      PlatformButton(onPressed: () => _draftPressed(context), child: const Text('Draft'));
+  Widget build(BuildContext context) => PlatformButton(
+    onPressed: () => _draftPressed(context),
+    emphasis: .medium,
+    child: const Text('Draft'),
+  );
 
   Future<void> _draftPressed(BuildContext context) async {
     // #region platform_choices

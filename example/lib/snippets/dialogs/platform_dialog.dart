@@ -8,8 +8,11 @@ class PlatformDialogSnippet extends StatelessWidget {
   const PlatformDialogSnippet({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      PlatformButton(onPressed: () => _openPressed(context), child: const Text('Open'));
+  Widget build(BuildContext context) => PlatformButton(
+    onPressed: () => _openPressed(context),
+    emphasis: .medium,
+    child: const Text('Open'),
+  );
 
   Future<void> _openPressed(BuildContext context) async {
     // #region platform_dialog
@@ -23,6 +26,7 @@ class PlatformDialogSnippet extends StatelessWidget {
             const Text('Pick one'),
             PlatformButton(
               onPressed: () => Navigator.maybeOf(context)?.pop('chosen'),
+              emphasis: .low,
               child: const Text('Confirm'),
             ),
           ],
@@ -38,8 +42,11 @@ class FullscreenDialogSnippet extends StatelessWidget {
   const FullscreenDialogSnippet({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      PlatformButton(onPressed: () => _openPressed(context), child: const Text('Open'));
+  Widget build(BuildContext context) => PlatformButton(
+    onPressed: () => _openPressed(context),
+    emphasis: .medium,
+    child: const Text('Open'),
+  );
 
   Future<void> _openPressed(BuildContext context) async {
     // #region fullscreen_dialog
@@ -50,6 +57,7 @@ class FullscreenDialogSnippet extends StatelessWidget {
       builder: (context) => Center(
         child: PlatformButton(
           onPressed: () => Navigator.maybeOf(context)?.pop('chosen'),
+          emphasis: .high,
           child: const Text('Done'),
         ),
       ),
