@@ -1,6 +1,9 @@
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icons;
+import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-/// [ColorKnob]'s palette when none is passed: recognisable hues, plus black and white.
+/// [ColorKnob]'s palette when the caller passes no other: recognisable hues, plus black and white.
 const _defaultSwatches = <Color>[
   Color(0xFF000000), // black
   Color(0xFFF44336), // red
@@ -17,9 +20,12 @@ const _defaultSwatches = <Color>[
 class ColorKnob extends StatelessWidget {
   final String label;
 
-  final Color value;
+  final Color? value;
 
   final ValueChanged<Color> onChanged;
+
+  /// Adds a "none" swatch, which clears the colour so the widget falls back to its own default.
+  final VoidCallback? onCleared;
 
   final List<Color> swatches;
 
@@ -27,6 +33,7 @@ class ColorKnob extends StatelessWidget {
     required this.label,
     required this.value,
     required this.onChanged,
+    this.onCleared,
     this.swatches = _defaultSwatches,
     super.key,
   });
@@ -41,6 +48,11 @@ class ColorKnob extends StatelessWidget {
         spacing: 8,
         runSpacing: 8,
         children: [
+          if (onCleared != null)
+            GestureDetector(
+              onTap: onCleared,
+              child: _Swatch(color: null, isSelected: value == null),
+            ),
           for (final swatch in swatches)
             GestureDetector(
               onTap: () => onChanged(swatch),
@@ -53,30 +65,41 @@ class ColorKnob extends StatelessWidget {
 }
 
 /// One square in [ColorKnob]. Ringed when selected, faintly outlined otherwise so pale swatches stay
-/// visible against the background.
+/// visible against the background. No [color] makes it the "none" swatch.
 final class _Swatch extends StatelessWidget {
-  final Color color;
+  final Color? color;
   final bool isSelected;
 
   const _Swatch({required this.color, required this.isSelected});
 
   @override
-  Widget build(BuildContext context) => Container(
-    width: 28,
-    height: 28,
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: const BorderRadius.all(Radius.circular(6)),
-      border: Border.fromBorderSide(
-        isSelected
-            ? BorderSide(
-                color: color.computeLuminance() > 0.5
-                    ? const Color(0xFF000000)
-                    : const Color(0xFFFFFFFF),
-                width: 2,
-              )
-            : const BorderSide(color: Color(0x33000000)),
+  Widget build(BuildContext context) {
+    final color = this.color;
+    // The none swatch has no fill, so its ring sits on the page and matches its icon instead.
+    final ringColor = switch (color) {
+      null => IconTheme.of(context).color ?? const Color(0xFF000000),
+      final fill when fill.computeLuminance() > 0.5 => const Color(0xFF000000),
+      _ => const Color(0xFFFFFFFF),
+    };
+
+    return Container(
+      width: 28,
+      height: 28,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: const BorderRadius.all(Radius.circular(6)),
+        border: Border.fromBorderSide(
+          isSelected
+              ? BorderSide(color: ringColor, width: 2)
+              : const BorderSide(color: Color(0x33000000)),
+        ),
       ),
-    ),
-  );
+      child: color == null
+          ? Icon(
+              context.platformIcon(material: Icons.block, cupertino: CupertinoIcons.nosign),
+              size: 16,
+            )
+          : null,
+    );
+  }
 }

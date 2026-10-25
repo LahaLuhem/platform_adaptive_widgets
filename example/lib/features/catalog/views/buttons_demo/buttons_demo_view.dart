@@ -77,11 +77,13 @@ class ButtonsDemoView extends StatelessWidget {
                   label: 'color',
                   value: viewModel.cupertinoColor,
                   onChanged: viewModel.onCupertinoColorSelected,
+                  onCleared: () => viewModel.onCupertinoColorSelected(null),
                 ),
                 ColorKnob(
                   label: 'foregroundColor',
                   value: viewModel.cupertinoForegroundColor,
                   onChanged: viewModel.onCupertinoForegroundColorSelected,
+                  onCleared: () => viewModel.onCupertinoForegroundColorSelected(null),
                 ),
                 DoubleKnob(
                   label: 'pressedOpacity',
