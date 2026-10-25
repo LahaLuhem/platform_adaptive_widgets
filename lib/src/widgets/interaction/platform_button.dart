@@ -6,8 +6,7 @@ import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoButton, CupertinoColors, CupertinoTheme;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart'
-    show FilledButton, IconAlignment, OutlinedButton, TextButton;
+import 'package:material_ui/material_ui.dart' show FilledButton, OutlinedButton, TextButton;
 
 import '/src/models/dialogs/platform_action_kind.dart';
 import '/src/models/interaction/platform_button_data.dart';
@@ -67,12 +66,11 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   /// Cupertino-branch overrides, plus the knobs Material has no answer for.
   final CupertinoButtonData? cupertinoButtonData;
 
-  // Content slots. `_child` and the `_icon`/`_label`/`_iconAlignment` trio are mutually exclusive,
-  // one set or the other, decided by which constructor ran.
+  // Content slots. `_child` and the `_icon`/`_label` pair are mutually exclusive, one set or the
+  // other, decided by which constructor ran.
   final Widget? _child;
   final Widget? _icon;
   final Widget? _label;
-  final IconAlignment? _iconAlignment;
 
   bool get _hasIconChild => _icon != null;
 
@@ -93,18 +91,16 @@ class PlatformButton extends PlatformWidgetKeyedBase {
     super.key,
   }) : _child = child,
        _icon = null,
-       _label = null,
-       _iconAlignment = null;
+       _label = null;
 
-  /// Creates a button holding an icon next to a label, which Material renders through its button's
-  /// icon factory and Cupertino, having none, renders as a [Row]. [iconAlignment] sets the order,
-  /// `.start` putting the icon first and `.end` the label.
+  /// Creates a button holding an icon before a label, which Material renders through its button's
+  /// icon factory and Cupertino, having none, renders as a [Row]. In a right-to-left language the
+  /// icon sits right of the label, as both platforms draw it.
   const new icon({
     required this.onPressed,
     required this.emphasis,
     required Widget icon,
     required Widget label,
-    IconAlignment iconAlignment = .start,
     this.actionKind = .normal,
     this.onLongPress,
     this.isEnabled = true,
@@ -117,8 +113,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
     super.key,
   }) : _child = null,
        _icon = icon,
-       _label = label,
-       _iconAlignment = iconAlignment;
+       _label = label;
 
   @override
   @protected
@@ -160,7 +155,6 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         statesController: statesController,
         icon: _icon,
         label: _label!,
-        iconAlignment: _iconAlignment,
       ),
       (.medium, false) => FilledButton.tonal(
         key: widgetKey,
@@ -188,7 +182,6 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         statesController: statesController,
         icon: _icon,
         label: _label!,
-        iconAlignment: _iconAlignment,
       ),
       (.mediumNeutral, false) => OutlinedButton(
         key: widgetKey,
@@ -216,7 +209,6 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         statesController: statesController,
         icon: _icon,
         label: _label!,
-        iconAlignment: _iconAlignment,
       ),
       (.low, false) => TextButton(
         key: widgetKey,
@@ -245,7 +237,6 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         statesController: statesController,
         icon: _icon,
         label: _label!,
-        iconAlignment: _iconAlignment,
       ),
     };
   }
@@ -256,13 +247,9 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   Widget buildCupertino(BuildContext context) {
     final pressed = isEnabled ? onPressed : null;
     final long = isEnabled ? onLongPress : null;
-    // Cupertino has no icon factory, so the icon and the label share a Row, ordered by `iconAlignment`.
+    // Cupertino has no icon factory, so the icon and the label share a Row.
     final child = _hasIconChild
-        ? Row(
-            mainAxisSize: .min,
-            spacing: kDefaultButtonIconLabelGap,
-            children: _iconAlignment == .start ? [_icon!, _label!] : [_label!, _icon!],
-          )
+        ? Row(mainAxisSize: .min, spacing: kDefaultButtonIconLabelGap, children: [_icon!, _label!])
         : _child!;
     final sizeStyle = cupertinoButtonData?.sizeStyle ?? kDefaultCupertinoButtonSizeStyle;
     final padding = cupertinoButtonData?.padding;
