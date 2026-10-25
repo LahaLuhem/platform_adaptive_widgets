@@ -39,6 +39,7 @@ class ShowcaseView extends StatelessWidget {
                     children: [
                       PlatformButton(
                         onPressed: viewModel.onProbeIncremented,
+                        emphasis: .medium,
                         child: const Text('Tap +'),
                       ),
                       Text('Count: $count'),
@@ -56,6 +57,7 @@ class ShowcaseView extends StatelessWidget {
                 code: 'pushPlatformRoute(context, (_) => const DetailPage())',
                 demo: PlatformButton(
                   onPressed: () => viewModel.onPushPagePressed(large: false),
+                  emphasis: .medium,
                   child: const Text('Push a page'),
                 ),
               ),
@@ -133,6 +135,7 @@ class ShowcaseView extends StatelessWidget {
                 code: 'cupertinoNavigationBarData: CupertinoNavigationBarData(large: true)',
                 demo: PlatformButton(
                   onPressed: () => viewModel.onPushPagePressed(large: true),
+                  emphasis: .medium,
                   child: const Text('Push a large-title page'),
                 ),
               ),

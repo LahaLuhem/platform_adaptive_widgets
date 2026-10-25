@@ -8,8 +8,11 @@ class PlatformConfirmSnippet extends StatelessWidget {
   const PlatformConfirmSnippet({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      PlatformButton(onPressed: () => _closePressed(context), child: const Text('Close'));
+  Widget build(BuildContext context) => PlatformButton(
+    onPressed: () => _closePressed(context),
+    emphasis: .medium,
+    child: const Text('Close'),
+  );
 
   Future<void> _closePressed(BuildContext context) async {
     // #region platform_confirm

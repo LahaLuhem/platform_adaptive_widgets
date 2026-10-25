@@ -117,7 +117,7 @@ final class DialogsDemoViewModel extends ViewModel {
                 if (designLanguage == .cupertino)
                   PlatformButton(
                     onPressed: () => Navigator.maybeOf(context)?.pop(),
-                    materialButtonVariant: .text,
+                    emphasis: .low,
                     child: const Text('Done'),
                   ),
               ],
@@ -133,6 +133,7 @@ final class DialogsDemoViewModel extends ViewModel {
       builder: (context) => Center(
         child: PlatformButton(
           onPressed: () => Navigator.maybeOf(context)?.pop('Team lunch'),
+          emphasis: .high,
           child: const Text('Save "Team lunch"'),
         ),
       ),

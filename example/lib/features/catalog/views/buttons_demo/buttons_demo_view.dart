@@ -34,14 +34,13 @@ class ButtonsDemoView extends StatelessWidget {
         children: [
           DemoCard(
             title: 'PlatformButton',
-            description: 'Material or Cupertino variants, whichever look is showing.',
+            description: 'Ranks the same on Material and Cupertino, from high to low.',
             child: PropertyEditor(
               preview: viewModel.shouldUseIcon
                   ? PlatformButton.icon(
                       onPressed: () => viewModel.onButtonPressed('Playground'),
                       isEnabled: viewModel.shouldEnable,
-                      materialButtonVariant: viewModel.materialVariant,
-                      cupertinoButtonVariant: viewModel.cupertinoVariant,
+                      emphasis: viewModel.emphasis,
                       cupertinoButtonData: cupertinoData,
                       icon: Icon(
                         context.platformIcon(material: Icons.add, cupertino: CupertinoIcons.add),
@@ -51,23 +50,16 @@ class ButtonsDemoView extends StatelessWidget {
                   : PlatformButton(
                       onPressed: () => viewModel.onButtonPressed('Playground'),
                       isEnabled: viewModel.shouldEnable,
-                      materialButtonVariant: viewModel.materialVariant,
-                      cupertinoButtonVariant: viewModel.cupertinoVariant,
+                      emphasis: viewModel.emphasis,
                       cupertinoButtonData: cupertinoData,
                       child: const Text('Button'),
                     ),
               knobs: [
-                EnumKnob<MaterialButtonVariant>(
-                  label: 'materialButtonVariant',
-                  value: viewModel.materialVariant,
-                  values: MaterialButtonVariant.values,
-                  onChanged: viewModel.onMaterialVariantSelected,
-                ),
-                EnumKnob<CupertinoButtonVariant>(
-                  label: 'cupertinoButtonVariant',
-                  value: viewModel.cupertinoVariant,
-                  values: CupertinoButtonVariant.values,
-                  onChanged: viewModel.onCupertinoVariantSelected,
+                EnumKnob<PlatformButtonEmphasis>(
+                  label: 'emphasis',
+                  value: viewModel.emphasis,
+                  values: PlatformButtonEmphasis.values,
+                  onChanged: viewModel.onEmphasisSelected,
                 ),
                 BoolKnob(
                   label: 'isEnabled',

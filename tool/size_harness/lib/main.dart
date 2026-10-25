@@ -24,7 +24,7 @@ class _Surfaces extends StatelessWidget {
   Widget build(BuildContext context) => ListView(
     children: [
       // PlatformWidgetBase virtual dispatch.
-      PlatformButton(onPressed: () {}, child: const Text('platform button')),
+      PlatformButton(onPressed: () {}, emphasis: .medium, child: const Text('platform button')),
       const PlatformProgressBar(value: 0.3),
       PlatformMenuPicker<int>(
         items: List.generate(

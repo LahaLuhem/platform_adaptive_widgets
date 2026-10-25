@@ -8,8 +8,11 @@ class PlatformAcknowledgeSnippet extends StatelessWidget {
   const PlatformAcknowledgeSnippet({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      PlatformButton(onPressed: () => _notifyPressed(context), child: const Text('Notify'));
+  Widget build(BuildContext context) => PlatformButton(
+    onPressed: () => _notifyPressed(context),
+    emphasis: .medium,
+    child: const Text('Notify'),
+  );
 
   Future<void> _notifyPressed(BuildContext context) async {
     // #region platform_acknowledge

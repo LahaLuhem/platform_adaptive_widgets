@@ -7,8 +7,7 @@ import 'package:pmvvm/pmvvm.dart';
 final class ButtonsDemoViewModel extends ViewModel {
   var _shouldEnable = true;
   var _shouldUseIcon = false;
-  var _materialVariant = MaterialButtonVariant.elevated;
-  var _cupertinoVariant = CupertinoButtonVariant.normal;
+  var _emphasis = PlatformButtonEmphasis.high;
 
   var _cupertinoColor = const Color(0xFF2196F3);
   var _cupertinoForegroundColor = const Color(0xFFFFFFFF);
@@ -19,9 +18,7 @@ final class ButtonsDemoViewModel extends ViewModel {
 
   bool get shouldUseIcon => _shouldUseIcon;
 
-  MaterialButtonVariant get materialVariant => _materialVariant;
-
-  CupertinoButtonVariant get cupertinoVariant => _cupertinoVariant;
+  PlatformButtonEmphasis get emphasis => _emphasis;
 
   Color get cupertinoColor => _cupertinoColor;
 
@@ -44,13 +41,8 @@ final class ButtonsDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
-  void onMaterialVariantSelected(MaterialButtonVariant variant) {
-    _materialVariant = variant;
-    notifyListeners();
-  }
-
-  void onCupertinoVariantSelected(CupertinoButtonVariant variant) {
-    _cupertinoVariant = variant;
+  void onEmphasisSelected(PlatformButtonEmphasis emphasis) {
+    _emphasis = emphasis;
     notifyListeners();
   }
 

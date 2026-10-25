@@ -34,14 +34,15 @@ class const _Page({
       Align(
         alignment: .topCenter,
         child: PlatformActionsMenu(
-          builder: (_, onPressed) => PlatformButton(onPressed: onPressed, child: const Text(_more)),
+          builder: (_, onPressed) =>
+              PlatformButton(onPressed: onPressed, emphasis: .medium, child: const Text(_more)),
           actions: actions,
         ),
       ),
       if (onUnderPressed case final onPressed?)
         Align(
           alignment: .bottomCenter,
-          child: PlatformButton(onPressed: onPressed, child: const Text(_under)),
+          child: PlatformButton(onPressed: onPressed, emphasis: .medium, child: const Text(_under)),
         ),
     ],
   );

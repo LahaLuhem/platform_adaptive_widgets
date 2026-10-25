@@ -47,6 +47,7 @@ class ErrorView extends StatelessWidget {
                 if (routingError != null) Text(routingError.message, textAlign: .center),
                 PlatformButton(
                   onPressed: () => context.goNamed(AppRoute.catalog.name),
+                  emphasis: .high,
                   child: const Text('Back to Catalog'),
                 ),
               ],

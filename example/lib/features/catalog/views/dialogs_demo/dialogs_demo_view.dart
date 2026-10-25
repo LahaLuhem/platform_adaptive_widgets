@@ -32,6 +32,7 @@ class DialogsDemoView extends StatelessWidget {
           child: PropertyEditor(
             preview: PlatformButton(
               onPressed: viewModel.onShowDialogPressed,
+              emphasis: .medium,
               child: const Text('Show dialog'),
             ),
             knobs: [
@@ -54,6 +55,7 @@ class DialogsDemoView extends StatelessWidget {
               'A full-screen dialog on Material, a page that slides up on Cupertino. Its bar closes it.',
           child: PlatformButton(
             onPressed: viewModel.onShowFullscreenDialogPressed,
+            emphasis: .medium,
             child: Text(
               viewModel.savedEvent == null ? 'New event' : 'Saved: ${viewModel.savedEvent}',
             ),
@@ -66,6 +68,7 @@ class DialogsDemoView extends StatelessWidget {
           child: PropertyEditor(
             preview: PlatformButton(
               onPressed: viewModel.onShowAlertDialogPressed,
+              emphasis: .medium,
               child: const Text('Show alert'),
             ),
             knobs: [
@@ -110,6 +113,7 @@ class DialogsDemoView extends StatelessWidget {
           child: PropertyEditor(
             preview: PlatformButton(
               onPressed: viewModel.onShowToastPressed,
+              emphasis: .medium,
               child: Text(viewModel.isUndone ? 'Undone' : 'Show toast'),
             ),
             knobs: [
@@ -129,6 +133,7 @@ class DialogsDemoView extends StatelessWidget {
           child: PropertyEditor(
             preview: PlatformButton(
               onPressed: viewModel.onShowBottomSheetPressed,
+              emphasis: .medium,
               child: const Text('Show bottom sheet'),
             ),
             knobs: [
@@ -147,6 +152,7 @@ class DialogsDemoView extends StatelessWidget {
               'top, in red.',
           child: PlatformButton(
             onPressed: viewModel.onShowChoicesPressed,
+            emphasis: .medium,
             child: Text(
               viewModel.draftOutcome == null ? 'Unsent draft' : 'Draft ${viewModel.draftOutcome}',
             ),
@@ -158,8 +164,11 @@ class DialogsDemoView extends StatelessWidget {
               'A pull-down menu on Cupertino, an M3 menu on Material. Delete asks first, and is red on '
               'Cupertino.',
           child: PlatformActionsMenu(
-            builder: (_, onPressed) =>
-                PlatformButton(onPressed: onPressed, child: const Text('Grocery list')),
+            builder: (_, onPressed) => PlatformButton(
+              onPressed: onPressed,
+              emphasis: .medium,
+              child: const Text('Grocery list'),
+            ),
             actions: {
               PlatformMenuAction.normal(
                 label: 'Share List',
@@ -198,12 +207,14 @@ class DialogsDemoView extends StatelessWidget {
               Expanded(
                 child: PlatformButton(
                   onPressed: viewModel.onShowDatePickerPressed,
+                  emphasis: .medium,
                   child: Text(viewModel.selectedDate?.toString() ?? 'Pick a date'),
                 ),
               ),
               Expanded(
                 child: PlatformButton(
                   onPressed: viewModel.onShowTimePickerPressed,
+                  emphasis: .medium,
                   child: Text(viewModel.selectedTime?.toString() ?? 'Pick a time'),
                 ),
               ),

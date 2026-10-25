@@ -9,8 +9,11 @@ class PlatformTimePickerSnippet extends StatelessWidget {
   const PlatformTimePickerSnippet({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      PlatformButton(onPressed: () => _pickPressed(context), child: const Text('Pick a time'));
+  Widget build(BuildContext context) => PlatformButton(
+    onPressed: () => _pickPressed(context),
+    emphasis: .medium,
+    child: const Text('Pick a time'),
+  );
 
   Future<void> _pickPressed(BuildContext context) async {
     // #region platform_time_picker
