@@ -39,6 +39,7 @@ final class const MaterialButtonData({
   /// Material's whole visual surface, keyed by [WidgetState]. `null` leaves it to the theme.
   final ButtonStyle? style,
 
+  /// Doesn't reach an icon-only button, since Material's icon button takes none.
   final Clip? clipBehavior,
 
   final WidgetStatesController? statesController,

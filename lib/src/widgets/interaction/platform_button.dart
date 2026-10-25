@@ -6,7 +6,8 @@ import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoButton, CupertinoColors, CupertinoTheme;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart' show FilledButton, OutlinedButton, TextButton;
+import 'package:material_ui/material_ui.dart'
+    show FilledButton, IconButton, OutlinedButton, TextButton;
 
 import '/src/models/dialogs/platform_action_kind.dart';
 import '/src/models/interaction/platform_button_data.dart';
@@ -15,9 +16,10 @@ import '/src/models/platform_widget_base.dart';
 
 /// One of Material's buttons or one of Cupertino's, at the rank [emphasis] asks for.
 ///
-/// 2 shapes to build one. [PlatformButton.new] takes a free-form `child`. [PlatformButton.icon] takes
+/// 3 shapes to build one. [PlatformButton.new] takes a free-form `child`. [PlatformButton.icon] takes
 /// an icon and a label, which Material renders through each button's icon factory and Cupertino,
-/// having none, renders as a [Row] spaced by [kDefaultButtonIconLabelGap].
+/// having none, renders as a [Row] spaced by [kDefaultButtonIconLabelGap]. [PlatformButton.iconOnly]
+/// takes just an icon, and a label for screen readers and Material's tooltip.
 ///
 /// Per-platform tuning lives in [materialButtonData] / [cupertinoButtonData]. See `APPENDIX.md#field-classification`.
 ///
@@ -37,7 +39,8 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   /// See `APPENDIX.md#callback-nullability`.
   final VoidCallback onPressed;
 
-  /// Optional long-press callback.
+  /// Optional long-press callback. An icon-only button has none, since Material's tooltip takes the
+  /// long press.
   final VoidCallback? onLongPress;
 
   /// The way to disable a button, passing both branches a `null` callback for their standard disabled
@@ -50,7 +53,8 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   /// Whether the button grabs focus when mounted.
   final bool autofocus;
 
-  /// Fires on focus gained and lost.
+  /// Fires on focus gained and lost. An icon-only button has none, since Material's icon button takes
+  /// no such callback.
   final ValueChanged<bool>? onFocusChange;
 
   /// How much attention the button asks for, the same on both platforms.
@@ -66,13 +70,13 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   /// Cupertino-branch overrides, plus the knobs Material has no answer for.
   final CupertinoButtonData? cupertinoButtonData;
 
-  // Content slots. `_child` and the `_icon`/`_label` pair are mutually exclusive, one set or the
-  // other, decided by which constructor ran.
+  // Content slots, filled by the constructor that ran, which also sets `_shape`: `_child` alone,
+  // `_icon` with `_label`, or `_icon` with `_iconOnlyLabel`.
+  final _Shape _shape;
   final Widget? _child;
   final Widget? _icon;
   final Widget? _label;
-
-  bool get _hasIconChild => _icon != null;
+  final String? _iconOnlyLabel;
 
   /// Creates a button around a free-form [child].
   const new({
@@ -89,9 +93,11 @@ class PlatformButton extends PlatformWidgetKeyedBase {
     this.cupertinoButtonData,
     super.widgetKey,
     super.key,
-  }) : _child = child,
+  }) : _shape = .child,
+       _child = child,
        _icon = null,
-       _label = null;
+       _label = null,
+       _iconOnlyLabel = null;
 
   /// Creates a button holding an icon before a label, which Material renders through its button's
   /// icon factory and Cupertino, having none, renders as a [Row]. In a right-to-left language the
@@ -111,9 +117,34 @@ class PlatformButton extends PlatformWidgetKeyedBase {
     this.cupertinoButtonData,
     super.widgetKey,
     super.key,
-  }) : _child = null,
+  }) : _shape = .iconAndLabel,
+       _child = null,
        _icon = icon,
-       _label = label;
+       _label = label,
+       _iconOnlyLabel = null;
+
+  /// Creates a button showing only [icon]. [label] names the action: Material shows it as a tooltip,
+  /// and screen readers read it on both.
+  const new iconOnly({
+    required this.onPressed,
+    required this.emphasis,
+    required Widget icon,
+    required String label,
+    this.actionKind = .normal,
+    this.isEnabled = true,
+    this.focusNode,
+    this.autofocus = false,
+    this.materialButtonData,
+    this.cupertinoButtonData,
+    super.widgetKey,
+    super.key,
+  }) : onLongPress = null,
+       onFocusChange = null,
+       _shape = .iconOnly,
+       _child = null,
+       _icon = icon,
+       _label = null,
+       _iconOnlyLabel = label;
 
   @override
   @protected
@@ -126,8 +157,8 @@ class PlatformButton extends PlatformWidgetKeyedBase {
     final clipBehavior = materialButtonData?.clipBehavior;
     final statesController = materialButtonData?.statesController;
 
-    return switch ((emphasis, _hasIconChild)) {
-      (.high, false) => FilledButton(
+    return switch ((emphasis, _shape)) {
+      (.high, .child) => FilledButton(
         key: widgetKey,
         onPressed: pressed,
         onLongPress: long,
@@ -142,7 +173,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         // tonal and outlined. Only TextButton narrows it to non-null.
         child: _child,
       ),
-      (.high, true) => FilledButton.icon(
+      (.high, .iconAndLabel) => FilledButton.icon(
         key: widgetKey,
         onPressed: pressed,
         onLongPress: long,
@@ -156,7 +187,18 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         icon: _icon,
         label: _label!,
       ),
-      (.medium, false) => FilledButton.tonal(
+      (.high, .iconOnly) => IconButton.filled(
+        key: widgetKey,
+        onPressed: pressed,
+        onHover: onHover,
+        style: style,
+        focusNode: focusNode,
+        autofocus: autofocus,
+        statesController: statesController,
+        tooltip: _iconOnlyLabel,
+        icon: _icon!,
+      ),
+      (.medium, .child) => FilledButton.tonal(
         key: widgetKey,
         onPressed: pressed,
         onLongPress: long,
@@ -169,7 +211,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         statesController: statesController,
         child: _child,
       ),
-      (.medium, true) => FilledButton.tonalIcon(
+      (.medium, .iconAndLabel) => FilledButton.tonalIcon(
         key: widgetKey,
         onPressed: pressed,
         onLongPress: long,
@@ -183,7 +225,18 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         icon: _icon,
         label: _label!,
       ),
-      (.mediumNeutral, false) => OutlinedButton(
+      (.medium, .iconOnly) => IconButton.filledTonal(
+        key: widgetKey,
+        onPressed: pressed,
+        onHover: onHover,
+        style: style,
+        focusNode: focusNode,
+        autofocus: autofocus,
+        statesController: statesController,
+        tooltip: _iconOnlyLabel,
+        icon: _icon!,
+      ),
+      (.mediumNeutral, .child) => OutlinedButton(
         key: widgetKey,
         onPressed: pressed,
         onLongPress: long,
@@ -196,7 +249,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         statesController: statesController,
         child: _child,
       ),
-      (.mediumNeutral, true) => OutlinedButton.icon(
+      (.mediumNeutral, .iconAndLabel) => OutlinedButton.icon(
         key: widgetKey,
         onPressed: pressed,
         onLongPress: long,
@@ -210,7 +263,18 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         icon: _icon,
         label: _label!,
       ),
-      (.low, false) => TextButton(
+      (.mediumNeutral, .iconOnly) => IconButton.outlined(
+        key: widgetKey,
+        onPressed: pressed,
+        onHover: onHover,
+        style: style,
+        focusNode: focusNode,
+        autofocus: autofocus,
+        statesController: statesController,
+        tooltip: _iconOnlyLabel,
+        icon: _icon!,
+      ),
+      (.low, .child) => TextButton(
         key: widgetKey,
         onPressed: pressed,
         onLongPress: long,
@@ -224,7 +288,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         isSemanticButton: materialButtonData?.isSemanticButton,
         child: _child!,
       ),
-      (.low, true) => TextButton.icon(
+      (.low, .iconAndLabel) => TextButton.icon(
         key: widgetKey,
         onPressed: pressed,
         onLongPress: long,
@@ -238,6 +302,17 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         icon: _icon,
         label: _label!,
       ),
+      (.low, .iconOnly) => IconButton(
+        key: widgetKey,
+        onPressed: pressed,
+        onHover: onHover,
+        style: style,
+        focusNode: focusNode,
+        autofocus: autofocus,
+        statesController: statesController,
+        tooltip: _iconOnlyLabel,
+        icon: _icon!,
+      ),
     };
   }
 
@@ -247,10 +322,17 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   Widget buildCupertino(BuildContext context) {
     final pressed = isEnabled ? onPressed : null;
     final long = isEnabled ? onLongPress : null;
-    // Cupertino has no icon factory, so the icon and the label share a Row.
-    final child = _hasIconChild
-        ? Row(mainAxisSize: .min, spacing: kDefaultButtonIconLabelGap, children: [_icon!, _label!])
-        : _child!;
+    final child = switch (_shape) {
+      .child => _child!,
+      // Cupertino has no icon factory, so the icon and the label share a Row.
+      .iconAndLabel => Row(
+        mainAxisSize: .min,
+        spacing: kDefaultButtonIconLabelGap,
+        children: [_icon!, _label!],
+      ),
+      // The label names it, in place of anything the icon says about itself.
+      .iconOnly => Semantics(label: _iconOnlyLabel, excludeSemantics: true, child: _icon),
+    };
     final sizeStyle = cupertinoButtonData?.sizeStyle ?? kDefaultCupertinoButtonSizeStyle;
     final padding = cupertinoButtonData?.padding;
     // cupertino_ui's recipe for iOS's gray button.
@@ -345,4 +427,11 @@ class PlatformButton extends PlatformWidgetKeyedBase {
       ),
     };
   }
+}
+
+// Which constructor ran, and so which content slots are filled.
+enum _Shape() {
+  child,
+  iconAndLabel,
+  iconOnly,
 }
