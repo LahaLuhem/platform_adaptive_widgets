@@ -2,12 +2,14 @@
 // assigned in the initializer list instead.
 // ignore_for_file: prefer_initializing_formals
 
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoButton, CupertinoColors;
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show CupertinoButton, CupertinoColors, CupertinoTheme;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart'
     show FilledButton, IconAlignment, OutlinedButton, TextButton;
 
+import '/src/models/dialogs/platform_action_kind.dart';
 import '/src/models/interaction/platform_button_data.dart';
 import '/src/models/interaction/platform_button_emphasis.dart';
 import '/src/models/platform_widget_base.dart';
@@ -19,6 +21,12 @@ import '/src/models/platform_widget_base.dart';
 /// having none, renders as a [Row] spaced by [kDefaultButtonIconLabelGap].
 ///
 /// Per-platform tuning lives in [materialButtonData] / [cupertinoButtonData]. See `APPENDIX.md#field-classification`.
+///
+/// Known Flutter gap: in light mode, Cupertino's `medium` and `mediumNeutral` draw lighter than UIKit's
+/// tinted and gray buttons ([flutter/flutter#195265](https://github.com/flutter/flutter/issues/195265)).
+///
+/// Guidelines: [M3 buttons](https://m3.material.io/components/buttons/guidelines),
+/// [HIG buttons](https://developer.apple.com/design/human-interface-guidelines/buttons#Best-practices).
 ///
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_button.dart#platform_button}
@@ -49,6 +57,10 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   /// How much attention the button asks for, the same on both platforms.
   final PlatformButtonEmphasis emphasis;
 
+  /// What the action does. A delete or a discard draws red where the accent would be on Cupertino, as
+  /// SwiftUI draws a destructive button. Material stays plain, as M3 has no destructive style.
+  final PlatformActionKind actionKind;
+
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialButtonData? materialButtonData;
 
@@ -69,6 +81,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
     required this.onPressed,
     required this.emphasis,
     required Widget child,
+    this.actionKind = .normal,
     this.onLongPress,
     this.isEnabled = true,
     this.focusNode,
@@ -92,6 +105,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
     required Widget icon,
     required Widget label,
     IconAlignment iconAlignment = .start,
+    this.actionKind = .normal,
     this.onLongPress,
     this.isEnabled = true,
     this.focusNode,
@@ -272,7 +286,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
     final focusColor = cupertinoButtonData?.focusColor;
     final mouseCursor = cupertinoButtonData?.mouseCursor;
 
-    return switch (emphasis) {
+    final button = switch (emphasis) {
       .high => CupertinoButton.filled(
         key: widgetKey,
         onPressed: pressed,
@@ -332,6 +346,15 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         alignment: alignment,
         focusColor: focusColor,
         child: child,
+      ),
+    };
+
+    return switch (actionKind) {
+      .normal => button,
+      // A red accent turns exactly the parts that would wear the accent red, at every rank.
+      .delete || .discard => CupertinoTheme(
+        data: CupertinoTheme.of(context).copyWith(primaryColor: CupertinoColors.systemRed),
+        child: button,
       ),
     };
   }
