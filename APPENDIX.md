@@ -243,10 +243,9 @@ discoverable name plus a `.tristate` constructor. The costs are minor and accept
 - **Callbacks tightly coupled to a single visual field** (e.g. `onActiveThumbImageError` for
   `activeThumbImage`) follow that visual field's bucket, not the general "callbacks are functional"
   rule. They're a parameter of the visual field, not an independent action.
-- **Variant enums** (`MaterialButtonVariant`, `CupertinoButtonVariant`) live as flat fields on the
-  widget. Each variant exists only on its own platform but the package exposes both at the widget
-  level so callers pick per-platform without re-importing the underlying frameworks. Treated as
-  functional for layout purposes (single source of truth on the widget).
+- **Emphasis and action kind** (`PlatformButton.emphasis`, `.actionKind`) change the look, yet live
+  flat on the widget with no per-platform override, like functional fields. Both platforms read the
+  one value, so a button can't rank differently on each, or turn destructive on one only.
 - **`showPlatformXxx` helpers** apply the same rule: functional params flat on the function
   signature. Visual via per-platform records.
 - **Platform-only *capabilities*, not just fields.** A whole feature can exist on one platform and
