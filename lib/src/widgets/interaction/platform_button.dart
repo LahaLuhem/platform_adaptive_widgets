@@ -2,6 +2,9 @@
 // assigned in the initializer list instead.
 // ignore_for_file: prefer_initializing_formals
 
+/// @docImport '/src/models/layout/platform_bar_action.dart';
+library;
+
 import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoButton, CupertinoColors, CupertinoTheme;
 import 'package:flutter/foundation.dart';
@@ -127,7 +130,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
        _iconOnlyLabel = null;
 
   /// Creates a button showing only [icon]. [label] names the action: Material shows it as a tooltip,
-  /// and screen readers read it on both.
+  /// and screen readers read it on both. In a bar, use a [PlatformBarAction], which fits the bar.
   const new iconOnly({
     required this.onPressed,
     required this.emphasis,

@@ -246,6 +246,12 @@ discoverable name plus a `.tristate` constructor. The costs are minor and accept
 - **Emphasis and action kind** (`PlatformButton.emphasis`, `.actionKind`) change the look, yet live
   flat on the widget with no per-platform override, like functional fields. Both platforms read the
   one value, so a button can't rank differently on each, or turn destructive on one only.
+- **Bar content is shared as data, raw widgets per platform.** `PlatformAppBar.actions` and
+  `.primaryAction` take `PlatformBarAction`s, which the bar builds into each platform's own bar
+  button, so none can misfit the bar. A raw widget goes only in a per-platform slot
+  (`MaterialAppBarData.leading` and `.actions`, `CupertinoNavigationBarData.leading` and `.trailing`),
+  which replaces that side's own. The leading has no shared slot, since both bars fill it themselves:
+  back, a full-screen dialog's close or Cancel, Material's drawer button.
 - **`showPlatformXxx` helpers** apply the same rule: functional params flat on the function
   signature. Visual via per-platform records.
 - **Platform-only *capabilities*, not just fields.** A whole feature can exist on one platform and

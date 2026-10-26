@@ -62,11 +62,17 @@ class _Surfaces extends StatelessWidget {
         child: const Text('dialog'),
       ),
 
-      // showPlatformFullscreenDialog, top-level switch dispatch.
+      // showPlatformFullscreenDialog, top-level switch dispatch. Its bar builds both kinds of action.
       TextButton(
         onPressed: () => showPlatformFullscreenDialog<void>(
           context: context,
-          appBarBuilder: (_) => const PlatformAppBar(title: Text('title')),
+          appBarBuilder: (_) => PlatformAppBar(
+            title: const Text('title'),
+            actions: [
+              PlatformBarAction(label: 'share', icon: const Icon(Icons.share), onPressed: () {}),
+            ],
+            primaryAction: PlatformBarAction(label: 'save', onPressed: () {}),
+          ),
           builder: (_) => const Text('page'),
         ),
         child: const Text('fullscreen dialog'),

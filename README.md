@@ -210,12 +210,12 @@ column shows what you can pass to tune each side. See
 
 ### Layout
 
-| Widget                               | Material                                               | Cupertino                                                       | Data Classes                                                                |
-|--------------------------------------|--------------------------------------------------------|-----------------------------------------------------------------|-----------------------------------------------------------------------------|
-| `PlatformApp` / `PlatformApp.router` | `MaterialApp` / `MaterialApp.router`                   | `CupertinoApp` / `CupertinoApp.router`                          | `MaterialAppData`, `CupertinoAppData` (shared config is flat on the widget) |
-| `PlatformAppBar`                     | `AppBar`                                               | `CupertinoNavigationBar`                                        | `MaterialAppBarData`, `CupertinoNavigationBarData`                          |
-| `PlatformScaffold`                   | `Scaffold`                                             | `CupertinoPageScaffold`                                         | `MaterialScaffoldData`, `CupertinoScaffoldData`                             |
-| `PlatformTabScaffold`                | `Scaffold` + `NavigationBar` + `NavigationDestination` | `CupertinoTabScaffold` + `CupertinoTabBar` + `CupertinoTabView` | `MaterialTabScaffoldData`, `TabDestination`                                 |
+| Widget                                 | Material                                                                               | Cupertino                                                                                 | Data Classes                                                                |
+|----------------------------------------|----------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| `PlatformApp` / `PlatformApp.router`   | `MaterialApp` / `MaterialApp.router`                                                   | `CupertinoApp` / `CupertinoApp.router`                                                    | `MaterialAppData`, `CupertinoAppData` (shared config is flat on the widget) |
+| `PlatformAppBar` + `PlatformBarAction` | `AppBar`, each action an `IconButton` with its label as the tooltip, or a `TextButton` | `CupertinoNavigationBar`, each action a flush `CupertinoButton`, the primary one semibold | `MaterialAppBarData`, `CupertinoNavigationBarData`                          |
+| `PlatformScaffold`                     | `Scaffold`                                                                             | `CupertinoPageScaffold`                                                                   | `MaterialScaffoldData`, `CupertinoScaffoldData`                             |
+| `PlatformTabScaffold`                  | `Scaffold` + `NavigationBar` + `NavigationDestination`                                 | `CupertinoTabScaffold` + `CupertinoTabBar` + `CupertinoTabView`                           | `MaterialTabScaffoldData`, `TabDestination`                                 |
 
 ### Painting
 
