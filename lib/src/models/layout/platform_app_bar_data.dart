@@ -32,10 +32,11 @@ abstract final class const _PlatformAppBarData({final Color? backgroundColor});
 final class const MaterialAppBarData({
   super.backgroundColor,
 
+  /// Replaces [PlatformAppBar.actions] and its `primaryAction` on Material, for a widget an action can't
+  /// describe.
   final List<Widget>? actions,
 
-  /// Lets the framework guess at actions while [actions] is empty. Set [actions] and this stops mattering.
-  /// Cupertino has no actions list at all.
+  /// Lets the framework add the end drawer's button while the bar has no actions.
   final bool automaticallyImplyActions = kAutomaticallyImplyActions,
 
   /// Sits behind the toolbar and tab bar.
@@ -143,6 +144,8 @@ final class const CupertinoNavigationBarData({
   /// What the back button reads, instead of the previous route's title.
   final String? previousPageTitle,
 
+  /// Replaces [PlatformAppBar.actions] and its `primaryAction` on Cupertino, for a widget an action
+  /// can't describe.
   final Widget? trailing,
 
   /// Hairline along the bottom edge.
