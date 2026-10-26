@@ -53,6 +53,7 @@ class TextDemoView extends StatelessWidget {
                 label: 'cursorColor',
                 value: viewModel.cursorColor,
                 onChanged: viewModel.onCursorColorSelected,
+                onCleared: () => viewModel.onCursorColorSelected(null),
               ),
               DoubleKnob(
                 label: 'cursorWidth',
@@ -70,7 +71,8 @@ class TextDemoView extends StatelessWidget {
               EnumKnob<TextAlign>(
                 label: 'textAlign',
                 value: viewModel.textAlign,
-                values: TextAlign.values,
+                // One line, left to right: left and justify draw like start, right like end.
+                values: const [.start, .center, .end],
                 onChanged: viewModel.onTextAlignSelected,
               ),
             ],

@@ -16,6 +16,7 @@ renames don't break callers.
 - [Widget composition](#widget-composition)
     * [Native widget parameters](#native-widget-parameters)
     * [Spacing, rule of 8](#spacing-rule-of-8)
+- [Playground knobs](#playground-knobs)
 - [Async-action buttons](#async-action-buttons)
 - [Routing, `go_router` integration](#routing-go-router-integration)
 
@@ -264,6 +265,23 @@ This keeps the UI visually consistent and stops ad-hoc values from drifting in.
 
 When in doubt, prefer the smaller 8-grid neighbour over the larger sub-8 value. `8` over `4` for
 breathing room, `16` over `12` for section separation.
+
+---
+
+<a id="playground-knobs"></a>
+## Playground knobs
+
+A knob shows only what it changes. One that changes nothing, or 2 values that draw the same, reads as
+a bug in the widget under edit.
+
+- **Put a knob in the group of the platform it changes.** A shared parameter that only one platform
+  draws goes in that platform's group, like `actionKind` on the button card, which Material keeps
+  plain.
+- **Offer only the values that draw differently** in a state the playground can reach. Leave the rest
+  out with a one-line reason at the call site, like `TextAlign.left`, which draws like `start` with
+  no right-to-left.
+- **Start a color knob unset**, with the "none" swatch (`ColorKnob.onCleared`), so the preview opens on
+  the platform's own colors. A set color can hide the platform's look, like M3's disabled switch.
 
 ---
 

@@ -136,7 +136,8 @@ class DialogsDemoView extends StatelessWidget {
               emphasis: .medium,
               child: const Text('Show bottom sheet'),
             ),
-            knobs: [
+            knobs: const [],
+            cupertinoKnobs: [
               BoolKnob(
                 label: 'raw',
                 value: viewModel.isSheetRaw,

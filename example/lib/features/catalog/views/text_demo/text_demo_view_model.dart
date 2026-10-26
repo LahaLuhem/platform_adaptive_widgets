@@ -12,7 +12,7 @@ final class TextDemoViewModel extends ViewModel {
 
   final playgroundController = TextEditingController(text: 'Sample text');
   var _hintText = 'Placeholder';
-  var _cursorColor = const Color(0xFF2196F3);
+  Color? _cursorColor;
   double _cursorWidth = 2;
   var _shouldObscure = false;
   var _textAlign = TextAlign.start;
@@ -23,7 +23,7 @@ final class TextDemoViewModel extends ViewModel {
 
   String get hintText => _hintText;
 
-  Color get cursorColor => _cursorColor;
+  Color? get cursorColor => _cursorColor;
 
   double get cursorWidth => _cursorWidth;
 
@@ -48,7 +48,7 @@ final class TextDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
-  void onCursorColorSelected(Color color) {
+  void onCursorColorSelected(Color? color) {
     _cursorColor = color;
     notifyListeners();
   }

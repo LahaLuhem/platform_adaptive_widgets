@@ -67,6 +67,7 @@ class ContainersDemoView extends StatelessWidget {
                 label: 'color',
                 value: viewModel.listTileColor,
                 onChanged: viewModel.onListTileColorSelected,
+                onCleared: () => viewModel.onListTileColorSelected(null),
               ),
             ],
             materialKnobs: [
@@ -74,16 +75,19 @@ class ContainersDemoView extends StatelessWidget {
                 label: 'iconColor',
                 value: viewModel.listTileIconColor,
                 onChanged: viewModel.onListTileIconColorSelected,
+                onCleared: () => viewModel.onListTileIconColorSelected(null),
               ),
               ColorKnob(
                 label: 'textColor',
                 value: viewModel.listTileTextColor,
                 onChanged: viewModel.onListTileTextColorSelected,
+                onCleared: () => viewModel.onListTileTextColorSelected(null),
               ),
               EnumKnob<ListTileTitleAlignment>(
                 label: 'titleAlignment',
                 value: viewModel.listTileTitleAlignment,
-                values: ListTileTitleAlignment.values,
+                // Center draws like threeLine on this two-line tile.
+                values: const [.threeLine, .titleHeight, .top, .bottom],
                 onChanged: viewModel.onListTileTitleAlignmentSelected,
               ),
             ],
@@ -115,11 +119,13 @@ class ContainersDemoView extends StatelessWidget {
                 label: 'textColor',
                 value: viewModel.expansionTextColor,
                 onChanged: viewModel.onExpansionTextColorSelected,
+                onCleared: () => viewModel.onExpansionTextColorSelected(null),
               ),
               ColorKnob(
                 label: 'iconColor',
                 value: viewModel.expansionIconColor,
                 onChanged: viewModel.onExpansionIconColorSelected,
+                onCleared: () => viewModel.onExpansionIconColorSelected(null),
               ),
             ],
           ),
@@ -225,6 +231,7 @@ class ContainersDemoView extends StatelessWidget {
                 label: 'color',
                 value: viewModel.progressColor,
                 onChanged: viewModel.onProgressColorSelected,
+                onCleared: () => viewModel.onProgressColorSelected(null),
               ),
               DoubleKnob(
                 label: 'value',
