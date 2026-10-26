@@ -18,7 +18,6 @@ final class DialogsDemoViewModel extends ViewModel {
   var _isSheetRaw = false;
   var _shouldOfferUndo = true;
   var _isUndone = false;
-  String? _savedEvent;
   String? _draftOutcome;
   Date? _selectedDate;
   TimeOfDay? _selectedTime;
@@ -42,8 +41,6 @@ final class DialogsDemoViewModel extends ViewModel {
   bool get shouldOfferUndo => _shouldOfferUndo;
 
   bool get isUndone => _isUndone;
-
-  String? get savedEvent => _savedEvent;
 
   String? get draftOutcome => _draftOutcome;
 
@@ -126,19 +123,20 @@ final class DialogsDemoViewModel extends ViewModel {
         );
 
   Future<void> onShowFullscreenDialogPressed() async {
-    _savedEvent = await showPlatformFullscreenDialog<String>(
+    final saved = await showPlatformFullscreenDialog<String>(
       context: context,
-      appBarData: const PlatformAppBar(title: Text('New event')),
-      // Save sits in the body for now, since the bar's trailing actions are still per platform.
-      builder: (context) => Center(
-        child: PlatformButton(
+      appBarBuilder: (context) => PlatformAppBar(
+        title: const Text('New event'),
+        primaryAction: PlatformBarAction(
+          label: 'Save',
           onPressed: () => Navigator.maybeOf(context)?.pop('Team lunch'),
-          emphasis: .high,
-          child: const Text('Save "Team lunch"'),
         ),
       ),
+      builder: (_) => const Center(child: Text('Team lunch')),
     );
-    notifyListeners();
+    // The bar's close button returns null, so only Save gets a toast.
+    if (saved == null || !context.mounted) return;
+    await showPlatformToast(context: context, message: 'Saved: $saved');
   }
 
   Future<void> onShowAlertDialogPressed() => switch (_alertActions) {

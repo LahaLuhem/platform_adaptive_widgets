@@ -66,7 +66,7 @@ class _Surfaces extends StatelessWidget {
       TextButton(
         onPressed: () => showPlatformFullscreenDialog<void>(
           context: context,
-          appBarData: const PlatformAppBar(title: Text('title')),
+          appBarBuilder: (_) => const PlatformAppBar(title: Text('title')),
           builder: (_) => const Text('page'),
         ),
         child: const Text('fullscreen dialog'),
