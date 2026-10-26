@@ -108,6 +108,9 @@ Future<T?> showPlatformDialog<T>({
 /// body sits on a page background. On Cupertino the bar is the only way out, since a full-screen page
 /// can't be swiped back.
 ///
+/// Both builders get the dialog's own context, so an action in the bar, like a Save, closes this dialog
+/// through it, whichever navigator opened it.
+///
 /// [MaterialFullscreenDialogData] only carries the fields [Dialog.fullscreen] honours, so a centred
 /// dialog's knobs can't be passed here and quietly do nothing.
 ///
@@ -118,7 +121,7 @@ Future<T?> showPlatformDialog<T>({
 /// {@example /example/lib/snippets/dialogs/platform_dialog.dart#fullscreen_dialog}
 Future<T?> showPlatformFullscreenDialog<T>({
   required BuildContext context,
-  required PlatformAppBarData appBarData,
+  required PlatformAppBarData Function(BuildContext context) appBarBuilder,
   required WidgetBuilder builder,
   Color? backgroundColor,
   RouteSettings? routeSettings,
@@ -129,7 +132,7 @@ Future<T?> showPlatformFullscreenDialog<T>({
   // Built by the package rather than the caller, so the close button and page background can't be
   // forgotten.
   Widget page(BuildContext context) => PlatformScaffold(
-    appBarData: appBarData,
+    appBarData: appBarBuilder(context),
     backgroundColor: backgroundColor,
     body: builder(context),
   );

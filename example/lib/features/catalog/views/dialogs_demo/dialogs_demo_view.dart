@@ -56,9 +56,7 @@ class DialogsDemoView extends StatelessWidget {
           child: PlatformButton(
             onPressed: viewModel.onShowFullscreenDialogPressed,
             emphasis: .medium,
-            child: Text(
-              viewModel.savedEvent == null ? 'New event' : 'Saved: ${viewModel.savedEvent}',
-            ),
+            child: const Text('New event'),
           ),
         ),
         DemoCard(

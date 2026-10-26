@@ -10,9 +10,14 @@ import '../support/support.dart';
 const _bar = PlatformAppBar(title: Text('New event'));
 const _body = SizedBox.expand(key: Key('body'));
 const _statusBarHeight = 24.0;
+const _save = 'Save';
+const _saved = 'saved';
 
-Future<String?> _open(BuildContext context) =>
-    showPlatformFullscreenDialog<String>(context: context, appBarData: _bar, builder: (_) => _body);
+Future<String?> _open(BuildContext context) => showPlatformFullscreenDialog<String>(
+  context: context,
+  appBarBuilder: (_) => _bar,
+  builder: (_) => _body,
+);
 
 Future<int> _seeThroughPixels(WidgetTester tester) async {
   final image = (await tester.runAsync(
@@ -73,5 +78,40 @@ void main() {
       // The flag both bars read, not the button, since what each bar draws is Flutter's call.
       check(ModalRoute.of(tester.element(find.byWidget(_body)))!.fullscreenDialog).isTrue();
     });
+
+    scenarioOutlineWidgets<bool>(
+      'closes with the value of a Save in its bar',
+      examples: {'opened from the root navigator': false, 'opened from a nested one': true},
+      outline: (tester, isNested) async {
+        // go_router's tab branches are nested navigators, while the dialog goes on the root one.
+        await pumpPlatformWidget(
+          tester,
+          isNested
+              ? Navigator(
+                  onGenerateRoute: (_) =>
+                      PageRouteBuilder<void>(pageBuilder: (_, _, _) => const SizedBox()),
+                )
+              : const SizedBox(),
+        );
+        final result = showPlatformFullscreenDialog<String>(
+          context: tester.element(find.byType(SizedBox).last),
+          appBarBuilder: (context) => PlatformAppBar(
+            primaryAction: PlatformBarAction(
+              label: _save,
+              onPressed: () => Navigator.maybeOf(context)?.pop(_saved),
+            ),
+          ),
+          builder: (_) => _body,
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text(_save));
+        await tester.pumpAndSettle();
+
+        // Closed first, or the result never comes.
+        check(find.byWidget(_body).evaluate()).isEmpty();
+        check(await result).equals(_saved);
+      },
+    );
   });
 }

@@ -52,15 +52,15 @@ class FullscreenDialogSnippet extends StatelessWidget {
     // #region fullscreen_dialog
     final choice = await showPlatformFullscreenDialog<String>(
       context: context,
-      // The bar brings the close button, so the body only holds the content.
-      appBarData: const PlatformAppBar(title: Text('Pick one')),
-      builder: (context) => Center(
-        child: PlatformButton(
+      // The bar brings the close button. Its context is the dialog's, so Done closes this dialog.
+      appBarBuilder: (context) => PlatformAppBar(
+        title: const Text('Pick one'),
+        primaryAction: PlatformBarAction(
+          label: 'Done',
           onPressed: () => Navigator.maybeOf(context)?.pop('chosen'),
-          emphasis: .high,
-          child: const Text('Done'),
         ),
       ),
+      builder: (_) => const Center(child: Text('The choices go here.')),
     );
     // #endregion
     debugPrint('$choice'); // #hide
