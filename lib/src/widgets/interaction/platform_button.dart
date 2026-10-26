@@ -34,6 +34,9 @@ import '/src/models/platform_widget_base.dart';
 ///
 /// With an icon:
 /// {@example /example/lib/snippets/interaction/platform_button.dart#platform_button_icon}
+///
+/// Icon only:
+/// {@example /example/lib/snippets/interaction/platform_button.dart#platform_button_icon_only}
 class PlatformButton extends PlatformWidgetKeyedBase {
   /// Stays required and non-null even for a disabled button. That's [isEnabled]'s job, not a null callback's.
   /// See `APPENDIX.md#callback-nullability`.

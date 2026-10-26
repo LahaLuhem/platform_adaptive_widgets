@@ -300,10 +300,10 @@ The `dynamic`-escape-hatch ban and the `print()`-in-library ban are listed under
   at the fix.
 
   **Prefer compile-time exclusivity when feasible.** If the invariant can be encoded by splitting
-  into 2 constructors (`PlatformButton(...)` vs `PlatformButton.icon(...)`), do that, the type
-  system enforces it without any runtime check at all. Reach for `assert` when the invariant can't
-  be expressed in the constructor signature (cross-parameter conditions, value-range checks,
-  Iterable-length constraints, etc.).
+  into constructors (`PlatformButton(...)`, `PlatformButton.icon(...)`,
+  `PlatformButton.iconOnly(...)`), do that, the type system enforces it without any runtime check at
+  all. Reach for `assert` when the invariant can't be expressed in the constructor signature
+  (cross-parameter conditions, value-range checks, Iterable-length constraints, etc.).
 - **Value types override `toString`.** Immutable data classes (`TabDestination`, the various `*Data`
   value records) implement `toString()` returning `'ClassName(field1: value1, field2: value2)'`. The
   default `Instance of 'ClassName'` is hostile in logs, exception traces, and `print` debugging.
@@ -425,8 +425,7 @@ return / variable type, not from inference of arbitrary expressions. Drop the le
   practice, prefer it on `EdgeInsets`-typed parameters (`padding: const .all(16)`,
   `padding: const .symmetric(horizontal: 12, vertical: 4)`, `margin: .zero`), `Alignment` slots, and
   similar value types.
-- Cupertino / Material variant enums on this package's own data records:
-  `materialButtonVariant: .text`, `cupertinoButtonVariant: .tinted`,
+- This package's own enums and data records: `emphasis: .high`, `actionKind: .delete`,
   `cupertinoButtonData: CupertinoButtonData(padding: .zero)`.
 - **Constructor field defaults**: when the field's declared type pins the context, the default
   literal drops its prefix:
@@ -510,28 +509,26 @@ build site has to branch on.
 
 ```dart
 // Prefer:
-enum CupertinoButtonVariant {
-  normal(defaultDisabledColor: CupertinoColors.quaternarySystemFill),
-  filled(defaultDisabledColor: CupertinoColors.tertiarySystemFill),
-  tinted(defaultDisabledColor: CupertinoColors.tertiarySystemFill);
+enum ChipDensity {
+  compact(padding: 4),
+  regular(padding: 8);
 
-  final Color defaultDisabledColor;
-  const CupertinoButtonVariant({required this.defaultDisabledColor});
+  final double padding;
+  const ChipDensity({required this.padding});
 }
 
 // Build site:
-disabledColor: disabledColor ?? cupertinoButtonVariant.defaultDisabledColor,
+padding: padding ?? density.padding,
 
 // Over:
-const kDefaultCupertinoButtonDisabledColor = CupertinoColors.quaternarySystemFill;
-const kDefaultCupertinoFilledTintedButtonDisabledColor = CupertinoColors.tertiarySystemFill;
+const kDefaultCompactChipPadding = 4.0;
+const kDefaultRegularChipPadding = 8.0;
 
-enum CupertinoButtonVariant { normal, filled, tinted }
+enum ChipDensity { compact, regular }
 
 // Build site:
-.normal => CupertinoButton(disabledColor: disabledColor ?? kDefaultCupertinoButtonDisabledColor, ...)
-.filled => CupertinoButton.filled(disabledColor: disabledColor ?? kDefaultCupertinoFilledTintedButtonDisabledColor, ...)
-.tinted => CupertinoButton.tinted(disabledColor: disabledColor ?? kDefaultCupertinoFilledTintedButtonDisabledColor, ...)
+.compact => Chip(padding: padding ?? kDefaultCompactChipPadding, ...)
+.regular => Chip(padding: padding ?? kDefaultRegularChipPadding, ...)
 ```
 
 **Why.** 3 real wins:
@@ -539,21 +536,21 @@ enum CupertinoButtonVariant { normal, filled, tinted }
 - **Locality.** The default lives on the variant it describes. Adding a new variant requires picking
   a default, the const constructor parameter forces the choice at compile time. Top-level constants
   are easy to add then forget to plumb through.
-- **Discoverability.** A user hovering `CupertinoButtonVariant.filled` in the IDE sees
-  `defaultDisabledColor` in the same hovercard. Separate `kDefault…` constants are reachable only by
-  name.
-- **Build-site uniformity.** Every switch arm references the same expression
-  (`variant.defaultDisabledColor`). No per-arm constant lookup, no chance of pasting the wrong
-  constant into a new arm.
+- **Discoverability.** A user hovering `ChipDensity.compact` in the IDE sees `padding` in the same
+  hovercard. Separate `kDefault…` constants are reachable only by name.
+- **Build-site uniformity.** Every switch arm references the same expression (`density.padding`).
+  No per-arm constant lookup, no chance of pasting the wrong constant into a new arm.
 
 **When to reach for it.** The config is genuinely per-value *and* needed by the package's own code
 (build site, default-substitution, etc.). If the "default" is the same across every value, a single
 top-level constant suffices. If the config is purely external to the package (callers reach for it
 but the package never reads it), a constants module is fine.
 
-**Don't force it.** A discriminator-only variant enum (`MaterialButtonVariant`, where the package
-doesn't intercept any per-variant defaults, each underlying Material button has its own upstream
-defaults we pass straight through) stays plain. Adding empty enum fields for symmetry is ceremony.
+**Don't force it.** A discriminator-only enum (`PlatformActionKind`, which each component maps to
+its own look) stays plain. Adding empty enum fields for symmetry is ceremony. Nor does a shared enum
+carry one platform's config: `PlatformButtonEmphasis` holds nothing Cupertino-only, and
+`buildCupertino` picks Cupertino's default disabled colour with one exhaustive `switch` on it, so a
+new rank still has to choose one.
 
 <a id="navigator-maybeof-over-of"></a>
 ### `Navigator.maybeOf` over `Navigator.of` for fire-and-forget pops
