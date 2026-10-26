@@ -2,10 +2,12 @@
 // ignore_for_file: prefer-match-file-name
 
 import 'package:checks/checks.dart';
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoButton;
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show CupertinoButton, CupertinoNavigationBarBackButton;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:material_ui/material_ui.dart' show IconButton, Icons, TextButton;
+import 'package:material_ui/material_ui.dart'
+    show BackButton, DrawerButton, IconButton, Icons, TextButton;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 import '../support/support.dart';
@@ -14,6 +16,8 @@ const _share = 'Share';
 const _edit = 'Edit';
 const _save = 'Save';
 const _custom = 'Custom';
+const _first = 'First';
+const _drawer = 'Drawer';
 
 // ignore: no-empty-block, only where the action sits and how it looks matter here.
 void _ignore() {}
@@ -167,5 +171,64 @@ void main() {
         ).deepEquals(designLanguage == overridden ? {_custom} : {_share, _save});
       },
     );
+
+    scenarioOutlineWidgets<DesignLanguage>(
+      "puts one platform's own leading widget on its side only",
+      examples: {'Material': .material, 'Cupertino': .cupertino},
+      outline: (tester, given) async {
+        const custom = Text(_custom);
+        await _pump(
+          tester,
+          PlatformAppBar(
+            materialAppBarData: given == .material
+                ? const MaterialAppBarData(leading: custom)
+                : null,
+            cupertinoNavigationBarData: given == .cupertino
+                ? const CupertinoNavigationBarData(leading: custom)
+                : null,
+          ),
+        );
+
+        check(
+          because: designLanguage.name,
+          find.text(_custom).evaluate().isNotEmpty,
+        ).equals(designLanguage == given);
+      },
+    );
+
+    scenarioWidgets("goes back through the platform's own back button", (tester) async {
+      await pumpInPlatformScaffold(tester, const Text(_first));
+      Navigator.of(tester.element(find.text(_first))).push(
+        PageRouteBuilder<void>(
+          pageBuilder: (_, _, _) =>
+              const PlatformScaffold(appBarData: PlatformAppBar(), body: SizedBox()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(switch (designLanguage) {
+        .material => find.byType(BackButton),
+        .cupertino => find.byType(CupertinoNavigationBarBackButton),
+      });
+      await tester.pumpAndSettle();
+
+      check(find.text(_first).evaluate()).isNotEmpty();
+    });
+
+    scenarioWidgets("opens the drawer through Material's own drawer button", (tester) async {
+      await pumpPlatformWidget(
+        tester,
+        const PlatformScaffold(
+          appBarData: PlatformAppBar(),
+          materialScaffoldData: MaterialScaffoldData(drawer: Text(_drawer)),
+          body: SizedBox(),
+        ),
+      );
+
+      await tester.tap(find.byType(DrawerButton));
+      await tester.pumpAndSettle();
+
+      check(find.text(_drawer).evaluate()).isNotEmpty();
+    }, variant: androidOnly);
   });
 }
