@@ -19,6 +19,9 @@ import '/src/models/layout/platform_bar_action.dart';
 /// because a scaffold's bar slot wants a `PreferredSizeWidget` and a plain `StatelessWidget` isn't one.
 /// So there's no `build` here, just the 2 builders [PlatformScaffold] picks between.
 ///
+/// Guidelines: [M3 app bars](https://m3.material.io/components/app-bars/guidelines),
+/// [HIG toolbars](https://developer.apple.com/design/human-interface-guidelines/toolbars).
+///
 /// Example:
 /// {@example /example/lib/snippets/layout/platform_app_bar.dart#platform_app_bar}
 class const PlatformAppBar({

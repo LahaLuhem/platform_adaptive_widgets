@@ -280,8 +280,8 @@ a bug in the widget under edit.
 - **Offer only the values that draw differently** in a state the playground can reach. Leave the rest
   out with a one-line reason at the call site, like `TextAlign.left`, which draws like `start` with
   no right-to-left.
-- **Start a color knob unset**, with the "none" swatch (`ColorKnob.onCleared`), so the preview opens on
-  the platform's own colors. A set color can hide the platform's look, like M3's disabled switch.
+- **Start a color knob unset**, with the "none" swatch (`ColorKnob.onCleared`), so the preview opens
+  on the platform's own colors. A set color can hide the platform's look, like M3's disabled switch.
 
 ---
 
