@@ -16,9 +16,11 @@ class PlatformAppBarSnippet extends StatelessWidget {
       // #region platform_app_bar
       PlatformAppBar(
         title: const Text('My App'),
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () => Scaffold.of(context).openDrawer(),
+        materialAppBarData: MaterialAppBarData(
+          leading: IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
         ),
       );
   // #endregion

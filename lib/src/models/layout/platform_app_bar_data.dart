@@ -23,7 +23,7 @@ abstract class PlatformAppBarData {
 /// Cupertino nav bars lean translucent and Material app bars opaque, so a single colour rarely suits
 /// both.
 ///
-/// Everything else (title, leading, bottom, `automaticallyImplyLeading`, widgetKey) stays flat on `PlatformAppBar`.
+/// Everything else (title, actions, bottom, `automaticallyImplyLeading`, widgetKey) stays flat on `PlatformAppBar`.
 /// Private, never exported.
 abstract final class const _PlatformAppBarData({final Color? backgroundColor});
 
@@ -31,6 +31,10 @@ abstract final class const _PlatformAppBarData({final Color? backgroundColor});
 /// on `PlatformAppBar`.
 final class const MaterialAppBarData({
   super.backgroundColor,
+
+  /// Replaces the button the bar adds itself (back, close or the drawer's), for a widget only Material
+  /// puts there.
+  final Widget? leading,
 
   /// Replaces [PlatformAppBar.actions] and its `primaryAction` on Material, for a widget an action can't
   /// describe.
@@ -143,6 +147,10 @@ final class const CupertinoNavigationBarData({
 
   /// What the back button reads, instead of the previous route's title.
   final String? previousPageTitle,
+
+  /// Replaces the button the bar adds itself (back, or a full-screen dialog's Cancel), for a widget only
+  /// Cupertino puts there.
+  final Widget? leading,
 
   /// Replaces [PlatformAppBar.actions] and its `primaryAction` on Cupertino, for a widget an action
   /// can't describe.

@@ -35,10 +35,9 @@ class const PlatformAppBar({
 
   final Color? backgroundColor,
 
-  /// Before the title, usually a navigation or menu icon.
-  final Widget? leading,
-
-  /// Puts a back button in [leading]'s place when there's somewhere to go back to.
+  /// Lets each bar add its own way out before the title: back, a full-screen dialog's close or Cancel, or
+  /// Material's drawer button. `materialAppBarData.leading` or `cupertinoNavigationBarData.leading` take
+  /// its place on their side.
   final bool automaticallyImplyLeading = true,
 
   /// At the trailing edge, as each platform's own bar buttons. M3 asks for 2 at most on a phone, the HIG
@@ -59,7 +58,7 @@ class const PlatformAppBar({
   @override
   PreferredSizeWidget materialBuilder(BuildContext context) => AppBar(
     key: widgetKey,
-    leading: leading,
+    leading: materialAppBarData?.leading,
     title: title,
     backgroundColor: materialAppBarData?.backgroundColor ?? backgroundColor,
     automaticallyImplyLeading: automaticallyImplyLeading,
@@ -126,6 +125,7 @@ class const PlatformAppBar({
         CupertinoNavigationBarData.kTransitionBetweenRoutes;
     // Promoted to non-null inside the branches below, so no force-unwrap is needed there.
     final heroTag = cupertinoNavigationBarData?.heroTag;
+    final leading = cupertinoNavigationBarData?.leading;
     final trailing =
         cupertinoNavigationBarData?.trailing ??
         (actions.isEmpty && primaryAction == null
