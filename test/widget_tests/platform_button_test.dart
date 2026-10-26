@@ -6,7 +6,6 @@ import 'dart:math' as math;
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoButton, CupertinoColors, CupertinoThemeData;
-import 'package:flutter/semantics.dart' show SemanticsNode;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart' show Icons, Material;
@@ -137,13 +136,6 @@ _Drawn _drawn(WidgetTester tester) {
   );
 }
 
-// The buttons a screen reader would read out as [name], as a label or a tooltip.
-FinderBase<SemanticsNode> _buttonsNamed(String name) => find.semantics.byPredicate((node) {
-  final data = node.getSemanticsData();
-
-  return data.flagsCollection.isButton && (data.label == name || data.tooltip == name);
-});
-
 // How much color it adds over a white page.
 double _chroma(Color color) {
   final channels = [color.r, color.g, color.b];
@@ -232,7 +224,7 @@ void main() {
         final semantics = tester.ensureSemantics();
         await _pump(tester, _Button(emphasis, shape: .iconOnly));
 
-        check(_buttonsNamed(_label).evaluate()).isNotEmpty();
+        check(buttonsNamed(_label).evaluate()).isNotEmpty();
         semantics.dispose();
       },
     );

@@ -2,11 +2,12 @@
 library;
 
 import 'package:cupertino_ui/cupertino_ui.dart'
-    show CupertinoNavigationBar, ObstructingPreferredSizeWidget;
+    show CupertinoButton, CupertinoNavigationBar, ObstructingPreferredSizeWidget;
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart' show AppBar;
+import 'package:material_ui/material_ui.dart' show AppBar, IconButton, TextButton;
 
 import '/src/models/layout/platform_app_bar_data.dart';
+import '/src/models/layout/platform_bar_action.dart';
 
 /// `AppBar` on Material, `CupertinoNavigationBar` on Cupertino.
 ///
@@ -40,6 +41,15 @@ class const PlatformAppBar({
   /// Puts a back button in [leading]'s place when there's somewhere to go back to.
   final bool automaticallyImplyLeading = true,
 
+  /// At the trailing edge, as each platform's own bar buttons. M3 asks for 2 at most on a phone, the HIG
+  /// for few. Set, `materialAppBarData.actions` or `cupertinoNavigationBarData.trailing` replace these and
+  /// [primaryAction] on their side.
+  final List<PlatformBarAction> actions = const [],
+
+  /// The action that finishes the screen, like Done or Save. It goes last, at the trailing edge, and
+  /// Cupertino draws its text semibold, as iOS does.
+  final PlatformBarAction? primaryAction,
+
   /// Under the bar, usually tabs.
   final PreferredSizeWidget? bottom,
 }) implements PlatformAppBarData {
@@ -54,7 +64,12 @@ class const PlatformAppBar({
     backgroundColor: materialAppBarData?.backgroundColor ?? backgroundColor,
     automaticallyImplyLeading: automaticallyImplyLeading,
     bottom: bottom,
-    actions: materialAppBarData?.actions,
+    actions:
+        materialAppBarData?.actions ??
+        [
+          for (final action in actions) _MaterialBarAction(action),
+          if (primaryAction case final primary?) _MaterialBarAction(primary),
+        ],
     automaticallyImplyActions:
         materialAppBarData?.automaticallyImplyActions ??
         MaterialAppBarData.kAutomaticallyImplyActions,
@@ -111,6 +126,20 @@ class const PlatformAppBar({
         CupertinoNavigationBarData.kTransitionBetweenRoutes;
     // Promoted to non-null inside the branches below, so no force-unwrap is needed there.
     final heroTag = cupertinoNavigationBarData?.heroTag;
+    final trailing =
+        cupertinoNavigationBarData?.trailing ??
+        (actions.isEmpty && primaryAction == null
+            ? null
+            : Row(
+                mainAxisSize: .min,
+                // UIKit's gap between bar items.
+                spacing: 8,
+                children: [
+                  for (final action in actions) _CupertinoBarAction(action),
+                  if (primaryAction case final primary?)
+                    _CupertinoBarAction(primary, isPrimary: true),
+                ],
+              ));
 
     if (cupertinoNavigationBarData?.large ?? CupertinoNavigationBarData.kLarge) {
       return heroTag == null
@@ -121,7 +150,7 @@ class const PlatformAppBar({
               automaticallyImplyLeading: automaticallyImplyLeading,
               automaticallyImplyTitle: automaticallyImplyMiddle,
               previousPageTitle: cupertinoNavigationBarData?.previousPageTitle,
-              trailing: cupertinoNavigationBarData?.trailing,
+              trailing: trailing,
               border: cupertinoNavigationBarData?.border,
               backgroundColor: resolvedBackgroundColor,
               automaticBackgroundVisibility: automaticBackgroundVisibility,
@@ -138,7 +167,7 @@ class const PlatformAppBar({
               automaticallyImplyLeading: automaticallyImplyLeading,
               automaticallyImplyTitle: automaticallyImplyMiddle,
               previousPageTitle: cupertinoNavigationBarData?.previousPageTitle,
-              trailing: cupertinoNavigationBarData?.trailing,
+              trailing: trailing,
               border: cupertinoNavigationBarData?.border,
               backgroundColor: resolvedBackgroundColor,
               automaticBackgroundVisibility: automaticBackgroundVisibility,
@@ -161,7 +190,7 @@ class const PlatformAppBar({
             bottom: bottom,
             automaticallyImplyMiddle: automaticallyImplyMiddle,
             previousPageTitle: cupertinoNavigationBarData?.previousPageTitle,
-            trailing: cupertinoNavigationBarData?.trailing,
+            trailing: trailing,
             border: cupertinoNavigationBarData?.border,
             automaticBackgroundVisibility: automaticBackgroundVisibility,
             enableBackgroundFilterBlur: enableBackgroundFilterBlur,
@@ -178,7 +207,7 @@ class const PlatformAppBar({
             bottom: bottom,
             automaticallyImplyMiddle: automaticallyImplyMiddle,
             previousPageTitle: cupertinoNavigationBarData?.previousPageTitle,
-            trailing: cupertinoNavigationBarData?.trailing,
+            trailing: trailing,
             border: cupertinoNavigationBarData?.border,
             automaticBackgroundVisibility: automaticBackgroundVisibility,
             enableBackgroundFilterBlur: enableBackgroundFilterBlur,
@@ -187,5 +216,36 @@ class const PlatformAppBar({
             transitionBetweenRoutes: transitionBetweenRoutes,
             heroTag: heroTag,
           );
+  }
+}
+
+// Each platform's own bar button, not a PlatformButton, which is sized to stand alone.
+class const _MaterialBarAction(final PlatformBarAction action) extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final onPressed = action.isEnabled ? action.onPressed : null;
+    final icon = action.icon;
+
+    return icon == null
+        ? TextButton(onPressed: onPressed, child: Text(action.label))
+        : IconButton(onPressed: onPressed, tooltip: action.label, icon: icon);
+  }
+}
+
+class const _CupertinoBarAction(final PlatformBarAction action, {final bool isPrimary = false})
+    extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final icon = action.icon;
+
+    return CupertinoButton(
+      // Flush, like cupertino_ui's own bar buttons. Any padding squeezes the content in a 44pt bar.
+      padding: EdgeInsets.zero,
+      onPressed: action.isEnabled ? action.onPressed : null,
+      child: icon == null
+          ? Text(action.label, style: isPrimary ? const TextStyle(fontWeight: .w600) : null)
+          // The label names it, in place of anything the icon says about itself.
+          : Semantics(label: action.label, excludeSemantics: true, child: icon),
+    );
   }
 }

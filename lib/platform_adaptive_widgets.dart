@@ -26,6 +26,7 @@ export 'src/models/interaction/platform_switch_data.dart';
 export 'src/models/interaction/platform_text_field_data.dart';
 export 'src/models/layout/platform_app_bar_data.dart';
 export 'src/models/layout/platform_app_data.dart';
+export 'src/models/layout/platform_bar_action.dart';
 export 'src/models/layout/platform_scaffold_data.dart';
 export 'src/models/layout/platform_tab_scaffold_data.dart';
 export 'src/models/painting/platform_list_tile_data.dart';
