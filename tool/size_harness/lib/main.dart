@@ -25,6 +25,12 @@ class _Surfaces extends StatelessWidget {
     children: [
       // PlatformWidgetBase virtual dispatch.
       PlatformButton(onPressed: () {}, emphasis: .medium, child: const Text('platform button')),
+      PlatformButton.iconOnly(
+        onPressed: () {},
+        emphasis: .low,
+        icon: const Icon(Icons.share),
+        label: 'share',
+      ),
       const PlatformProgressBar(value: 0.3),
       PlatformMenuPicker<int>(
         items: List.generate(

@@ -11,9 +11,9 @@ final class ContainersDemoViewModel extends ViewModel {
 
   var _shouldEnableListTile = true;
   double _listTileLeadingWidth = 40;
-  var _listTileColor = const Color(0xFFFFFFFF);
-  var _listTileIconColor = const Color(0xFF2196F3);
-  var _listTileTextColor = const Color(0xFF000000);
+  Color? _listTileColor;
+  Color? _listTileIconColor;
+  Color? _listTileTextColor;
   var _listTileTitleAlignment = ListTileTitleAlignment.threeLine;
 
   var _shouldShowScrollbarThumb = true;
@@ -23,25 +23,25 @@ final class ContainersDemoViewModel extends ViewModel {
   var _scrollAxis = Axis.vertical;
   var _scrollbarOrientation = ScrollbarOrientation.right;
 
-  var _progressColor = const Color(0xFF2196F3);
+  Color? _progressColor;
   var _progressValue = 0.3;
   double _progressStrokeWidth = 4;
   var _shouldAnimateProgress = true;
   double _progressRadius = 10;
 
   var _shouldShowExpansionTrailingIcon = true;
-  var _expansionTextColor = const Color(0xFF000000);
-  var _expansionIconColor = const Color(0xFF2196F3);
+  Color? _expansionTextColor;
+  Color? _expansionIconColor;
 
   bool get shouldEnableListTile => _shouldEnableListTile;
 
   double get listTileLeadingWidth => _listTileLeadingWidth;
 
-  Color get listTileColor => _listTileColor;
+  Color? get listTileColor => _listTileColor;
 
-  Color get listTileIconColor => _listTileIconColor;
+  Color? get listTileIconColor => _listTileIconColor;
 
-  Color get listTileTextColor => _listTileTextColor;
+  Color? get listTileTextColor => _listTileTextColor;
 
   ListTileTitleAlignment get listTileTitleAlignment => _listTileTitleAlignment;
 
@@ -68,7 +68,7 @@ final class ContainersDemoViewModel extends ViewModel {
     .horizontal => const [.top, .bottom],
   };
 
-  Color get progressColor => _progressColor;
+  Color? get progressColor => _progressColor;
 
   double get progressValue => _progressValue;
 
@@ -80,9 +80,9 @@ final class ContainersDemoViewModel extends ViewModel {
 
   bool get shouldShowExpansionTrailingIcon => _shouldShowExpansionTrailingIcon;
 
-  Color get expansionTextColor => _expansionTextColor;
+  Color? get expansionTextColor => _expansionTextColor;
 
-  Color get expansionIconColor => _expansionIconColor;
+  Color? get expansionIconColor => _expansionIconColor;
 
   void onListTileEnabledToggled({required bool value}) {
     _shouldEnableListTile = value;
@@ -94,17 +94,17 @@ final class ContainersDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
-  void onListTileColorSelected(Color color) {
+  void onListTileColorSelected(Color? color) {
     _listTileColor = color;
     notifyListeners();
   }
 
-  void onListTileIconColorSelected(Color color) {
+  void onListTileIconColorSelected(Color? color) {
     _listTileIconColor = color;
     notifyListeners();
   }
 
-  void onListTileTextColorSelected(Color color) {
+  void onListTileTextColorSelected(Color? color) {
     _listTileTextColor = color;
     notifyListeners();
   }
@@ -146,7 +146,7 @@ final class ContainersDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
-  void onProgressColorSelected(Color color) {
+  void onProgressColorSelected(Color? color) {
     _progressColor = color;
     notifyListeners();
   }
@@ -176,12 +176,12 @@ final class ContainersDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
-  void onExpansionTextColorSelected(Color color) {
+  void onExpansionTextColorSelected(Color? color) {
     _expansionTextColor = color;
     notifyListeners();
   }
 
-  void onExpansionIconColorSelected(Color color) {
+  void onExpansionIconColorSelected(Color? color) {
     _expansionIconColor = color;
     notifyListeners();
   }

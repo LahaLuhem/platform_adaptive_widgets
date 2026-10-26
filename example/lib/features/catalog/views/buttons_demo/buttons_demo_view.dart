@@ -4,12 +4,14 @@ import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
+import '/features/catalog/data/enums/button_shape.dart';
 import '/features/catalog/widgets/demo_card.dart';
 import '/features/catalog/widgets/property_editor/bool_knob.dart';
 import '/features/catalog/widgets/property_editor/color_knob.dart';
 import '/features/catalog/widgets/property_editor/double_knob.dart';
 import '/features/catalog/widgets/property_editor/enum_knob.dart';
 import '/features/catalog/widgets/property_editor/property_editor.dart';
+import '/features/catalog/widgets/property_editor/segment_knob.dart';
 import 'buttons_demo_view_model.dart';
 
 /// A live `PlatformButton` playground. Only Cupertino gets a platform panel here, since Material puts
@@ -27,6 +29,10 @@ class ButtonsDemoView extends StatelessWidget {
         pressedOpacity: viewModel.cupertinoPressedOpacity,
         sizeStyle: viewModel.cupertinoSizeStyle,
       );
+      final addIcon = Icon(
+        context.platformIcon(material: Icons.add, cupertino: CupertinoIcons.add),
+      );
+      Future<void> onPressed() => viewModel.onButtonPressed('Playground');
 
       return Column(
         crossAxisAlignment: .stretch,
@@ -34,26 +40,37 @@ class ButtonsDemoView extends StatelessWidget {
         children: [
           DemoCard(
             title: 'PlatformButton',
-            description: 'Ranks the same on Material and Cupertino, from high to low.',
+            description:
+                'Ranks the same on both platforms. A delete or a discard turns red on Cupertino.',
             child: PropertyEditor(
-              preview: viewModel.shouldUseIcon
-                  ? PlatformButton.icon(
-                      onPressed: () => viewModel.onButtonPressed('Playground'),
-                      isEnabled: viewModel.shouldEnable,
-                      emphasis: viewModel.emphasis,
-                      cupertinoButtonData: cupertinoData,
-                      icon: Icon(
-                        context.platformIcon(material: Icons.add, cupertino: CupertinoIcons.add),
-                      ),
-                      label: const Text('Add'),
-                    )
-                  : PlatformButton(
-                      onPressed: () => viewModel.onButtonPressed('Playground'),
-                      isEnabled: viewModel.shouldEnable,
-                      emphasis: viewModel.emphasis,
-                      cupertinoButtonData: cupertinoData,
-                      child: const Text('Button'),
-                    ),
+              preview: switch (viewModel.shape) {
+                .child => PlatformButton(
+                  onPressed: onPressed,
+                  isEnabled: viewModel.shouldEnable,
+                  emphasis: viewModel.emphasis,
+                  actionKind: viewModel.actionKind,
+                  cupertinoButtonData: cupertinoData,
+                  child: const Text('Button'),
+                ),
+                .icon => PlatformButton.icon(
+                  onPressed: onPressed,
+                  isEnabled: viewModel.shouldEnable,
+                  emphasis: viewModel.emphasis,
+                  actionKind: viewModel.actionKind,
+                  cupertinoButtonData: cupertinoData,
+                  icon: addIcon,
+                  label: const Text('Add'),
+                ),
+                .iconOnly => PlatformButton.iconOnly(
+                  onPressed: onPressed,
+                  isEnabled: viewModel.shouldEnable,
+                  emphasis: viewModel.emphasis,
+                  actionKind: viewModel.actionKind,
+                  cupertinoButtonData: cupertinoData,
+                  icon: addIcon,
+                  label: 'Add',
+                ),
+              },
               knobs: [
                 EnumKnob<PlatformButtonEmphasis>(
                   label: 'emphasis',
@@ -66,13 +83,21 @@ class ButtonsDemoView extends StatelessWidget {
                   value: viewModel.shouldEnable,
                   onChanged: (value) => viewModel.onEnabledToggled(value: value),
                 ),
-                BoolKnob(
-                  label: 'icon + label',
-                  value: viewModel.shouldUseIcon,
-                  onChanged: (value) => viewModel.onUseIconToggled(value: value),
+                SegmentKnob<ButtonShape>(
+                  label: 'shape',
+                  value: viewModel.shape,
+                  values: ButtonShape.values,
+                  onChanged: viewModel.onShapeChanged,
                 ),
               ],
               cupertinoKnobs: [
+                SegmentKnob<PlatformActionKind>(
+                  label: 'actionKind',
+                  value: viewModel.actionKind,
+                  // A discard draws like a delete here. The alert card shows where they differ.
+                  values: const [.normal, .delete],
+                  onChanged: viewModel.onActionKindChanged,
+                ),
                 ColorKnob(
                   label: 'color',
                   value: viewModel.cupertinoColor,

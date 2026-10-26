@@ -3,11 +3,14 @@ import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
+import '/features/catalog/data/enums/button_shape.dart';
+
 /// The Buttons playground's editable state. The `cupertino…` fields feed `cupertinoButtonData`.
 final class ButtonsDemoViewModel extends ViewModel {
   var _shouldEnable = true;
-  var _shouldUseIcon = false;
+  var _shape = ButtonShape.child;
   var _emphasis = PlatformButtonEmphasis.high;
+  var _actionKind = PlatformActionKind.normal;
 
   Color? _cupertinoColor;
   Color? _cupertinoForegroundColor;
@@ -16,9 +19,11 @@ final class ButtonsDemoViewModel extends ViewModel {
 
   bool get shouldEnable => _shouldEnable;
 
-  bool get shouldUseIcon => _shouldUseIcon;
+  ButtonShape get shape => _shape;
 
   PlatformButtonEmphasis get emphasis => _emphasis;
+
+  PlatformActionKind get actionKind => _actionKind;
 
   Color? get cupertinoColor => _cupertinoColor;
 
@@ -36,13 +41,18 @@ final class ButtonsDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
-  void onUseIconToggled({required bool value}) {
-    _shouldUseIcon = value;
+  void onShapeChanged(ButtonShape shape) {
+    _shape = shape;
     notifyListeners();
   }
 
   void onEmphasisSelected(PlatformButtonEmphasis emphasis) {
     _emphasis = emphasis;
+    notifyListeners();
+  }
+
+  void onActionKindChanged(PlatformActionKind actionKind) {
+    _actionKind = actionKind;
     notifyListeners();
   }
 
