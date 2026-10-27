@@ -9,7 +9,8 @@
 /// @docImport '/src/widgets/interaction/platform_text_field.dart';
 library;
 
-import 'package:cupertino_ui/cupertino_ui.dart' show OverlayVisibilityMode;
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show CupertinoColors, CupertinoDynamicColor, OverlayVisibilityMode;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show InputCounterWidgetBuilder, InputDecoration;
 
@@ -22,6 +23,25 @@ const kDefaultMaterialTextFieldCanRequestFocus = true;
 
 /// Default value for [MaterialTextFieldData.onTapAlwaysCalled]. Matches upstream.
 const kDefaultMaterialTextFieldOnTapAlwaysCalled = false;
+
+/// Default value for [CupertinoTextFieldData.decoration]. Matches upstream `CupertinoTextField`'s rounded border,
+/// which it keeps private.
+const kDefaultCupertinoTextFieldDecoration = BoxDecoration(
+  color: CupertinoDynamicColor.withBrightness(
+    color: CupertinoColors.white,
+    darkColor: CupertinoColors.black,
+  ),
+  border: Border.fromBorderSide(
+    BorderSide(
+      color: CupertinoDynamicColor.withBrightness(
+        color: Color(0x33000000),
+        darkColor: Color(0x33FFFFFF),
+      ),
+      width: 0,
+    ),
+  ),
+  borderRadius: BorderRadius.all(Radius.circular(5)),
+);
 
 /// Default value for [CupertinoTextFieldData.clearButtonMode]. Matches upstream `CupertinoTextField.clearButtonMode`.
 const kDefaultCupertinoTextFieldClearButtonMode = OverlayVisibilityMode.never;
@@ -83,7 +103,7 @@ final class const MaterialTextFieldData({
 /// [placeholder], [prefix] and [suffix] here are for when Cupertino wants something different, shorter
 /// copy say, and they beat the flat ones when set.
 final class const CupertinoTextFieldData({
-  /// Left out, you get Cupertino's rounded rectangle border.
+  /// Left out, you get Cupertino's rounded rectangle border. `BoxDecoration()` draws none.
   final BoxDecoration? decoration,
 
   /// When the clear (x) button shows up. Never, out of the box.
