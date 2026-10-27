@@ -25,22 +25,28 @@ class DialogsDemoView extends StatelessWidget {
       spacing: 16,
       children: [
         DemoCard(
-          title: 'Dialog',
+          title: 'Sheet',
           description:
-              'A centered modal, showDialog on Material, showCupertinoDialog on Cupertino. '
-              'Raw leaves out the card around the content.',
+              "M3's bottom sheet on Material, a sheet on Cupertino. Type a name, then close it without "
+              'saving, and it asks first.',
+          child: PlatformButton(
+            onPressed: viewModel.onShowSheetPressed,
+            emphasis: .medium,
+            child: const Text('New list'),
+          ),
+        ),
+        DemoCard(
+          title: 'Raw dialog',
+          description:
+              'A centered modal with no card around the content, showDialog on Material, '
+              'showCupertinoDialog on Cupertino.',
           child: PropertyEditor(
             preview: PlatformButton(
-              onPressed: viewModel.onShowDialogPressed,
+              onPressed: viewModel.onShowRawDialogPressed,
               emphasis: .medium,
               child: const Text('Show dialog'),
             ),
             knobs: [
-              BoolKnob(
-                label: 'raw',
-                value: viewModel.isDialogRaw,
-                onChanged: (value) => viewModel.onDialogRawToggled(value: value),
-              ),
               BoolKnob(
                 label: 'barrierDismissible',
                 value: viewModel.shouldDismissDialogOnBarrierTap,
@@ -124,24 +130,14 @@ class DialogsDemoView extends StatelessWidget {
           ),
         ),
         DemoCard(
-          title: 'Modal bottom sheet',
+          title: 'Raw bottom sheet',
           description:
-              'Slides up from the bottom of the screen. Raw leaves out the surface on Cupertino, '
-              'Material keeps its native sheet.',
-          child: PropertyEditor(
-            preview: PlatformButton(
-              onPressed: viewModel.onShowBottomSheetPressed,
-              emphasis: .medium,
-              child: const Text('Show bottom sheet'),
-            ),
-            knobs: const [],
-            cupertinoKnobs: [
-              BoolKnob(
-                label: 'raw',
-                value: viewModel.isSheetRaw,
-                onChanged: (value) => viewModel.onSheetRawToggled(value: value),
-              ),
-            ],
+              'Slides up from the bottom of the screen. Material keeps its own sheet, while Cupertino '
+              'gets no surface around the content.',
+          child: PlatformButton(
+            onPressed: viewModel.onShowRawBottomSheetPressed,
+            emphasis: .medium,
+            child: const Text('Show bottom sheet'),
           ),
         ),
         DemoCard(
