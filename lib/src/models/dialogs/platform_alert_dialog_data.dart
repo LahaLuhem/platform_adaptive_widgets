@@ -5,7 +5,6 @@
 
 /// @docImport 'package:cupertino_ui/cupertino_ui.dart';
 /// @docImport 'package:material_ui/material_ui.dart';
-/// @docImport '/src/widgets/dialogs/platform_dialog.dart';
 library;
 
 import 'package:flutter/widgets.dart';
@@ -28,10 +27,6 @@ const kDefaultCupertinoAlertDialogInsetAnimationCurve = Curves.decelerate;
 
 /// Material-side settings for `showPlatformAcknowledge` and `showPlatformConfirm`, passed as
 /// `materialAlertDialogData`.
-///
-/// Not the same thing as `MaterialDialogData`, which styles the [Dialog] that `showPlatformDialog` wraps
-/// around your content. [AlertDialog] already is a Dialog, so nothing wraps it and that surface never
-/// comes into play here.
 final class const MaterialAlertDialogData({
   /// Sits above the title.
   final Widget? icon,

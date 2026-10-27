@@ -51,7 +51,7 @@ base class const MaterialScaffoldData({
 
   final void Function(bool)? onEndDrawerChanged,
 
-  /// A sheet that stays put, unlike the one `showPlatformModalBottomSheet` puts up.
+  /// A sheet that stays put, unlike the one `showPlatformSheet` puts up.
   final Widget? bottomSheet,
 
   /// `CupertinoPageScaffold` has no such slot. For a Cupertino tab bar reach for `PlatformTabScaffold`,

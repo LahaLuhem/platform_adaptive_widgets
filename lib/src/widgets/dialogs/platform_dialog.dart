@@ -1,9 +1,8 @@
 /// @docImport 'package:cupertino_ui/cupertino_ui.dart';
-/// @docImport '/src/widgets/dialogs/platform_alert_dialog.dart';
 /// @docImport '/src/widgets/dialogs/platform_sheet.dart';
 library;
 
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoPageRoute, CupertinoPopupSurface;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoPageRoute;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Dialog;
 
@@ -13,93 +12,6 @@ import '/src/models/layout/platform_app_bar_data.dart';
 import '/src/utils/design_language.dart';
 import '/src/widgets/layout/platform_scaffold.dart';
 import 'dialog_routes.dart';
-
-/// Shows a centred modal dialog, wrapping your content in a [Dialog] on Material and a [CupertinoPopupSurface]
-/// on Cupertino. Want to bring your own surface, or none at all? That's [showPlatformRawDialog].
-///
-/// Give it content that sizes itself, a [Column] with `mainAxisSize: .min` say. The Cupertino route
-/// hands the builder the whole screen, so anything unbounded stretches the card to fill it.
-///
-/// **On Cupertino, tapping outside does nothing by default.** That matches the HIG, where an alert closes
-/// from a button rather than a tap outside, and there's no system back button to fall back on. So your
-/// content needs its own way out, or the dialog is a dead end. `barrierDismissible: true` opts out.
-///
-/// Full-screen is [showPlatformFullscreenDialog].
-///
-/// Either pass [builder] for content shared across both, or pass [materialBuilder] and [cupertinoBuilder]
-/// together. Mixing the 2 trips an assert.
-///
-/// [materialDialogData] tunes the Material side. There's no Cupertino equivalent, since [showCupertinoDialog]
-/// takes nothing beyond the flat args already here.
-///
-/// Example:
-/// {@example /example/lib/snippets/dialogs/platform_dialog.dart#platform_dialog}
-Future<T?> showPlatformDialog<T>({
-  required BuildContext context,
-  WidgetBuilder? builder,
-  WidgetBuilder? materialBuilder,
-  WidgetBuilder? cupertinoBuilder,
-  Offset? anchorPoint,
-  Color? barrierColor,
-  bool? barrierDismissible,
-  String? barrierLabel,
-  RouteSettings? routeSettings,
-  bool useRootNavigator = kDefaultUseRootNavigator,
-  bool? requestFocus,
-  MaterialDialogData? materialDialogData,
-}) {
-  _assertBuilderInvariant(
-    hasBuilder: builder != null,
-    hasMaterialBuilder: materialBuilder != null,
-    hasCupertinoBuilder: cupertinoBuilder != null,
-  );
-
-  return switch (designLanguage) {
-    .material => showMaterialDialogRoute(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: materialDialogData?.backgroundColor,
-        insetAnimationDuration:
-            materialDialogData?.insetAnimationDuration ??
-            kDefaultMaterialDialogInsetAnimationDuration,
-        insetAnimationCurve:
-            materialDialogData?.insetAnimationCurve ?? kDefaultMaterialDialogInsetAnimationCurve,
-        semanticsRole: materialDialogData?.semanticsRole ?? kDefaultMaterialDialogSemanticsRole,
-        alignment: materialDialogData?.alignment,
-        shape: materialDialogData?.shape,
-        clipBehavior: materialDialogData?.clipBehavior,
-        constraints: materialDialogData?.constraints,
-        elevation: materialDialogData?.elevation,
-        insetPadding: materialDialogData?.insetPadding,
-        shadowColor: materialDialogData?.shadowColor,
-        surfaceTintColor: materialDialogData?.surfaceTintColor,
-        child: (materialBuilder ?? builder!)(context),
-      ),
-      isFullscreenRoute: false,
-      anchorPoint: anchorPoint,
-      barrierColor: barrierColor,
-      barrierDismissible: barrierDismissible,
-      barrierLabel: barrierLabel,
-      routeSettings: routeSettings,
-      useRootNavigator: useRootNavigator,
-      requestFocus: requestFocus,
-      animationStyle: materialDialogData?.animationStyle,
-      traversalEdgeBehavior: materialDialogData?.traversalEdgeBehavior,
-      useSafeArea: materialDialogData?.useSafeArea ?? kDefaultMaterialDialogUseSafeArea,
-    ),
-    .cupertino => showCupertinoDialogRoute(
-      context: context,
-      builder: _cupertinoDialogSurface(cupertinoBuilder ?? builder!),
-      anchorPoint: anchorPoint,
-      barrierColor: barrierColor,
-      barrierDismissible: barrierDismissible,
-      barrierLabel: barrierLabel,
-      routeSettings: routeSettings,
-      useRootNavigator: useRootNavigator,
-      requestFocus: requestFocus,
-    ),
-  };
-}
 
 /// Shows a full-screen modal dialog: [Dialog.fullscreen] on Material, a full-screen [CupertinoPageRoute]
 /// on Cupertino. It's for long or multistep tasks. Extra content or a short task fits [showPlatformSheet].
@@ -111,9 +23,6 @@ Future<T?> showPlatformDialog<T>({
 ///
 /// Both builders get the dialog's own context, so an action in the bar, like a Save, closes this dialog
 /// through it, whichever navigator opened it.
-///
-/// [MaterialFullscreenDialogData] only carries the fields [Dialog.fullscreen] honours, so a centred
-/// dialog's knobs can't be passed here and quietly do nothing.
 ///
 /// Guidelines: [M3 full-screen dialogs](https://m3.material.io/components/dialogs/guidelines),
 /// [HIG full-screen modals](https://developer.apple.com/design/human-interface-guidelines/modality#Best-practices).
@@ -175,13 +84,14 @@ Future<T?> showPlatformFullscreenDialog<T>({
 
 /// Shows a modal dialog with no surface wrapped around your content at all. You get the platform's barrier
 /// and transition, and everything inside is yours: a floating image, a hand-painted card, an onboarding
-/// coachmark.
+/// coachmark. Content or a short task fits [showPlatformSheet] instead.
 ///
-/// Worth reaching for when [showPlatformDialog]'s card is in the way, say when you're dropping in your
-/// own [CupertinoAlertDialog] and don't want it double-wrapped, or going edge to edge.
+/// **On Cupertino, tapping outside does nothing by default.** That matches the HIG, where an alert closes
+/// from a button rather than a tap outside, and there's no system back button to fall back on. So your
+/// content needs its own way out, or the dialog is a dead end. `barrierDismissible: true` opts out.
 ///
-/// Builder selection and the Cupertino dismissal caveat work exactly as in [showPlatformDialog]. No
-/// `materialDialogData` here, since there's no [Dialog] left to configure.
+/// Either pass [builder] for content shared across both, or pass [materialBuilder] and [cupertinoBuilder]
+/// together. Mixing the 2 trips an assert.
 Future<T?> showPlatformRawDialog<T>({
   required BuildContext context,
   WidgetBuilder? builder,
@@ -268,12 +178,3 @@ Future<T?> _showCupertinoFullscreenDialog<T>({
     fullscreenDialog: true,
   ),
 );
-
-/// Cupertino's answer to the [Dialog] the Material branch wraps on. [showCupertinoDialog]'s route only
-/// paints the barrier and runs the transition, so without this the content floats on the dim with no
-/// card.
-///
-/// Kept out of [showCupertinoDialogRoute] because [showPlatformAlertDialog] brings its own surface and would
-/// end up double-wrapped.
-WidgetBuilder _cupertinoDialogSurface(WidgetBuilder content) =>
-    (context) => Center(child: CupertinoPopupSurface(child: content(context)));

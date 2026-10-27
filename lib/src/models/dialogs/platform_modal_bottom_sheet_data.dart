@@ -1,4 +1,4 @@
-// Per-platform records for showPlatformModalBottomSheet (no shared private
+// Per-platform records for showPlatformRawModalBottomSheet (no shared private
 // base. Material's showModalBottomSheet and Cupertino's showCupertinoModalPopup
 // have only a small set of overlapping show-function args that live as flat
 // parameters. Everything else is platform-only).
@@ -33,7 +33,7 @@ const kDefaultMaterialModalBottomSheetUseSafeArea = false;
 /// default.
 const kDefaultCupertinoModalPopupSemanticsDismissible = false;
 
-/// Material-side settings for `showPlatformModalBottomSheet`, passed as `materialModalBottomSheetData`.
+/// Material-side settings for `showPlatformRawModalBottomSheet`, passed as `materialModalBottomSheetData`.
 /// None of it reaches Cupertino, where `showCupertinoModalPopup` is a far plainer thing with its own
 /// fields on [CupertinoModalPopupData].
 final class const MaterialModalBottomSheetData({
@@ -70,11 +70,11 @@ final class const MaterialModalBottomSheetData({
 
   final AnimationStyle? sheetAnimationStyle,
 }) {
-  /// Creates Material-side settings for `showPlatformModalBottomSheet`.
+  /// Creates Material-side settings for `showPlatformRawModalBottomSheet`.
   this;
 }
 
-/// Cupertino-side settings for `showPlatformModalBottomSheet`, passed as `cupertinoModalPopupData`.
+/// Cupertino-side settings for `showPlatformRawModalBottomSheet`, passed as `cupertinoModalPopupData`.
 final class const CupertinoModalPopupData({
   /// Usually a Gaussian blur, for the frosted glass look iOS goes in for.
   final ImageFilter? filter,
@@ -82,6 +82,6 @@ final class const CupertinoModalPopupData({
   /// Lets a screen reader close the popup from outside it too.
   final bool semanticsDismissible = kDefaultCupertinoModalPopupSemanticsDismissible,
 }) {
-  /// Creates Cupertino-side settings for `showPlatformModalBottomSheet`.
+  /// Creates Cupertino-side settings for `showPlatformRawModalBottomSheet`.
   this;
 }

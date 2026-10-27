@@ -50,16 +50,22 @@ class _Surfaces extends StatelessWidget {
         },
       ),
 
-      // showPlatformDialog, top-level switch dispatch.
+      // showPlatformSheet, top-level switch dispatch. The guard reaches the confirm's switch too.
       TextButton(
-        onPressed: () => showPlatformDialog<void>(
+        onPressed: () => showPlatformSheet<void>(
           context: context,
-          materialBuilder: (_) => const AlertDialog(content: Text('m')),
-          // Not a Cupertino widget: one in a closure stays in the Android build and hides a leak of the
-          // same widgets.
-          cupertinoBuilder: (_) => const Text('c'),
+          appBarBuilder: (_) => PlatformAppBar(
+            title: const Text('title'),
+            primaryAction: PlatformBarAction(label: 'save', onPressed: () {}),
+          ),
+          unsavedChanges: PlatformUnsavedChanges(
+            hasChanges: () => true,
+            message: 'discard?',
+            discardLabel: 'discard',
+          ),
+          builder: (_) => const Text('sheet'),
         ),
-        child: const Text('dialog'),
+        child: const Text('sheet'),
       ),
 
       // showPlatformFullscreenDialog, top-level switch dispatch. Its bar builds both kinds of action.
@@ -118,15 +124,6 @@ class _Surfaces extends StatelessWidget {
           initialTime: const TimeOfDay(hour: 12, minute: 0),
         ),
         child: const Text('time'),
-      ),
-
-      // showPlatformModalBottomSheet, single inline switch.
-      TextButton(
-        onPressed: () => showPlatformModalBottomSheet<void>(
-          context: context,
-          builder: (_) => const Text('sheet'),
-        ),
-        child: const Text('sheet'),
       ),
 
       // showPlatformChoices, top-level switch dispatch.
