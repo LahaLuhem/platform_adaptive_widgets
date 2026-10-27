@@ -1,13 +1,19 @@
 // Named after what it tests, not after its helper class.
 // ignore_for_file: prefer-match-file-name
 
+import 'dart:async';
+
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart'
-    show CupertinoButton, CupertinoNavigationBarBackButton;
+    show
+        CupertinoButton,
+        CupertinoLocalizations,
+        CupertinoNavigationBarBackButton,
+        CupertinoSheetRoute;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart'
-    show BackButton, DrawerButton, IconButton, Icons, TextButton;
+    show BackButton, CloseButton, DrawerButton, IconButton, Icons, TextButton, showModalBottomSheet;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 import '../support/support.dart';
@@ -21,6 +27,12 @@ const _drawer = 'Drawer';
 
 // ignore: no-empty-block, only where the action sits and how it looks matter here.
 void _ignore() {}
+
+const _sheetBody = Key('sheet body');
+const _sheetPage = PlatformScaffold(
+  appBarData: PlatformAppBar(),
+  body: SizedBox(key: _sheetBody),
+);
 
 const _shareAction = PlatformBarAction(label: _share, icon: Icon(Icons.share), onPressed: _ignore);
 const _editAction = PlatformBarAction(label: _edit, onPressed: _ignore);
@@ -45,6 +57,25 @@ class const _OwnBarButton(final PlatformBarAction action) extends StatelessWidge
 
 Future<void> _pump(WidgetTester tester, PlatformAppBar bar) =>
     pumpPlatformWidget(tester, PlatformScaffold(appBarData: bar, body: const SizedBox()));
+
+// Each platform's own sheet, so these tests don't lean on showPlatformSheet.
+Future<void> _openInSheet(WidgetTester tester, Widget page) async {
+  final context = await pumpForContext(tester);
+  unawaited(switch (designLanguage) {
+    .material => showModalBottomSheet<void>(context: context, builder: (_) => page),
+    .cupertino => Navigator.of(
+      context,
+    ).push(CupertinoSheetRoute<void>(scrollableBuilder: (_, _) => page)),
+  });
+  await tester.pumpAndSettle();
+}
+
+Finder _sheetWayOut(WidgetTester tester) => switch (designLanguage) {
+  .material => find.byType(CloseButton),
+  .cupertino => find.text(
+    CupertinoLocalizations.of(tester.element(find.byKey(_sheetBody))).cancelButtonLabel,
+  ),
+};
 
 // Where the action's content sits, and the button around it.
 ({Rect content, Rect button}) _placed(WidgetTester tester, Finder content) => (
@@ -230,5 +261,57 @@ void main() {
 
       check(find.text(_drawer).evaluate()).isNotEmpty();
     }, variant: androidOnly);
+
+    scenarioWidgets("closes a sheet through the platform's own way out", (tester) async {
+      await _openInSheet(tester, _sheetPage);
+
+      await tester.tap(_sheetWayOut(tester));
+      await tester.pumpAndSettle();
+
+      check(find.byKey(_sheetBody).evaluate()).isEmpty();
+    });
+
+    scenarioWidgets("asks the sheet's PopScope before closing it", (tester) async {
+      var attempts = 0;
+      await _openInSheet(
+        tester,
+        PopScope<void>(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, _) {
+            if (!didPop) attempts++;
+          },
+          child: _sheetPage,
+        ),
+      );
+
+      await tester.tap(_sheetWayOut(tester));
+      await tester.pumpAndSettle();
+
+      check(find.byKey(_sheetBody).evaluate()).isNotEmpty();
+      check(attempts).equals(1);
+    });
+
+    scenarioOutlineWidgets<PlatformAppBar>(
+      "lets a sheet's bar swap or drop its way out",
+      examples: {
+        'swapped for its own leading': const PlatformAppBar(
+          materialAppBarData: MaterialAppBarData(leading: Text(_custom)),
+          cupertinoNavigationBarData: CupertinoNavigationBarData(leading: Text(_custom)),
+        ),
+        'dropped': const PlatformAppBar(automaticallyImplyLeading: false),
+      },
+      outline: (tester, bar) async {
+        await _openInSheet(
+          tester,
+          PlatformScaffold(
+            appBarData: bar,
+            body: const SizedBox(key: _sheetBody),
+          ),
+        );
+        check(find.byKey(_sheetBody).evaluate()).isNotEmpty();
+
+        check(_sheetWayOut(tester).evaluate()).isEmpty();
+      },
+    );
   });
 }
