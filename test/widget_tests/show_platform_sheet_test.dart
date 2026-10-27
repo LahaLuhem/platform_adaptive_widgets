@@ -15,7 +15,7 @@ const _fieldKey = Key('field');
 const _save = 'Save';
 const _saved = 'saved';
 const _message = 'Discard this list?';
-const _discard = 'Discard';
+const _discard = 'Discard List';
 const _phone = Size(390, 844);
 const _keyboardHeight = 336.0;
 const _statusBarHeight = 47.0;
@@ -171,6 +171,33 @@ void main() {
       final tall = await sheetHeightAround(300);
 
       check(tall - short).equals(200);
+    }, variant: androidOnly);
+
+    scenarioWidgets("draws an Android sheet's bar on the sheet's own color", (tester) async {
+      unawaited(_open(await _pumpPhone(tester)));
+      await tester.pumpAndSettle();
+      final bar = tester.getRect(find.byType(AppBar));
+      final body = tester.getRect(find.byKey(_bodyKey));
+
+      final image = (await tester.runAsync(
+        () => captureImage(tester.element(find.byType(PlatformApp))),
+      ))!;
+      final pixels = (await tester.runAsync(image.toByteData))!;
+      int colorAt(Offset point) {
+        final ratio = tester.view.devicePixelRatio;
+
+        // Raw RGBA, 4 bytes a pixel.
+        return pixels.getUint32(
+          ((point.dy * ratio).round() * image.width + (point.dx * ratio).round()) * 4,
+        );
+      }
+
+      // Past the title, where the bar draws nothing of its own.
+      final barColor = colorAt(Offset(bar.right - 16, bar.center.dy));
+      final bodyColor = colorAt(body.center);
+      image.dispose();
+
+      check(barColor).equals(bodyColor);
     }, variant: androidOnly);
 
     scenarioWidgets('opens a long Android sheet up to the status bar, with no overflow', (
