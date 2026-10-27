@@ -354,7 +354,7 @@ class const PlatformTextField({
     contextMenuBuilder: contextMenuBuilder,
     spellCheckConfiguration: spellCheckConfiguration,
     magnifierConfiguration: magnifierConfiguration,
-    decoration: cupertinoTextFieldData?.decoration,
+    decoration: cupertinoTextFieldData?.decoration ?? kDefaultCupertinoTextFieldDecoration,
     clearButtonMode:
         cupertinoTextFieldData?.clearButtonMode ?? kDefaultCupertinoTextFieldClearButtonMode,
     clearButtonSemanticLabel: cupertinoTextFieldData?.clearButtonSemanticLabel,
