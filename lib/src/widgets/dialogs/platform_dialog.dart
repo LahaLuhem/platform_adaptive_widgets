@@ -9,6 +9,7 @@ import 'package:material_ui/material_ui.dart' show Dialog;
 import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_dialog_data.dart';
 import '/src/models/layout/platform_app_bar_data.dart';
+import '/src/models/layout/platform_scaffold_data.dart';
 import '/src/utils/design_language.dart';
 import '/src/widgets/layout/platform_scaffold.dart';
 import 'dialog_routes.dart';
@@ -22,7 +23,8 @@ import 'dialog_routes.dart';
 /// can't be swiped back.
 ///
 /// Both builders get the dialog's own context, so an action in the bar, like a Save, closes this dialog
-/// through it, whichever navigator opened it.
+/// through it, whichever navigator opened it. A body that doesn't scroll wants [useSafeArea], or iOS draws
+/// it under the bar.
 ///
 /// Guidelines: [M3 full-screen dialogs](https://m3.material.io/components/dialogs/guidelines),
 /// [HIG full-screen modals](https://developer.apple.com/design/human-interface-guidelines/modality#Best-practices).
@@ -33,6 +35,7 @@ Future<T?> showPlatformFullscreenDialog<T>({
   required BuildContext context,
   required PlatformAppBarData Function(BuildContext context) appBarBuilder,
   required WidgetBuilder builder,
+  bool useSafeArea = kDefaultUseSafeArea,
   Color? backgroundColor,
   RouteSettings? routeSettings,
   bool useRootNavigator = kDefaultUseRootNavigator,
@@ -44,6 +47,7 @@ Future<T?> showPlatformFullscreenDialog<T>({
   Widget page(BuildContext context) => PlatformScaffold(
     appBarData: appBarBuilder(context),
     backgroundColor: backgroundColor,
+    useSafeArea: useSafeArea,
     body: builder(context),
   );
 

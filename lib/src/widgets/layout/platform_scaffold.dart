@@ -18,6 +18,7 @@ import '/src/models/platform_widget_base.dart';
 /// Example:
 /// {@example /example/lib/snippets/layout/platform_scaffold.dart#platform_scaffold}
 class const PlatformScaffold({
+  /// On iOS it runs under the bar, which a scroll view pads for itself. Anything else wants [useSafeArea].
   required final Widget body,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
@@ -34,6 +35,9 @@ class const PlatformScaffold({
 
   /// Shrinks the body when the keyboard comes up, rather than letting it hide the bottom.
   final bool resizeToAvoidBottomInset = kDefaultResizeToAvoidBottomInset,
+
+  /// Keeps the body clear of the bar, the status bar, the home indicator or gesture bar, and any notch.
+  final bool useSafeArea = kDefaultUseSafeArea,
   super.widgetKey,
   super.key,
 }) extends PlatformWidgetKeyedBase {
@@ -46,6 +50,7 @@ class const PlatformScaffold({
   Widget buildMaterial(BuildContext context) {
     // Shared values resolved once, both bottomSheetScrimBuilder branches below pass the identical set.
     final appBar = materialScaffoldData?.appBar ?? appBarData?.materialBuilder(context);
+    final resolvedBody = useSafeArea ? SafeArea(child: body) : body;
     final resolvedBackgroundColor = materialScaffoldData?.backgroundColor ?? backgroundColor;
     final persistentFooterAlignment =
         materialScaffoldData?.persistentFooterAlignment ??
@@ -76,7 +81,7 @@ class const PlatformScaffold({
             appBar: appBar,
             backgroundColor: resolvedBackgroundColor,
             resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-            body: body,
+            body: resolvedBody,
             floatingActionButton: materialScaffoldData?.floatingActionButton,
             floatingActionButtonLocation: materialScaffoldData?.floatingActionButtonLocation,
             floatingActionButtonAnimator: materialScaffoldData?.floatingActionButtonAnimator,
@@ -105,7 +110,7 @@ class const PlatformScaffold({
             appBar: appBar,
             backgroundColor: resolvedBackgroundColor,
             resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-            body: body,
+            body: resolvedBody,
             floatingActionButton: materialScaffoldData?.floatingActionButton,
             floatingActionButtonLocation: materialScaffoldData?.floatingActionButtonLocation,
             floatingActionButtonAnimator: materialScaffoldData?.floatingActionButtonAnimator,
@@ -140,6 +145,6 @@ class const PlatformScaffold({
     navigationBar: cupertinoScaffoldData?.navigationBar ?? appBarData?.cupertinoBuilder(context),
     backgroundColor: cupertinoScaffoldData?.backgroundColor ?? backgroundColor,
     resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-    child: body,
+    child: useSafeArea ? SafeArea(child: body) : body,
   );
 }
