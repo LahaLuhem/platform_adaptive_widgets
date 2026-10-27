@@ -251,7 +251,7 @@ discoverable name plus a `.tristate` constructor. The costs are minor and accept
   button, so none can misfit the bar. A raw widget goes only in a per-platform slot
   (`MaterialAppBarData.leading` and `.actions`, `CupertinoNavigationBarData.leading` and `.trailing`),
   which replaces that side's own. The leading has no shared slot, since both bars fill it themselves:
-  back, a full-screen dialog's close or Cancel, Material's drawer button.
+  back, a full-screen dialog's or a sheet's close or Cancel, Material's drawer button.
 - **`showPlatformXxx` helpers** apply the same rule: functional params flat on the function
   signature. Visual via per-platform records.
 - **Platform-only *capabilities*, not just fields.** A whole feature can exist on one platform and

@@ -69,8 +69,8 @@ renames don't break callers.
   // Over:
   class PlatformRadio<T> extends PlatformWidgetKeyedBase { … }
 
-  // Exception (dialog result type may be null / void):
-  Future<T?> showPlatformDialog<T>(…) { … }
+  // Exception (a modal's result type may be null / void):
+  Future<T?> showPlatformSheet<T>(…) { … }
   ```
 
   Bounded `T` is a subtype of unbounded `T` in parameter positions, so wrapping Flutter's raw-`<T>`
