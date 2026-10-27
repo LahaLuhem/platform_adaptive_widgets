@@ -2,9 +2,15 @@
 library;
 
 import 'package:cupertino_ui/cupertino_ui.dart'
-    show CupertinoButton, CupertinoNavigationBar, ObstructingPreferredSizeWidget;
+    show
+        CupertinoButton,
+        CupertinoLocalizations,
+        CupertinoNavigationBar,
+        CupertinoSheetRoute,
+        ObstructingPreferredSizeWidget;
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart' show AppBar, IconButton, TextButton;
+import 'package:material_ui/material_ui.dart'
+    show AppBar, CloseButton, IconButton, ModalBottomSheetRoute, TextButton;
 
 import '/src/models/layout/platform_app_bar_data.dart';
 import '/src/models/layout/platform_bar_action.dart';
@@ -38,9 +44,9 @@ class const PlatformAppBar({
 
   final Color? backgroundColor,
 
-  /// Lets each bar add its own way out before the title: back, a full-screen dialog's close or Cancel, or
-  /// Material's drawer button. `materialAppBarData.leading` or `cupertinoNavigationBarData.leading` take
-  /// its place on their side.
+  /// Lets each bar add its own way out before the title: back, close or Cancel in a full-screen dialog or a
+  /// sheet, or Material's drawer button. `materialAppBarData.leading` or `cupertinoNavigationBarData.leading`
+  /// take its place on their side.
   final bool automaticallyImplyLeading = true,
 
   /// At the trailing edge, as each platform's own bar buttons. M3 asks for 2 at most on a phone, the HIG
@@ -61,7 +67,12 @@ class const PlatformAppBar({
   @override
   PreferredSizeWidget materialBuilder(BuildContext context) => AppBar(
     key: widgetKey,
-    leading: materialAppBarData?.leading,
+    leading:
+        materialAppBarData?.leading ??
+        // AppBar swaps its back arrow for a close button only in a full-screen dialog.
+        (automaticallyImplyLeading && ModalRoute.of(context) is ModalBottomSheetRoute
+            ? const CloseButton()
+            : null),
     title: title,
     backgroundColor: materialAppBarData?.backgroundColor ?? backgroundColor,
     automaticallyImplyLeading: automaticallyImplyLeading,
@@ -128,7 +139,17 @@ class const PlatformAppBar({
         CupertinoNavigationBarData.kTransitionBetweenRoutes;
     // Promoted to non-null inside the branches below, so no force-unwrap is needed there.
     final heroTag = cupertinoNavigationBarData?.heroTag;
-    final leading = cupertinoNavigationBarData?.leading;
+    final leading =
+        cupertinoNavigationBarData?.leading ??
+        // cupertino_ui gives a full-screen dialog's bar a Cancel, but leaves a sheet's empty.
+        (automaticallyImplyLeading && ModalRoute.of(context) is CupertinoSheetRoute
+            ? _CupertinoBarAction(
+                PlatformBarAction(
+                  label: CupertinoLocalizations.of(context).cancelButtonLabel,
+                  onPressed: () => Navigator.maybePop(context),
+                ),
+              )
+            : null);
     final trailing =
         cupertinoNavigationBarData?.trailing ??
         (actions.isEmpty && primaryAction == null
