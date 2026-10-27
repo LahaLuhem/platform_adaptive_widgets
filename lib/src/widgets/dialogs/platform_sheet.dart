@@ -12,6 +12,7 @@ import 'package:material_ui/material_ui.dart' show AppBarTheme, Colors, showModa
 
 import '/src/models/dialogs/platform_unsaved_changes.dart';
 import '/src/models/layout/platform_app_bar_data.dart';
+import '/src/models/layout/platform_scaffold_data.dart';
 import '/src/utils/design_language.dart';
 import '/src/widgets/layout/platform_app_bar.dart';
 import '/src/widgets/layout/platform_scaffold.dart';
@@ -27,7 +28,8 @@ import 'platform_destructive_confirm.dart';
 /// by its scrim, a swipe or Back.
 ///
 /// Both builders get the sheet's own context, so a Save in the bar closes this sheet whichever navigator
-/// opened it. A body that can outgrow the screen should scroll.
+/// opened it. A body that can outgrow the screen should scroll. One that doesn't scroll wants
+/// [useSafeArea], or iOS draws it under the bar.
 ///
 /// Name a confirming action by what it does, like Save or Create, as M3 asks of a full-screen dialog. iOS
 /// draws it semibold either way.
@@ -57,6 +59,7 @@ Future<T?> showPlatformSheet<T>({
   required WidgetBuilder builder,
   PlatformAppBarData Function(BuildContext context)? appBarBuilder,
   PlatformUnsavedChanges? unsavedChanges,
+  bool useSafeArea = kDefaultUseSafeArea,
   Color? backgroundColor,
   RouteSettings? routeSettings,
 }) => switch (designLanguage) {
@@ -85,7 +88,7 @@ Future<T?> showPlatformSheet<T>({
                 data: AppBarTheme.of(context).copyWith(backgroundColor: Colors.transparent),
                 child: bar(context).materialBuilder(context),
               ),
-            Flexible(child: builder(context)),
+            Flexible(child: useSafeArea ? SafeArea(child: builder(context)) : builder(context)),
           ],
         ),
       ),
@@ -103,6 +106,7 @@ Future<T?> showPlatformSheet<T>({
         // Without a bar, a swipe would be the only way out.
         appBarData: appBarBuilder?.call(context) ?? const PlatformAppBar(),
         backgroundColor: backgroundColor,
+        useSafeArea: useSafeArea,
         body: builder(context),
       ),
     ),

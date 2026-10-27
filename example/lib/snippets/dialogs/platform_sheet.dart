@@ -42,6 +42,8 @@ class _PlatformSheetSnippetState extends State<PlatformSheetSnippet> {
         message: 'Discard this list?',
         discardLabel: 'Discard List',
       ),
+      // The body doesn't scroll, so iOS would otherwise draw it under the bar.
+      useSafeArea: true,
       builder: (_) => Padding(
         padding: const EdgeInsets.all(16),
         child: PlatformTextField(controller: _nameController, hintText: 'Name'),

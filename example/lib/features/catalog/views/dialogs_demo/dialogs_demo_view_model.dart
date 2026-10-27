@@ -94,6 +94,7 @@ final class DialogsDemoViewModel extends ViewModel {
         message: 'Discard this list?',
         discardLabel: 'Discard List',
       ),
+      useSafeArea: true,
       builder: (_) => Padding(
         padding: const .all(16),
         child: PlatformTextField(

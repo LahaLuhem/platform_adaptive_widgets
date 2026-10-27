@@ -14,6 +14,10 @@ import 'package:material_ui/material_ui.dart'
 /// and `PlatformTabScaffold`.
 const kDefaultResizeToAvoidBottomInset = true;
 
+/// Default value for `useSafeArea` on `PlatformScaffold`, `showPlatformSheet` and `showPlatformFullscreenDialog`.
+/// Off, so a list can scroll under an iOS bar.
+const kDefaultUseSafeArea = false;
+
 /// Shared-visual base for the 2 scaffold records, holding the one property worth varying per platform.
 /// Everything else (`body`, `resizeToAvoidBottomInset`, `widgetKey`) stays flat on `PlatformScaffold`.
 /// Private, never exported.
