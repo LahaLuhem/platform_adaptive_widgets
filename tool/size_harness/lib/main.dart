@@ -68,6 +68,18 @@ class _Surfaces extends StatelessWidget {
         child: const Text('sheet'),
       ),
 
+      // showPlatformRawDialog, top-level switch dispatch, with a builder per platform.
+      TextButton(
+        onPressed: () => showPlatformRawDialog<void>(
+          context: context,
+          materialBuilder: (_) => const AlertDialog(content: Text('m')),
+          // Not a Cupertino widget: one in a closure stays in the Android build and hides a leak of the
+          // same widgets.
+          cupertinoBuilder: (_) => const Text('c'),
+        ),
+        child: const Text('raw dialog'),
+      ),
+
       // showPlatformFullscreenDialog, top-level switch dispatch. Its bar builds both kinds of action.
       TextButton(
         onPressed: () => showPlatformFullscreenDialog<void>(
