@@ -6,10 +6,13 @@
 - \[#58\] `showPlatformConfirm`, Cancel included, styled by `PlatformActionKind`
 - \[#48\] `showPlatformChoices`: action sheet on iOS, sheet of rows on Android
 - \[#49\] `PlatformActionsMenu`: pull-down on iOS, M3 menu on Android, confirms destructive items
+- \[#55\] `PlatformButton.actionKind`: delete and discard in red (Cupertino)
+- \[#55\] `PlatformButton.iconOnly`, its label the tooltip and screen-reader name
+- \[#55\] `PlatformBarAction`: `PlatformAppBar.actions` and `primaryAction`, each look's own bar buttons
 
 ### Changed
 - \[#46\] Full-screen dialog: slide-up page on iOS, edge to edge on Android
-- **BREAKING** \[#46\] `showPlatformFullscreenDialog` takes `appBarData` + body `builder`. `backgroundColor` flat, `anchorPoint` into `MaterialFullscreenDialogData`
+- **BREAKING** \[#46\] `showPlatformFullscreenDialog` takes the page's bar + body `builder`. `backgroundColor` flat, `anchorPoint` into `MaterialFullscreenDialogData`
 - \[#51\] Toast action on iOS too, waits for a tap
 - \[#52\] `PlatformProgressIndicator`: spinner only, read by VoiceOver
 - **BREAKING** \[#52\] `value`, `semanticsLabel`, `semanticsValue` out of `MaterialProgressIndicatorData`, label flat on the widget
@@ -19,6 +22,9 @@
 - \[#57\] Menu picker ignores re-picking the current value
 - **BREAKING** \[#58\] `MaterialAlertDialogData.actionsOverflowDirection` non-null, default `up`
 - **BREAKING** \[#48\] Modal bottom sheets: flat `barrierDismissible` and `barrierColor`
+- **BREAKING** \[#55\] `PlatformButton` needs `emphasis`: ranks the same on both looks
+- **BREAKING** \[#55\] `PlatformAppBar.leading` per look, in `MaterialAppBarData` / `CupertinoNavigationBarData`
+- **BREAKING** \[#55\] `showPlatformFullscreenDialog`'s bar is an `appBarBuilder`, given the dialog's context
 
 ### Fixed
 - \[#56\] Menu picker: same behaviour on both looks
@@ -31,6 +37,8 @@
 - **BREAKING** \[#58\] `showPlatformAlertDialog`, `PlatformDialogAction`: use `showPlatformConfirm` or `showPlatformAcknowledge`
 - **BREAKING** \[#46\] `showPlatformFullscreenDialog`'s `materialBuilder`, `cupertinoBuilder`, `barrier*`, and `MaterialFullscreenDialogData.useSafeArea`
 - **BREAKING** \[#48\] `MaterialModalBottomSheetData.isDismissible`, `CupertinoModalPopupData.barrierColor` / `.barrierDismissible`, their 3 `kDefault*` constants
+- **BREAKING** \[#55\] `MaterialButtonVariant`, `CupertinoButtonVariant`: use `PlatformButton.emphasis`
+- **BREAKING** \[#55\] `PlatformButton.icon`'s `iconAlignment`: the icon leads on both looks
 
 ## [2.2.0] - 2026-09-13
 ### Added
