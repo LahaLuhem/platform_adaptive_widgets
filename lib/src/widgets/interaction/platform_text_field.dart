@@ -23,6 +23,9 @@ import '/src/models/platform_widget_base.dart';
 /// branch. So the flat value is the cross-platform default and the record is the per-platform override.
 /// See `APPENDIX.md#cross-platform-field-mappings` and `APPENDIX.md#field-classification`.
 ///
+/// Known Flutter gap: on Cupertino, the `editing` and `notEditing` modes for the clear button, prefix
+/// and suffix go by the text, not focus ([flutter/flutter#195410](https://github.com/flutter/flutter/issues/195410)).
+///
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_text_field.dart#platform_text_field}
 class const PlatformTextField({
@@ -201,8 +204,6 @@ class const PlatformTextField({
   @protected
   @visibleForOverriding
   Widget buildMaterial(BuildContext context) {
-    // Merge widget-level flat slots into the Material decoration. Data-class values win when explicitly
-    // set. Flat widget values fill the gaps.
     final baseDecoration = materialTextFieldData?.decoration ?? kDefaultMaterialTextFieldDecoration;
     final mergedDecoration = baseDecoration.copyWith(
       hintText: baseDecoration.hintText ?? hintText,
@@ -323,8 +324,7 @@ class const PlatformTextField({
     enabled: isEnabled,
     cursorWidth: cursorWidth,
     cursorHeight: cursorHeight,
-    // Cupertino's cursorRadius is non-null with an inline default. Substitute
-    // when the package's nullable flat field is null. Material's stays nullable.
+    // Cupertino's own default, since its cursorRadius can't take null.
     cursorRadius: cursorRadius ?? const Radius.circular(2),
     cursorOpacityAnimates: cursorOpacityAnimates,
     cursorColor: cursorColor,
@@ -338,9 +338,7 @@ class const PlatformTextField({
     selectionControls: selectionControls,
     onTap: onTap,
     onTapOutside: onTapOutside,
-    // Pattern match binds the non-null callback in the match arm, that
-    // local IS promoted across the closure boundary (an instance field would not be).
-    // See [onTapUpOutside] dartdoc for the upstream Cupertino-typing bug this conversion compensates for.
+    // Binding the callback to a local keeps it non-null inside the closure, which a field read wouldn't.
     onTapUpOutside: switch (onTapUpOutside) {
       null => null,
       final onTapUpOutsideCallback => (event) => onTapUpOutsideCallback(event.toPointerUpEvent()),
