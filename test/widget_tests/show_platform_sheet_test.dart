@@ -340,7 +340,7 @@ void main() {
         unawaited(_open(await _pumpPhone(tester), unsavedChanges: unsavedChanges));
         await tester.pumpAndSettle();
 
-        await tester.fling(find.byKey(_bodyKey), const Offset(0, 500), 2000);
+        await tester.flingFrom(tester.getCenter(find.byKey(_bodyKey)), const Offset(0, 500), 2000);
         await tester.pumpAndSettle();
 
         // The unguarded row proves the fling is strong enough to close a sheet.
