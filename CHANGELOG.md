@@ -9,6 +9,9 @@
 - \[#55\] `PlatformButton.actionKind`: delete and discard in red (Cupertino)
 - \[#55\] `PlatformButton.iconOnly`, its label the tooltip and screen-reader name
 - \[#55\] `PlatformBarAction`: `PlatformAppBar.actions` and `primaryAction`, each look's own bar buttons
+- \[#47\] `showPlatformSheet`: content or a short task in a sheet, iOS's sheet or M3's bottom sheet
+- \[#47\] `PlatformUnsavedChanges`: closing a sheet with unsaved changes asks first
+- \[#47\] `useSafeArea` keeps a body that doesn't scroll clear of the bars: `PlatformScaffold`, `showPlatformSheet`, `showPlatformFullscreenDialog`
 
 ### Changed
 - \[#46\] Full-screen dialog: slide-up page on iOS, edge to edge on Android
@@ -25,11 +28,13 @@
 - **BREAKING** \[#55\] `PlatformButton` needs `emphasis`: ranks the same on both looks
 - **BREAKING** \[#55\] `PlatformAppBar.leading` per look, in `MaterialAppBarData` / `CupertinoNavigationBarData`
 - **BREAKING** \[#55\] `showPlatformFullscreenDialog`'s bar is an `appBarBuilder`, given the dialog's context
+- **BREAKING** \[#47\] `PlatformAppBar` in a sheet shows the sheet's close X or Cancel
 
 ### Fixed
 - \[#56\] Menu picker: same behaviour on both looks
 - \[#49\] Menu picker keeps its checkmark at accessibility text sizes (Cupertino)
 - \[#49\] Untitled alert: M3's top padding (Material)
+- \[#47\] Text field draws its rounded border (Cupertino)
 
 ### Removed
 - **BREAKING** \[#51\] `MaterialToastData.action`, `.persist`, `PlatformToastClosedReason`: use flat `action`
@@ -39,6 +44,8 @@
 - **BREAKING** \[#48\] `MaterialModalBottomSheetData.isDismissible`, `CupertinoModalPopupData.barrierColor` / `.barrierDismissible`, their 3 `kDefault*` constants
 - **BREAKING** \[#55\] `MaterialButtonVariant`, `CupertinoButtonVariant`: use `PlatformButton.emphasis`
 - **BREAKING** \[#55\] `PlatformButton.icon`'s `iconAlignment`: the icon leads on both looks
+- **BREAKING** \[#47\] `showPlatformDialog`, `MaterialDialogData`: use `showPlatformSheet`, or `showPlatformRawDialog` for your own surface
+- **BREAKING** \[#50\] `showPlatformModalBottomSheet`: use `showPlatformSheet`, or `showPlatformRawModalBottomSheet` for your own surface
 
 ## [2.2.0] - 2026-09-13
 ### Added
