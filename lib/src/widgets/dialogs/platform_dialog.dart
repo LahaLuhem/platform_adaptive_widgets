@@ -1,5 +1,6 @@
 /// @docImport 'package:cupertino_ui/cupertino_ui.dart';
 /// @docImport '/src/widgets/dialogs/platform_alert_dialog.dart';
+/// @docImport '/src/widgets/dialogs/platform_sheet.dart';
 library;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoPageRoute, CupertinoPopupSurface;
@@ -101,7 +102,7 @@ Future<T?> showPlatformDialog<T>({
 }
 
 /// Shows a full-screen modal dialog: [Dialog.fullscreen] on Material, a full-screen [CupertinoPageRoute]
-/// on Cupertino.
+/// on Cupertino. It's for long or multistep tasks. Extra content or a short task fits [showPlatformSheet].
 ///
 /// You hand over the page's parts, the bar and the body, and the package builds a [PlatformScaffold]
 /// from them. That way the bar gets each platform's close button (M3's X, Cupertino's Cancel) and the
