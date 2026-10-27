@@ -49,6 +49,9 @@ import 'platform_destructive_confirm.dart';
 ///
 /// Guidelines: [M3 bottom sheets](https://m3.material.io/components/bottom-sheets/guidelines),
 /// [HIG sheets](https://developer.apple.com/design/human-interface-guidelines/sheets).
+///
+/// Example:
+/// {@example /example/lib/snippets/dialogs/platform_sheet.dart#platform_sheet}
 Future<T?> showPlatformSheet<T>({
   required BuildContext context,
   required WidgetBuilder builder,

@@ -5,22 +5,21 @@ import 'package:pmvvm/pmvvm.dart';
 
 import '/features/catalog/data/enums/alert_actions.dart';
 
-/// Triggers for the dialog, sheet and picker showcase, plus the args their knobs set. The full-screen
-/// dialog, toast, choices, date and time buttons keep the last result they got, so it can be shown on them.
+/// Triggers for the dialog, sheet and picker showcase, plus the args their knobs set. The toast, choices,
+/// date and time buttons keep the last result they got, so it can be shown on them.
 final class DialogsDemoViewModel extends ViewModel {
   var _alertTitle = 'Discard changes?';
   var _alertMessage = 'Your edits will be lost.';
   var _alertActions = AlertActions.confirm;
   var _confirmLabel = 'Discard';
   var _confirmActionKind = PlatformActionKind.discard;
-  var _isDialogRaw = false;
   var _shouldDismissDialogOnBarrierTap = true;
-  var _isSheetRaw = false;
   var _shouldOfferUndo = true;
   var _isUndone = false;
   String? _draftOutcome;
   Date? _selectedDate;
   TimeOfDay? _selectedTime;
+  final _listNameController = TextEditingController();
 
   String get alertTitle => _alertTitle;
 
@@ -32,11 +31,7 @@ final class DialogsDemoViewModel extends ViewModel {
 
   PlatformActionKind get confirmActionKind => _confirmActionKind;
 
-  bool get isDialogRaw => _isDialogRaw;
-
   bool get shouldDismissDialogOnBarrierTap => _shouldDismissDialogOnBarrierTap;
-
-  bool get isSheetRaw => _isSheetRaw;
 
   bool get shouldOfferUndo => _shouldOfferUndo;
 
@@ -73,18 +68,8 @@ final class DialogsDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
-  void onDialogRawToggled({required bool value}) {
-    _isDialogRaw = value;
-    notifyListeners();
-  }
-
   void onBarrierDismissibleToggled({required bool value}) {
     _shouldDismissDialogOnBarrierTap = value;
-    notifyListeners();
-  }
-
-  void onSheetRawToggled({required bool value}) {
-    _isSheetRaw = value;
     notifyListeners();
   }
 
@@ -93,34 +78,56 @@ final class DialogsDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
-  Future<void> onShowDialogPressed() => _isDialogRaw
-      ? showPlatformRawDialog(
-          context: context,
-          barrierDismissible: _shouldDismissDialogOnBarrierTap,
-          builder: (_) => const Center(child: Text('A raw dialog, the package adds no card here.')),
-        )
-      : showPlatformDialog(
-          context: context,
-          barrierDismissible: _shouldDismissDialogOnBarrierTap,
-          // On Cupertino, custom content needs its own way out: by default tapping outside doesn't close a
-          // centred dialog (HIG), and there's no back button.
-          builder: (context) => Padding(
-            padding: const .all(24),
-            child: Column(
-              mainAxisSize: .min,
-              spacing: 16,
-              children: [
-                const Text('A centered platform dialog.'),
-                if (designLanguage == .cupertino)
-                  PlatformButton(
-                    onPressed: () => Navigator.maybeOf(context)?.pop(),
-                    emphasis: .low,
-                    child: const Text('Done'),
-                  ),
-              ],
+  Future<void> onShowSheetPressed() async {
+    _listNameController.clear();
+    final saved = await showPlatformSheet<String>(
+      context: context,
+      appBarBuilder: (context) => PlatformAppBar(
+        title: const Text('New list'),
+        primaryAction: PlatformBarAction(
+          label: 'Save',
+          onPressed: () => Navigator.maybeOf(context)?.pop(_listNameController.text),
+        ),
+      ),
+      unsavedChanges: PlatformUnsavedChanges(
+        hasChanges: () => _listNameController.text.isNotEmpty,
+        message: 'Discard this list?',
+        discardLabel: 'Discard List',
+      ),
+      builder: (_) => Padding(
+        padding: const .all(16),
+        child: PlatformTextField(
+          controller: _listNameController,
+          hintText: 'Name',
+          autofocus: true,
+        ),
+      ),
+    );
+    // Every way out but Save returns null, so only Save gets a toast.
+    if (saved == null || !context.mounted) return;
+    await showPlatformToast(context: context, message: 'Saved: $saved');
+  }
+
+  Future<void> onShowRawDialogPressed() => showPlatformRawDialog(
+    context: context,
+    barrierDismissible: _shouldDismissDialogOnBarrierTap,
+    builder: (context) => Center(
+      child: Column(
+        mainAxisSize: .min,
+        spacing: 16,
+        children: [
+          const Text('A raw dialog. The package adds no card here.'),
+          // Cupertino has no back button, so with barrierDismissible off this is the only way out.
+          if (designLanguage == .cupertino)
+            PlatformButton(
+              onPressed: () => Navigator.maybeOf(context)?.pop(),
+              emphasis: .low,
+              child: const Text('Done'),
             ),
-          ),
-        );
+        ],
+      ),
+    ),
+  );
 
   Future<void> onShowFullscreenDialogPressed() async {
     final saved = await showPlatformFullscreenDialog<String>(
@@ -173,28 +180,15 @@ final class DialogsDemoViewModel extends ViewModel {
     );
   }
 
-  Future<void> onShowBottomSheetPressed() => _isSheetRaw
-      ? showPlatformRawModalBottomSheet(
-          context: context,
-          builder: (_) => const SafeArea(
-            child: Padding(
-              padding: .all(24),
-              child: Text('A raw bottom sheet, the package adds no surface on Cupertino.'),
-            ),
-          ),
-        )
-      : showPlatformModalBottomSheet(
-          context: context,
-          builder: (_) => const SafeArea(
-            child: Padding(
-              padding: .all(24),
-              child: Text(
-                'A modal bottom sheet, a Material sheet, or an action-sheet-style '
-                'popup on Cupertino.',
-              ),
-            ),
-          ),
-        );
+  Future<void> onShowRawBottomSheetPressed() => showPlatformRawModalBottomSheet(
+    context: context,
+    builder: (_) => const SafeArea(
+      child: Padding(
+        padding: .all(24),
+        child: Text('A raw bottom sheet. The package adds no surface on Cupertino.'),
+      ),
+    ),
+  );
 
   Future<void> onShowChoicesPressed() async {
     _draftOutcome = await showPlatformChoices(
@@ -229,5 +223,11 @@ final class DialogsDemoViewModel extends ViewModel {
     final picked = await showPlatformTimePicker(context: context, initialTime: TimeOfDay.now());
     _selectedTime = picked;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _listNameController.dispose();
+    super.dispose();
   }
 }
