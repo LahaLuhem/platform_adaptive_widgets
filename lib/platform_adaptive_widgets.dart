@@ -55,6 +55,7 @@ export 'src/widgets/interaction/platform_radio.dart';
 export 'src/widgets/interaction/platform_scrollbar.dart';
 export 'src/widgets/interaction/platform_search_bar.dart';
 export 'src/widgets/interaction/platform_segment_button.dart';
+export 'src/widgets/interaction/platform_single_select_list.dart';
 export 'src/widgets/interaction/platform_slider.dart';
 export 'src/widgets/interaction/platform_switch.dart';
 export 'src/widgets/interaction/platform_text_field.dart';

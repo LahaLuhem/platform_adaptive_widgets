@@ -1,6 +1,8 @@
 // Named after what it tests, not after its helper widget.
 // ignore_for_file: prefer-match-file-name
 
+import 'dart:ui' show Tristate;
+
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoMenuItem;
 import 'package:flutter/widgets.dart';
@@ -401,6 +403,23 @@ void main() {
 
       check(picked).deepEquals([7]);
       check(find.byType(PlatformMenuPicker<int>).evaluate()).isNotEmpty();
+    }, variant: iosOnly);
+
+    scenarioWidgets("tells a screen reader which row of a very long list's page is picked", (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      await _pump(tester, const _Picker(count: 300, current: 5));
+
+      await _open(tester);
+      final picked = tester.getSemantics(_listRow(_label(5))).getSemanticsData();
+      final next = tester.getSemantics(_listRow(_label(6))).getSemanticsData();
+      semantics.dispose();
+
+      // The row's own title, so VoiceOver reads it with the state, not a run of rows.
+      check(picked.label).equals(_label(5));
+      check(picked.flagsCollection.isSelected).equals(Tristate.isTrue);
+      check(next.flagsCollection.isSelected).not((it) => it.equals(Tristate.isTrue));
     }, variant: iosOnly);
 
     scenarioWidgets("leaves a very long list's page without a pick", (tester) async {
