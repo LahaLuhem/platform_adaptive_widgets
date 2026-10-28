@@ -462,7 +462,10 @@ branches on the look, and `isIOS` picked the wrong one on macOS.
    Android and fails once Cupertino-named bytes pass the budget at the top of the script. The
    harness touches every dispatch surface, so a leak the lint misses still trips it.
 
-Raise the budget only when an SDK update grows the Cupertino baseline, never to quiet a leak.
+Raise the budget only when an SDK update grows the Cupertino baseline, never to quiet a leak. A whole
+Cupertino file that a Material widget the package builds holds onto, like the `.adaptive` arms of
+material_ui's `Radio` and `Checkbox`, goes in the script's excluded files instead, with that widget
+named beside it.
 
 ---
 

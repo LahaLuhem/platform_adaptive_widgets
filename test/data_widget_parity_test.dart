@@ -1,27 +1,20 @@
-// Parity guard for the field-classification contract in
-// APPENDIX.md#field-classification. For every canonical widget whose
-// shared-visual fields live on a private `_PlatformXxxData` base (inherited by
-// `MaterialXxxData` / `CupertinoXxxData` via `super`-forwarding), 2 static
-// checks over `lib/src/` keep the 2 edges the Dart compiler does NOT check
-// honest:
+// Parity guard for the field-classification contract in APPENDIX.md#field-classification. For every
+// canonical widget whose shared-visual fields live on a private `_PlatformXxxData` base
+// (inherited by `MaterialXxxData` / `CupertinoXxxData` via `super`-forwarding), 2 static checks over
+// `lib/src/` keep the 2 edges the Dart compiler does NOT check honest:
 //
-//   1. Field-set parity, every field on the `_PlatformXxxData` base also
-//      exists as a flat field on the matching `PlatformXxx` widget. Dart
-//      compiler-checks `super.x` forwarding (base -> records) and ctor-params
-//      -> field-decls, but nothing forces the widget to mirror the base. A base
-//      field added without a flat widget twin compiles, yet can never be set at
-//      the call site.
+//   1. Field-set parity, every field on the `_PlatformXxxData` base also exists as a flat field on
+//      the matching `PlatformXxx` widget. Dart compiler-checks `super.x` forwarding (base -> records)
+//      and ctor-params -> field-decls, but nothing forces the widget to mirror the base. A base field
+//      added without a flat widget twin compiles, yet can never be set at the call site.
 //
-//   2. Build-method wiring, every base field is merged via
-//      `materialXxxData?.field ?? field` in `buildMaterial` AND
-//      `cupertinoXxxData?.field ?? field` in `buildCupertino`. A forgotten
-//      fallback (or one pointing at the wrong flat field) compiles, type-checks,
-//      and silently drops the per-platform override. This is the more dangerous
-//      edge and the one the compiler is blindest to.
+//   2. Build-method wiring, every base field is merged via `materialXxxData?.field ?? field` in
+//      `buildMaterial` AND `cupertinoXxxData?.field ?? field` in `buildCupertino`. A forgotten fallback
+//      (or one pointing at the wrong flat field) compiles, type-checks, and silently drops the per-platform
+//      override. This is the more dangerous edge and the one the compiler is blindest to.
 //
-// Bases listed in `_basesWithoutFlatMirror` exist only to DRY a single field
-// across the 2 records and have no flat widget twin by design. See that
-// set's comment.
+// Bases listed in `_basesWithoutFlatMirror` exist only to DRY a single field across the 2 records and
+// have no flat widget twin by design. See that set's comment.
 
 // This guard declares several private visitor / record classes in one file.
 // ignore_for_file: prefer-match-file-name
@@ -43,8 +36,6 @@ const _basesWithoutFlatMirror = {'_PlatformAppBarData', '_PlatformScaffoldData'}
 /// A floor, not a ceiling. New widgets enrol themselves, and this only catches discovery quietly finding
 /// nothing, which would let every check below pass on an empty set.
 const _knownCanonicalWidgets = {
-  'PlatformCheckbox',
-  'PlatformRadio',
   'PlatformScrollbar',
   'PlatformSlider',
   'PlatformSwitch',
