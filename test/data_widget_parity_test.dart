@@ -65,7 +65,7 @@ void main() {
     test('finds fields on every base (guards against checks passing on none)', () {
       check(
         because:
-            'A base exists to share fields, so one with none found means `_instanceFieldNames` '
+            'A base exists to share fields, so one with none found means `instanceFieldNames` '
             'missed how they are declared, and the checks below pass on an empty set.',
         bases.where((base) => base.fields.isEmpty).map((base) => base.location),
       ).isEmpty();
@@ -156,7 +156,7 @@ Iterable<_Base> _collectBases() => _unitsIn('lib/src/models/').expand(
         (candidate) => _Base(
           name: candidate.name,
           widgetName: candidate.name.replaceFirst('_', '').replaceFirst(RegExp(r'Data$'), ''),
-          fields: _instanceFieldNames(candidate.declaration),
+          fields: instanceFieldNames(candidate.declaration),
           location:
               '${unit.path}:${unit.parsed.lineInfo.getLocation(candidate.declaration.offset).lineNumber}',
         ),
@@ -170,7 +170,7 @@ Map<String, _Widget> _collectWidgetClasses() => Map.fromEntries(
         declaration.namePart.typeName.lexeme,
         _Widget(
           filePath: unit.path,
-          fieldNames: _instanceFieldNames(declaration),
+          fieldNames: instanceFieldNames(declaration),
           materialMerged: _mergedFields(declaration, 'buildMaterial', 'material'),
           cupertinoMerged: _mergedFields(declaration, 'buildCupertino', 'cupertino'),
         ),
@@ -178,21 +178,6 @@ Map<String, _Widget> _collectWidgetClasses() => Map.fromEntries(
     ),
   ),
 );
-
-Set<String> _instanceFieldNames(ClassDeclaration node) => {
-  ...node.body.members
-      .whereType<FieldDeclaration>()
-      .where((member) => !member.isStatic)
-      .expand((member) => member.fields.variables)
-      .map((variable) => variable.name.lexeme),
-  // A primary constructor declares a field for each of its `final` or `var` parameters.
-  if (node.namePart case PrimaryConstructorDeclaration(:final formalParameters))
-    ...formalParameters.parameters
-        .where(
-          (parameter) => const {'final', 'var'}.contains(parameter.constFinalOrVarKeyword?.lexeme),
-        )
-        .map((parameter) => parameter.name!.lexeme),
-};
 
 /// Fields merged as `<accessorPrefix>…?.field ?? field` inside [node]'s [methodName].
 Set<String> _mergedFields(ClassDeclaration node, String methodName, String accessorPrefix) {
