@@ -9,7 +9,6 @@ final class ShowcaseViewModel extends ViewModel {
   final _tapCountNotifier = ValueNotifier(0);
   final _controlEnabledNotifier = ValueNotifier(true);
   final _gatedValueNotifier = ValueNotifier(true);
-  final _checkboxValueNotifier = ValueNotifier<bool?>(false);
 
   /// Survives tab switches, which is the proof: the tab is kept alive, not rebuilt.
   ValueListenable<int> get tapCountListenable => _tapCountNotifier;
@@ -18,8 +17,6 @@ final class ShowcaseViewModel extends ViewModel {
   ValueListenable<bool> get controlEnabledListenable => _controlEnabledNotifier;
 
   ValueListenable<bool> get gatedValueListenable => _gatedValueNotifier;
-
-  ValueListenable<bool?> get checkboxValueListenable => _checkboxValueNotifier;
 
   void onProbeIncremented() => _tapCountNotifier.value++;
 
@@ -31,10 +28,6 @@ final class ShowcaseViewModel extends ViewModel {
   // ignore: use_setters_to_change_properties
   void onGatedToggled({required bool value}) => _gatedValueNotifier.value = value;
 
-  // A view-event callback, named on<Event> per CODESTYLE.
-  // ignore: use_setters_to_change_properties
-  void onCheckboxToggled({required bool? value}) => _checkboxValueNotifier.value = value;
-
   Future<void> onPushPagePressed({required bool large}) =>
       pushPlatformRoute(context, (_) => PushedDemoPage(large: large));
 
@@ -43,7 +36,6 @@ final class ShowcaseViewModel extends ViewModel {
     _tapCountNotifier.dispose();
     _controlEnabledNotifier.dispose();
     _gatedValueNotifier.dispose();
-    _checkboxValueNotifier.dispose();
 
     super.dispose();
   }
