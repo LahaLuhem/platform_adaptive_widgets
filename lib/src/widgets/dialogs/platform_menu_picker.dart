@@ -21,6 +21,7 @@ import 'package:material_ui/material_ui.dart' show DropdownMenu, DropdownMenuEnt
 import '/src/models/dialogs/platform_menu_picker_data.dart';
 import '/src/models/platform_widget_base.dart';
 import '/src/widgets/interaction/cupertino_checkmark_row.dart';
+import '/src/widgets/interaction/disabled_semantics.dart';
 
 /// Cupertino shows a menu up to this many items, and a wheel past it. The number is ours, not Apple's.
 /// A wheel shows about 5 rows
@@ -546,32 +547,38 @@ final class const _CupertinoPickerField({
     final selectedLabel = selectedIndex == null ? null : transformed[selectedIndex!].label;
 
     if (useIconButton && leadingIcon != null) {
-      return CupertinoButton(
-        onPressed: isEnabled ? onTap : null,
-        sizeStyle: .medium,
-        padding: .zero,
-        child: leadingIcon!,
+      return DisabledSemantics(
+        isEnabled: isEnabled,
+        child: CupertinoButton(
+          onPressed: isEnabled ? onTap : null,
+          sizeStyle: .medium,
+          padding: .zero,
+          child: leadingIcon!,
+        ),
       );
     }
 
-    return CupertinoListTile(
-      onTap: !isEnabled ? null : onTap,
-      title: Text(labelText ?? ''),
-      padding: const EdgeInsetsDirectional.only(start: 8, end: 12),
-      leadingToTitle: 8,
-      additionalInfo: selectedLabel == null ? null : Text(selectedLabel),
-      trailing: IconTheme(
-        data: IconThemeData(color: isEnabled ? null : CupertinoColors.inactiveGray),
-        child: const Column(
-          mainAxisSize: .min,
-          children: [
-            Icon(CupertinoIcons.chevron_up, size: 12),
-            Icon(CupertinoIcons.chevron_down, size: 12),
-          ],
+    return DisabledSemantics(
+      isEnabled: isEnabled,
+      child: CupertinoListTile(
+        onTap: !isEnabled ? null : onTap,
+        title: Text(labelText ?? ''),
+        padding: const EdgeInsetsDirectional.only(start: 8, end: 12),
+        leadingToTitle: 8,
+        additionalInfo: selectedLabel == null ? null : Text(selectedLabel),
+        trailing: IconTheme(
+          data: IconThemeData(color: isEnabled ? null : CupertinoColors.inactiveGray),
+          child: const Column(
+            mainAxisSize: .min,
+            children: [
+              Icon(CupertinoIcons.chevron_up, size: 12),
+              Icon(CupertinoIcons.chevron_down, size: 12),
+            ],
+          ),
         ),
+        backgroundColor: backgroundColor,
+        leading: leadingIcon,
       ),
-      backgroundColor: backgroundColor,
-      leading: leadingIcon,
     );
   }
 }

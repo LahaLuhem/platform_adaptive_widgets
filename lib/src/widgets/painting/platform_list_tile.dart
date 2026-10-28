@@ -125,34 +125,39 @@ class const PlatformListTile({
     final resolvedColor = cupertinoListTileData?.color ?? color;
     final resolvedPadding = cupertinoListTileData?.padding ?? padding;
 
-    return isNotched
-        ? CupertinoListTile.notched(
-            key: widgetKey,
-            title: title,
-            subtitle: subtitle,
-            leading: leading,
-            trailing: trailing,
-            onTap: resolvedOnTap,
-            backgroundColor: resolvedColor,
-            padding: resolvedPadding,
-            leadingSize: resolvedLeadingSize,
-            leadingToTitle: resolvedLeadingToTitle,
-            additionalInfo: cupertinoListTileData?.additionalInfo,
-            backgroundColorActivated: cupertinoListTileData?.backgroundColorActivated,
-          )
-        : CupertinoListTile(
-            key: widgetKey,
-            title: title,
-            subtitle: subtitle,
-            leading: leading,
-            trailing: trailing,
-            onTap: resolvedOnTap,
-            backgroundColor: resolvedColor,
-            padding: resolvedPadding,
-            leadingSize: resolvedLeadingSize,
-            leadingToTitle: resolvedLeadingToTitle,
-            additionalInfo: cupertinoListTileData?.additionalInfo,
-            backgroundColorActivated: cupertinoListTileData?.backgroundColorActivated,
-          );
+    return Semantics(
+      // Not DisabledSemantics, whose IgnorePointer would stop a switch in the row, which Material keeps
+      // working. Goes once CupertinoListTile takes `enabled` (https://github.com/flutter/flutter/issues/195327).
+      enabled: isEnabled ? null : false,
+      child: isNotched
+          ? CupertinoListTile.notched(
+              key: widgetKey,
+              title: title,
+              subtitle: subtitle,
+              leading: leading,
+              trailing: trailing,
+              onTap: resolvedOnTap,
+              backgroundColor: resolvedColor,
+              padding: resolvedPadding,
+              leadingSize: resolvedLeadingSize,
+              leadingToTitle: resolvedLeadingToTitle,
+              additionalInfo: cupertinoListTileData?.additionalInfo,
+              backgroundColorActivated: cupertinoListTileData?.backgroundColorActivated,
+            )
+          : CupertinoListTile(
+              key: widgetKey,
+              title: title,
+              subtitle: subtitle,
+              leading: leading,
+              trailing: trailing,
+              onTap: resolvedOnTap,
+              backgroundColor: resolvedColor,
+              padding: resolvedPadding,
+              leadingSize: resolvedLeadingSize,
+              leadingToTitle: resolvedLeadingToTitle,
+              additionalInfo: cupertinoListTileData?.additionalInfo,
+              backgroundColorActivated: cupertinoListTileData?.backgroundColorActivated,
+            ),
+    );
   }
 }

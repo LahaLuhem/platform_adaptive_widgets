@@ -8,6 +8,7 @@ import 'package:material_ui/material_ui.dart' show ButtonSegment, SegmentedButto
 
 import '/src/models/interaction/platform_segment_button_data.dart';
 import '/src/models/platform_widget_base.dart';
+import '/src/widgets/interaction/disabled_semantics.dart';
 
 /// [SegmentedButton] on Material, [CupertinoSlidingSegmentedControl] on Cupertino.
 ///
@@ -73,23 +74,34 @@ class const PlatformSegmentButton<T extends Object>({
   @override
   @protected
   @visibleForOverriding
-  Widget buildCupertino(BuildContext context) => CupertinoSlidingSegmentedControl<T>(
-    key: widgetKey,
-    children: {for (final choice in choices) choice: segmentBuilder(choice)},
-    groupValue: selectedChoice,
-    onValueChanged: onSelectionChanged,
-    disabledChildren:
+  Widget buildCupertino(BuildContext context) {
+    final disabledChildren =
         cupertinoSegmentButtonData?.disabledChildren ??
-        kDefaultCupertinoSegmentButtonDisabledChildren,
-    thumbColor: cupertinoSegmentButtonData?.thumbColor ?? kDefaultCupertinoSegmentButtonThumbColor,
-    padding: cupertinoSegmentButtonData?.padding ?? kDefaultCupertinoSegmentButtonPadding,
-    backgroundColor:
-        cupertinoSegmentButtonData?.backgroundColor ??
-        kDefaultCupertinoSegmentButtonBackgroundColor,
-    proportionalWidth:
-        cupertinoSegmentButtonData?.proportionalWidth ??
-        kDefaultCupertinoSegmentButtonProportionalWidth,
-    isMomentary:
-        cupertinoSegmentButtonData?.isMomentary ?? kDefaultCupertinoSegmentButtonIsMomentary,
-  );
+        kDefaultCupertinoSegmentButtonDisabledChildren;
+
+    return CupertinoSlidingSegmentedControl<T>(
+      key: widgetKey,
+      children: {
+        for (final choice in choices)
+          choice: DisabledSemantics(
+            isEnabled: !disabledChildren.contains(choice),
+            child: segmentBuilder(choice),
+          ),
+      },
+      groupValue: selectedChoice,
+      onValueChanged: onSelectionChanged,
+      disabledChildren: disabledChildren,
+      thumbColor:
+          cupertinoSegmentButtonData?.thumbColor ?? kDefaultCupertinoSegmentButtonThumbColor,
+      padding: cupertinoSegmentButtonData?.padding ?? kDefaultCupertinoSegmentButtonPadding,
+      backgroundColor:
+          cupertinoSegmentButtonData?.backgroundColor ??
+          kDefaultCupertinoSegmentButtonBackgroundColor,
+      proportionalWidth:
+          cupertinoSegmentButtonData?.proportionalWidth ??
+          kDefaultCupertinoSegmentButtonProportionalWidth,
+      isMomentary:
+          cupertinoSegmentButtonData?.isMomentary ?? kDefaultCupertinoSegmentButtonIsMomentary,
+    );
+  }
 }

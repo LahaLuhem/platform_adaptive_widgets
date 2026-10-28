@@ -6,7 +6,7 @@ library;
 
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:checks/checks.dart';
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoListTile;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoListTile, CupertinoSlider;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/semantics.dart' show SemanticsData;
 import 'package:flutter/widgets.dart';
@@ -207,8 +207,6 @@ final _segment = _Path(
 // Each has its own row under 'until upstream' below.
 const _noLookOnIos = {'slider', 'row', 'search bar'};
 
-const _toldOnIos = {'switch', 'text field', 'search bar', 'actions menu item'};
-
 Map<String, _Path> _where(bool Function(String name) keep) =>
     Map.fromEntries(_paths.entries.where((path) => keep(path.key)));
 
@@ -286,18 +284,45 @@ void main() {
       'tells screen readers it is disabled',
       examples: _paths,
       outline: _saysDisabled,
-      variant: androidOnly,
     );
 
-    scenarioOutlineWidgets<_Path>(
-      'tells screen readers it is disabled',
-      examples: _where(_toldOnIos.contains),
-      outline: _saysDisabled,
-      variant: iosOnly,
-    );
+    scenarioWidgets('tells screen readers a disabled segment is disabled', (tester) async {
+      final [segment] = await _disabledTargets(tester, _segment);
 
-    test('covers every class with a field that disables something', () {
+      check(segment.flagsCollection.isEnabled).equals(.isFalse);
+    }, variant: iosOnly);
+
+    scenarioWidgets('leaves a control inside a disabled row working', (tester) async {
+      var toggles = 0;
+      await pumpPlatformWidget(
+        tester,
+        _InBody(
+          PlatformListTile(
+            title: const Text(_label),
+            isEnabled: false,
+            trailing: PlatformSwitch(value: true, onChanged: (_) => toggles++),
+          ),
+        ),
+      );
+      await tester.tap(find.byType(PlatformSwitch));
+      await tester.pump();
+
+      check(toggles).equals(1);
+    });
+
+    scenarioWidgets("keeps a widget's state when it's disabled", (tester) async {
+      // The slider stands in for every path that disables through the package's own wrapper.
+      final slider = _paths['slider']!;
+      await pumpPlatformWidget(tester, slider.screen(isEnabled: true));
+      final enabled = tester.state(find.byType(CupertinoSlider));
+      await pumpPlatformWidget(tester, slider.screen(isEnabled: false));
+
+      check(tester.state(find.byType(CupertinoSlider))).identicalTo(enabled);
+    }, variant: iosOnly);
+
+    test('covers every public class with a field that disables something', () {
       final owners = libSrcUnits
+          .where((unit) => exportedPaths.contains(unit.path))
           .expand((unit) => unit.parsed.unit.declarations.whereType<ClassDeclaration>())
           .where(
             (declaration) =>
@@ -347,6 +372,17 @@ void main() {
         }),
       ).throws<NoSuchMethodError>();
     });
+
+    scenarioWidgets('a disabled segment still offers screen readers a tap on iOS', (tester) async {
+      final [segment] = await _disabledTargets(tester, _segment);
+
+      check(
+        because:
+            'Upstream drops it now (https://github.com/flutter/flutter/issues/195515). Move the '
+            'segment into "tells screen readers it is disabled".',
+        segment.hasAction(.tap),
+      ).isTrue();
+    }, variant: iosOnly);
 
     scenarioWidgets('a disabled slider gives screen readers no value on iOS', (tester) async {
       final [slider] = await _disabledTargets(tester, _paths['slider']!);
