@@ -20,6 +20,7 @@ import 'package:material_ui/material_ui.dart' show DropdownMenu, DropdownMenuEnt
 
 import '/src/models/dialogs/platform_menu_picker_data.dart';
 import '/src/models/platform_widget_base.dart';
+import '/src/widgets/interaction/cupertino_checkmark_row.dart';
 
 /// Cupertino shows a menu up to this many items, and a wheel past it. The number is ours, not Apple's.
 /// A wheel shows about 5 rows
@@ -474,58 +475,57 @@ final class const _CupertinoPickerPage<T extends Object>({
     backgroundColor: backgroundColor,
     isEnabled: isEnabled,
     useIconButton: useIconButton,
-    onTap: () async {
-      final listScrollController = ScrollController();
-      final firstRow = GlobalKey();
-      // Opens on the current row once the page has laid out. Every row is as tall as the first, which
-      // says where the current one sits, and stopping at the list's end keeps it from bouncing back.
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final rowHeight = firstRow.currentContext?.size?.height;
-        if (rowHeight != null && listScrollController.hasClients) {
-          listScrollController.jumpTo(
-            min((selectedIndex ?? 0) * rowHeight, listScrollController.position.maxScrollExtent),
-          );
-        }
-      });
+    onTap: () => _onTap(context),
+  );
 
-      final picked = await Navigator.of(context).push(
-        CupertinoPageRoute<int>(
-          builder: (context) => CupertinoPageScaffold(
-            // ignore: prefer-define-hero-tag, the default tag slides this bar out of the one underneath, like any iOS push.
-            navigationBar: CupertinoNavigationBar(
-              middle: labelText == null ? null : Text(labelText!),
-            ),
-            child: ListView.builder(
-              controller: listScrollController,
-              itemCount: items.length,
-              itemBuilder: (context, index) => DecoratedBox(
-                key: index != 0 ? null : firstRow,
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: CupertinoColors.separator.resolveFrom(context),
-                      width: 0,
-                    ),
+  Future<void> _onTap(BuildContext context) async {
+    final listScrollController = ScrollController();
+    final firstRow = GlobalKey();
+    // Opens on the current row once the page has laid out. Every row is as tall as the first, which
+    // says where the current one sits, and stopping at the list's end keeps it from bouncing back.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final rowHeight = firstRow.currentContext?.size?.height;
+      if (rowHeight != null && listScrollController.hasClients) {
+        listScrollController.jumpTo(
+          min((selectedIndex ?? 0) * rowHeight, listScrollController.position.maxScrollExtent),
+        );
+      }
+    });
+
+    final picked = await Navigator.of(context).push(
+      CupertinoPageRoute<int>(
+        builder: (context) => CupertinoPageScaffold(
+          navigationBar: CupertinoNavigationBar(
+            middle: labelText == null ? null : Text(labelText!),
+          ),
+          child: ListView.builder(
+            controller: listScrollController,
+            itemCount: items.length,
+            itemBuilder: (context, index) => DecoratedBox(
+              key: index != 0 ? null : firstRow,
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: CupertinoColors.separator.resolveFrom(context),
+                    width: 0,
                   ),
                 ),
-                child: CupertinoListTile(
-                  leading: transformed[index].iconData == null
-                      ? null
-                      : Icon(transformed[index].iconData),
-                  title: Text(transformed[index].label ?? ''),
-                  trailing: index != selectedIndex ? null : const Icon(CupertinoIcons.check_mark),
-                  onTap: () => Navigator.of(context).pop(index),
-                ),
+              ),
+              child: CupertinoCheckmarkRow(
+                label: transformed[index].label ?? '',
+                iconData: transformed[index].iconData,
+                isPicked: index == selectedIndex,
+                onTap: () => Navigator.of(context).pop(index),
               ),
             ),
           ),
         ),
-      );
-      listScrollController.dispose();
+      ),
+    );
+    listScrollController.dispose();
 
-      if (picked != null && picked != selectedIndex) onSelected?.call(items[picked]);
-    },
-  );
+    if (picked != null && picked != selectedIndex) onSelected?.call(items[picked]);
+  }
 }
 
 /// What each Cupertino look shows until tapped: a row with the current value, or only the icon.
