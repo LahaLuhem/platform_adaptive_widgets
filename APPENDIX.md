@@ -193,56 +193,6 @@ When a widget is fundamentally interactive but a caller wants a display-only var
 answer is to use a different widget (e.g. `Text` instead of `PlatformButton` with a no-op callback),
 not to make the callback nullable.
 
-<a id="checkbox-tristate-split"></a>
-### Tristate checkbox split
-
-`PlatformCheckbox`'s default constructor exposes non-null `value: bool` /
-`onChanged: ValueChanged<bool>`: the common 2-state case. The indeterminate (third) state, supported
-natively on both platforms, is a second constructor, `PlatformCheckbox.tristate`, whose `value` /
-`onChanged` are nullable (`bool?`).
-
-**Why not one `tristate`-flagged widget with nullable `value` / `onChanged` (Flutter's own shape).**
-That forces the nullability dance (`v!`, `v ?? false`, `bool?`-typed state) onto the *common*
-2-state caller, contradicting [#callback-nullability](#callback-nullability): the package's
-interactive widgets give callers non-null callbacks, with `PlatformSwitch` as the model. The
-checkbox is the one control with a genuine third state, so the third state gets its own constructor
-and the default stays non-null. Dropping tristate entirely was rejected, both platforms support the
-indeterminate state natively (Cupertino renders `null` as a dash, like Material), and it's
-demonstrated in the example.
-
-**Why 2 constructors on one class can't share a single `onChanged` field.** `buildMaterial` /
-`buildCupertino` hand `onChanged` to `Checkbox` / `CupertinoCheckbox`, both of which type it
-`ValueChanged<bool?>?`, so a stored callback must be `ValueChanged<bool?>`. `value` *can* be one
-shared `bool?` field (the default constructor narrows it with a `required bool this.value` formal,
-`bool` is a subtype of `bool?`), but `onChanged` cannot: function parameters are contravariant, so
-`ValueChanged<bool>` is a *supertype* of `ValueChanged<bool?>`, and storing the default's
-`ValueChanged<bool>` into a `ValueChanged<bool?>` field needs an adapter closure, which can't run in
-a `const` constructor.
-
-**How.** 2 **private** callback fields, `_onChanged` (`ValueChanged<bool>?`) and
-`_onChangedTristate` (`ValueChanged<bool?>?`), exactly one non-null per instance. Keep both
-constructors `const`. The default ctor binds its callback as a `this._onChanged` initializing formal
-*typed* `ValueChanged<bool>`: Dart drops the leading underscore, so callers still pass a non-null
-`onChanged:` and no `prefer_initializing_formals` ignore is needed. Private fields as named
-initializing formals need a recent Dart, which the `pubspec.yaml` floor already guarantees. (Omit
-the type and the formal inherits the field's nullable type, silently re-opening `onChanged` to
-`null`: the bug to avoid.) The `.tristate` ctor assigns in the initializer list instead, it can't
-use the formal because its field `_onChangedTristate` would surface as `onChangedTristate`, while
-its public parameter must also be `onChanged` (the lint leaves that assignment alone for the same
-reason). Widening to the underlying `ValueChanged<bool?>?` happens at *build* time, not construction
-(so both ctors stay `const`): build uses `_onChangedTristate ?? _adaptedOnChanged`, with
-`_adaptedOnChanged` = `(v) => _onChanged!(v!)`: safe, reached only in 2-state mode where
-`tristate: false` never yields null. `_isTristate` is `_onChangedTristate != null`.
-
-**Chosen over 2 sibling classes** (`PlatformCheckbox` + `PlatformTristateCheckbox`) for the single
-discoverable name plus a `.tristate` constructor. The costs are minor and accepted:
-
-- One extra null pointer-slot per instance (the unused callback field). Not a heap allocation,
-  `null` doesn't allocate, and object layout is per-class, so it isn't elided, ~8 bytes on an
-  immutable widget.
-- `value` is one `bool?` field, so `widget.value` reads back as `bool?` even on the 2-state path
-  (the default constructor still rejects `null` at the call site via the narrowing formal).
-
 ### Carve-outs
 
 - **Callbacks tightly coupled to a single visual field** (e.g. `onActiveThumbImageError` for
@@ -328,7 +278,6 @@ parameter). Each row maps a single package field to its native counterparts.
 | `PlatformListTile`      | `leadingWidth`     | `ListTile.minLeadingWidth` (`double?`)                                 | `CupertinoListTile.leadingSize` (`double`, non-null, default `28.0` for base / `30.0` for notched) | Package exposes `double?`. Material passes through. Cupertino branch substitutes `kDefaultCupertinoListTileLeadingSize` for the base variant or `kDefaultCupertinoNotchedListTileLeadingSize` for the notched variant when null.                                                                                                                                                                                                         |
 | `PlatformListTile`      | `color`            | `ListTile.tileColor` (`Color?`)                                        | `CupertinoListTile.backgroundColor` (`Color?`)                                                     | Same `Color?` nullability on both, differ only by parameter name. Package's `color` chosen for brevity.                                                                                                                                                                                                                                                                                                                                  |
 | `PlatformListTile`      | `padding`          | `ListTile.contentPadding` (`EdgeInsetsGeometry?`)                      | `CupertinoListTile.padding` (`EdgeInsetsGeometry?`)                                                | Same `EdgeInsetsGeometry?` nullability on both, differ only by parameter name.                                                                                                                                                                                                                                                                                                                                                           |
-| `PlatformRadio`         | `fillColor`        | `Radio.fillColor` (`WidgetStateProperty<Color?>?`)                     | `CupertinoRadio.fillColor` (`Color?`)                                                              | Package exposes the richer `WidgetStateProperty<Color?>?`. Material passes through. Cupertino branch resolves to a single `Color?` via `.resolve({.selected, if (!isEnabled) .disabled})`: radios primarily render the fill colour when selected. The build-time-known `isEnabled` flag drives the disabled-state branch.                                                                                                                |
 | `PlatformExpansionTile` | `child`            | `ExpansionTile.children` (`List<Widget>`, default `<Widget>[]`)        | `CupertinoExpansionTile.child` (`Widget`, required non-null)                                       | Package exposes a single `Widget child` (required non-null) since Cupertino requires it. Material branch wraps as `[child]`. Callers wanting multiple Material children wrap with `Column` at the call site.                                                                                                                                                                                                                             |
 | `PlatformSearchBar`     | `hintText`         | `SearchBar.hintText` (`String?`)                                       | `CupertinoSearchTextField.placeholder` (`String?`)                                                 | Same `String?` nullability on both, differ only by parameter name. Package's `hintText` chosen to mirror Material's term and the package's own `PlatformTextField.hintText`.                                                                                                                                                                                                                                                             |
 | `PlatformSearchBar`     | `leading`          | `SearchBar.leading` (`Widget?`)                                        | `CupertinoSearchTextField.prefixIcon` (`Widget`, non-null, default `Icon(CupertinoIcons.search)`)  | Package exposes `Widget?`. Material passes through. Cupertino branch substitutes `kDefaultCupertinoSearchBarLeading` when null.                                                                                                                                                                                                                                                                                                          |

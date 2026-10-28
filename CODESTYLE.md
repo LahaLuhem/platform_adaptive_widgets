@@ -63,20 +63,20 @@ renames don't break callers.
 
   ```dart
   // Prefer:
-  class PlatformRadio<T extends Object> extends PlatformWidgetKeyedBase { … }
+  class PlatformSingleSelectList<T extends Object> extends PlatformWidgetBase { … }
   class PlatformSegmentButton<T extends Object> extends PlatformWidgetKeyedBase { … }
 
   // Over:
-  class PlatformRadio<T> extends PlatformWidgetKeyedBase { … }
+  class PlatformSingleSelectList<T> extends PlatformWidgetBase { … }
 
   // Exception (a modal's result type may be null / void):
   Future<T?> showPlatformSheet<T>(…) { … }
   ```
 
   Bounded `T` is a subtype of unbounded `T` in parameter positions, so wrapping Flutter's raw-`<T>`
-  widgets (e.g. `Radio<T>`, `RadioGroup<T>`) with a `<T extends Object>`-bound package widget is
-  type-safe, the bound narrows the accepted set. The upstream's looser slot still accepts the
-  narrower value.
+  widgets (e.g. `RadioGroup<T>`, `RadioListTile<T>`) with a `<T extends Object>`-bound package
+  widget is type-safe, the bound narrows the accepted set. The upstream's looser slot still accepts
+  the narrower value.
 - **No Java ceremony.** No getter-only abstract base classes, no `AbstractFooFactory`, no
   interface-per-class. Use mixins / sealed classes / records / extension types where they add
   clarity, not weight. The `PlatformWidgetBase` hierarchy is the legitimate exception, it encodes

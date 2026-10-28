@@ -51,9 +51,9 @@ Views subscribe via `ValueListenableBuilder`.
 - **Naming: `_xNotifier` for the private field, `xListenable` for the public getter.**
 
   ```dart
-  final _checkboxValueNotifier = ValueNotifier<bool?>(true);
+  final _gatedValueNotifier = ValueNotifier(true);
 
-  ValueListenable<bool?> get checkboxValueListenable => _checkboxValueNotifier;
+  ValueListenable<bool> get gatedValueListenable => _gatedValueNotifier;
   ```
 
   The suffixes make it unambiguous which side reads vs. writes, and prevent the bare-noun field from
@@ -68,8 +68,8 @@ Views subscribe via `ValueListenableBuilder`.
   in lockstep. Promote the record to a top-level `typedef` so the public listenable's type does not
   fail the `library_private_types_in_public_api` lint.
 - **Dispose every notifier in `dispose()`** before `super.dispose()`. The
-  [`selection_demo_view_model.dart`](./lib/features/catalog/views/selection_demo/selection_demo_view_model.dart)
-  models the pattern.
+  [`showcase_view_model.dart`](./lib/features/showcase/views/showcase_view_model.dart) models the
+  pattern.
 - **VM-internal state stays plain.** Fields no widget observes (controllers held by the VM,
   subscriptions, thresholds) are plain Dart fields, no notifier ceremony. Widget controllers the
   view binds to *are* notifier-shaped already (`TextEditingController`, `ScrollController`,
@@ -157,11 +157,8 @@ void onAcceptAnyToggled({required bool value}) =>
 onChanged: (value) => viewModel.onAcceptAnyToggled(value: value),
 ```
 
-The current example uses positional-bool callbacks in a few places
-(`onCheckboxChanged(bool? value)`, `onSwitchChanged(bool value)`) with an
-`// ignore: avoid_positional_boolean_parameters` directive because the widget's callback signature
-is positional. New VM methods should prefer the named-arg form. Keep the positional form only when
-it directly matches a third-party widget's tear-off signature.
+Keep a positional `bool` only when the method is a tear-off for a third-party widget's positional
+callback, with an `// ignore: avoid_positional_boolean_parameters` saying so.
 
 ---
 
