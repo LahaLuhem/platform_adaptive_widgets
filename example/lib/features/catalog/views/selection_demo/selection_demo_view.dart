@@ -12,6 +12,7 @@ import '/features/catalog/widgets/property_editor/bool_knob.dart';
 import '/features/catalog/widgets/property_editor/color_knob.dart';
 import '/features/catalog/widgets/property_editor/property_editor.dart';
 import '/features/catalog/widgets/property_editor/segment_knob.dart';
+import '/features/catalog/widgets/property_editor/string_knob.dart';
 import 'selection_demo_view_model.dart';
 
 /// The Catalog's Selection controls section.
@@ -26,33 +27,21 @@ class SelectionDemoView extends StatelessWidget {
       spacing: 16,
       children: [
         DemoCard(
-          title: 'PlatformCheckbox',
-          description: 'Material Checkbox · CupertinoCheckbox.',
+          title: 'PlatformMultiSelectList',
+          description: 'Material CheckboxListTiles · checkmark rows in a Cupertino section.',
           child: PropertyEditor(
-            preview: PlatformCheckbox(
-              value: viewModel.checkboxValue,
-              onChanged: (value) => viewModel.onCheckboxToggled(value: value),
-              isEnabled: viewModel.shouldEnableCheckbox,
-              activeColor: viewModel.checkboxActiveColor,
-              checkColor: viewModel.checkboxCheckColor,
+            preview: PlatformMultiSelectList(
+              options: Weekday.values.toSet(),
+              selected: viewModel.repeatDays,
+              label: (day) => day.name,
+              onChanged: viewModel.onRepeatDaysChanged,
+              header: viewModel.repeatHeader,
             ),
             knobs: [
-              BoolKnob(
-                label: 'isEnabled',
-                value: viewModel.shouldEnableCheckbox,
-                onChanged: (value) => viewModel.onCheckboxEnabledToggled(value: value),
-              ),
-              ColorKnob(
-                label: 'activeColor',
-                value: viewModel.checkboxActiveColor,
-                onChanged: viewModel.onCheckboxActiveColorSelected,
-                onCleared: () => viewModel.onCheckboxActiveColorSelected(null),
-              ),
-              ColorKnob(
-                label: 'checkColor',
-                value: viewModel.checkboxCheckColor,
-                onChanged: viewModel.onCheckboxCheckColorSelected,
-                onCleared: () => viewModel.onCheckboxCheckColorSelected(null),
+              StringKnob(
+                label: 'header',
+                value: viewModel.repeatHeader ?? '',
+                onChanged: viewModel.onRepeatHeaderChanged,
               ),
             ],
           ),
@@ -140,7 +129,7 @@ class SelectionDemoView extends StatelessWidget {
         DemoCard(
           title: 'Shared selection',
           description:
-              'Segmented button, radio group and menu picker bound to one value, '
+              'Segmented button, single-select list and menu picker bound to one value, '
               'change any one and the others follow.',
           child: Column(
             crossAxisAlignment: .stretch,
@@ -152,20 +141,11 @@ class SelectionDemoView extends StatelessWidget {
                 segmentBuilder: (direction) => Text(direction.name),
                 onSelectionChanged: viewModel.onDirectionChanged,
               ),
-              PlatformRadioGroupBuilder<AxisDirection>(
-                values: AxisDirection.values,
-                groupValue: viewModel.selectedDirection,
+              PlatformSingleSelectList(
+                options: AxisDirection.values.toSet(),
+                selected: viewModel.selectedDirection,
+                label: (direction) => direction.name,
                 onChanged: viewModel.onDirectionChanged,
-                itemBuilder: (_, direction) => Row(
-                  mainAxisSize: .min,
-                  children: [
-                    PlatformRadio(
-                      value: direction,
-                      materialRadioData: const MaterialRadioData(visualDensity: .compact),
-                    ),
-                    Text(direction.name),
-                  ],
-                ),
               ),
               PlatformMenuPicker(
                 items: AxisDirection.values,

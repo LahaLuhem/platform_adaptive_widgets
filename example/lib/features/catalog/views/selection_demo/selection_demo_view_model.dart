@@ -1,15 +1,14 @@
 import 'package:flutter/widgets.dart' show AxisDirection, Color;
+import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart' show Weekday;
 import 'package:pmvvm/pmvvm.dart';
 
 import '/features/catalog/data/enums/menu_picker_length.dart';
 
-/// State for the Selection controls demo. Its segmented button, radio group and first menu picker
-/// share [selectedDirection], so moving one moves the others.
+/// State for the Selection controls demo. Its segmented button, single-select list and first menu
+/// picker share [selectedDirection], so moving one moves the others.
 final class SelectionDemoViewModel extends ViewModel {
-  var _checkboxValue = true;
-  var _shouldEnableCheckbox = true;
-  Color? _checkboxActiveColor;
-  Color? _checkboxCheckColor;
+  var _repeatDays = {Weekday.saturday, Weekday.sunday};
+  String? _repeatHeader = 'Repeat';
 
   var _isSwitchOn = false;
   var _shouldEnableSwitch = true;
@@ -28,13 +27,9 @@ final class SelectionDemoViewModel extends ViewModel {
   var _menuPickerLength = MenuPickerLength.menu;
   int? _pickedItem = 1;
 
-  bool get checkboxValue => _checkboxValue;
+  Set<Weekday> get repeatDays => _repeatDays;
 
-  bool get shouldEnableCheckbox => _shouldEnableCheckbox;
-
-  Color? get checkboxActiveColor => _checkboxActiveColor;
-
-  Color? get checkboxCheckColor => _checkboxCheckColor;
+  String? get repeatHeader => _repeatHeader;
 
   bool get isSwitchOn => _isSwitchOn;
 
@@ -62,23 +57,14 @@ final class SelectionDemoViewModel extends ViewModel {
 
   int? get pickedItem => _pickedItem;
 
-  void onCheckboxToggled({required bool value}) {
-    _checkboxValue = value;
+  void onRepeatDaysChanged(Set<Weekday> days) {
+    _repeatDays = days;
     notifyListeners();
   }
 
-  void onCheckboxEnabledToggled({required bool value}) {
-    _shouldEnableCheckbox = value;
-    notifyListeners();
-  }
-
-  void onCheckboxActiveColorSelected(Color? color) {
-    _checkboxActiveColor = color;
-    notifyListeners();
-  }
-
-  void onCheckboxCheckColorSelected(Color? color) {
-    _checkboxCheckColor = color;
+  // An empty header would still draw its padding, so the knob's empty field means none.
+  void onRepeatHeaderChanged(String text) {
+    _repeatHeader = text.isEmpty ? null : text;
     notifyListeners();
   }
 

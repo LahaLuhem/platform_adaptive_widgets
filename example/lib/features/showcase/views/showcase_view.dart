@@ -106,27 +106,6 @@ class ShowcaseView extends StatelessWidget {
                 ),
               ),
               NuanceCard(
-                title: 'Tri-state, faithfully',
-                body:
-                    'Both the Material and Cupertino checkboxes have a native third, '
-                    'indeterminate state, rendered as a dash rather than a check. '
-                    'PlatformCheckbox.tristate exposes it on both: value and onChanged go '
-                    'nullable, and taps cycle true, false, null.',
-                demo: ValueListenableBuilder(
-                  valueListenable: viewModel.checkboxValueListenable,
-                  builder: (_, value, _) => Row(
-                    spacing: 12,
-                    children: [
-                      PlatformCheckbox.tristate(
-                        value: value,
-                        onChanged: (newValue) => viewModel.onCheckboxToggled(value: newValue),
-                      ),
-                      Text('Value: $value'),
-                    ],
-                  ),
-                ),
-              ),
-              NuanceCard(
                 title: 'Large titles, where they belong',
                 body:
                     'Cupertino has a large navigation title that collapses on scroll. Material has '

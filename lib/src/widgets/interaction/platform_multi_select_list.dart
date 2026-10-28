@@ -18,6 +18,9 @@ const _kSelectedOutsideMessage =
 ///
 /// Guidelines: [M3 checkboxes](https://m3.material.io/components/checkbox/guidelines),
 /// [HIG lists and tables](https://developer.apple.com/design/human-interface-guidelines/lists-and-tables#Best-practices).
+///
+/// Example:
+/// {@example /example/lib/snippets/interaction/platform_multi_select_list.dart#platform_multi_select_list}
 class const PlatformMultiSelectList<T extends Object>({
   /// Shown top to bottom in the set's order.
   required final Set<T> options,

@@ -19,6 +19,9 @@ const _kSelectedMissingMessage = 'Pass one of the options as selected, or nothin
 ///
 /// Guidelines: [M3 radio buttons](https://m3.material.io/components/radio-button/guidelines),
 /// [HIG lists and tables](https://developer.apple.com/design/human-interface-guidelines/lists-and-tables#Best-practices).
+///
+/// Example:
+/// {@example /example/lib/snippets/interaction/platform_single_select_list.dart#platform_single_select_list}
 class const PlatformSingleSelectList<T extends Object>({
   /// Shown top to bottom in the set's order.
   required final Set<T> options,
