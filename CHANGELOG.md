@@ -12,6 +12,8 @@
 - \[#47\] `showPlatformSheet`: content or a short task in a sheet, iOS's sheet or M3's bottom sheet
 - \[#47\] `PlatformUnsavedChanges`: closing a sheet with unsaved changes asks first
 - \[#47\] `useSafeArea` keeps a body that doesn't scroll clear of the bars: `PlatformScaffold`, `showPlatformSheet`, `showPlatformFullscreenDialog`
+- \[#53\] `PlatformMultiSelectList`: checkmark rows on iOS, checkboxes on Android
+- \[#54\] `PlatformSingleSelectList`: checkmark rows on iOS, radios on Android
 
 ### Changed
 - \[#46\] Full-screen dialog: slide-up page on iOS, edge to edge on Android
@@ -46,6 +48,8 @@
 - **BREAKING** \[#55\] `PlatformButton.icon`'s `iconAlignment`: the icon leads on both looks
 - **BREAKING** \[#47\] `showPlatformDialog`, `MaterialDialogData`: use `showPlatformSheet`, or `showPlatformRawDialog` for your own surface
 - **BREAKING** \[#50\] `showPlatformModalBottomSheet`: use `showPlatformSheet`, or `showPlatformRawModalBottomSheet` for your own surface
+- **BREAKING** \[#53\] `PlatformCheckbox`, `MaterialCheckboxData`, `CupertinoCheckboxData`: use `PlatformMultiSelectList`
+- **BREAKING** \[#54\] `PlatformRadio`, `PlatformRadioGroupBuilder`, `MaterialRadioData`, `CupertinoRadioData`: use `PlatformSingleSelectList`
 
 ## [2.2.0] - 2026-09-13
 ### Added
