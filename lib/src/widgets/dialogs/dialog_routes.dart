@@ -1,4 +1,5 @@
 import 'package:cupertino_ui/cupertino_ui.dart' show showCupertinoDialog;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show showDialog;
 
@@ -6,6 +7,7 @@ import '/src/models/dialogs/const_values.dart';
 
 /// Takes an already-wrapped [builder] and only passes arguments along. Top-level rather than inline, so
 /// release builds can drop the other platform's branch.
+@internal
 Future<T?> showMaterialDialogRoute<T>({
   required BuildContext context,
   required WidgetBuilder builder,
@@ -37,6 +39,7 @@ Future<T?> showMaterialDialogRoute<T>({
 );
 
 /// The Cupertino half of [showMaterialDialogRoute].
+@internal
 Future<T?> showCupertinoDialogRoute<T>({
   required BuildContext context,
   required WidgetBuilder builder,

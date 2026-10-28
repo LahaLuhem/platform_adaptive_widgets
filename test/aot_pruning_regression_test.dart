@@ -21,25 +21,15 @@
 @TestOn('vm')
 library;
 
-import 'dart:io';
-
-import 'package:analyzer/dart/analysis/features.dart';
-import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/lib_src.dart';
+
 const _helperHomeBasename = 'platform_value.dart';
-
-const _designLanguageHomeBasename = 'design_language.dart';
-
-const _halfNames = {'buildMaterial', 'buildCupertino'};
-
-// The analyzer doesn't carry the base's annotations over to overrides.
-const _halfLocks = {'protected', 'visibleForOverriding'};
 
 const _forbiddenHelperNames = {
   'platformValue',
@@ -52,7 +42,7 @@ void main() {
   group('AOT pruning regression guard', () {
     // The helpers' own definitions aren't calls.
     test('no caller of dispatch helpers outside $_helperHomeBasename', () {
-      final offenders = _unitsExcept({_helperHomeBasename}).expand((unit) {
+      final offenders = libSrcUnitsExcept({_helperHomeBasename}).expand((unit) {
         final visitor = _HelperCallVisitor(unit.path, unit.parsed.lineInfo);
         unit.parsed.unit.accept(visitor);
 
@@ -72,11 +62,11 @@ void main() {
 
     test('no internal helper in lib/src takes both material* and cupertino* '
         'function-typed params', () {
-      final offenders = _unitsExcept({_helperHomeBasename}).expand((unit) {
+      final offenders = libSrcUnitsExcept({_helperHomeBasename}).expand((unit) {
         final visitor = _DispatchHelperVisitor(
           unit.path,
           unit.parsed.lineInfo,
-          isExported: _exportedPaths.contains(unit.path),
+          isExported: exportedPaths.contains(unit.path),
         );
         unit.parsed.unit.accept(visitor);
 
@@ -96,68 +86,7 @@ void main() {
       ).isEmpty();
     });
   });
-
-  group('Look-picking guard', () {
-    test('nothing in lib/src but $_designLanguageHomeBasename reads defaultTargetPlatform', () {
-      final offenders = _unitsExcept({_designLanguageHomeBasename}).expand((unit) {
-        final visitor = _PlatformReadVisitor(unit.path, unit.parsed.lineInfo);
-        unit.parsed.unit.accept(visitor);
-
-        return visitor.offenders;
-      });
-      check(
-        because: 'Switch on `designLanguage` instead, so every site agrees on the look.',
-        offenders,
-      ).isEmpty();
-    });
-
-    test('every ${_halfNames.join(' / ')} is $_halfLocks', () {
-      final visitors = _libSrcUnits
-          .map((unit) {
-            final visitor = _HalfLockVisitor(unit.path, unit.parsed.lineInfo);
-            unit.parsed.unit.accept(visitor);
-
-            return visitor;
-          })
-          .toList(growable: false);
-      check(visitors.fold(0, (sum, visitor) => sum + visitor.halfCount)).isGreaterThan(0);
-      check(
-        because: 'A half callable from outside skips `designLanguage`.',
-        visitors.expand((visitor) => visitor.offenders),
-      ).isEmpty();
-    });
-  });
 }
-
-typedef _Unit = ({String path, String basename, ParseStringResult parsed});
-
-final List<_Unit> _libSrcUnits = Directory('lib/src')
-    .listSync(recursive: true)
-    .whereType<File>()
-    .where((file) => file.path.endsWith('.dart'))
-    .map(
-      (dartFile) => (
-        path: dartFile.path,
-        basename: dartFile.uri.pathSegments.last,
-        parsed: parseFile(
-          path: dartFile.absolute.path,
-          featureSet: FeatureSet.latestLanguageVersion(),
-        ),
-      ),
-    )
-    .toList(growable: false);
-
-final Set<String> _exportedPaths =
-    parseFile(
-          path: File('lib/platform_adaptive_widgets.dart').absolute.path,
-          featureSet: FeatureSet.latestLanguageVersion(),
-        ).unit.directives
-        .whereType<ExportDirective>()
-        .map((export) => 'lib/${export.uri.stringValue}')
-        .toSet();
-
-Iterable<_Unit> _unitsExcept(Set<String> basenames) =>
-    _libSrcUnits.where((unit) => !basenames.contains(unit.basename));
 
 class _HelperCallVisitor(final String _filePath, final LineInfo _lineInfo)
     extends RecursiveAstVisitor<void> {
@@ -224,42 +153,5 @@ class _DispatchHelperVisitor(
         src.contains('Builder') ||
         src.contains('Callback') ||
         src.contains('Getter');
-  }
-}
-
-class _PlatformReadVisitor(final String _filePath, final LineInfo _lineInfo)
-    extends RecursiveAstVisitor<void> {
-  final List<String> offenders = [];
-
-  @override
-  void visitSimpleIdentifier(SimpleIdentifier node) {
-    // Doc comments may still name it.
-    if (node.name == 'defaultTargetPlatform' && node.thisOrAncestorOfType<Comment>() == null) {
-      final loc = _lineInfo.getLocation(node.offset);
-      offenders.add('$_filePath:${loc.lineNumber}: reads defaultTargetPlatform');
-    }
-    super.visitSimpleIdentifier(node);
-  }
-}
-
-class _HalfLockVisitor(final String _filePath, final LineInfo _lineInfo)
-    extends RecursiveAstVisitor<void> {
-  final List<String> offenders = [];
-  var halfCount = 0;
-
-  @override
-  void visitMethodDeclaration(MethodDeclaration node) {
-    final name = node.name.lexeme;
-    if (_halfNames.contains(name)) {
-      halfCount++;
-      final missing = _halfLocks.difference(
-        node.metadata.map((annotation) => annotation.name.name).toSet(),
-      );
-      if (missing.isNotEmpty) {
-        final loc = _lineInfo.getLocation(node.offset);
-        offenders.add('$_filePath:${loc.lineNumber}: $name misses $missing');
-      }
-    }
-    super.visitMethodDeclaration(node);
   }
 }

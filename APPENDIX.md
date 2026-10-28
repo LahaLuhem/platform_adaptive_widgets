@@ -37,6 +37,11 @@ or grep-and-update every caller.
   `lib/` is importable. The single-entry + `lib/src/` convention is how the ecosystem signals
   private intent. It also gives one place to audit the public surface when planning a release, and
   one place to control re-exports.
+- **Locked with `@internal`.** Anything public in a `src/` file the entry file doesn't export, like
+  a route helper or a row 2 widgets share, carries `@internal`. Another package that imports it
+  anyway gets a warning, and so does an `export` of it here.
+  [`test/internal_lock_guard_test.dart`](./test/internal_lock_guard_test.dart) fails on one that
+  misses it.
 - **Implication for refactors:** moving code *within* `lib/src/` is free (private), as long as the
   matching `export 'src/…';` line in `lib/platform_adaptive_widgets.dart` is updated to the new
   path. Moving anything *into or out of* the re-export list is a semver-visible change, minor for
@@ -60,9 +65,9 @@ or grep-and-update every caller.
   quietly stops being true. A non-virtual `build` makes forking that a compile error.
 - **Locked from outside.** The bases are `@internal`, and every half repeats the base's
   `@protected @visibleForOverriding`, since the analyzer doesn't carry them to overrides. Otherwise
-  a caller could build one half directly and skip `designLanguage`. The look-picking guard in
-  [`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart) catches a half
-  that drops them.
+  a caller could build one half directly and skip `designLanguage`.
+  [`test/look_picking_guard_test.dart`](./test/look_picking_guard_test.dart) catches a half that
+  drops them.
 - **Not a function:** it'd lose the widget's own type, so it can't be const or keyed, and DevTools
   shows `Builder` instead of `PlatformButton`.
 - **Not a mixin:** it can't enforce `@nonVirtual` the same way.
@@ -293,7 +298,9 @@ widget, those whose shared-visual fields live on a private `_PlatformXxxData` ba
    edge, and the one the compiler is blindest to.
 
 A third check asserts the guard actually discovered the known canonical widgets, so a future
-analyzer-AST change or a `lib/src/models/` move can't quietly reduce it to a vacuous pass. Bases
+analyzer-AST change or a `lib/src/models/` move can't quietly reduce it to a vacuous pass. A
+fourth asserts it finds fields on every base, since a new way of declaring them hides them all: the
+move to primary constructors did, and both checks passed on nothing until this one. Bases
 that exist only to DRY a single field across their 2 records with no flat widget twin by design,
 `_PlatformScaffoldData` and `_PlatformAppBarData`, whose lone `backgroundColor` is read straight off
 the record, are listed in the test's `_basesWithoutFlatMirror` and skipped.

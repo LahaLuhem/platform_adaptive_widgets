@@ -130,7 +130,8 @@ under `lib/src/models/<category>/platform_xxx_data.dart`. The same sub-categorie
 
 1. **The public API lives only in `lib/platform_adaptive_widgets.dart`.** That file re-exports from
    `lib/src/`. Don't make users import from `package:platform_adaptive_widgets/src/…`: the `src/`
-   subtree is private by convention. Anything callers need goes through an explicit `export`. See
+   subtree is private by convention. Anything callers need goes through an explicit `export`, and
+   anything public in a `src/` file it doesn't export carries `@internal`. See
    [`APPENDIX.md#public-api-via-single-export-file`](../APPENDIX.md#public-api-via-single-export-file).
 2. **No `print()` in library code.** Diagnostic output is the caller's responsibility (loggers,
    callbacks, the example app). `avoid_print` is already a warning in the shared lints.

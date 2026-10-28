@@ -3,6 +3,7 @@
 
 import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoColors, CupertinoDatePicker, CupertinoDatePickerMode, showCupertinoModalPopup;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '/src/models/dialogs/const_values.dart';
@@ -10,6 +11,7 @@ import '/src/models/dialogs/platform_date_picker_data.dart';
 
 /// One popup for both pickers, since Cupertino only changes the [CupertinoDatePicker]'s `mode` between
 /// them. Callers cut the [DateTime] down to what they asked for.
+@internal
 Future<DateTime?> showCupertinoPickerPopup({
   required BuildContext context,
   required CupertinoDatePickerMode mode,

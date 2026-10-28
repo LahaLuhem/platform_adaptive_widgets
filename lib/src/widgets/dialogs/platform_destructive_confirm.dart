@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '/src/models/dialogs/const_values.dart';
@@ -10,6 +11,7 @@ import 'platform_confirm_alert.dart';
 /// one-choice action sheet the HIG asks for after a destructive menu item
 /// ([HIG pull-down buttons](https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons#Best-practices)),
 /// Material a basic dialog.
+@internal
 Future<bool> showPlatformDestructiveConfirm({
   required BuildContext context,
   required String message,

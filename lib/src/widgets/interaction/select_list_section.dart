@@ -2,6 +2,7 @@
 // ignore_for_file: prefer-match-file-name
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoListSection;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Theme;
 
@@ -12,6 +13,7 @@ const _kMaterialHeaderPadding = EdgeInsetsDirectional.fromSTEB(72, 16, 24, 8);
 const _kHeaderHeadingLevel = 2;
 
 /// A select list's rows on Material, under its header.
+@internal
 final class const MaterialSelectListSection({
   required final List<Widget> rows,
   final String? header,
@@ -44,6 +46,7 @@ final class const MaterialSelectListSection({
 }
 
 /// A select list's rows on Cupertino, in an inset-grouped section under its header.
+@internal
 final class const CupertinoSelectListSection({
   required final List<Widget> rows,
   final String? header,

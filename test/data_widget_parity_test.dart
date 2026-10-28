@@ -29,14 +29,12 @@
 @TestOn('vm')
 library;
 
-import 'dart:io';
-
-import 'package:analyzer/dart/analysis/features.dart';
-import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'support/lib_src.dart';
 
 /// Bases with deliberately no flat mirror on their widget. They exist only to share one `backgroundColor`
 /// declaration between the 2 records, which the widget then reads directly. See APPENDIX.md#field-classification.
@@ -70,6 +68,15 @@ void main() {
             '`_collectBases`, or update `_knownCanonicalWidgets` if a widget was '
             'intentionally removed.',
         _knownCanonicalWidgets.difference(discovered),
+      ).isEmpty();
+    });
+
+    test('finds fields on every base (guards against checks passing on none)', () {
+      check(
+        because:
+            'A base exists to share fields, so one with none found means `_instanceFieldNames` '
+            'missed how they are declared, and the checks below pass on an empty set.',
+        bases.where((base) => base.fields.isEmpty).map((base) => base.location),
       ).isEmpty();
     });
 
@@ -141,19 +148,11 @@ void main() {
   });
 }
 
-Iterable<File> _dartFilesIn(String dir) =>
-    Directory(dir)
-        .listSync(recursive: true)
-        .whereType<File>()
-        .where((file) => file.path.endsWith('.dart'));
+Iterable<LibSrcUnit> _unitsIn(String folder) =>
+    libSrcUnits.where((unit) => unit.path.startsWith(folder));
 
-Iterable<_Base> _collectBases() => _dartFilesIn('lib/src/models').expand((file) {
-  final parsed = parseFile(
-    path: file.absolute.path,
-    featureSet: FeatureSet.latestLanguageVersion(),
-  );
-
-  return parsed.unit.declarations
+Iterable<_Base> _collectBases() => _unitsIn('lib/src/models/').expand(
+  (unit) => unit.parsed.unit.declarations
       .whereType<ClassDeclaration>()
       .map((declaration) => (declaration: declaration, name: declaration.namePart.typeName.lexeme))
       .where(
@@ -168,38 +167,41 @@ Iterable<_Base> _collectBases() => _dartFilesIn('lib/src/models').expand((file) 
           widgetName: candidate.name.replaceFirst('_', '').replaceFirst(RegExp(r'Data$'), ''),
           fields: _instanceFieldNames(candidate.declaration),
           location:
-              '${file.path}:${parsed.lineInfo.getLocation(candidate.declaration.offset).lineNumber}',
+              '${unit.path}:${unit.parsed.lineInfo.getLocation(candidate.declaration.offset).lineNumber}',
         ),
-      );
-});
+      ),
+);
 
 Map<String, _Widget> _collectWidgetClasses() => Map.fromEntries(
-  _dartFilesIn('lib/src/widgets').expand((file) {
-    final parsed = parseFile(
-      path: file.absolute.path,
-      featureSet: FeatureSet.latestLanguageVersion(),
-    );
-
-    return parsed.unit.declarations.whereType<ClassDeclaration>().map(
+  _unitsIn('lib/src/widgets/').expand(
+    (unit) => unit.parsed.unit.declarations.whereType<ClassDeclaration>().map(
       (declaration) => MapEntry(
         declaration.namePart.typeName.lexeme,
         _Widget(
-          filePath: file.path,
+          filePath: unit.path,
           fieldNames: _instanceFieldNames(declaration),
           materialMerged: _mergedFields(declaration, 'buildMaterial', 'material'),
           cupertinoMerged: _mergedFields(declaration, 'buildCupertino', 'cupertino'),
         ),
       ),
-    );
-  }),
+    ),
+  ),
 );
 
-Set<String> _instanceFieldNames(ClassDeclaration node) => node.body.members
-    .whereType<FieldDeclaration>()
-    .where((member) => !member.isStatic)
-    .expand((member) => member.fields.variables)
-    .map((variable) => variable.name.lexeme)
-    .toSet();
+Set<String> _instanceFieldNames(ClassDeclaration node) => {
+  ...node.body.members
+      .whereType<FieldDeclaration>()
+      .where((member) => !member.isStatic)
+      .expand((member) => member.fields.variables)
+      .map((variable) => variable.name.lexeme),
+  // A primary constructor declares a field for each of its `final` or `var` parameters.
+  if (node.namePart case PrimaryConstructorDeclaration(:final formalParameters))
+    ...formalParameters.parameters
+        .where(
+          (parameter) => const {'final', 'var'}.contains(parameter.constFinalOrVarKeyword?.lexeme),
+        )
+        .map((parameter) => parameter.name!.lexeme),
+};
 
 /// Fields merged as `<accessorPrefix>…?.field ?? field` inside [node]'s [methodName].
 Set<String> _mergedFields(ClassDeclaration node, String methodName, String accessorPrefix) {

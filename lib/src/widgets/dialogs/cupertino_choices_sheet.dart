@@ -3,6 +3,7 @@ library;
 
 import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoActionSheet, CupertinoActionSheetAction, CupertinoLocalizations;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '/src/models/dialogs/platform_choice.dart';
@@ -10,6 +11,7 @@ import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 import 'sheet_routes.dart';
 
 /// [showPlatformChoices]'s action sheet, in a file of its own so the destructive confirm can share it.
+@internal
 Future<T?> showCupertinoChoicesSheet<T extends Object>({
   required BuildContext context,
   required Set<PlatformChoice<T>> choices,
