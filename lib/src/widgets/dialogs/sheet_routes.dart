@@ -1,5 +1,6 @@
 import 'package:cupertino_ui/cupertino_ui.dart'
     show kCupertinoModalBarrierColor, showCupertinoModalPopup;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show showModalBottomSheet;
 
@@ -7,6 +8,7 @@ import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 
 /// Feeds [showModalBottomSheet] from [materialModalBottomSheetData] and the flat settings. One builder,
 /// not 2, so the AOT compiler can drop the unused arm. See `test/aot_pruning_regression_test.dart`.
+@internal
 Future<T?> showMaterialSheetRoute<T>({
   required BuildContext context,
   required WidgetBuilder builder,
@@ -49,6 +51,7 @@ Future<T?> showMaterialSheetRoute<T>({
 
 /// The Cupertino half of [showMaterialSheetRoute]. Its [builder] comes wrapped in a surface or bare,
 /// as the caller wants.
+@internal
 Future<T?> showCupertinoPopupRoute<T>({
   required BuildContext context,
   required WidgetBuilder builder,

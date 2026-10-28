@@ -2,10 +2,12 @@
 library;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons, CupertinoListTile;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 /// [PlatformMenuPicker]'s page row, in a file of its own so other lists of options can share it: the
 /// option's title, a checkmark once it's picked, and a tap anywhere on the row.
+@internal
 final class const CupertinoCheckmarkRow({
   required final String label,
   required final bool isPicked,

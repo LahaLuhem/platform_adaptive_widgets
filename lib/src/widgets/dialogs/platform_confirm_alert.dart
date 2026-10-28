@@ -2,6 +2,7 @@
 library;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoLocalizations;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show MaterialLocalizations;
 
@@ -13,6 +14,7 @@ import 'platform_alert_dialog.dart';
 
 /// [showPlatformConfirm]'s alert, in a file of its own so the destructive confirm can share its
 /// Material dialog.
+@internal
 Future<bool> showPlatformConfirmAlert({
   required BuildContext context,
   required String title,

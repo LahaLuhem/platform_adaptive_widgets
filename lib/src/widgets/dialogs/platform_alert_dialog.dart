@@ -19,6 +19,7 @@ const _kMaterialUntitledContentPadding = EdgeInsets.all(24);
 
 /// The alert under `showPlatformAcknowledge` and `showPlatformConfirm`, [AlertDialog] on Material and
 /// [CupertinoAlertDialog] on Cupertino. Not exported, so only those jobs pick its actions.
+@internal
 Future<T?> showPlatformAlertDialog<T>({
   required BuildContext context,
   // The HIG gives every alert one.
@@ -117,6 +118,7 @@ Future<T?> showPlatformAlertDialog<T>({
 
 /// A button for [showPlatformAlertDialog]'s `actions` list. [TextButton] on Material, [CupertinoDialogAction]
 /// on Cupertino.
+@internal
 class const PlatformDialogAction({
   required super.child,
 
