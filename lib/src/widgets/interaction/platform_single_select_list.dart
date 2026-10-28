@@ -1,19 +1,14 @@
+/// @docImport 'package:cupertino_ui/cupertino_ui.dart';
 /// @docImport '/src/widgets/dialogs/platform_menu_picker.dart';
 library;
 
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoListSection;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:material_ui/material_ui.dart' show RadioListTile, Theme;
+import 'package:material_ui/material_ui.dart' show RadioListTile;
 
 import '/src/models/platform_widget_base.dart';
 import '/src/widgets/interaction/cupertino_checkmark_row.dart';
-
-/// Lines the header up with the rows' titles, which start past the radio.
-const _kMaterialHeaderPadding = EdgeInsetsDirectional.fromSTEB(72, 16, 24, 8);
-
-/// The list sits in a page, whose own title is the level 1 heading.
-const _kHeaderHeadingLevel = 2;
+import '/src/widgets/interaction/select_list_section.dart';
 
 const _kSelectedMissingMessage = 'Pass one of the options as selected, or nothing shows picked.';
 
@@ -47,27 +42,14 @@ class const PlatformSingleSelectList<T extends Object>({
   @visibleForOverriding
   Widget buildMaterial(BuildContext context) {
     assert(options.contains(selected), _kSelectedMissingMessage);
-    final header = this.header;
-    final themeData = Theme.of(context);
 
     return RadioGroup<T>(
       groupValue: selected,
       // No row is toggleable, so a pick is never cleared to null.
       onChanged: (option) => onChanged(option!),
-      child: Column(
-        mainAxisSize: .min,
-        crossAxisAlignment: .stretch,
-        children: [
-          if (header != null)
-            Padding(
-              padding: _kMaterialHeaderPadding,
-              child: _ListHeader(
-                text: header,
-                style: themeData.textTheme.titleSmall?.copyWith(
-                  color: themeData.colorScheme.primary,
-                ),
-              ),
-            ),
+      child: MaterialSelectListSection(
+        header: header,
+        rows: [
           for (final option in options) RadioListTile<T>(value: option, title: Text(label(option))),
         ],
       ),
@@ -79,12 +61,10 @@ class const PlatformSingleSelectList<T extends Object>({
   @visibleForOverriding
   Widget buildCupertino(BuildContext context) {
     assert(options.contains(selected), _kSelectedMissingMessage);
-    final header = this.header;
 
-    return CupertinoListSection.insetGrouped(
-      header: header == null ? null : _ListHeader(text: header),
-      hasLeading: false,
-      children: [
+    return CupertinoSelectListSection(
+      header: header,
+      rows: [
         for (final option in options)
           CupertinoCheckmarkRow(
             label: label(option),
@@ -96,15 +76,4 @@ class const PlatformSingleSelectList<T extends Object>({
       ],
     );
   }
-}
-
-final class const _ListHeader({required final String text, final TextStyle? style})
-    extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => Semantics(
-    header: true,
-    // iOS and Android take a heading from its level, not from `header`.
-    headingLevel: _kHeaderHeadingLevel,
-    child: Text(text, style: style),
-  );
 }
