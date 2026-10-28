@@ -51,6 +51,7 @@ export 'src/widgets/dialogs/platform_toast.dart';
 export 'src/widgets/interaction/platform_button.dart';
 export 'src/widgets/interaction/platform_checkbox.dart';
 export 'src/widgets/interaction/platform_expansion_tile.dart';
+export 'src/widgets/interaction/platform_multi_select_list.dart';
 export 'src/widgets/interaction/platform_radio.dart';
 export 'src/widgets/interaction/platform_scrollbar.dart';
 export 'src/widgets/interaction/platform_search_bar.dart';
