@@ -7,8 +7,14 @@ import 'dart:io';
 ///
 /// The harness keeps only the Cupertino that the SDK's own Material widgets hold, so this sits just above
 /// that: a leaked sheet trips it, SDK drift doesn't. Raise it only for SDK growth, never for a leak:
-/// APPENDIX.md#aot-pruning-rules.
+/// APPENDIX.md#aot-pruning-rules. A whole file one of those widgets holds goes in [_excludedFiles].
 const int _maxCupertinoBytes = 100 * 1024;
+
+/// Cupertino files a Material widget the package builds holds whole, left out of the count.
+const _excludedFiles = {
+  'package:cupertino_ui/src/radio.dart', // material_ui's Radio keeps its `.adaptive` arm: https://github.com/flutter/flutter/issues/195489
+  'package:cupertino_ui/src/checkbox.dart', // material_ui's Checkbox, keeps its `.adaptive` arm: https://github.com/flutter/flutter/issues/195489
+};
 
 /// Number of top offenders to print on failure.
 const _maxOffendersShown = 30;
@@ -34,15 +40,18 @@ Future<void> main(List<String> args) async {
 
   final root = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
   // Read more than once (sort, sum, slice), so materialise the lazy walk once.
-  final hits = _cupertinoSymbols(root).toList(growable: false)
+  final symbols = _cupertinoSymbols(root).toList(growable: false);
+  final hits = symbols.where((symbol) => !_isExcluded(symbol)).toList(growable: false)
     ..sort((a, b) => b.bytes.compareTo(a.bytes));
   final total = hits.fold<int>(0, (sum, hit) => sum + hit.bytes);
+  final excluded = symbols.where(_isExcluded).fold<int>(0, (sum, symbol) => sum + symbol.bytes);
 
   stdout
     ..writeln('AOT-pruning size-regression check')
     ..writeln('  source: ${file.path}')
     ..writeln('  cupertino-pathed symbols: ${hits.length}')
-    ..writeln('  cupertino-pathed bytes:   $total (budget: $_maxCupertinoBytes)');
+    ..writeln('  cupertino-pathed bytes:   $total (budget: $_maxCupertinoBytes)')
+    ..writeln('  left out, held by Material widgets: $excluded');
 
   if (total <= _maxCupertinoBytes) return stdout.writeln('  PASS');
 
@@ -95,5 +104,7 @@ Iterable<_Symbol> _cupertinoSymbols(
 
   return full.toLowerCase().contains('cupertino') ? [_Symbol(full, value.toInt())] : const [];
 }
+
+bool _isExcluded(_Symbol symbol) => _excludedFiles.any((file) => symbol.path.contains('$file/'));
 
 class _Symbol(final String path, final int bytes);

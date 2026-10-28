@@ -1,4 +1,4 @@
-/// @docImport '/src/widgets/interaction/platform_radio.dart';
+/// @docImport '/src/widgets/interaction/platform_multi_select_list.dart';
 library;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoSlidingSegmentedControl;
@@ -16,8 +16,7 @@ import '/src/models/platform_widget_base.dart';
 /// One selection at a time, deliberately. Material can do multi-select, Cupertino can't, and shipping
 /// that would mean the same widget behaving differently on the 2 platforms, which is the opposite of
 /// what this package is for. Hence [onSelectionChanged] taking a single `T?`, with Material's `Set<T>`
-/// collapsed on the way through. If you need multi-select everywhere, something else fits better: chips,
-/// a list of checkboxes, or [PlatformRadioGroupBuilder] with toggle semantics.
+/// collapsed on the way through. For multi-select everywhere, use [PlatformMultiSelectList].
 ///
 /// No `isEnabled` either, since neither underlying widget has a disabled state. Wrap it in an [IgnorePointer],
 /// with an [Opacity] if you want it to look the part too.

@@ -40,6 +40,20 @@ class _Surfaces extends StatelessWidget {
         ),
         onSelected: (_) {},
       ),
+      PlatformSingleSelectList<int>(
+        options: const {1, 2},
+        selected: 1,
+        label: (option) => '$option',
+        onChanged: (_) {},
+        header: 'single select',
+      ),
+      PlatformMultiSelectList<int>(
+        options: const {1, 2},
+        selected: const {1},
+        label: (option) => '$option',
+        onChanged: (_) {},
+        header: 'multi select',
+      ),
       // The delete reaches the confirm's own top-level switch.
       PlatformActionsMenu(
         builder: (_, onPressed) =>
