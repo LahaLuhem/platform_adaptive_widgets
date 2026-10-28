@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart' show Slider;
 
 import '/src/models/interaction/platform_slider_data.dart';
 import '/src/models/platform_widget_base.dart';
+import '/src/widgets/interaction/disabled_semantics.dart';
 
 /// [Slider] on Material, [CupertinoSlider] on Cupertino.
 ///
@@ -88,16 +89,20 @@ class const PlatformSlider({
   @override
   @protected
   @visibleForOverriding
-  Widget buildCupertino(BuildContext context) => CupertinoSlider(
-    key: widgetKey,
-    value: value,
-    onChanged: isEnabled ? onChanged : null,
-    onChangeStart: onChangeStart,
-    onChangeEnd: onChangeEnd,
-    min: min,
-    max: max,
-    divisions: divisions,
-    activeColor: cupertinoSliderData?.activeColor ?? activeColor,
-    thumbColor: cupertinoSliderData?.thumbColor ?? thumbColor ?? kDefaultCupertinoSliderThumbColor,
+  Widget buildCupertino(BuildContext context) => DisabledSemantics(
+    isEnabled: isEnabled,
+    child: CupertinoSlider(
+      key: widgetKey,
+      value: value,
+      onChanged: isEnabled ? onChanged : null,
+      onChangeStart: onChangeStart,
+      onChangeEnd: onChangeEnd,
+      min: min,
+      max: max,
+      divisions: divisions,
+      activeColor: cupertinoSliderData?.activeColor ?? activeColor,
+      thumbColor:
+          cupertinoSliderData?.thumbColor ?? thumbColor ?? kDefaultCupertinoSliderThumbColor,
+    ),
   );
 }

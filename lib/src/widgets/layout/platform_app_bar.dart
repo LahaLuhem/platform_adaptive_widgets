@@ -14,6 +14,7 @@ import 'package:material_ui/material_ui.dart'
 
 import '/src/models/layout/platform_app_bar_data.dart';
 import '/src/models/layout/platform_bar_action.dart';
+import '/src/widgets/interaction/disabled_semantics.dart';
 
 /// `AppBar` on Material, `CupertinoNavigationBar` on Cupertino.
 ///
@@ -262,14 +263,17 @@ class const _CupertinoBarAction(final PlatformBarAction action, {final bool isPr
   Widget build(BuildContext context) {
     final icon = action.icon;
 
-    return CupertinoButton(
-      // Flush, like cupertino_ui's own bar buttons. Any padding squeezes the content in a 44pt bar.
-      padding: EdgeInsets.zero,
-      onPressed: action.isEnabled ? action.onPressed : null,
-      child: icon == null
-          ? Text(action.label, style: isPrimary ? const TextStyle(fontWeight: .w600) : null)
-          // The label names it, in place of anything the icon says about itself.
-          : Semantics(label: action.label, excludeSemantics: true, child: icon),
+    return DisabledSemantics(
+      isEnabled: action.isEnabled,
+      child: CupertinoButton(
+        // Flush, like cupertino_ui's own bar buttons. Any padding squeezes the content in a 44pt bar.
+        padding: EdgeInsets.zero,
+        onPressed: action.isEnabled ? action.onPressed : null,
+        child: icon == null
+            ? Text(action.label, style: isPrimary ? const TextStyle(fontWeight: .w600) : null)
+            // The label names it, in place of anything the icon says about itself.
+            : Semantics(label: action.label, excludeSemantics: true, child: icon),
+      ),
     );
   }
 }
