@@ -20,16 +20,12 @@ Future<String?> _open(BuildContext context) => showPlatformFullscreenDialog<Stri
 );
 
 Future<int> _seeThroughPixels(WidgetTester tester) async {
-  final image = (await tester.runAsync(
-    () => captureImage(tester.element(find.byType(PlatformApp))),
-  ))!;
-  final bytes = (await tester.runAsync(image.toByteData))!.buffer.asUint8List();
-  image.dispose();
+  final rgba = (await pixelsOf(tester, find.byType(PlatformApp))).rgba;
 
   var seeThrough = 0;
   // Raw RGBA, so alpha is every 4th byte.
-  for (var alpha = 3; alpha < bytes.length; alpha += 4) {
-    if (bytes[alpha] < 0xFF) seeThrough++;
+  for (var alpha = 3; alpha < rgba.length; alpha += 4) {
+    if (rgba[alpha] < 0xFF) seeThrough++;
   }
 
   return seeThrough;

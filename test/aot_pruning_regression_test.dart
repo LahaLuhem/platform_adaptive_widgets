@@ -42,12 +42,10 @@ void main() {
   group('AOT pruning regression guard', () {
     // The helpers' own definitions aren't calls.
     test('no caller of dispatch helpers outside $_helperHomeBasename', () {
-      final offenders = libSrcUnitsExcept({_helperHomeBasename}).expand((unit) {
-        final visitor = _HelperCallVisitor(unit.path, unit.parsed.lineInfo);
-        unit.parsed.unit.accept(visitor);
-
-        return visitor._offenders;
-      });
+      final offenders = offendersIn(
+        libSrcUnitsExcept({_helperHomeBasename}),
+        (unit) => _HelperCallVisitor(unit.path, unit.parsed.lineInfo),
+      );
       check(
         because:
             'Files in lib/src/ call the dispatch helpers '
@@ -62,16 +60,14 @@ void main() {
 
     test('no internal helper in lib/src takes both material* and cupertino* '
         'function-typed params', () {
-      final offenders = libSrcUnitsExcept({_helperHomeBasename}).expand((unit) {
-        final visitor = _DispatchHelperVisitor(
+      final offenders = offendersIn(
+        libSrcUnitsExcept({_helperHomeBasename}),
+        (unit) => _DispatchHelperVisitor(
           unit.path,
           unit.parsed.lineInfo,
           isExported: exportedPaths.contains(unit.path),
-        );
-        unit.parsed.unit.accept(visitor);
-
-        return visitor._offenders;
-      });
+        ),
+      );
       check(
         because:
             'Found internal function(s) that take both a material*-named and '
@@ -89,14 +85,16 @@ void main() {
 }
 
 class _HelperCallVisitor(final String _filePath, final LineInfo _lineInfo)
-    extends RecursiveAstVisitor<void> {
-  final List<String> _offenders = [];
+    extends RecursiveAstVisitor<void>
+    implements OffenderVisitor {
+  @override
+  final List<String> offenders = [];
 
   @override
   void visitMethodInvocation(MethodInvocation node) {
     if (_forbiddenHelperNames.contains(node.methodName.name)) {
       final loc = _lineInfo.getLocation(node.offset);
-      _offenders.add('$_filePath:${loc.lineNumber}: calls ${node.methodName.name}(...)');
+      offenders.add('$_filePath:${loc.lineNumber}: calls ${node.methodName.name}(...)');
     }
     super.visitMethodInvocation(node);
   }
@@ -106,8 +104,9 @@ class _DispatchHelperVisitor(
   final String _filePath,
   final LineInfo _lineInfo, {
   required final bool isExported,
-}) extends RecursiveAstVisitor<void> {
-  final List<String> _offenders = [];
+}) extends RecursiveAstVisitor<void> implements OffenderVisitor {
+  @override
+  final List<String> offenders = [];
 
   @override
   void visitFunctionDeclaration(FunctionDeclaration node) {
@@ -138,7 +137,7 @@ class _DispatchHelperVisitor(
     final hasCupertino = functionTypedNames.any((paramName) => paramName.startsWith('cupertino'));
     if (hasMaterial && hasCupertino) {
       final loc = _lineInfo.getLocation(offset);
-      _offenders.add(
+      offenders.add(
         '$_filePath:${loc.lineNumber}: internal function `$name` takes both '
         'material* and cupertino* function-typed params',
       );

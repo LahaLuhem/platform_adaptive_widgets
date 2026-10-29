@@ -25,18 +25,15 @@ const _custom = 'Custom';
 const _first = 'First';
 const _drawer = 'Drawer';
 
-// ignore: no-empty-block, only where the action sits and how it looks matter here.
-void _ignore() {}
-
 const _sheetBody = Key('sheet body');
 const _sheetPage = PlatformScaffold(
   appBarData: PlatformAppBar(),
   body: SizedBox(key: _sheetBody),
 );
 
-const _shareAction = PlatformBarAction(label: _share, icon: Icon(Icons.share), onPressed: _ignore);
-const _editAction = PlatformBarAction(label: _edit, onPressed: _ignore);
-const _saveAction = PlatformBarAction(label: _save, onPressed: _ignore);
+const _shareAction = PlatformBarAction(label: _share, icon: Icon(Icons.share), onPressed: noop);
+const _editAction = PlatformBarAction(label: _edit, onPressed: noop);
+const _saveAction = PlatformBarAction(label: _save, onPressed: noop);
 
 // The button each platform's own bar uses for an action: an icon or text button on Material, and on
 // Cupertino the flush button cupertino_ui builds its own Cancel with.
@@ -48,9 +45,9 @@ class const _OwnBarButton(final PlatformBarAction action) extends StatelessWidge
     return switch (designLanguage) {
       .material =>
         action.icon == null
-            ? TextButton(onPressed: _ignore, child: content)
-            : IconButton(onPressed: _ignore, icon: content),
-      .cupertino => CupertinoButton(padding: EdgeInsets.zero, onPressed: _ignore, child: content),
+            ? TextButton(onPressed: noop, child: content)
+            : IconButton(onPressed: noop, icon: content),
+      .cupertino => CupertinoButton(padding: EdgeInsets.zero, onPressed: noop, child: content),
     };
   }
 }

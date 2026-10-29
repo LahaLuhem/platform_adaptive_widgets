@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoLocalizations;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart'
@@ -97,6 +98,25 @@ Finder _askCancel(WidgetTester tester) {
   }).last;
 }
 
+Future<double> _sheetHeightAround(WidgetTester tester, double bodyHeight) async {
+  unawaited(
+    _open(
+      await _pumpPhone(tester),
+      body: SizedBox(key: _bodyKey, height: bodyHeight),
+    ),
+  );
+  await tester.pumpAndSettle();
+  final height = tester.getSize(find.byType(BottomSheet)).height;
+  await tester.pumpWidget(const SizedBox());
+
+  return height;
+}
+
+/// The pixel at [point], in physical pixels, as RGBA packed into one int.
+int _rgbaAt(({Uint8List rgba, int width}) pixels, Offset point) =>
+    ByteData.sublistView(pixels.rgba)
+        .getUint32((point.dy.round() * pixels.width + point.dx.round()) * 4);
+
 void main() {
   feature('showPlatformSheet', () {
     scenarioWidgets("closes with null through its bar's own way out", (tester) async {
@@ -153,22 +173,8 @@ void main() {
     });
 
     scenarioWidgets('sizes an Android sheet to its content', (tester) async {
-      Future<double> sheetHeightAround(double bodyHeight) async {
-        unawaited(
-          _open(
-            await _pumpPhone(tester),
-            body: SizedBox(key: _bodyKey, height: bodyHeight),
-          ),
-        );
-        await tester.pumpAndSettle();
-        final height = tester.getSize(find.byType(BottomSheet)).height;
-        await tester.pumpWidget(const SizedBox());
-
-        return height;
-      }
-
-      final short = await sheetHeightAround(100);
-      final tall = await sheetHeightAround(300);
+      final short = await _sheetHeightAround(tester, 100);
+      final tall = await _sheetHeightAround(tester, 300);
 
       check(tall - short).equals(200);
     }, variant: androidOnly);
@@ -179,23 +185,12 @@ void main() {
       final bar = tester.getRect(find.byType(AppBar));
       final body = tester.getRect(find.byKey(_bodyKey));
 
-      final image = (await tester.runAsync(
-        () => captureImage(tester.element(find.byType(PlatformApp))),
-      ))!;
-      final pixels = (await tester.runAsync(image.toByteData))!;
-      int colorAt(Offset point) {
-        final ratio = tester.view.devicePixelRatio;
-
-        // Raw RGBA, 4 bytes a pixel.
-        return pixels.getUint32(
-          ((point.dy * ratio).round() * image.width + (point.dx * ratio).round()) * 4,
-        );
-      }
+      final pixels = await pixelsOf(tester, find.byType(PlatformApp));
+      final ratio = tester.view.devicePixelRatio;
 
       // Past the title, where the bar draws nothing of its own.
-      final barColor = colorAt(Offset(bar.right - 16, bar.center.dy));
-      final bodyColor = colorAt(body.center);
-      image.dispose();
+      final barColor = _rgbaAt(pixels, Offset(bar.right - 16, bar.center.dy) * ratio);
+      final bodyColor = _rgbaAt(pixels, body.center * ratio);
 
       check(barColor).equals(bodyColor);
     }, variant: androidOnly);

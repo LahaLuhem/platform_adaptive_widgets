@@ -23,9 +23,6 @@ const _open = 'Open';
 // Room for a slider or a field, which take whatever width they're given.
 const _width = 300.0;
 
-// ignore: no-empty-block, a disabled widget never calls it.
-void _ignore([Object? _]) {}
-
 bool _named(SemanticsData data) =>
     data.label == _label || data.value == _label || data.tooltip == _label;
 
@@ -63,18 +60,18 @@ final _paths = <String, _Path>{
   'slider': _Path(
     owner: 'PlatformSlider',
     screen: ({required isEnabled}) =>
-        _InBody(PlatformSlider(value: 0.5, onChanged: _ignore, isEnabled: isEnabled)),
+        _InBody(PlatformSlider(value: 0.5, onChanged: (_) => noop(), isEnabled: isEnabled)),
     target: (data) => data.flagsCollection.isSlider,
   ),
   'row': _Path(
     owner: 'PlatformListTile',
     screen: ({required isEnabled}) =>
-        _InBody(PlatformListTile(title: const Text(_label), onTap: _ignore, isEnabled: isEnabled)),
+        _InBody(PlatformListTile(title: const Text(_label), onTap: noop, isEnabled: isEnabled)),
   ),
   'switch': _Path(
     owner: 'PlatformSwitch',
     screen: ({required isEnabled}) =>
-        _InBody(PlatformSwitch(value: true, onChanged: _ignore, isEnabled: isEnabled)),
+        _InBody(PlatformSwitch(value: true, onChanged: (_) => noop(), isEnabled: isEnabled)),
     target: (data) => data.flagsCollection.isToggled != .none,
   ),
   for (final emphasis in PlatformButtonEmphasis.values) ...{
@@ -82,7 +79,7 @@ final _paths = <String, _Path>{
       owner: 'PlatformButton',
       screen: ({required isEnabled}) => _InBody(
         PlatformButton(
-          onPressed: _ignore,
+          onPressed: noop,
           emphasis: emphasis,
           isEnabled: isEnabled,
           child: const Text(_label),
@@ -93,7 +90,7 @@ final _paths = <String, _Path>{
       owner: 'PlatformButton',
       screen: ({required isEnabled}) => _InBody(
         PlatformButton.icon(
-          onPressed: _ignore,
+          onPressed: noop,
           emphasis: emphasis,
           isEnabled: isEnabled,
           icon: const Icon(Icons.share),
@@ -105,7 +102,7 @@ final _paths = <String, _Path>{
       owner: 'PlatformButton',
       screen: ({required isEnabled}) => _InBody(
         PlatformButton.iconOnly(
-          onPressed: _ignore,
+          onPressed: noop,
           emphasis: emphasis,
           isEnabled: isEnabled,
           icon: const Icon(Icons.share),
@@ -122,8 +119,9 @@ final _paths = <String, _Path>{
   ),
   'search bar': _Path(
     owner: 'PlatformSearchBar',
-    screen: ({required isEnabled}) =>
-        _InBody(PlatformSearchBar(onChanged: _ignore, hintText: _label, isEnabled: isEnabled)),
+    screen: ({required isEnabled}) => _InBody(
+      PlatformSearchBar(onChanged: (_) => noop(), hintText: _label, isEnabled: isEnabled),
+    ),
     target: (data) => data.flagsCollection.isTextField,
   ),
   'menu picker': _Path(
@@ -132,7 +130,7 @@ final _paths = <String, _Path>{
       PlatformMenuPicker<String>(
         items: const [_label],
         currentValue: _label,
-        onSelected: _ignore,
+        onSelected: (_) => noop(),
         isEnabled: isEnabled,
       ),
     ),
@@ -143,7 +141,7 @@ final _paths = <String, _Path>{
       PlatformMenuPicker<String>(
         items: const [_label],
         leadingIcon: const Icon(Icons.sort),
-        onSelected: _ignore,
+        onSelected: (_) => noop(),
         isEnabled: isEnabled,
         materialMenuPickerData: const MaterialMenuPickerData.iconButton(),
         cupertinoMenuPickerData: const CupertinoMenuPickerData.iconButton(),
@@ -155,7 +153,7 @@ final _paths = <String, _Path>{
     owner: 'PlatformBarAction',
     screen: ({required isEnabled}) => _InBar(
       PlatformAppBar(
-        primaryAction: PlatformBarAction(label: _label, onPressed: _ignore, isEnabled: isEnabled),
+        primaryAction: PlatformBarAction(label: _label, onPressed: noop, isEnabled: isEnabled),
       ),
     ),
   ),
@@ -167,7 +165,7 @@ final _paths = <String, _Path>{
           PlatformBarAction(
             label: _label,
             icon: const Icon(Icons.share),
-            onPressed: _ignore,
+            onPressed: noop,
             isEnabled: isEnabled,
           ),
         ],
@@ -179,9 +177,7 @@ final _paths = <String, _Path>{
     screen: ({required isEnabled}) => _InBody(
       PlatformActionsMenu(
         builder: (_, onPressed) => GestureDetector(onTap: onPressed, child: const Text(_open)),
-        actions: {
-          PlatformMenuAction.normal(label: _label, onPressed: _ignore, isEnabled: isEnabled),
-        },
+        actions: {PlatformMenuAction.normal(label: _label, onPressed: noop, isEnabled: isEnabled)},
       ),
     ),
     open: _openMenu,
@@ -196,7 +192,7 @@ final _segment = _Path(
       choices: const ['Other', _label],
       segmentBuilder: Text.new,
       selectedChoice: 'Other',
-      onSelectionChanged: _ignore,
+      onSelectionChanged: (_) => noop(),
       cupertinoSegmentButtonData: CupertinoSegmentButtonData(
         disabledChildren: {if (!isEnabled) _label},
       ),
@@ -218,23 +214,14 @@ Future<void> _pump(WidgetTester tester, _Path path, {required bool isEnabled}) a
   await path.open?.call(tester);
 }
 
-Future<Uint8List> _screen(WidgetTester tester) async {
-  final image = (await tester.runAsync(
-    () => captureImage(tester.element(find.byType(PlatformApp))),
-  ))!;
-  final bytes = (await tester.runAsync(image.toByteData))!.buffer.asUint8List();
-  image.dispose();
-
-  return bytes;
-}
-
 /// Whether disabling [path] changes how the screen looks.
 Future<bool> _disablingShows(WidgetTester tester, _Path path) async {
   await _pump(tester, path, isEnabled: true);
-  final enabled = await _screen(tester);
+  final enabled = await pixelsOf(tester, find.byType(PlatformApp));
   await _pump(tester, path, isEnabled: false);
+  final disabled = await pixelsOf(tester, find.byType(PlatformApp));
 
-  return !listEquals(enabled, await _screen(tester));
+  return !listEquals(enabled.rgba, disabled.rgba);
 }
 
 Future<List<SemanticsData>> _disabledTargets(WidgetTester tester, _Path path) async {
