@@ -8,7 +8,7 @@ import 'dart:io';
 /// The harness keeps only the Cupertino that the SDK's own Material widgets hold, so this sits just above
 /// that: a leaked sheet trips it, SDK drift doesn't. Raise it only for SDK growth, never for a leak:
 /// APPENDIX.md#aot-pruning-rules. A whole file one of those widgets holds goes in [_excludedFiles].
-const int _maxCupertinoBytes = 100 * 1024;
+const _maxCupertinoBytes = 100 * 1024;
 
 /// Cupertino files a Material widget the package builds holds whole, left out of the count.
 const _excludedFiles = {
@@ -46,12 +46,13 @@ Future<void> main(List<String> args) async {
   final total = hits.fold<int>(0, (sum, hit) => sum + hit.bytes);
   final excluded = symbols.where(_isExcluded).fold<int>(0, (sum, symbol) => sum + symbol.bytes);
 
+  const reportIndent = '  ';
   stdout
     ..writeln('AOT-pruning size-regression check')
-    ..writeln('  source: ${file.path}')
-    ..writeln('  cupertino-pathed symbols: ${hits.length}')
-    ..writeln('  cupertino-pathed bytes:   $total (budget: $_maxCupertinoBytes)')
-    ..writeln('  left out, held by Material widgets: $excluded');
+    ..writeln('${reportIndent}source: ${file.path}')
+    ..writeln('${reportIndent}cupertino-pathed symbols: ${hits.length}')
+    ..writeln('${reportIndent}cupertino-pathed bytes:   $total (budget: $_maxCupertinoBytes)')
+    ..writeln('${reportIndent}left out, held by Material widgets: $excluded');
 
   if (total <= _maxCupertinoBytes) return stdout.writeln('  PASS');
 
@@ -64,10 +65,10 @@ Future<void> main(List<String> args) async {
     )
     ..writeln('\nTop $_maxOffendersShown by size:');
   for (final hit in hits.take(_maxOffendersShown)) {
-    stderr.writeln('  ${hit.bytes.toString().padLeft(8)} B  ${hit.path}');
+    stderr.writeln('$reportIndent${hit.bytes.toString().padLeft(8)} B  ${hit.path}');
   }
   if (hits.length > _maxOffendersShown) {
-    stderr.writeln('  ... and ${hits.length - _maxOffendersShown} more.');
+    stderr.writeln('$reportIndent... and ${hits.length - _maxOffendersShown} more.');
   }
 
   exit(1);

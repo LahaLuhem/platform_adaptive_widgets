@@ -354,7 +354,9 @@ void main() {
         ),
       },
       outline: (tester, gap) async => check(
-        because: 'Upstream draws it now (${gap.issue}). Move it to "looks disabled".',
+        because:
+            'Upstream draws it now (${gap.issue}). Move it to "looks disabled", and drop any note '
+            'on its `isEnabled`.',
         await _disablingShows(tester, gap.path),
       ).isFalse(),
       variant: iosOnly,
@@ -363,8 +365,8 @@ void main() {
     test("a CupertinoListTile can't be disabled", () {
       check(
         because:
-            'It takes `enabled` now (https://github.com/flutter/flutter/issues/195327). Pass it, and '
-            'move the row to "looks disabled".',
+            'It takes `enabled` now (https://github.com/flutter/flutter/issues/195327). Pass it, move '
+            'the row to "looks disabled", and drop the note on `PlatformListTile.isEnabled`.',
         // Throws on a named argument it doesn't take.
         () => Function.apply(CupertinoListTile.new, const [], {
           #title: const Text(_label),

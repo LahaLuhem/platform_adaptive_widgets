@@ -35,8 +35,9 @@ class const PlatformListTile({
   // ignore: avoid_futureor_void
   final FutureOr<void> Function()? onTap,
 
-  /// The way to disable a tile, leaving [onTap] non-null. Material greys the content out, Cupertino
-  /// just stops the tap flicker and long-press feedback, having no disabled look of its own.
+  /// The way to disable a tile, leaving [onTap] non-null and a control inside it, like a switch, usable.
+  /// Material greys it out. Cupertino can't yet ([flutter/flutter#195327](https://github.com/flutter/flutter/issues/195327)),
+  /// but VoiceOver reads it as dimmed.
   final bool isEnabled = true,
 
   /// [ListTile.minLeadingWidth] on Material, [CupertinoListTile.leadingSize] on Cupertino, where it
