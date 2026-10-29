@@ -17,7 +17,9 @@ import 'containers_demo_view_model.dart';
 /// The Lists & containers section of the Catalog accordion, list tile, scrollbar, progress-indicator
 /// and expansion-tile playgrounds.
 class ContainersDemoView extends StatelessWidget {
-  const ContainersDemoView({super.key});
+  final bool shouldEnable;
+
+  const ContainersDemoView({required this.shouldEnable, super.key});
 
   @override
   Widget build(BuildContext context) => MVVM.builder(
@@ -40,7 +42,9 @@ class ContainersDemoView extends StatelessWidget {
               title: const Text('List tile'),
               subtitle: const Text('With leading and trailing'),
               trailing: const PlatformIcon(.forward),
-              isEnabled: viewModel.shouldEnableListTile,
+              // Tappable, so disabling it has a tap to stop.
+              onTap: viewModel.onListTileTapped,
+              isEnabled: shouldEnable,
               leadingWidth: viewModel.listTileLeadingWidth,
               color: viewModel.listTileColor,
               materialListTileData: MaterialListTileData(
@@ -50,11 +54,6 @@ class ContainersDemoView extends StatelessWidget {
               ),
             ),
             knobs: [
-              BoolKnob(
-                label: 'isEnabled',
-                value: viewModel.shouldEnableListTile,
-                onChanged: (value) => viewModel.onListTileEnabledToggled(value: value),
-              ),
               DoubleKnob(
                 label: 'leadingWidth',
                 min: 24,

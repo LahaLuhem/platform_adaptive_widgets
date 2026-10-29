@@ -279,6 +279,9 @@ a bug in the widget under edit.
   no right-to-left.
 - **Start a color knob unset**, with the "none" swatch (`ColorKnob.onCleared`), so the preview opens
   on the platform's own colors. A set color can hide the platform's look, like M3's disabled switch.
+- **The disabled state comes from the Catalog's one Disable widgets bar action**, which each demo
+  takes as `shouldEnable`. Wire every widget that can be disabled to it instead of giving its card a
+  knob. A button that opens a dialog stays live, so what it opens can be seen disabled.
 
 ---
 
