@@ -9,4 +9,24 @@ extension PlatformAdaptiveIconsExtension on PlatformAdaptiveIcons {
 
   IconData get arrowDownward =>
       context.platformIcon(material: Icons.arrow_downward, cupertino: CupertinoIcons.chevron_down);
+
+  IconData get collapseAll => context.platformIcon(
+    material: Icons.unfold_less_outlined,
+    cupertino: CupertinoIcons.rectangle_compress_vertical,
+  );
+
+  IconData get expandAll => context.platformIcon(
+    material: Icons.unfold_more_outlined,
+    cupertino: CupertinoIcons.rectangle_expand_vertical,
+  );
+
+  IconData get disable => context.platformIcon(
+    material: Icons.do_not_touch_outlined,
+    cupertino: CupertinoIcons.hand_raised_slash,
+  );
+
+  IconData get enable => context.platformIcon(
+    material: Icons.touch_app_outlined,
+    cupertino: CupertinoIcons.hand_raised,
+  );
 }

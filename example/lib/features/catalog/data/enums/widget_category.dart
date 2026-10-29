@@ -8,7 +8,7 @@ enum WidgetCategory {
   /// Filled, tonal, outlined, text, icon and disabled buttons.
   buttons(label: 'Buttons'),
 
-  /// Checkbox, switch, slider, segmented button, radios, menu picker.
+  /// Multi-select list, switch, slider, segmented button, single-select list, menu picker.
   selection(label: 'Selection controls'),
 
   /// Text field and search bar.

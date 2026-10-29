@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show ListTileTitleAlignment;
+import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
 /// State for the Lists & containers demos: the expansion tile's and scrollbar's controllers, plus every
@@ -9,7 +10,6 @@ final class ContainersDemoViewModel extends ViewModel {
   final scrollController = ScrollController();
   final horizontalScrollController = ScrollController();
 
-  var _shouldEnableListTile = true;
   double _listTileLeadingWidth = 40;
   Color? _listTileColor;
   Color? _listTileIconColor;
@@ -32,8 +32,6 @@ final class ContainersDemoViewModel extends ViewModel {
   var _shouldShowExpansionTrailingIcon = true;
   Color? _expansionTextColor;
   Color? _expansionIconColor;
-
-  bool get shouldEnableListTile => _shouldEnableListTile;
 
   double get listTileLeadingWidth => _listTileLeadingWidth;
 
@@ -84,10 +82,8 @@ final class ContainersDemoViewModel extends ViewModel {
 
   Color? get expansionIconColor => _expansionIconColor;
 
-  void onListTileEnabledToggled({required bool value}) {
-    _shouldEnableListTile = value;
-    notifyListeners();
-  }
+  Future<void> onListTileTapped() =>
+      showPlatformToast(context: context, message: 'List tile tapped');
 
   void onListTileLeadingWidthChanged(double value) {
     _listTileLeadingWidth = value;

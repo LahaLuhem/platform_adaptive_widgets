@@ -8,7 +8,6 @@ import 'package:pmvvm/pmvvm.dart';
 import '/features/catalog/data/enums/menu_picker_length.dart';
 import '/features/catalog/data/extensions/platform_adaptive_icons_extension.dart';
 import '/features/catalog/widgets/demo_card.dart';
-import '/features/catalog/widgets/property_editor/bool_knob.dart';
 import '/features/catalog/widgets/property_editor/color_knob.dart';
 import '/features/catalog/widgets/property_editor/property_editor.dart';
 import '/features/catalog/widgets/property_editor/segment_knob.dart';
@@ -17,7 +16,9 @@ import 'selection_demo_view_model.dart';
 
 /// The Catalog's Selection controls section.
 class SelectionDemoView extends StatelessWidget {
-  const SelectionDemoView({super.key});
+  final bool shouldEnable;
+
+  const SelectionDemoView({required this.shouldEnable, super.key});
 
   @override
   Widget build(BuildContext context) => MVVM.builder(
@@ -53,17 +54,12 @@ class SelectionDemoView extends StatelessWidget {
             preview: PlatformSwitch(
               value: viewModel.isSwitchOn,
               onChanged: (value) => viewModel.onSwitchToggled(value: value),
-              isEnabled: viewModel.shouldEnableSwitch,
+              isEnabled: shouldEnable,
               activeTrackColor: viewModel.switchActiveTrackColor,
               activeThumbColor: viewModel.switchActiveThumbColor,
               inactiveThumbColor: viewModel.switchInactiveThumbColor,
             ),
             knobs: [
-              BoolKnob(
-                label: 'isEnabled',
-                value: viewModel.shouldEnableSwitch,
-                onChanged: (value) => viewModel.onSwitchEnabledToggled(value: value),
-              ),
               ColorKnob(
                 label: 'activeTrackColor',
                 value: viewModel.switchActiveTrackColor,
@@ -92,17 +88,12 @@ class SelectionDemoView extends StatelessWidget {
             preview: PlatformSlider(
               value: viewModel.sliderValue,
               onChanged: viewModel.onSliderChanged,
-              isEnabled: viewModel.shouldEnableSlider,
+              isEnabled: shouldEnable,
               activeColor: viewModel.sliderActiveColor,
               thumbColor: viewModel.sliderThumbColor,
               materialSliderData: MaterialSliderData(inactiveColor: viewModel.sliderInactiveColor),
             ),
             knobs: [
-              BoolKnob(
-                label: 'isEnabled',
-                value: viewModel.shouldEnableSlider,
-                onChanged: (value) => viewModel.onSliderEnabledToggled(value: value),
-              ),
               ColorKnob(
                 label: 'activeColor',
                 value: viewModel.sliderActiveColor,
@@ -140,6 +131,10 @@ class SelectionDemoView extends StatelessWidget {
                 selectedChoice: viewModel.selectedDirection,
                 segmentBuilder: (direction) => Text(direction.name),
                 onSelectionChanged: viewModel.onDirectionChanged,
+                // Material can't disable a segment upstream, so only Cupertino dims these.
+                cupertinoSegmentButtonData: CupertinoSegmentButtonData(
+                  disabledChildren: {if (!shouldEnable) ...AxisDirection.values},
+                ),
               ),
               PlatformSingleSelectList(
                 options: AxisDirection.values.toSet(),
@@ -151,6 +146,7 @@ class SelectionDemoView extends StatelessWidget {
                 items: AxisDirection.values,
                 currentValue: viewModel.selectedDirection,
                 onSelected: viewModel.onDirectionChanged,
+                isEnabled: shouldEnable,
                 labelText: 'Direction',
                 leadingIcon: const PlatformIcon(.crop),
                 menuPickerItemTransformer: (direction) => MenuPickerItem(
@@ -181,6 +177,7 @@ class SelectionDemoView extends StatelessWidget {
               ),
               currentValue: viewModel.pickedItem,
               onSelected: viewModel.onPickerItemSelected,
+              isEnabled: shouldEnable,
               labelText: 'Item',
               menuPickerItemTransformer: (item) => MenuPickerItem(
                 label: 'Item $item',

@@ -16,7 +16,9 @@ import 'text_demo_view_model.dart';
 /// The Text & search section of the Catalog accordion, a live `PlatformTextField` playground plus a
 /// `PlatformSearchBar` demo.
 class TextDemoView extends StatelessWidget {
-  const TextDemoView({super.key});
+  final bool shouldEnable;
+
+  const TextDemoView({required this.shouldEnable, super.key});
 
   @override
   Widget build(BuildContext context) => MVVM.builder(
@@ -31,6 +33,7 @@ class TextDemoView extends StatelessWidget {
           child: PropertyEditor(
             preview: PlatformTextField(
               controller: viewModel.playgroundController,
+              isEnabled: shouldEnable,
               hintText: viewModel.hintText,
               cursorColor: viewModel.cursorColor,
               cursorWidth: viewModel.cursorWidth,
@@ -104,6 +107,7 @@ class TextDemoView extends StatelessWidget {
                 hintText: 'Search',
                 controller: viewModel.searchController,
                 onChanged: viewModel.onSearchChanged,
+                isEnabled: shouldEnable,
                 leading: Icon(
                   context.platformIcon(material: Icons.search, cupertino: CupertinoIcons.search),
                 ),

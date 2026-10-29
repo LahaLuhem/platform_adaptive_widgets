@@ -6,7 +6,6 @@ import 'package:pmvvm/pmvvm.dart';
 
 import '/features/catalog/data/enums/button_shape.dart';
 import '/features/catalog/widgets/demo_card.dart';
-import '/features/catalog/widgets/property_editor/bool_knob.dart';
 import '/features/catalog/widgets/property_editor/color_knob.dart';
 import '/features/catalog/widgets/property_editor/double_knob.dart';
 import '/features/catalog/widgets/property_editor/enum_knob.dart';
@@ -17,7 +16,9 @@ import 'buttons_demo_view_model.dart';
 /// A live `PlatformButton` playground. Only Cupertino gets a platform panel here, since Material puts
 /// its whole surface behind `ButtonStyle` and there are no individual fields to knob.
 class ButtonsDemoView extends StatelessWidget {
-  const ButtonsDemoView({super.key});
+  final bool shouldEnable;
+
+  const ButtonsDemoView({required this.shouldEnable, super.key});
 
   @override
   Widget build(BuildContext context) => MVVM.builder(
@@ -46,7 +47,7 @@ class ButtonsDemoView extends StatelessWidget {
               preview: switch (viewModel.shape) {
                 .child => PlatformButton(
                   onPressed: onPressed,
-                  isEnabled: viewModel.shouldEnable,
+                  isEnabled: shouldEnable,
                   emphasis: viewModel.emphasis,
                   actionKind: viewModel.actionKind,
                   cupertinoButtonData: cupertinoData,
@@ -54,7 +55,7 @@ class ButtonsDemoView extends StatelessWidget {
                 ),
                 .icon => PlatformButton.icon(
                   onPressed: onPressed,
-                  isEnabled: viewModel.shouldEnable,
+                  isEnabled: shouldEnable,
                   emphasis: viewModel.emphasis,
                   actionKind: viewModel.actionKind,
                   cupertinoButtonData: cupertinoData,
@@ -63,7 +64,7 @@ class ButtonsDemoView extends StatelessWidget {
                 ),
                 .iconOnly => PlatformButton.iconOnly(
                   onPressed: onPressed,
-                  isEnabled: viewModel.shouldEnable,
+                  isEnabled: shouldEnable,
                   emphasis: viewModel.emphasis,
                   actionKind: viewModel.actionKind,
                   cupertinoButtonData: cupertinoData,
@@ -77,11 +78,6 @@ class ButtonsDemoView extends StatelessWidget {
                   value: viewModel.emphasis,
                   values: PlatformButtonEmphasis.values,
                   onChanged: viewModel.onEmphasisSelected,
-                ),
-                BoolKnob(
-                  label: 'isEnabled',
-                  value: viewModel.shouldEnable,
-                  onChanged: (value) => viewModel.onEnabledToggled(value: value),
                 ),
                 SegmentKnob<ButtonShape>(
                   label: 'shape',

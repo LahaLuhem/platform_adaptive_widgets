@@ -11,13 +11,11 @@ final class SelectionDemoViewModel extends ViewModel {
   String? _repeatHeader = 'Repeat';
 
   var _isSwitchOn = false;
-  var _shouldEnableSwitch = true;
   Color? _switchActiveTrackColor;
   Color? _switchActiveThumbColor;
   Color? _switchInactiveThumbColor;
 
   double _sliderValue = 0;
-  var _shouldEnableSlider = true;
   Color? _sliderActiveColor;
   Color? _sliderInactiveColor;
   Color? _sliderThumbColor;
@@ -33,8 +31,6 @@ final class SelectionDemoViewModel extends ViewModel {
 
   bool get isSwitchOn => _isSwitchOn;
 
-  bool get shouldEnableSwitch => _shouldEnableSwitch;
-
   Color? get switchActiveTrackColor => _switchActiveTrackColor;
 
   Color? get switchActiveThumbColor => _switchActiveThumbColor;
@@ -42,8 +38,6 @@ final class SelectionDemoViewModel extends ViewModel {
   Color? get switchInactiveThumbColor => _switchInactiveThumbColor;
 
   double get sliderValue => _sliderValue;
-
-  bool get shouldEnableSlider => _shouldEnableSlider;
 
   Color? get sliderActiveColor => _sliderActiveColor;
 
@@ -73,11 +67,6 @@ final class SelectionDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
-  void onSwitchEnabledToggled({required bool value}) {
-    _shouldEnableSwitch = value;
-    notifyListeners();
-  }
-
   void onSwitchActiveTrackColorSelected(Color? color) {
     _switchActiveTrackColor = color;
     notifyListeners();
@@ -95,11 +84,6 @@ final class SelectionDemoViewModel extends ViewModel {
 
   void onSliderChanged(double value) {
     _sliderValue = value;
-    notifyListeners();
-  }
-
-  void onSliderEnabledToggled({required bool value}) {
-    _shouldEnableSlider = value;
     notifyListeners();
   }
 

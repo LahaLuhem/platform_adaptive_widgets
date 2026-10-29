@@ -4,6 +4,7 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
 import '/features/catalog/data/enums/widget_category.dart';
+import '/features/catalog/data/extensions/platform_adaptive_icons_extension.dart';
 import '/features/catalog/views/buttons_demo/buttons_demo_view.dart';
 import '/features/catalog/views/containers_demo/containers_demo_view.dart';
 import '/features/catalog/views/dialogs_demo/dialogs_demo_view.dart';
@@ -19,57 +20,72 @@ class CatalogView extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MVVM.builder(
     viewModel: CatalogViewModel(),
-    viewBuilder: (context, viewModel) => PlatformScaffold(
-      appBarData: const PlatformAppBar(title: Text('Catalog')),
-      body: SafeArea(
-        child: ListView(
-          children: [
-            Padding(
-              padding: const .symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: .end,
-                spacing: 8,
-                children: [
-                  PlatformButton(
-                    onPressed: viewModel.onExpandAllPressed,
-                    emphasis: .low,
-                    child: const Text('Expand all'),
-                  ),
-                  PlatformButton(
-                    onPressed: viewModel.onCollapseAllPressed,
-                    emphasis: .low,
-                    child: const Text('Collapse all'),
-                  ),
-                ],
+    viewBuilder: (context, viewModel) => ValueListenableBuilder(
+      valueListenable: viewModel.shouldEnableListenable,
+      builder: (context, shouldEnable, _) => ListenableBuilder(
+        listenable: viewModel.sectionsListenable,
+        builder: (context, body) => PlatformScaffold(
+          appBarData: PlatformAppBar(
+            title: const Text('Catalog'),
+            actions: [
+              if (viewModel.isAnySectionExpanded)
+                PlatformBarAction(
+                  label: 'Collapse all',
+                  icon: Icon(context.platformAdaptiveIcons.collapseAll),
+                  onPressed: viewModel.onCollapseAllPressed,
+                )
+              else
+                PlatformBarAction(
+                  label: 'Expand all',
+                  icon: Icon(context.platformAdaptiveIcons.expandAll),
+                  onPressed: viewModel.onExpandAllPressed,
+                ),
+              PlatformBarAction(
+                label: shouldEnable ? 'Disable widgets' : 'Enable widgets',
+                icon: Icon(
+                  shouldEnable
+                      ? context.platformAdaptiveIcons.disable
+                      : context.platformAdaptiveIcons.enable,
+                ),
+                onPressed: viewModel.onEnableTogglePressed,
               ),
-            ),
-            for (final category in WidgetCategory.values)
-              PlatformExpansionTile(
-                controller: viewModel.controllerFor(category),
-                materialExpansionTileData: const MaterialExpansionTileData(showTrailingIcon: true),
-                cupertinoExpansionTileData: const CupertinoExpansionTileData(
-                  transitionMode: .scroll,
+            ],
+          ),
+          body: body!,
+        ),
+        child: SafeArea(
+          child: ListView(
+            children: [
+              for (final category in WidgetCategory.values)
+                PlatformExpansionTile(
+                  controller: viewModel.controllerFor(category),
+                  materialExpansionTileData: const MaterialExpansionTileData(
+                    showTrailingIcon: true,
+                  ),
+                  cupertinoExpansionTileData: const CupertinoExpansionTileData(
+                    transitionMode: .scroll,
+                  ),
+                  title: Row(
+                    children: [
+                      category.icon(context),
+                      // 12: icon-to-label gap, between the 8 and 16 grid steps.
+                      const Gap(12),
+                      Text(category.label),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const .only(left: 16, top: 16, bottom: 16),
+                    child: switch (category) {
+                      .buttons => ButtonsDemoView(shouldEnable: shouldEnable),
+                      .selection => SelectionDemoView(shouldEnable: shouldEnable),
+                      .text => TextDemoView(shouldEnable: shouldEnable),
+                      .containers => ContainersDemoView(shouldEnable: shouldEnable),
+                      .dialogs => DialogsDemoView(shouldEnable: shouldEnable),
+                    },
+                  ),
                 ),
-                title: Row(
-                  children: [
-                    category.icon(context),
-                    // 12: icon-to-label gap, between the 8 and 16 grid steps.
-                    const Gap(12),
-                    Text(category.label),
-                  ],
-                ),
-                child: Padding(
-                  padding: const .only(left: 16, top: 16, bottom: 16),
-                  child: switch (category) {
-                    .buttons => const ButtonsDemoView(),
-                    .selection => const SelectionDemoView(),
-                    .text => const TextDemoView(),
-                    .containers => const ContainersDemoView(),
-                    .dialogs => const DialogsDemoView(),
-                  },
-                ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     ),

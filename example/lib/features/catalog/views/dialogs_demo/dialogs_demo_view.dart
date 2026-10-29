@@ -15,7 +15,10 @@ import 'dialogs_demo_view_model.dart';
 /// The Dialogs & pickers section of the Catalog accordion. Dialogs open from a function call, not as a
 /// widget, so each playground is configure-then-trigger: knobs set the args, the button opens the dialog.
 class DialogsDemoView extends StatelessWidget {
-  const DialogsDemoView({super.key});
+  // Reaches what the dialogs hold, not the buttons that open them, so they still open.
+  final bool shouldEnable;
+
+  const DialogsDemoView({required this.shouldEnable, super.key});
 
   @override
   Widget build(BuildContext context) => MVVM.builder(
@@ -30,7 +33,7 @@ class DialogsDemoView extends StatelessWidget {
               "M3's bottom sheet on Material, a sheet on Cupertino. Type a name, then close it without "
               'saving, and it asks first.',
           child: PlatformButton(
-            onPressed: viewModel.onShowSheetPressed,
+            onPressed: () => viewModel.onShowSheetPressed(shouldEnable: shouldEnable),
             emphasis: .medium,
             child: const Text('New list'),
           ),
@@ -60,7 +63,7 @@ class DialogsDemoView extends StatelessWidget {
           description:
               'A full-screen dialog on Material, a page that slides up on Cupertino. Its bar closes it.',
           child: PlatformButton(
-            onPressed: viewModel.onShowFullscreenDialogPressed,
+            onPressed: () => viewModel.onShowFullscreenDialogPressed(shouldEnable: shouldEnable),
             emphasis: .medium,
             child: const Text('New event'),
           ),
@@ -172,6 +175,7 @@ class DialogsDemoView extends StatelessWidget {
                   cupertino: CupertinoIcons.square_arrow_up,
                 ),
                 onPressed: viewModel.onShareListPressed,
+                isEnabled: shouldEnable,
               ),
               PlatformMenuAction.normal(
                 label: 'Print',
@@ -180,6 +184,7 @@ class DialogsDemoView extends StatelessWidget {
                   cupertino: CupertinoIcons.printer,
                 ),
                 onPressed: viewModel.onPrintPressed,
+                isEnabled: shouldEnable,
               ),
               PlatformMenuAction.delete(
                 label: 'Delete List',
@@ -189,6 +194,7 @@ class DialogsDemoView extends StatelessWidget {
                   cupertino: CupertinoIcons.trash,
                 ),
                 onPressed: viewModel.onDeleteListPressed,
+                isEnabled: shouldEnable,
               ),
             },
           ),

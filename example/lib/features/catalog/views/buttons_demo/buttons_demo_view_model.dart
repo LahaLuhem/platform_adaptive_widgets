@@ -7,7 +7,6 @@ import '/features/catalog/data/enums/button_shape.dart';
 
 /// The Buttons playground's editable state. The `cupertino…` fields feed `cupertinoButtonData`.
 final class ButtonsDemoViewModel extends ViewModel {
-  var _shouldEnable = true;
   var _shape = ButtonShape.child;
   var _emphasis = PlatformButtonEmphasis.high;
   var _actionKind = PlatformActionKind.normal;
@@ -16,8 +15,6 @@ final class ButtonsDemoViewModel extends ViewModel {
   Color? _cupertinoForegroundColor;
   var _cupertinoPressedOpacity = 0.4;
   var _cupertinoSizeStyle = CupertinoButtonSize.large;
-
-  bool get shouldEnable => _shouldEnable;
 
   ButtonShape get shape => _shape;
 
@@ -35,11 +32,6 @@ final class ButtonsDemoViewModel extends ViewModel {
 
   Future<void> onButtonPressed(String label) =>
       showPlatformToast(context: context, message: '$label button pressed');
-
-  void onEnabledToggled({required bool value}) {
-    _shouldEnable = value;
-    notifyListeners();
-  }
 
   void onShapeChanged(ButtonShape shape) {
     _shape = shape;
