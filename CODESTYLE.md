@@ -681,13 +681,16 @@ Most of this package is synchronous UI code, so the opportunities are rare.
 <a id="listunmodifiable-over-unmodifiablelistview"></a>
 ### `List.unmodifiable(…)` over `UnmodifiableListView(…)`
 
-Default to `List.unmodifiable(…)` when exposing an immutable collection, and likewise for `Set` /
-`Map`. It copies, so the result is a snapshot that nobody else can mutate behind your back. The
-`…View` types only wrap, so whoever still holds the original can change it and the view quietly
-follows.
+Default to `List.unmodifiable(…)`, and the `Set`/`Map` equivalents, for exposing an immutable
+collection. It *copies*, so you get a snapshot. The `…View` only *wraps*, so whoever still holds
+the original can mutate what the view shows, which is the point when you want a read-through view
+of private mutable state and a bug otherwise.
 
-Reach for `UnmodifiableListView` only when you actually want that read-through view onto private
-mutable state. Rare here.
+Over data that never changes once built, a view just saves the copy:
+`UnmodifiableListView(pages.map((page) => page.items))`. Say at the call site why it can't change.
+Not over a filter, which the view walks again on every read, and not where the result is read
+several times, since each read runs the mapping again.
+
 <a id="part-part-of-only-when-structurally-needed"></a>
 ### `part` / `part of` only when structurally needed
 
