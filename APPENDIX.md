@@ -184,6 +184,13 @@ the callback is essential to the widget:
 disabling mechanism, the underlying platform widget receives a `null` callback when
 `isEnabled: false`, but the package's public API keeps the 2 concerns separate.
 
+On Cupertino, a `null` callback isn't always enough. Some cupertino_ui widgets never tell VoiceOver
+they're disabled, so `DisabledSemantics` adds that half, which stays right once upstream catches up.
+The disabled look stays each widget's own: where cupertino_ui draws none (the slider, the list tile),
+a stand-in would double up once upstream draws one.
+[`disabled_state_test.dart`](./test/widget_tests/disabled_state_test.dart) checks both halves on every
+disable path, and its canaries go red when upstream closes a gap.
+
 This is a deliberate deviation from Flutter's `Widget.onChanged: null = disabled` convention. The
 trade-off, more explicit at call sites, no nullability dance, no ambiguity between "no callback
 registered" and "widget disabled", is worth the divergence for a package whose value proposition is

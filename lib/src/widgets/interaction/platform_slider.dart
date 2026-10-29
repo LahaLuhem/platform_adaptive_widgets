@@ -22,8 +22,8 @@ class const PlatformSlider({
   /// See `APPENDIX.md#callback-nullability`.
   required final ValueChanged<double> onChanged,
 
-  /// The way to disable a slider, passing the underlying widget a `null` callback for its standard disabled
-  /// look.
+  /// The way to disable a slider. Cupertino can't draw it disabled yet ([flutter/flutter#106691](https://github.com/flutter/flutter/issues/106691)),
+  /// but VoiceOver reads it as dimmed.
   final bool isEnabled = true,
 
   /// Fires once as the drag begins, where [onChanged] fires all the way through it.
