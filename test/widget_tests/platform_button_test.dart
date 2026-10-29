@@ -47,33 +47,28 @@ class const _Button(
   final PlatformActionKind actionKind = .normal,
 }) extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    // ignore: no-empty-block, only how it looks matters here.
-    void onPressed() {}
-
-    return switch (shape) {
-      .child => PlatformButton(
-        onPressed: onPressed,
-        emphasis: emphasis,
-        actionKind: actionKind,
-        child: const Text(_label),
-      ),
-      .iconAndLabel => PlatformButton.icon(
-        onPressed: onPressed,
-        emphasis: emphasis,
-        actionKind: actionKind,
-        icon: const Icon(_icon),
-        label: const Text(_label),
-      ),
-      .iconOnly => PlatformButton.iconOnly(
-        onPressed: onPressed,
-        emphasis: emphasis,
-        actionKind: actionKind,
-        icon: const Icon(_icon),
-        label: _label,
-      ),
-    };
-  }
+  Widget build(BuildContext context) => switch (shape) {
+    .child => PlatformButton(
+      onPressed: noop,
+      emphasis: emphasis,
+      actionKind: actionKind,
+      child: const Text(_label),
+    ),
+    .iconAndLabel => PlatformButton.icon(
+      onPressed: noop,
+      emphasis: emphasis,
+      actionKind: actionKind,
+      icon: const Icon(_icon),
+      label: const Text(_label),
+    ),
+    .iconOnly => PlatformButton.iconOnly(
+      onPressed: noop,
+      emphasis: emphasis,
+      actionKind: actionKind,
+      icon: const Icon(_icon),
+      label: _label,
+    ),
+  };
 }
 
 Future<void> _pump(
@@ -114,15 +109,17 @@ Color _plain(Color color) => Color(color.toARGB32());
   }
 }
 
+// A clear color draws nothing.
+Color? _shown(Color? color) => color == null || color.a == 0 ? null : _plain(color);
+
 _Drawn _drawn(WidgetTester tester) {
   final surface = _surface(tester);
   final shape = surface.shape;
   final outline = shape is OutlinedBorder && shape.side.style != .none ? shape.side.color : null;
-  Color? shown(Color? color) => color == null || color.a == 0 ? null : _plain(color);
 
   return (
-    fill: shown(surface.color),
-    outline: shown(outline),
+    fill: _shown(surface.color),
+    outline: _shown(outline),
     // The first glyph on it: the icon where there is one, or else the label.
     content: _plain(
       tester

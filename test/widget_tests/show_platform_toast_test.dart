@@ -61,8 +61,7 @@ void main() {
     scenarioWidgets('stays up past its duration while it has an action', (tester) async {
       final context = await _pumpPage(tester);
 
-      // ignore: no-empty-block, only having an action matters here, not what it does.
-      _show(context, onUndo: () {});
+      _show(context, onUndo: noop);
       await tester.pumpAndSettle();
       await tester.pump(_duration * 3);
       await tester.pumpAndSettle();

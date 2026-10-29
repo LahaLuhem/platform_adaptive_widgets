@@ -1,5 +1,7 @@
-/// `lib/src`, parsed once for the static guards. Kept out of `support.dart`, which the widget tests
-/// import.
+// Named after what it parses, not after its visitor interface.
+// ignore_for_file: prefer-match-file-name
+
+/// `lib/src`, parsed once for the static guards. Deliberately kept out of `support.dart`.
 library;
 
 import 'dart:io';
@@ -38,6 +40,23 @@ final Set<String> exportedPaths =
         .whereType<ExportDirective>()
         .map((export) => 'lib/${export.uri.stringValue}')
         .toSet();
+
+/// A visitor that notes each thing it finds wrong, as one line.
+abstract interface class OffenderVisitor() implements AstVisitor<void> {
+  /// What it found, one line each.
+  List<String> get offenders;
+}
+
+/// Everything a fresh [visitorFor] finds wrong in each of [units].
+Iterable<String> offendersIn(
+  Iterable<LibSrcUnit> units,
+  OffenderVisitor Function(LibSrcUnit unit) visitorFor,
+) => units.expand((unit) {
+  final visitor = visitorFor(unit);
+  unit.parsed.unit.accept(visitor);
+
+  return visitor.offenders;
+});
 
 /// [libSrcUnits] but the files named [basenames], each a rule's own home.
 Iterable<LibSrcUnit> libSrcUnitsExcept(Set<String> basenames) =>

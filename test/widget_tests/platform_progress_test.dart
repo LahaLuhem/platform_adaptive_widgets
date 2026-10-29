@@ -32,16 +32,6 @@ Future<void> _pump(WidgetTester tester, Widget indicator) => pumpPlatformWidget(
   ),
 );
 
-Future<Uint8List> _pixels(WidgetTester tester) async {
-  final image = (await tester.runAsync(
-    () => captureImage(tester.element(find.byKey(_indicatorKey))),
-  ))!;
-  final bytes = (await tester.runAsync(image.toByteData))!.buffer.asUint8List();
-  image.dispose();
-
-  return bytes;
-}
-
 String _spokenValue() =>
     find.semantics.byPredicate((node) => node.value.isNotEmpty).evaluate().singleOrNull?.value ??
     '';
@@ -50,10 +40,10 @@ void main() {
   feature('Progress indicators', () {
     scenarioWidgets('show how far along known progress is', (tester) async {
       await _pump(tester, const _Indicator(value: 0.3));
-      final atThird = await _pixels(tester);
+      final atThird = (await pixelsOf(tester, find.byKey(_indicatorKey))).rgba;
       // No time passes between the 2 frames, so a spinner can't make them differ by turning.
       await _pump(tester, const _Indicator(value: 0.6));
-      final atTwoThirds = await _pixels(tester);
+      final atTwoThirds = (await pixelsOf(tester, find.byKey(_indicatorKey))).rgba;
 
       check(listEquals(atThird, atTwoThirds)).isFalse();
     });

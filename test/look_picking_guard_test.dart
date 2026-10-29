@@ -25,12 +25,10 @@ const _halfLocks = {'protected', 'visibleForOverriding'};
 void main() {
   group('Look-picking guard', () {
     test('nothing in lib/src but $_designLanguageHomeBasename reads defaultTargetPlatform', () {
-      final offenders = libSrcUnitsExcept({_designLanguageHomeBasename}).expand((unit) {
-        final visitor = _PlatformReadVisitor(unit.path, unit.parsed.lineInfo);
-        unit.parsed.unit.accept(visitor);
-
-        return visitor.offenders;
-      });
+      final offenders = offendersIn(
+        libSrcUnitsExcept({_designLanguageHomeBasename}),
+        (unit) => _PlatformReadVisitor(unit.path, unit.parsed.lineInfo),
+      );
       check(
         because: 'Switch on `designLanguage` instead, so every site agrees on the look.',
         offenders,
@@ -56,7 +54,9 @@ void main() {
 }
 
 class _PlatformReadVisitor(final String _filePath, final LineInfo _lineInfo)
-    extends RecursiveAstVisitor<void> {
+    extends RecursiveAstVisitor<void>
+    implements OffenderVisitor {
+  @override
   final List<String> offenders = [];
 
   @override

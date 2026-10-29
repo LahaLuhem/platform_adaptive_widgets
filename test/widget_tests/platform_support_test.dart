@@ -17,8 +17,7 @@ bool get _isApple => defaultTargetPlatform == .iOS || defaultTargetPlatform == .
 void main() {
   feature('Platform support', () {
     scenarioWidgets('Apple platforms get Cupertino widgets, the rest Material', (tester) async {
-      // ignore: no-empty-block, only which switch shows up matters here.
-      await pumpInPlatformScaffold(tester, PlatformSwitch(value: true, onChanged: (_) {}));
+      await pumpInPlatformScaffold(tester, PlatformSwitch(value: true, onChanged: (_) => noop()));
 
       check(tester.any(find.byType(_isApple ? CupertinoSwitch : Switch))).isTrue();
     }, variant: _everyPlatform);
