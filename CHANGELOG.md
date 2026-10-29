@@ -37,6 +37,7 @@
 - \[#49\] Menu picker keeps its checkmark at accessibility text sizes (Cupertino)
 - \[#49\] Untitled alert: M3's top padding (Material)
 - \[#47\] Text field draws its rounded border (Cupertino)
+- \[#71\] VoiceOver reads disabled widgets as dimmed, buttons offer no dead tap (Cupertino)
 
 ### Removed
 - **BREAKING** \[#51\] `MaterialToastData.action`, `.persist`, `PlatformToastClosedReason`: use flat `action`
