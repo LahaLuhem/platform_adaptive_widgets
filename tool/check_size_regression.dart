@@ -38,9 +38,8 @@ Future<void> main(List<String> args) async {
     exit(66);
   }
 
-  final root = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
-  // Read more than once (sort, sum, slice), so materialise the lazy walk once.
-  final symbols = _cupertinoSymbols(root).toList(growable: false);
+  final root = _Node(jsonDecode(file.readAsStringSync()) as Map<String, dynamic>);
+  final symbols = _cupertinoSymbols(root, root.name);
   final hits = symbols.where((symbol) => !_isExcluded(symbol)).toList(growable: false)
     ..sort((a, b) => b.bytes.compareTo(a.bytes));
   final total = hits.fold<int>(0, (sum, hit) => sum + hit.bytes);
@@ -88,24 +87,31 @@ File? _newestReport() {
   return reports.lastOrNull;
 }
 
-/// Every leaf in the `--analyze-size` tree whose path mentions cupertino, case-insensitively. Lazy.
-Iterable<_Symbol> _cupertinoSymbols(
-  Map<String, dynamic> node, [
-  List<String> ancestors = const [],
-]) {
-  final path = [...ancestors, node['n']?.toString() ?? ''];
-  final children = node['children'];
-  if (children is List && children.isNotEmpty) {
-    return children.expand((child) => _cupertinoSymbols(child as Map<String, dynamic>, path));
-  }
+/// The leaves under [node], at [path], whose path mentions cupertino.
+List<_Symbol> _cupertinoSymbols(_Node node, String path) =>
+    node.name.toLowerCase().contains('cupertino')
+    ? _leaves(node, path)
+    : [for (final child in node.children) ..._cupertinoSymbols(child, '$path/${child.name}')];
 
-  final value = node['value'];
-  if (value is! num) return const [];
-  final full = path.join('/');
-
-  return full.toLowerCase().contains('cupertino') ? [_Symbol(full, value.toInt())] : const [];
-}
+/// Every leaf under [node], at [path].
+List<_Symbol> _leaves(_Node node, String path) => node.children.isEmpty
+    ? [if (node.bytes case final bytes?) _Symbol(path, bytes)]
+    : [for (final child in node.children) ..._leaves(child, '$path/${child.name}')];
 
 bool _isExcluded(_Symbol symbol) => _excludedFiles.any((file) => symbol.path.contains('$file/'));
 
 class _Symbol(final String path, final int bytes);
+
+/// A node of the `--analyze-size` tree.
+extension type const _Node(Map<String, dynamic> _json) {
+  String get name => _json['n']?.toString() ?? '';
+
+  /// Whether [name] mentions cupertino, case-insensitively. `cupertino` holds no `/`, so a path mentions
+  /// it exactly when one of its names does.
+  bool get isCupertino => name.toLowerCase().contains('cupertino');
+
+  Iterable<_Node> get children =>
+      (_json['children'] as List?)?.cast<Map<String, dynamic>>().map(_Node.new) ?? const [];
+
+  int? get bytes => (_json['value'] as num?)?.toInt();
+}
