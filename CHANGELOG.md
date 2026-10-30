@@ -31,6 +31,7 @@
 - **BREAKING** \[#55\] `PlatformAppBar.leading` per look, in `MaterialAppBarData` / `CupertinoNavigationBarData`
 - **BREAKING** \[#55\] `showPlatformFullscreenDialog`'s bar is an `appBarBuilder`, given the dialog's context
 - **BREAKING** \[#47\] `PlatformAppBar` in a sheet shows the sheet's close X or Cancel
+- **BREAKING** \[#69\] `PlatformMenuPicker.items`, `PlatformSegmentButton.choices`: a `Set`, so options can't repeat
 
 ### Fixed
 - \[#56\] Menu picker: same behaviour on both looks
@@ -38,6 +39,8 @@
 - \[#49\] Untitled alert: M3's top padding (Material)
 - \[#47\] Text field draws its rounded border (Cupertino)
 - \[#71\] VoiceOver reads disabled widgets as dimmed, buttons offer no dead tap (Cupertino)
+- \[#69\] Open menu picker follows the app's new items, an open menu stays open past 5 (Cupertino)
+- \[#69\] Segment button asserts on 1 choice or a selection outside them (Material)
 
 ### Removed
 - **BREAKING** \[#51\] `MaterialToastData.action`, `.persist`, `PlatformToastClosedReason`: use flat `action`
