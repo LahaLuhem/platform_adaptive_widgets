@@ -247,8 +247,9 @@ column shows what you can pass to tune each side. See
 
 #### Platform value selectors
 
-These build both arms, so the unused one stays in release builds (≈342 KB for one Cupertino widget,
-measured). Prefer an inline `switch (designLanguage)` when an arm builds a widget:
+These build both arms, so the unused one stays in release builds
+([measured](https://github.com/LahaLuhem/platform_adaptive_widgets/blob/master/doc/costs.md#both-looks-in-one-call)).
+Prefer an inline `switch (designLanguage)` when an arm builds a widget:
 
 | Helper                                            | Description                                                  |
 |---------------------------------------------------|--------------------------------------------------------------|

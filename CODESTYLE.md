@@ -251,6 +251,9 @@ The `dynamic`-escape-hatch ban and the `print()`-in-library ban are listed under
   2. **No drift risk.** Constants exist partly to keep 2 readers from diverging on the same value.
      With only one reader, there's nothing to diverge from.
 
+  A copy of upstream's own default keeps its name even with one reader. It pegs a value that an
+  upstream release can move, so the name marks it as upstream's and is the one place to update.
+
   Counts as a real second use:
   - A `build*` branch substituting the constant when a per-platform record's field is `null` (the
     literal would otherwise appear in both the data class default and the build branch).

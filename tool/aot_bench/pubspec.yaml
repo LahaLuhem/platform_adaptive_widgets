@@ -1,0 +1,15 @@
+name: aot_bench
+description: Times package patterns in a release (AOT) build, for doc/costs.md.
+publish_to: 'none'
+version: 0.0.1
+
+environment:
+  sdk: ^3.13.7
+
+dependencies:
+  cupertino_ui: ^1.1.5
+  flutter:
+    sdk: flutter
+  material_ui: ^1.9.0
+  platform_adaptive_widgets:
+    path: ../..

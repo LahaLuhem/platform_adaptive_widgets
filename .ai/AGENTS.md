@@ -36,7 +36,8 @@ the full widget catalogue. APPENDIX for design rationale.
   or ryl run too. Don't reintroduce `brew` / `pip` / `uv` linter installs.
 - **Cupertino on iOS and macOS, Material everywhere else.** One getter,
   [`designLanguage`](../lib/src/utils/design_language.dart), makes that call for every dispatch.
-- **Published to pub.dev.** `.pubignore` controls what ships in the tarball. The
+- **Published to pub.dev.** `.pubignore` lists what ships in the tarball, so a new path consumers
+  need goes in it. The
   `.github/workflows/publish.yml` workflow fires on a pushed semver tag (`{{version}}`) and hands
   off to dartender's `publish.yml`, which publishes via OIDC (configured by `dart-lang/setup-dart`)
   and runs no `pub get`, so `example/pubspec.lock` stays byte-identical through the publish dry-run.
@@ -74,9 +75,12 @@ platform_adaptive_widgets/
 │           ├── layout/                         `PlatformApp` / `Scaffold` / `AppBar` / …
 │           └── painting/                       `PlatformListTile` / `ProgressIndicator`
 ├── example/                                    Runnable Flutter demo (see example/.ai/AGENTS.md)
+├── tool/                                       Size harness and its check, AOT bench, size-report
+│                                                differ
+├── doc/costs.md                                What package patterns cost: AOT time, app size
 ├── analysis_options.yaml                       Includes dartender's shared lints
 ├── pubspec.yaml                                Deps + topics
-├── .pubignore                                  Files excluded from `flutter pub publish`
+├── .pubignore                                  What `flutter pub publish` ships
 ├── .fvmrc                                      FVM channel pin (`stable`)
 ├── .github/workflows/                          CI: dartender's ci, conventions, changelog,
 │                                                release, publish (tag-triggered), and the
@@ -150,8 +154,8 @@ under `lib/src/models/<category>/platform_xxx_data.dart`. The same sub-categorie
    [`APPENDIX.md#platform-widget-base-hierarchy`](../APPENDIX.md#platform-widget-base-hierarchy).
 8. **Inside `lib/src/`, dispatch with an inline `switch (designLanguage)`**, each arm calling a
    helper for one look. Never hand both looks to `platformValue` and co, or to a helper taking both
-   builders: the loser gets compiled in anyway (about 192 KB of the example's Android build,
-   2026-05-30). The selectors stay public for callers who accept that. The AST lint in
+   builders: the loser gets compiled in anyway ([cost](../doc/costs.md#both-looks-in-one-call)). The
+   selectors stay public for callers who accept that. The AST lint in
    [`test/aot_pruning_regression_test.dart`](../test/aot_pruning_regression_test.dart) and the size
    benchmark over `tool/size_harness/` enforce it on every PR, so don't weaken either without a
    conversation. See [`APPENDIX.md#aot-pruning-rules`](../APPENDIX.md#aot-pruning-rules).
@@ -261,3 +265,5 @@ For everything else, naming, idioms, class structure, DCM rules, markdown conven
   change. The 2 entry points (`lib/main.dart` and `lib/main_go_router.dart`) exercise different
   navigation strategies. Touch both when a change could affect either (see
   [`APPENDIX.md#two-entry-point-example`](../APPENDIX.md#two-entry-point-example)).
+- **Check [`doc/costs.md`](../doc/costs.md) before measuring what a pattern costs, and record what
+  you measure there.** It says how to measure, and its numbers save measuring the same thing twice.

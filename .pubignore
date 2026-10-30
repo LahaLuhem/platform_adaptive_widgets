@@ -1,43 +1,21 @@
-# .pubignore — exclude maintainer-only / generated / non-consumer files from the
-# published tarball. Syntax is .gitignore-compatible. Patterns are unanchored unless
-# prefixed with `/`, so e.g. `test/` matches both `test/` at the package root AND
-# `example/test/`.
+# not `*`, so a listed folder ships whole.
+/*
 
-# Test sources.
-test/
+!/lib/
+!/pubspec.yaml
+!/README.md
+!/CHANGELOG.md
+!/LICENSE
 
-# Local-dev config — consumer machines have their own.
-.fvmrc
-analysis_options.yaml
+# pub.dev's gallery, through pubspec.yaml's `screenshots:`.
+!/doc/
+/doc/*
+!/doc/screenshots/
 
-# Build / IDE artefacts. `.idea/`, `.vscode/` need no entry: pub drops hidden paths
-# itself. `*.iml` does, since it sits at the package root.
-build/
-*.iml
-
-# Maintainer-only tooling.
-tool/
-
-# Context7 doc-indexer config — repo metadata for context7.com, not a consumer file.
-context7.json
-
-# Internal contributor / AI-agent docs — not useful to pub.dev consumers.
-# `AGENTS.md` and `CLAUDE.md` at the package root are symlinks into `.ai/`. `.ai/`
-# itself is auto-excluded by pub's hidden-path rule, but pub follows symlinks before
-# that check, so the symlink targets need explicit entries.
-AGENTS.md
-CLAUDE.md
-APPENDIX.md
-CODESTYLE.md
-example/AGENTS.md
-example/CODESTYLE.md
-
-# Example platform scaffolding — pub.dev's "Example" tab only renders example/lib/,
-# example/pubspec.yaml, and example/README.md. Platform dirs add bloat with no
-# pub.dev-side benefit.
-example/android/
-example/ios/
-example/devtools_options.yaml
-
-# Demo media — declared in pubspec.yaml's `screenshots:` field, so they ship in the tarball
-# for pub.dev's gallery to render them (and are inlined in README.md via GitHub raw URLs).
+# pub.dev's Example tab.
+!/example/
+/example/*
+!/example/lib/
+!/example/pubspec.yaml
+!/example/pubspec.lock
+!/example/README.md
