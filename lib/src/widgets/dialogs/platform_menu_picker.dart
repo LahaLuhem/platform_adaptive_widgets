@@ -96,14 +96,13 @@ class const PlatformMenuPicker<T extends Object>({
   @override
   @protected
   @visibleForOverriding
-  Widget buildMaterial(BuildContext context) => _MaterialMenuPicker<T>(
-    items: items,
+  Widget buildMaterial(BuildContext context) => _MaterialMenuPicker(
     transformed: _transformedItems(),
     selectedIndex: _selectedIndex(),
     isEnabled: _canOpen,
     leadingIcon: leadingIcon,
     labelText: labelText,
-    onSelected: onSelected,
+    onPicked: _onPicked,
     data: materialMenuPickerData,
   );
 
@@ -119,7 +118,6 @@ class const PlatformMenuPicker<T extends Object>({
 
     return switch (items.length) {
       <= kCupertinoMenuPickerSmallItemCountThreshold => _CupertinoPickerMenu(
-        items: items,
         transformed: transformed,
         selectedIndex: selectedIndex,
         isEnabled: _canOpen,
@@ -127,10 +125,9 @@ class const PlatformMenuPicker<T extends Object>({
         leadingIcon: leadingIcon,
         labelText: labelText,
         backgroundColor: cupertinoMenuPickerData?.backgroundColor,
-        onSelected: onSelected,
+        onPicked: _onPicked,
       ),
       <= kCupertinoMenuPickerLargeItemCountThreshold => _CupertinoPickerWheel(
-        items: items,
         transformed: transformed,
         selectedIndex: selectedIndex,
         isEnabled: _canOpen,
@@ -138,10 +135,9 @@ class const PlatformMenuPicker<T extends Object>({
         leadingIcon: leadingIcon,
         labelText: labelText,
         backgroundColor: cupertinoMenuPickerData?.backgroundColor,
-        onSelected: onSelected,
+        onPicked: _onPicked,
       ),
       _ => _CupertinoPickerPage(
-        items: items,
         transformed: transformed,
         selectedIndex: selectedIndex,
         isEnabled: _canOpen,
@@ -149,13 +145,15 @@ class const PlatformMenuPicker<T extends Object>({
         leadingIcon: leadingIcon,
         labelText: labelText,
         backgroundColor: cupertinoMenuPickerData?.backgroundColor,
-        onSelected: onSelected,
+        onPicked: _onPicked,
       ),
     };
   }
 
   List<MenuPickerItem> _transformedItems() =>
       items.map(menuPickerItemTransformer).toList(growable: false);
+
+  void _onPicked(int rowIndex) => onSelected?.call(items[rowIndex]);
 
   // An empty list shows as disabled on both, instead of opening on nothing.
   bool get _canOpen => isEnabled && items.isNotEmpty;
@@ -173,21 +171,20 @@ class const PlatformMenuPicker<T extends Object>({
 
 /// Owns the field's text, since [DropdownMenu] keeps an old label when the value goes null, leaves the
 /// list or gets renamed.
-final class const _MaterialMenuPicker<T extends Object>({
-  required final List<T> items,
+final class const _MaterialMenuPicker({
   required final List<MenuPickerItem> transformed,
   required final int? selectedIndex,
   required final bool isEnabled,
   required final Widget? leadingIcon,
   required final String? labelText,
-  required final ValueChanged<T>? onSelected,
+  required final ValueChanged<int> onPicked,
   required final MaterialMenuPickerData? data,
 }) extends StatefulWidget {
   @override
-  State<_MaterialMenuPicker<T>> createState() => _MaterialMenuPickerState<T>();
+  State<_MaterialMenuPicker> createState() => _MaterialMenuPickerState();
 }
 
-final class _MaterialMenuPickerState<T extends Object>() extends State<_MaterialMenuPicker<T>> {
+final class _MaterialMenuPickerState() extends State<_MaterialMenuPicker> {
   late final TextEditingController _controller;
 
   String get _selectedLabel {
@@ -205,7 +202,7 @@ final class _MaterialMenuPickerState<T extends Object>() extends State<_Material
   }
 
   @override
-  void didUpdateWidget(_MaterialMenuPicker<T> oldWidget) {
+  void didUpdateWidget(_MaterialMenuPicker oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     _showSelected();
@@ -218,13 +215,8 @@ final class _MaterialMenuPickerState<T extends Object>() extends State<_Material
     super.dispose();
   }
 
-  void _showSelected() {
-    final label = _selectedLabel;
-    if (_controller.text != label) _controller.text = label;
-  }
-
   @override
-  Widget build(BuildContext context) => DropdownMenu<T>(
+  Widget build(BuildContext context) => DropdownMenu<int>(
     controller: _controller,
     expandedInsets: widget.data?.expandedInsets,
     showTrailingIcon: widget.data?.showTrailingIcon ?? kDefaultMaterialMenuPickerShowTrailingIcon,
@@ -234,21 +226,13 @@ final class _MaterialMenuPickerState<T extends Object>() extends State<_Material
     label: widget.labelText == null ? null : Text(widget.labelText!),
     // No typing, which DropdownMenu allows on desktop.
     selectOnly: true,
-    // Finds the open row by value. The default matches labels, and two rows can share one.
+    // Opens on the current row. The default matches labels, and two rows can share one.
     searchCallback: (_, _) => widget.selectedIndex,
-    onSelected: (value) {
-      // Re-picking the current value changes nothing.
-      if (value != null && widget.items.indexOf(value) != widget.selectedIndex) {
-        widget.onSelected?.call(value);
-      }
-      // The dropdown writes the pick into the field by itself. Put the app's value back, so only the
-      // app moves it.
-      _showSelected();
-    },
+    onSelected: _onSelected,
     dropdownMenuEntries: List.generate(
-      widget.items.length,
+      widget.transformed.length,
       (index) => DropdownMenuEntry(
-        value: widget.items[index],
+        value: index,
         label: widget.transformed[index].label ?? '',
         leadingIcon: widget.transformed[index].iconData == null
             ? null
@@ -257,12 +241,24 @@ final class _MaterialMenuPickerState<T extends Object>() extends State<_Material
       growable: false,
     ),
   );
+
+  void _onSelected(int? rowIndex) {
+    // Re-picking the current value changes nothing.
+    if (rowIndex != null && rowIndex != widget.selectedIndex) widget.onPicked(rowIndex);
+    // The dropdown writes the pick into the field by itself. Put the app's value back, so only the
+    // app moves it.
+    _showSelected();
+  }
+
+  void _showSelected() {
+    final label = _selectedLabel;
+    if (_controller.text != label) _controller.text = label;
+  }
 }
 
 /// Up to [kCupertinoMenuPickerSmallItemCountThreshold] items, a [CupertinoMenuAnchor] whose menu shows
 /// one [CupertinoMenuItem] per choice.
-final class const _CupertinoPickerMenu<T extends Object>({
-  required final List<T> items,
+final class const _CupertinoPickerMenu({
   required final List<MenuPickerItem> transformed,
   required final int? selectedIndex,
   required final bool isEnabled,
@@ -270,7 +266,7 @@ final class const _CupertinoPickerMenu<T extends Object>({
   required final Widget? leadingIcon,
   required final String? labelText,
   required final Color? backgroundColor,
-  required final ValueChanged<T>? onSelected,
+  required final ValueChanged<int> onPicked,
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => CupertinoMenuAnchor(
@@ -282,14 +278,14 @@ final class const _CupertinoPickerMenu<T extends Object>({
       backgroundColor: backgroundColor,
       isEnabled: isEnabled,
       useIconButton: useIconButton,
-      onTap: () => controller.open(),
+      onTap: controller.open,
     ),
     menuChildren: List.generate(
-      items.length,
+      transformed.length,
       (index) => CupertinoMenuItem(
         // Not null for the current row, which would grey it out. A tap on it only closes the menu.
         onPressed: () {
-          if (index != selectedIndex) onSelected?.call(items[index]);
+          if (index != selectedIndex) onPicked(index);
         },
         // iOS's slots. Only the trailing one hides at accessibility text sizes, so the checkmark leads.
         leading: index != selectedIndex ? null : const Icon(CupertinoIcons.check_mark),
@@ -303,8 +299,7 @@ final class const _CupertinoPickerMenu<T extends Object>({
 
 /// Up to [kCupertinoMenuPickerLargeItemCountThreshold] items, a field that opens a [CupertinoPicker]
 /// wheel in a popup.
-final class const _CupertinoPickerWheel<T extends Object>({
-  required final List<T> items,
+final class const _CupertinoPickerWheel({
   required final List<MenuPickerItem> transformed,
   required final int? selectedIndex,
   required final bool isEnabled,
@@ -312,14 +307,14 @@ final class const _CupertinoPickerWheel<T extends Object>({
   required final Widget? leadingIcon,
   required final String? labelText,
   required final Color? backgroundColor,
-  required final ValueChanged<T>? onSelected,
+  required final ValueChanged<int> onPicked,
 }) extends StatefulWidget {
   @override
-  State<_CupertinoPickerWheel<T>> createState() => _CupertinoPickerWheelState<T>();
+  State<_CupertinoPickerWheel> createState() => _CupertinoPickerWheelState();
 }
 
 /// Hands the app's value to the open wheel, which the field's rebuilds don't reach.
-final class _CupertinoPickerWheelState<T extends Object>() extends State<_CupertinoPickerWheel<T>> {
+final class _CupertinoPickerWheelState() extends State<_CupertinoPickerWheel> {
   late final ValueNotifier<int?> _selectedIndex;
 
   @override
@@ -330,7 +325,7 @@ final class _CupertinoPickerWheelState<T extends Object>() extends State<_Cupert
   }
 
   @override
-  void didUpdateWidget(_CupertinoPickerWheel<T> oldWidget) {
+  void didUpdateWidget(_CupertinoPickerWheel oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     _selectedIndex.value = widget.selectedIndex;
@@ -357,7 +352,7 @@ final class _CupertinoPickerWheelState<T extends Object>() extends State<_Cupert
       builder: (_) => _CupertinoWheelPopup(
         transformed: widget.transformed,
         selectedIndex: _selectedIndex,
-        onStopped: (index) => widget.onSelected?.call(widget.items[index]),
+        onStopped: (index) => widget.onPicked(index),
       ),
     ),
   );
@@ -429,9 +424,9 @@ final class _CupertinoWheelPopupState() extends State<_CupertinoWheelPopup> {
   @override
   Widget build(BuildContext context) => Container(
     height: _kCupertinoPickerModalHeight,
-    padding: const EdgeInsets.only(top: 6),
+    padding: const .only(top: 6),
     // Keeps the wheel above the keyboard, if one's up.
-    margin: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+    margin: .only(bottom: MediaQuery.viewInsetsOf(context).bottom),
     color: CupertinoColors.systemBackground.resolveFrom(context),
     child: SafeArea(
       top: false,
@@ -456,8 +451,7 @@ final class _CupertinoWheelPopupState() extends State<_CupertinoWheelPopup> {
 }
 
 /// Past [kCupertinoMenuPickerLargeItemCountThreshold] items, a field that pushes a page listing them all.
-final class const _CupertinoPickerPage<T extends Object>({
-  required final List<T> items,
+final class const _CupertinoPickerPage({
   required final List<MenuPickerItem> transformed,
   required final int? selectedIndex,
   required final bool isEnabled,
@@ -465,7 +459,7 @@ final class const _CupertinoPickerPage<T extends Object>({
   required final Widget? leadingIcon,
   required final String? labelText,
   required final Color? backgroundColor,
-  required final ValueChanged<T>? onSelected,
+  required final ValueChanged<int> onPicked,
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => _CupertinoPickerField(
@@ -501,7 +495,7 @@ final class const _CupertinoPickerPage<T extends Object>({
           ),
           child: ListView.builder(
             controller: listScrollController,
-            itemCount: items.length,
+            itemCount: transformed.length,
             itemBuilder: (context, index) => DecoratedBox(
               key: index != 0 ? null : firstRow,
               decoration: BoxDecoration(
@@ -525,7 +519,7 @@ final class const _CupertinoPickerPage<T extends Object>({
     );
     listScrollController.dispose();
 
-    if (picked != null && picked != selectedIndex) onSelected?.call(items[picked]);
+    if (picked != null && picked != selectedIndex) onPicked(picked);
   }
 }
 
