@@ -20,7 +20,8 @@ const _materialDesktop = TargetPlatformVariant({TargetPlatform.windows, TargetPl
 
 String _label(int item) => 'Item $item';
 
-List<int> _items(int count, {int first = 0}) => List.generate(count, (index) => first + index);
+Set<int> _items(int count, {int first = 0}) =>
+    Iterable.generate(count, (index) => first + index).toSet();
 
 class const _Picker({
   required final int count,

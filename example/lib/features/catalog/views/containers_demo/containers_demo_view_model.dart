@@ -61,9 +61,9 @@ final class ContainersDemoViewModel extends ViewModel {
   };
 
   /// The sides the scrollbar can sit on, which depend on which way the list scrolls.
-  List<ScrollbarOrientation> get scrollbarOrientations => switch (_scrollAxis) {
-    .vertical => const [.left, .right],
-    .horizontal => const [.top, .bottom],
+  Set<ScrollbarOrientation> get scrollbarOrientations => switch (_scrollAxis) {
+    .vertical => const {.left, .right},
+    .horizontal => const {.top, .bottom},
   };
 
   Color? get progressColor => _progressColor;

@@ -76,13 +76,13 @@ class ButtonsDemoView extends StatelessWidget {
                 EnumKnob<PlatformButtonEmphasis>(
                   label: 'emphasis',
                   value: viewModel.emphasis,
-                  values: PlatformButtonEmphasis.values,
+                  values: PlatformButtonEmphasis.values.toSet(),
                   onChanged: viewModel.onEmphasisSelected,
                 ),
                 SegmentKnob<ButtonShape>(
                   label: 'shape',
                   value: viewModel.shape,
-                  values: ButtonShape.values,
+                  values: ButtonShape.values.toSet(),
                   onChanged: viewModel.onShapeChanged,
                 ),
               ],
@@ -91,7 +91,7 @@ class ButtonsDemoView extends StatelessWidget {
                   label: 'actionKind',
                   value: viewModel.actionKind,
                   // A discard draws like a delete here. The alert card shows where they differ.
-                  values: const [.normal, .delete],
+                  values: const {.normal, .delete},
                   onChanged: viewModel.onActionKindChanged,
                 ),
                 ColorKnob(
@@ -117,7 +117,7 @@ class ButtonsDemoView extends StatelessWidget {
                 EnumKnob<CupertinoButtonSize>(
                   label: 'sizeStyle',
                   value: viewModel.cupertinoSizeStyle,
-                  values: CupertinoButtonSize.values,
+                  values: CupertinoButtonSize.values.toSet(),
                   onChanged: viewModel.onCupertinoSizeStyleSelected,
                 ),
               ],

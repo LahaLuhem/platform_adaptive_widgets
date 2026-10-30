@@ -33,11 +33,7 @@ class _Surfaces extends StatelessWidget {
       ),
       const PlatformProgressBar(value: 0.3),
       PlatformMenuPicker<int>(
-        items: List.generate(
-          kCupertinoMenuPickerLargeItemCountThreshold + 1,
-          (index) => index,
-          growable: false,
-        ),
+        items: Iterable<int>.generate(kCupertinoMenuPickerLargeItemCountThreshold + 1).toSet(),
         onSelected: (_) {},
       ),
       PlatformSingleSelectList<int>(

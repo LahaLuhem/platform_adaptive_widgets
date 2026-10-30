@@ -61,7 +61,7 @@ class AboutView extends StatelessWidget {
               child: ValueListenableBuilder(
                 valueListenable: themeModeNotifier,
                 builder: (_, themeMode, _) => PlatformSegmentButton(
-                  choices: ThemeMode.values,
+                  choices: ThemeMode.values.toSet(),
                   selectedChoice: themeMode,
                   segmentBuilder: (mode) => Text(_themeModeLabel(mode)),
                   onSelectionChanged: (mode) => themeModeNotifier.value = mode!,
@@ -78,7 +78,7 @@ class AboutView extends StatelessWidget {
                   ValueListenableBuilder(
                     valueListenable: platformNotifier,
                     builder: (_, platformOverride, _) => PlatformSegmentButton(
-                      choices: const [TargetPlatform.android, TargetPlatform.iOS],
+                      choices: const {TargetPlatform.android, TargetPlatform.iOS},
                       // null = follow the device. Show the effective platform.
                       selectedChoice: platformOverride ?? defaultTargetPlatform,
                       segmentBuilder: (platform) => Text(platform.name),

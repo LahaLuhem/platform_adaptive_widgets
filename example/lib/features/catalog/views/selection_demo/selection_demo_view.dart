@@ -127,7 +127,7 @@ class SelectionDemoView extends StatelessWidget {
             spacing: 16,
             children: [
               PlatformSegmentButton(
-                choices: AxisDirection.values,
+                choices: AxisDirection.values.toSet(),
                 selectedChoice: viewModel.selectedDirection,
                 segmentBuilder: (direction) => Text(direction.name),
                 onSelectionChanged: viewModel.onDirectionChanged,
@@ -143,7 +143,7 @@ class SelectionDemoView extends StatelessWidget {
                 onChanged: viewModel.onDirectionChanged,
               ),
               PlatformMenuPicker(
-                items: AxisDirection.values,
+                items: AxisDirection.values.toSet(),
                 currentValue: viewModel.selectedDirection,
                 onSelected: viewModel.onDirectionChanged,
                 isEnabled: shouldEnable,
@@ -170,11 +170,10 @@ class SelectionDemoView extends StatelessWidget {
               '$kCupertinoMenuPickerLargeItemCountThreshold and a page past that, icons included.',
           child: PropertyEditor(
             preview: PlatformMenuPicker(
-              items: List.generate(
+              items: Iterable.generate(
                 viewModel.menuPickerLength.itemCount,
                 (index) => index + 1,
-                growable: false,
-              ),
+              ).toSet(),
               currentValue: viewModel.pickedItem,
               onSelected: viewModel.onPickerItemSelected,
               isEnabled: shouldEnable,
@@ -192,7 +191,7 @@ class SelectionDemoView extends StatelessWidget {
               SegmentKnob(
                 label: 'items',
                 value: viewModel.menuPickerLength,
-                values: MenuPickerLength.values,
+                values: MenuPickerLength.values.toSet(),
                 onChanged: viewModel.onMenuPickerLengthChanged,
               ),
             ],

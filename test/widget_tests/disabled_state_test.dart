@@ -128,7 +128,7 @@ final _paths = <String, _Path>{
     owner: 'PlatformMenuPicker',
     screen: ({required isEnabled}) => _InBody(
       PlatformMenuPicker<String>(
-        items: const [_label],
+        items: const {_label},
         currentValue: _label,
         onSelected: (_) => noop(),
         isEnabled: isEnabled,
@@ -139,7 +139,7 @@ final _paths = <String, _Path>{
     owner: 'PlatformMenuPicker',
     screen: ({required isEnabled}) => _InBody(
       PlatformMenuPicker<String>(
-        items: const [_label],
+        items: const {_label},
         leadingIcon: const Icon(Icons.sort),
         onSelected: (_) => noop(),
         isEnabled: isEnabled,
@@ -189,7 +189,7 @@ final _segment = _Path(
   owner: 'CupertinoSegmentButtonData',
   screen: ({required isEnabled}) => _InBody(
     PlatformSegmentButton<String>(
-      choices: const ['Other', _label],
+      choices: const {'Other', _label},
       segmentBuilder: Text.new,
       selectedChoice: 'Other',
       onSelectionChanged: (_) => noop(),

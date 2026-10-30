@@ -75,7 +75,7 @@ class TextDemoView extends StatelessWidget {
                 label: 'textAlign',
                 value: viewModel.textAlign,
                 // One line, left to right: left and justify draw like start, right like end.
-                values: const [.start, .center, .end],
+                values: const {.start, .center, .end},
                 onChanged: viewModel.onTextAlignSelected,
               ),
             ],
@@ -90,7 +90,7 @@ class TextDemoView extends StatelessWidget {
               EnumKnob<OverlayVisibilityMode>(
                 label: 'clearButtonMode',
                 value: viewModel.clearButtonMode,
-                values: OverlayVisibilityMode.values,
+                values: OverlayVisibilityMode.values.toSet(),
                 onChanged: viewModel.onClearButtonModeSelected,
               ),
             ],

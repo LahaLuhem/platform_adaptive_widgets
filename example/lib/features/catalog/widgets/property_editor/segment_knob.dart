@@ -7,7 +7,7 @@ class SegmentKnob<T extends Enum> extends StatelessWidget {
 
   final T value;
 
-  final List<T> values;
+  final Set<T> values;
 
   final ValueChanged<T> onChanged;
 
