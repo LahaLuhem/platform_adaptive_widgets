@@ -110,8 +110,11 @@ class const PlatformMenuPicker<T extends Object>({
   @protected
   @visibleForOverriding
   Widget buildCupertino(BuildContext context) => _CupertinoMenuPicker(
-    menuPickerItems: _menuPickerItems(),
-    selectedIndex: _selectedIndex(),
+    pickerSnapshot: (
+      menuPickerItems: _menuPickerItems(),
+      selectedIndex: _selectedIndex(),
+      onPicked: _onPicked,
+    ),
     isEnabled: _canOpen,
     useIconButton:
         cupertinoMenuPickerData?.useIconButtonVariant ??
@@ -119,7 +122,6 @@ class const PlatformMenuPicker<T extends Object>({
     leadingIcon: leadingIcon,
     labelText: labelText,
     backgroundColor: cupertinoMenuPickerData?.backgroundColor,
-    onPicked: _onPicked,
   );
 
   List<MenuPickerItem> _menuPickerItems() =>
@@ -229,50 +231,55 @@ final class _MaterialMenuPickerState() extends State<_MaterialMenuPicker> {
 }
 
 final class const _CupertinoMenuPicker({
-  required final List<MenuPickerItem> menuPickerItems,
-  required final int? selectedIndex,
+  required final _PickerSnapshot pickerSnapshot,
   required final bool isEnabled,
   required final bool useIconButton,
   required final Widget? leadingIcon,
   required final String? labelText,
   required final Color? backgroundColor,
-  required final ValueChanged<int> onPicked,
 }) extends StatefulWidget {
   @override
   State<_CupertinoMenuPicker> createState() => _CupertinoMenuPickerState();
 }
 
-/// Hands the app's value to the open wheel, which the field's rebuilds don't reach.
+/// One State behind the 3 looks, so a wheel or page open in its own route keeps up with the app,
+/// whatever the count does.
 final class _CupertinoMenuPickerState() extends State<_CupertinoMenuPicker> {
   final _menuController = MenuController();
-  late final ValueNotifier<int?> _selectedIndexNotifier;
+  late final ValueNotifier<_PickerSnapshot> _pickerSnapshotNotifier;
+
+  // An open menu stays a menu when the count grows past its range, so it doesn't vanish mid-pick.
+  bool get _showsMenu =>
+      _menuController.isOpen ||
+      widget.pickerSnapshot.menuPickerItems.length <= kCupertinoMenuPickerSmallItemCountThreshold;
 
   @override
   void initState() {
     super.initState();
 
-    _selectedIndexNotifier = ValueNotifier(widget.selectedIndex);
+    _pickerSnapshotNotifier = ValueNotifier(widget.pickerSnapshot);
   }
 
   @override
   void didUpdateWidget(_CupertinoMenuPicker oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    _selectedIndexNotifier.value = widget.selectedIndex;
+    _pickerSnapshotNotifier.value = widget.pickerSnapshot;
   }
 
   @override
   void dispose() {
-    _selectedIndexNotifier.dispose();
+    _pickerSnapshotNotifier.dispose();
 
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final snapshot = widget.pickerSnapshot;
     final field = _CupertinoPickerField(
-      selectedIndex: widget.selectedIndex,
-      menuPickerItems: widget.menuPickerItems,
+      selectedIndex: snapshot.selectedIndex,
+      menuPickerItems: snapshot.menuPickerItems,
       labelText: widget.labelText,
       leadingIcon: widget.leadingIcon,
       backgroundColor: widget.backgroundColor,
@@ -280,23 +287,23 @@ final class _CupertinoMenuPickerState() extends State<_CupertinoMenuPicker> {
       useIconButton: widget.useIconButton,
       onTap: _open,
     );
-    if (widget.menuPickerItems.length > kCupertinoMenuPickerSmallItemCountThreshold) return field;
+    if (!_showsMenu) return field;
 
     return CupertinoMenuAnchor(
       controller: _menuController,
       menuChildren: List.generate(
-        widget.menuPickerItems.length,
+        snapshot.menuPickerItems.length,
         (index) => CupertinoMenuItem(
           // Not null for the current row, which would grey it out. A tap on it only closes the menu.
           onPressed: () {
-            if (index != widget.selectedIndex) widget.onPicked(index);
+            if (index != snapshot.selectedIndex) snapshot.onPicked(index);
           },
           // iOS's slots. Only the trailing one hides at accessibility text sizes, so the checkmark leads.
-          leading: index != widget.selectedIndex ? null : const Icon(CupertinoIcons.check_mark),
-          trailing: widget.menuPickerItems[index].iconData == null
+          leading: index != snapshot.selectedIndex ? null : const Icon(CupertinoIcons.check_mark),
+          trailing: snapshot.menuPickerItems[index].iconData == null
               ? null
-              : Icon(widget.menuPickerItems[index].iconData),
-          child: Text(widget.menuPickerItems[index].label ?? ''),
+              : Icon(snapshot.menuPickerItems[index].iconData),
+          child: Text(snapshot.menuPickerItems[index].label ?? ''),
         ),
         growable: false,
       ),
@@ -304,23 +311,21 @@ final class _CupertinoMenuPickerState() extends State<_CupertinoMenuPicker> {
     );
   }
 
-  Future<void> _open() async => switch (widget.menuPickerItems.length) {
-    <= kCupertinoMenuPickerSmallItemCountThreshold => _menuController.open(),
+  Future<void> _open() async => switch (widget.pickerSnapshot.menuPickerItems.length) {
+    _ when _showsMenu => _menuController.open(),
     <= kCupertinoMenuPickerLargeItemCountThreshold => await _openWheel(),
     _ => await _openPage(),
   };
 
   Future<void> _openWheel() => showCupertinoModalPopup<void>(
     context: context,
-    builder: (_) => _CupertinoWheelPopup(
-      menuPickerItems: widget.menuPickerItems,
-      selectedIndex: _selectedIndexNotifier,
-      onStopped: widget.onPicked,
+    builder: (_) => _PickerSnapshotBuilder(
+      pickerSnapshotListenable: _pickerSnapshotNotifier,
+      builder: (snapshot, catchUp) => _CupertinoWheelPopup(snapshot: snapshot, catchUp: catchUp),
     ),
   );
 
   Future<void> _openPage() async {
-    final currentMenuPicker = widget;
     final listScrollController = ScrollController();
     final firstRow = GlobalKey();
     // Opens on the current row once the page has laid out. Every row is as tall as the first, which
@@ -330,37 +335,43 @@ final class _CupertinoMenuPickerState() extends State<_CupertinoMenuPicker> {
       if (rowHeight != null && listScrollController.hasClients) {
         listScrollController.jumpTo(
           min(
-            (currentMenuPicker.selectedIndex ?? 0) * rowHeight,
+            (widget.pickerSnapshot.selectedIndex ?? 0) * rowHeight,
             listScrollController.position.maxScrollExtent,
           ),
         );
       }
     });
 
-    final picked = await Navigator.of(context).push(
-      CupertinoPageRoute<int>(
+    await Navigator.of(context).push(
+      CupertinoPageRoute<void>(
         builder: (context) => CupertinoPageScaffold(
           navigationBar: CupertinoNavigationBar(
-            middle: currentMenuPicker.labelText == null ? null : Text(currentMenuPicker.labelText!),
+            middle: widget.labelText == null ? null : Text(widget.labelText!),
           ),
-          child: ListView.builder(
-            controller: listScrollController,
-            itemCount: currentMenuPicker.menuPickerItems.length,
-            itemBuilder: (context, index) => DecoratedBox(
-              key: index != 0 ? null : firstRow,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: CupertinoColors.separator.resolveFrom(context),
-                    width: 0,
+          child: _PickerSnapshotBuilder(
+            pickerSnapshotListenable: _pickerSnapshotNotifier,
+            builder: (snapshot, _) => ListView.builder(
+              controller: listScrollController,
+              itemCount: snapshot.menuPickerItems.length,
+              itemBuilder: (context, index) => DecoratedBox(
+                key: index != 0 ? null : firstRow,
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: CupertinoColors.separator.resolveFrom(context),
+                      width: 0,
+                    ),
                   ),
                 ),
-              ),
-              child: CupertinoCheckmarkRow(
-                label: currentMenuPicker.menuPickerItems[index].label ?? '',
-                iconData: currentMenuPicker.menuPickerItems[index].iconData,
-                isPicked: index == currentMenuPicker.selectedIndex,
-                onTap: () => Navigator.of(context).pop(index),
+                child: CupertinoCheckmarkRow(
+                  label: snapshot.menuPickerItems[index].label ?? '',
+                  iconData: snapshot.menuPickerItems[index].iconData,
+                  isPicked: index == snapshot.selectedIndex,
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    if (index != snapshot.selectedIndex) snapshot.onPicked(index);
+                  },
+                ),
               ),
             ),
           ),
@@ -368,18 +379,49 @@ final class _CupertinoMenuPickerState() extends State<_CupertinoMenuPicker> {
       ),
     );
     listScrollController.dispose();
-
-    if (picked != null && picked != currentMenuPicker.selectedIndex) {
-      currentMenuPicker.onPicked(picked);
-    }
   }
+}
+
+/// Builds an open wheel or page from the picker's latest snapshot. The picker can't rebuild another
+/// route in the middle of its own build, so this one catches up right after.
+final class const _PickerSnapshotBuilder({
+  required final ValueListenable<_PickerSnapshot> pickerSnapshotListenable,
+  required final Widget Function(_PickerSnapshot pickerSnapshot, VoidCallback catchUp) builder,
+}) extends StatefulWidget {
+  @override
+  State<_PickerSnapshotBuilder> createState() => _PickerSnapshotBuilderState();
+}
+
+final class _PickerSnapshotBuilderState() extends State<_PickerSnapshotBuilder> {
+  late _PickerSnapshot _shownPickerSnapshot;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _shownPickerSnapshot = widget.pickerSnapshotListenable.value;
+    widget.pickerSnapshotListenable.addListener(_catchUp);
+  }
+
+  @override
+  void dispose() {
+    widget.pickerSnapshotListenable.removeListener(_catchUp);
+
+    super.dispose();
+  }
+
+  void _catchUp() => WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (mounted) setState(() => _shownPickerSnapshot = widget.pickerSnapshotListenable.value);
+  });
+
+  @override
+  Widget build(BuildContext context) => widget.builder(_shownPickerSnapshot, _catchUp);
 }
 
 /// Always shows the app's value, like SwiftUI's wheel.
 final class const _CupertinoWheelPopup({
-  required final List<MenuPickerItem> menuPickerItems,
-  required final ValueListenable<int?> selectedIndex,
-  required final ValueChanged<int> onStopped,
+  required final _PickerSnapshot snapshot,
+  required final VoidCallback catchUp,
 }) extends StatefulWidget {
   @override
   State<_CupertinoWheelPopup> createState() => _CupertinoWheelPopupState();
@@ -397,30 +439,32 @@ final class _CupertinoWheelPopupState() extends State<_CupertinoWheelPopup> {
 
     // With nothing picked the wheel shows the top row.
     _wheelScrollController = FixedExtentScrollController(
-      initialItem: widget.selectedIndex.value ?? 0,
+      initialItem: widget.snapshot.selectedIndex ?? 0,
     );
-    widget.selectedIndex.addListener(_followAfterFrame);
+  }
+
+  @override
+  void didUpdateWidget(_CupertinoWheelPopup oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // After layout, so the wheel scrolls through the new rows, not the old ones.
+    WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_follow()));
   }
 
   @override
   void dispose() {
-    widget.selectedIndex.removeListener(_followAfterFrame);
     _wheelScrollController.dispose();
 
     super.dispose();
   }
 
-  // The app's value changes while the app builds, so the wheel moves once that's done.
-  void _followAfterFrame() =>
-      WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_follow()));
-
   Future<void> _follow() async {
-    final row = widget.selectedIndex.value ?? 0;
-    if (!mounted || _wheelScrollController.selectedItem == row) return;
+    final rowIndex = widget.snapshot.selectedIndex ?? 0;
+    if (!mounted || _wheelScrollController.selectedItem == rowIndex) return;
 
     _isFollowing = true;
     await _wheelScrollController.animateToItem(
-      row,
+      rowIndex,
       duration: _kCupertinoPickerFollowDuration,
       curve: Curves.easeInOut,
     );
@@ -429,15 +473,13 @@ final class _CupertinoWheelPopupState() extends State<_CupertinoWheelPopup> {
 
   // Not onSelectedItemChanged, which skips the row the wheel opened on. With nothing picked, that row
   // is still a pick.
-  bool _onNotification(ScrollEndNotification notification) {
+  void _onStopped(ScrollEndNotification notification) {
     final rowIndex = (notification.metrics as FixedExtentMetrics).itemIndex;
-    if (!_isFollowing && rowIndex != widget.selectedIndex.value) {
-      widget.onStopped(rowIndex);
-      // An app that doesn't take the pick keeps its value, and the wheel goes back to it.
-      _followAfterFrame();
-    }
+    if (_isFollowing || rowIndex == widget.snapshot.selectedIndex) return;
 
-    return false;
+    widget.snapshot.onPicked(rowIndex);
+    // An app that doesn't take the pick keeps its value, and the wheel goes back to it.
+    widget.catchUp();
   }
 
   @override
@@ -450,13 +492,17 @@ final class _CupertinoWheelPopupState() extends State<_CupertinoWheelPopup> {
     child: SafeArea(
       top: false,
       child: NotificationListener<ScrollEndNotification>(
-        onNotification: _onNotification,
+        onNotification: (notification) {
+          _onStopped(notification);
+
+          return false;
+        },
         child: CupertinoPicker(
           itemExtent: _kCupertinoPickerModalItemExtent,
           scrollController: _wheelScrollController,
           onSelectedItemChanged: null,
           children: [
-            for (final item in widget.menuPickerItems)
+            for (final item in widget.snapshot.menuPickerItems)
               Row(
                 mainAxisSize: .min,
                 spacing: 8,
@@ -522,3 +568,11 @@ final class const _CupertinoPickerField({
     );
   }
 }
+
+/// What an open look draws from, in one piece, so the rows it shows and the pick it reports always
+/// come from the same build.
+typedef _PickerSnapshot = ({
+  List<MenuPickerItem> menuPickerItems,
+  int? selectedIndex,
+  ValueChanged<int> onPicked,
+});

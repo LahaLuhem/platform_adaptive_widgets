@@ -4,7 +4,7 @@
 import 'dart:ui' show Tristate;
 
 import 'package:checks/checks.dart';
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoMenuItem;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoMenuItem, CupertinoPicker;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
@@ -20,10 +20,12 @@ const _materialDesktop = TargetPlatformVariant({TargetPlatform.windows, TargetPl
 
 String _label(int item) => 'Item $item';
 
-List<int> _items(int count) => List.generate(count, (index) => index);
+List<int> _items(int count, {int first = 0}) => List.generate(count, (index) => first + index);
 
 class const _Picker({
   required final int count,
+  // Shifts the list, so a test can change the items under an open picker.
+  final int first = 0,
   final int? current,
   final bool isEnabled = true,
   final bool asIconButton = false,
@@ -33,7 +35,7 @@ class const _Picker({
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => PlatformMenuPicker<int>(
-    items: _items(count),
+    items: _items(count, first: first),
     currentValue: current,
     isEnabled: isEnabled,
     leadingIcon: const Icon(_leadingIcon),
@@ -48,6 +50,24 @@ class const _Picker({
 
 Future<void> _pump(WidgetTester tester, _Picker picker) =>
     pumpInPlatformScaffold(tester, Center(child: picker));
+
+// Changes the picker the way an app's setState would, under the Navigator. Pumping again from the
+// top rebuilds every route as well, which hides an open look going stale.
+Future<ValueNotifier<_Picker>> _pumpChangeable(WidgetTester tester, _Picker picker) async {
+  final pickerNotifier = ValueNotifier(picker);
+  addTearDown(pickerNotifier.dispose);
+  await pumpInPlatformScaffold(
+    tester,
+    Center(
+      child: ValueListenableBuilder(
+        valueListenable: pickerNotifier,
+        builder: (_, picker, _) => picker,
+      ),
+    ),
+  );
+
+  return pickerNotifier;
+}
 
 // Taps the icon's spot, not the widget: Material keeps a hidden copy of it, and a disabled field
 // can't be hit.
@@ -88,6 +108,17 @@ bool _rowInView(String label) => find.text(label).evaluate().any((text) {
 
   return list != null && _globalRect(list.context).contains(_globalRect(text).center);
 });
+
+// The label in the middle of the open wheel, as it's drawn.
+String _wheelLabel(WidgetTester tester) {
+  final middle = tester.getCenter(find.byType(CupertinoPicker)).dy;
+  double offMiddle(Element label) => (_globalRect(label).center.dy - middle).abs();
+  final labels = find
+      .descendant(of: find.byType(CupertinoPicker), matching: find.byType(Text))
+      .evaluate();
+
+  return (labels.reduce((a, b) => offMiddle(a) <= offMiddle(b) ? a : b).widget as Text).data!;
+}
 
 Rect _globalRect(BuildContext context) {
   final box = context.findRenderObject()! as RenderBox;
@@ -434,6 +465,110 @@ void main() {
 
       check(picked).isEmpty();
       check(find.byType(PlatformMenuPicker<int>).evaluate()).isNotEmpty();
+    }, variant: iosOnly);
+
+    scenarioWidgets("reports the item an open wheel stops on after the app's items change", (
+      tester,
+    ) async {
+      final reports = <({int item, String shown})>[];
+      void onSelected(int item) => reports.add((item: item, shown: _wheelLabel(tester)));
+      final pickerNotifier = await _pumpChangeable(
+        tester,
+        _Picker(count: 8, current: 2, onSelected: onSelected),
+      );
+      await _open(tester);
+
+      pickerNotifier.value = _Picker(count: 8, first: 1, current: 2, onSelected: onSelected);
+      await tester.pumpAndSettle();
+      await tester.timedDrag(
+        _listRow(_wheelLabel(tester)),
+        const Offset(0, -100),
+        const Duration(milliseconds: 300),
+      );
+      await tester.pumpAndSettle();
+
+      check(reports).length.equals(1);
+      check(_label(reports.single.item)).equals(reports.single.shown);
+    }, variant: iosOnly);
+
+    scenarioWidgets(
+      'moves an open wheel to its top row, reporting nothing, when the current value leaves the list',
+      (tester) async {
+        final picked = <int>[];
+        final pickerNotifier = await _pumpChangeable(
+          tester,
+          _Picker(count: 8, current: 3, onSelected: picked.add),
+        );
+        await _open(tester);
+
+        pickerNotifier.value = _Picker(count: 8, first: 4, current: 3, onSelected: picked.add);
+        await tester.pumpAndSettle();
+
+        check(_wheelRow(tester)).equals(0);
+        check(_wheelLabel(tester)).equals(_label(4));
+        check(picked).isEmpty();
+      },
+      variant: iosOnly,
+    );
+
+    scenarioWidgets(
+      "shows the app's new items on an open page, and marks and reports the ones it shows",
+      (tester) async {
+        final picked = <int>[];
+        final semantics = tester.ensureSemantics();
+        final pickerNotifier = await _pumpChangeable(
+          tester,
+          _Picker(count: 300, current: 5, onSelected: picked.add),
+        );
+        await _open(tester);
+
+        pickerNotifier.value = _Picker(count: 300, first: 1, current: 5, onSelected: picked.add);
+        await tester.pumpAndSettle();
+        final pageList = find.byWidgetPredicate((widget) => widget is Scrollable);
+        await tester.drag(pageList, const Offset(0, 20000));
+        await tester.pumpAndSettle();
+        final currentRow = tester.getSemantics(_listRow(_label(5))).getSemanticsData();
+        await tester.drag(pageList, const Offset(0, -20000));
+        await tester.pumpAndSettle();
+        final showsNewLastItem = _listRow(_label(300)).evaluate().isNotEmpty;
+        if (showsNewLastItem) {
+          await tester.tap(_listRow(_label(300)));
+          await tester.pumpAndSettle();
+        }
+        semantics.dispose();
+
+        check(currentRow.flagsCollection.isSelected).equals(Tristate.isTrue);
+        check(showsNewLastItem).isTrue();
+        check(picked).deepEquals([300]);
+      },
+      variant: iosOnly,
+    );
+
+    scenarioWidgets(
+      "keeps showing the app's items on an open wheel after the count drops into the menu's range",
+      (tester) async {
+        final pickerNotifier = await _pumpChangeable(tester, const _Picker(count: 8, current: 3));
+        await _open(tester);
+
+        pickerNotifier.value = const _Picker(count: 5, first: 2, current: 3);
+        await tester.pumpAndSettle();
+
+        check(_listRow(_label(0)).evaluate()).isEmpty();
+        check(_wheelLabel(tester)).equals(_label(3));
+      },
+      variant: iosOnly,
+    );
+
+    scenarioWidgets("keeps an open menu open when the count grows past the menu's range", (
+      tester,
+    ) async {
+      final pickerNotifier = await _pumpChangeable(tester, const _Picker(count: 5, current: 1));
+      await _open(tester);
+
+      pickerNotifier.value = const _Picker(count: 6, current: 1);
+      await tester.pumpAndSettle();
+
+      check(find.byType(CupertinoMenuItem).evaluate()).length.equals(6);
     }, variant: iosOnly);
   });
 }
