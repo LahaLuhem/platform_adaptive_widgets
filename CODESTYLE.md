@@ -77,6 +77,8 @@ renames don't break callers.
   widgets (e.g. `RadioGroup<T>`, `RadioListTile<T>`) with a `<T extends Object>`-bound package
   widget is type-safe, the bound narrows the accepted set. The upstream's looser slot still accepts
   the narrower value.
+- **Options to pick from are a `Set<T>`.** The type says they can't repeat, and a set keeps its
+  order, which is the order on screen.
 - **No Java ceremony.** No getter-only abstract base classes, no `AbstractFooFactory`, no
   interface-per-class. Use mixins / sealed classes / records / extension types where they add
   clarity, not weight. The `PlatformWidgetBase` hierarchy is the legitimate exception, it encodes
