@@ -152,8 +152,8 @@ class SelectionDemoView extends StatelessWidget {
                 menuPickerItemTransformer: (direction) => MenuPickerItem(
                   label: direction.name,
                   iconData: switch (direction) {
-                    .left => Icons.adaptive.arrow_back,
-                    .right => Icons.adaptive.arrow_forward,
+                    .left => context.platformAdaptiveIcons.arrowLeft,
+                    .right => context.platformAdaptiveIcons.arrowRight,
                     .up => context.platformAdaptiveIcons.arrowUpward,
                     .down => context.platformAdaptiveIcons.arrowDownward,
                   },

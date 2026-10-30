@@ -10,6 +10,11 @@ import '/src/models/interaction/platform_segment_button_data.dart';
 import '/src/models/platform_widget_base.dart';
 import '/src/widgets/interaction/disabled_semantics.dart';
 
+const _kTooFewChoicesMessage =
+    'Pass at least 2 choices. With 1 there is nothing to switch between.';
+
+const _kSelectedMissingMessage = 'Pass one of the choices as selectedChoice, or null for none.';
+
 /// [SegmentedButton] on Material, [CupertinoSlidingSegmentedControl] on Cupertino.
 ///
 /// Per-platform tuning lives in [materialSegmentButtonData] / [cupertinoSegmentButtonData]. See `APPENDIX.md#field-classification`.
@@ -25,13 +30,13 @@ import '/src/widgets/interaction/disabled_semantics.dart';
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_segment_button.dart#platform_segment_button}
 class const PlatformSegmentButton<T extends Object>({
-  /// Shown in the set's order. Needs at least 2, which Cupertino asserts.
+  /// Shown in the set's order. Needs at least 2.
   required final Set<T> choices,
 
   /// Usually a [Text] or an [Icon].
   required final Widget Function(T choice) segmentBuilder,
 
-  /// `null` for nothing selected, which on Material needs [MaterialSegmentButtonData.emptySelectionAllowed]
+  /// One of [choices], or `null` for nothing selected, which on Material needs [MaterialSegmentButtonData.emptySelectionAllowed]
   /// or [SegmentedButton] trips an assert.
   required final T? selectedChoice,
 
@@ -53,28 +58,33 @@ class const PlatformSegmentButton<T extends Object>({
   @override
   @protected
   @visibleForOverriding
-  Widget buildMaterial(BuildContext context) => SegmentedButton<T>(
-    key: widgetKey,
-    segments: [
-      for (final choice in choices) ButtonSegment(value: choice, label: segmentBuilder(choice)),
-    ],
-    selected: {?selectedChoice},
-    onSelectionChanged: (set) => onSelectionChanged(set.firstOrNull),
-    emptySelectionAllowed:
-        materialSegmentButtonData?.emptySelectionAllowed ??
-        kDefaultSegmentButtonEmptySelectionAllowed,
-    expandedInsets: materialSegmentButtonData?.expandedInsets,
-    style: materialSegmentButtonData?.style,
-    showSelectedIcon:
-        materialSegmentButtonData?.showSelectedIcon ?? kDefaultSegmentButtonShowSelectedIcon,
-    selectedIcon: materialSegmentButtonData?.selectedIcon,
-    direction: materialSegmentButtonData?.direction ?? kDefaultSegmentButtonDirection,
-  );
+  Widget buildMaterial(BuildContext context) {
+    _assertChoices();
+
+    return SegmentedButton<T>(
+      key: widgetKey,
+      segments: [
+        for (final choice in choices) ButtonSegment(value: choice, label: segmentBuilder(choice)),
+      ],
+      selected: {?selectedChoice},
+      onSelectionChanged: (set) => onSelectionChanged(set.firstOrNull),
+      emptySelectionAllowed:
+          materialSegmentButtonData?.emptySelectionAllowed ??
+          kDefaultSegmentButtonEmptySelectionAllowed,
+      expandedInsets: materialSegmentButtonData?.expandedInsets,
+      style: materialSegmentButtonData?.style,
+      showSelectedIcon:
+          materialSegmentButtonData?.showSelectedIcon ?? kDefaultSegmentButtonShowSelectedIcon,
+      selectedIcon: materialSegmentButtonData?.selectedIcon,
+      direction: materialSegmentButtonData?.direction ?? kDefaultSegmentButtonDirection,
+    );
+  }
 
   @override
   @protected
   @visibleForOverriding
   Widget buildCupertino(BuildContext context) {
+    _assertChoices();
     final disabledChildren =
         cupertinoSegmentButtonData?.disabledChildren ??
         kDefaultCupertinoSegmentButtonDisabledChildren;
@@ -103,5 +113,11 @@ class const PlatformSegmentButton<T extends Object>({
       isMomentary:
           cupertinoSegmentButtonData?.isMomentary ?? kDefaultCupertinoSegmentButtonIsMomentary,
     );
+  }
+
+  // Both looks reject these alike. Cupertino would assert anyway, and Material would draw them silently.
+  void _assertChoices() {
+    assert(choices.length >= 2, _kTooFewChoicesMessage);
+    assert(selectedChoice == null || choices.contains(selectedChoice), _kSelectedMissingMessage);
   }
 }
