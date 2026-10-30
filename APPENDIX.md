@@ -381,8 +381,8 @@ through as a runtime mismatch.
   OS.
 - **Why?** It's the split Flutter's own `.adaptive` widgets use. Cupertino is opt-in, so a platform
   Flutter adds later gets Material until someone moves it.
-- **No runtime override.** One the app could set keeps both looks in every release build (42 KB more
-  Cupertino on the Android harness, 2026-10-20). Debug builds already have Flutter's
+- **No runtime override.** One the app could set keeps both looks in every release build
+  ([cost](./doc/costs.md#runtime-override)). Debug builds already have Flutter's
   `debugDefaultTargetPlatformOverride` for previews.
 - **No `platforms:` block** in `pubspec.yaml`, so pub.dev reads support off the code, which is every
   platform. A block would only take some away.
@@ -398,12 +398,12 @@ Release builds should carry only the look they show. `defaultTargetPlatform` is
 `@pragma('vm:platform-const-if', !kDebugMode)`, so AOT folds a switch on it, or on `designLanguage`,
 down to one arm. Whether the other arm's code drops out depends on the dispatch's shape:
 
-| Pattern                                                               | Prunes? | Why                                                                                                                                                           |
-|-----------------------------------------------------------------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Inline `switch (designLanguage)`                                      | ✓       | The other arm is dead code.                                                                                                                                   |
-| `PlatformWidgetBase.build` calling `buildMaterial` / `buildCupertino` | ✓       | The base's switch folds and the halves devirtualize. With many subclasses, each keeps a `buildCupertino` vtable slot and its name (~30 B), but the bodies go. |
-| Value selectors (`platformValue` and co)                              | ✗       | Both values are built at the call site, before the selector picks one.                                                                                        |
-| A builder closure passed as an argument                               | ✗       | The closure exists whether or not it's called.                                                                                                                |
+| Pattern                                                               | Prunes? | Why                                                                                                                                                                                          |
+|-----------------------------------------------------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Inline `switch (designLanguage)`                                      | ✓       | The other arm is dead code.                                                                                                                                                                  |
+| `PlatformWidgetBase.build` calling `buildMaterial` / `buildCupertino` | ✓       | The base's switch folds and the halves devirtualize. With many subclasses, each keeps a `buildCupertino` vtable slot and its name ([cost](./doc/costs.md#base-dispatch)), but the bodies go. |
+| Value selectors (`platformValue` and co)                              | ✗       | Both values are built at the call site, before the selector picks one.                                                                                                                       |
+| A builder closure passed as an argument                               | ✗       | The closure exists whether or not it's called.                                                                                                                                               |
 
 ### Internal rules the package follows
 
@@ -412,23 +412,24 @@ down to one arm. Whether the other arm's code drops out depends on the dispatch'
 2. **Widgets dispatch through `PlatformWidgetBase`.** See
    [`#platform-widget-base-hierarchy`](#platform-widget-base-hierarchy).
 3. **`static const` defaults in `*Data` classes that name Cupertino types don't leak code.** AOT
-   keeps them as metadata and drops them when unused (measured).
+   keeps them as metadata and drops them when unused
+   ([measured](./doc/costs.md#cupertino-const-defaults)).
 
 ### Public value selectors in [`platform_value.dart`](./lib/src/utils/platform_value.dart)
 
 They're kept for cheap values (colours, enums, `IconData`), with the cost in their dartdoc, and
-lint-banned inside `lib/src/`. On the harness, a `CupertinoDatePicker` routed through one stayed in
-the Android build (≈342 KB with what it pulls in), where an inline switch dropped it. The lazy forms
-ship the same bytes, since a closure keeps its body reachable too. `context.platformIcon` has its
-own inline switch.
+lint-banned inside `lib/src/`. A widget routed through one stays in the build where an inline switch
+drops it, and the lazy forms keep it too, since a closure keeps its body reachable
+([cost](./doc/costs.md#both-looks-in-one-call)). `context.platformIcon` has its own inline switch.
 
 ### Why the `targetPlatform` shim was removed (v2.0.0 breaking change)
 
 It re-exported `defaultTargetPlatform` for test seams and forward-compat nobody used, and put a
-layer between callers and the folding pragma. Direct use built a byte-identical Android `libapp.so`
-(2026-05-30), so import `defaultTargetPlatform` from `package:flutter/foundation.dart` instead. Its
-`isAndroid` / `isIOS` getters later went for [`designLanguage`](#android-ios-only), since app code
-branches on the look, and `isIOS` picked the wrong one on macOS.
+layer between callers and the folding pragma. Direct use costs nothing
+([measured](./doc/costs.md#target-platform-shim)), so import `defaultTargetPlatform` from
+`package:flutter/foundation.dart` instead. Its `isAndroid` / `isIOS` getters later went for
+[`designLanguage`](#android-ios-only), since app code branches on the look, and `isIOS` picked the
+wrong one on macOS.
 
 ### Enforcement: regression guards on every PR
 

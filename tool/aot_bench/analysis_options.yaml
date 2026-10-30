@@ -1,0 +1,9 @@
+# Replaces `flutter create`'s default, whose flutter_lints include doesn't resolve from the root.
+# A one-file app needs no lints.
+
+analyzer:
+  exclude:
+    - build/**
+    - android/**
+formatter:
+  page_width: 100

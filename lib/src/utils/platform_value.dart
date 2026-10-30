@@ -6,13 +6,10 @@ import '/src/utils/design_language.dart';
 /// happens, so the loser is built and thrown away. Fine for cheap values, which is what these are for.
 ///
 /// {@template platform_adaptive_widgets.pruning_size_cost}
-/// **Costs binary size, measured.** Passing both values means both are reachable at the call site
-/// before the internal switch runs. AOT folds the switch away, but the losing argument's expression,
-/// and every platform class it touches, stays lexically reachable and survives tree-shaking.
-///
-/// It is not a small effect. `tool/size_harness` puts a `CupertinoDatePicker` dispatched this way at
-/// roughly 27 times the symbol weight of the same thing behind an inline `switch (designLanguage)`.
-/// Run the harness for current figures, and see `APPENDIX.md#aot-pruning-rules`.
+/// **Costs binary size.** Passing both values means both are reachable at the call site before the
+/// internal switch runs. AOT folds the switch away, but the losing argument's expression, and every
+/// platform class it touches, stays lexically reachable and survives tree-shaking. It isn't small, as
+/// [measured](https://github.com/LahaLuhem/platform_adaptive_widgets/blob/master/doc/costs.md#both-looks-in-one-call).
 ///
 /// **So inline a `switch (designLanguage)` any time an arm builds a platform widget.** Save these for
 /// colours, enums, `IconData` and other values that drag no code behind them.
