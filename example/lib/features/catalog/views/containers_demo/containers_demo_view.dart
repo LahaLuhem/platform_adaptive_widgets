@@ -86,7 +86,7 @@ class ContainersDemoView extends StatelessWidget {
                 label: 'titleAlignment',
                 value: viewModel.listTileTitleAlignment,
                 // Center draws like threeLine on this two-line tile.
-                values: const [.threeLine, .titleHeight, .top, .bottom],
+                values: const {.threeLine, .titleHeight, .top, .bottom},
                 onChanged: viewModel.onListTileTitleAlignmentSelected,
               ),
             ],
@@ -162,7 +162,7 @@ class ContainersDemoView extends StatelessWidget {
               SegmentKnob<Axis>(
                 label: 'scrollDirection',
                 value: viewModel.scrollAxis,
-                values: const [.vertical, .horizontal],
+                values: const {.vertical, .horizontal},
                 onChanged: viewModel.onScrollAxisSelected,
               ),
               BoolKnob(

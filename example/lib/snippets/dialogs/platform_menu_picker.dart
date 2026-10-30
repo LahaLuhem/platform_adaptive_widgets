@@ -18,7 +18,7 @@ class _PlatformMenuPickerSnippetState extends State<PlatformMenuPickerSnippet> {
   Widget build(BuildContext context) =>
       // #region platform_menu_picker
       PlatformMenuPicker<String>(
-        items: const ['Day', 'Week', 'Month'],
+        items: const {'Day', 'Week', 'Month'},
         currentValue: _view,
         labelText: 'View',
         onSelected: (value) => setState(() => _view = value),

@@ -18,7 +18,7 @@ class _PlatformSegmentButtonSnippetState extends State<PlatformSegmentButtonSnip
   Widget build(BuildContext context) =>
       // #region platform_segment_button
       PlatformSegmentButton<String>(
-        choices: const ['Day', 'Week', 'Month'],
+        choices: const {'Day', 'Week', 'Month'},
         segmentBuilder: Text.new,
         selectedChoice: _selectedView,
         onSelectionChanged: (choice) => setState(() => _selectedView = choice),

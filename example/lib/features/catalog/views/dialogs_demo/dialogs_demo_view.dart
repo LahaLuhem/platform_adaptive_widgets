@@ -92,7 +92,7 @@ class DialogsDemoView extends StatelessWidget {
               SegmentKnob<AlertActions>(
                 label: 'actions',
                 value: viewModel.alertActions,
-                values: AlertActions.values,
+                values: AlertActions.values.toSet(),
                 onChanged: viewModel.onAlertActionsChanged,
               ),
               if (viewModel.alertActions == .confirm)
@@ -107,7 +107,7 @@ class DialogsDemoView extends StatelessWidget {
                 SegmentKnob<PlatformActionKind>(
                   label: 'actionKind',
                   value: viewModel.confirmActionKind,
-                  values: PlatformActionKind.values,
+                  values: PlatformActionKind.values.toSet(),
                   onChanged: viewModel.onConfirmActionKindChanged,
                 ),
             ],

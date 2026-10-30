@@ -57,8 +57,8 @@ const _kCupertinoPickerFollowDuration = Duration(milliseconds: 300);
 /// Example:
 /// {@example /example/lib/snippets/dialogs/platform_menu_picker.dart#platform_menu_picker}
 class const PlatformMenuPicker<T extends Object>({
-  /// An empty list shows the picker disabled.
-  required final List<T> items,
+  /// Shown in the set's order. An empty one shows the picker disabled.
+  required final Set<T> items,
 
   /// `null`, or a value missing from [items], shows nothing picked.
   final T? currentValue,
@@ -96,25 +96,25 @@ class const PlatformMenuPicker<T extends Object>({
   @override
   @protected
   @visibleForOverriding
-  Widget buildMaterial(BuildContext context) => _MaterialMenuPicker(
-    menuPickerItems: _menuPickerItems(),
-    selectedIndex: _selectedIndex(),
-    isEnabled: _canOpen,
-    leadingIcon: leadingIcon,
-    labelText: labelText,
-    onPicked: _onPicked,
-    data: materialMenuPickerData,
-  );
+  Widget buildMaterial(BuildContext context) {
+    final pickerSnapshot = _pickerSnapshot();
+
+    return _MaterialMenuPicker(
+      menuPickerItems: pickerSnapshot.menuPickerItems,
+      selectedIndex: pickerSnapshot.selectedIndex,
+      isEnabled: _canOpen,
+      leadingIcon: leadingIcon,
+      labelText: labelText,
+      onPicked: pickerSnapshot.onPicked,
+      data: materialMenuPickerData,
+    );
+  }
 
   @override
   @protected
   @visibleForOverriding
   Widget buildCupertino(BuildContext context) => _CupertinoMenuPicker(
-    pickerSnapshot: (
-      menuPickerItems: _menuPickerItems(),
-      selectedIndex: _selectedIndex(),
-      onPicked: _onPicked,
-    ),
+    pickerSnapshot: _pickerSnapshot(),
     isEnabled: _canOpen,
     useIconButton:
         cupertinoMenuPickerData?.useIconButtonVariant ??
@@ -124,23 +124,23 @@ class const PlatformMenuPicker<T extends Object>({
     backgroundColor: cupertinoMenuPickerData?.backgroundColor,
   );
 
-  List<MenuPickerItem> _menuPickerItems() =>
-      items.map(menuPickerItemTransformer).toList(growable: false);
+  // A set can't be read by row, so one walk over it makes the rows and finds the current one.
+  _PickerSnapshot _pickerSnapshot() {
+    final menuPickerItems = <MenuPickerItem>[];
+    int? selectedIndex;
+    for (final item in items) {
+      if (item == currentValue) selectedIndex = menuPickerItems.length;
+      menuPickerItems.add(menuPickerItemTransformer(item));
+    }
 
-  void _onPicked(int rowIndex) => onSelected?.call(items[rowIndex]);
-
-  // An empty list shows as disabled on both, instead of opening on nothing.
-  bool get _canOpen => isEnabled && items.isNotEmpty;
-
-  // A value missing from the list counts as nothing picked.
-  int? _selectedIndex() {
-    final currentVal = currentValue;
-    if (currentVal == null) return null;
-
-    final index = items.indexOf(currentVal);
-
-    return index == -1 ? null : index;
+    return (menuPickerItems: menuPickerItems, selectedIndex: selectedIndex, onPicked: _onPicked);
   }
+
+  // Walks the set once per pick, rather than keeping a list of it on every build.
+  void _onPicked(int rowIndex) => onSelected?.call(items.elementAt(rowIndex));
+
+  // An empty set shows as disabled on both, instead of opening on nothing.
+  bool get _canOpen => isEnabled && items.isNotEmpty;
 }
 
 /// Owns the field's text, since [DropdownMenu] keeps an old label when the value goes null, leaves the

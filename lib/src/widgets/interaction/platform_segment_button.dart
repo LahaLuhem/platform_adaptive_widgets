@@ -25,8 +25,8 @@ import '/src/widgets/interaction/disabled_semantics.dart';
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_segment_button.dart#platform_segment_button}
 class const PlatformSegmentButton<T extends Object>({
-  /// One [segmentBuilder] call per choice, in iteration order. Needs at least 2, which Cupertino asserts.
-  required final Iterable<T> choices,
+  /// Shown in the set's order. Needs at least 2, which Cupertino asserts.
+  required final Set<T> choices,
 
   /// Usually a [Text] or an [Icon].
   required final Widget Function(T choice) segmentBuilder,
