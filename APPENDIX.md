@@ -89,6 +89,29 @@ or grep-and-update every caller.
 
 ---
 
+<a id="pairing-principles"></a>
+## Pairing principles
+
+How a `PlatformXxx` or `showPlatformXxx` pairing gets designed or fixed. Check a proposal against
+all 6 before it ships.
+
+1. **Native beats custom.** Some sides were home-made because a platform had nothing at the time.
+   Once a native answer exists, it replaces the home-made one.
+2. **No do-nothing params.** A param that silently does nothing on one platform never ships, flat or
+   in a data record. Data saying what something *is*, like an action's kind, still stays flat when
+   one platform draws it only one way. Its dartdoc says so.
+3. **Shared data stays shared.** Reach for a per-platform record only when the idea really differs
+   between the 2, not because the widgets underneath spell it differently.
+4. **The package owns compliance.** Callers hand over the data, and the package picks what the
+   guidelines want for it. Where a guideline is vague ("medium-to-long"), the package picks a number
+   and says it's its own, like the menu picker's 250.
+5. **The guidelines are the authority, first-party apps are evidence.** A pattern the HIG or M3
+   allows stays valid even when Apple's or Google's own apps happen to skip it.
+6. **SwiftUI is the native reference, not UIKit.** When the 2 behave differently, match SwiftUI.
+   It's the modern one, and UIKit is there for older apps. Native probes still try both.
+
+---
+
 <a id="field-classification"></a>
 ## Field classification: functional vs visual
 
