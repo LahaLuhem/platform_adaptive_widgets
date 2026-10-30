@@ -97,7 +97,7 @@ class const PlatformMenuPicker<T extends Object>({
   @protected
   @visibleForOverriding
   Widget buildMaterial(BuildContext context) => _MaterialMenuPicker(
-    transformed: _transformedItems(),
+    menuPickerItems: _menuPickerItems(),
     selectedIndex: _selectedIndex(),
     isEnabled: _canOpen,
     leadingIcon: leadingIcon,
@@ -109,48 +109,20 @@ class const PlatformMenuPicker<T extends Object>({
   @override
   @protected
   @visibleForOverriding
-  Widget buildCupertino(BuildContext context) {
-    final transformed = _transformedItems();
-    final selectedIndex = _selectedIndex();
-    final useIconButton =
+  Widget buildCupertino(BuildContext context) => _CupertinoMenuPicker(
+    menuPickerItems: _menuPickerItems(),
+    selectedIndex: _selectedIndex(),
+    isEnabled: _canOpen,
+    useIconButton:
         cupertinoMenuPickerData?.useIconButtonVariant ??
-        kDefaultCupertinoMenuPickerUseIconButtonVariant;
+        kDefaultCupertinoMenuPickerUseIconButtonVariant,
+    leadingIcon: leadingIcon,
+    labelText: labelText,
+    backgroundColor: cupertinoMenuPickerData?.backgroundColor,
+    onPicked: _onPicked,
+  );
 
-    return switch (items.length) {
-      <= kCupertinoMenuPickerSmallItemCountThreshold => _CupertinoPickerMenu(
-        transformed: transformed,
-        selectedIndex: selectedIndex,
-        isEnabled: _canOpen,
-        useIconButton: useIconButton,
-        leadingIcon: leadingIcon,
-        labelText: labelText,
-        backgroundColor: cupertinoMenuPickerData?.backgroundColor,
-        onPicked: _onPicked,
-      ),
-      <= kCupertinoMenuPickerLargeItemCountThreshold => _CupertinoPickerWheel(
-        transformed: transformed,
-        selectedIndex: selectedIndex,
-        isEnabled: _canOpen,
-        useIconButton: useIconButton,
-        leadingIcon: leadingIcon,
-        labelText: labelText,
-        backgroundColor: cupertinoMenuPickerData?.backgroundColor,
-        onPicked: _onPicked,
-      ),
-      _ => _CupertinoPickerPage(
-        transformed: transformed,
-        selectedIndex: selectedIndex,
-        isEnabled: _canOpen,
-        useIconButton: useIconButton,
-        leadingIcon: leadingIcon,
-        labelText: labelText,
-        backgroundColor: cupertinoMenuPickerData?.backgroundColor,
-        onPicked: _onPicked,
-      ),
-    };
-  }
-
-  List<MenuPickerItem> _transformedItems() =>
+  List<MenuPickerItem> _menuPickerItems() =>
       items.map(menuPickerItemTransformer).toList(growable: false);
 
   void _onPicked(int rowIndex) => onSelected?.call(items[rowIndex]);
@@ -172,7 +144,7 @@ class const PlatformMenuPicker<T extends Object>({
 /// Owns the field's text, since [DropdownMenu] keeps an old label when the value goes null, leaves the
 /// list or gets renamed.
 final class const _MaterialMenuPicker({
-  required final List<MenuPickerItem> transformed,
+  required final List<MenuPickerItem> menuPickerItems,
   required final int? selectedIndex,
   required final bool isEnabled,
   required final Widget? leadingIcon,
@@ -187,18 +159,11 @@ final class const _MaterialMenuPicker({
 final class _MaterialMenuPickerState() extends State<_MaterialMenuPicker> {
   late final TextEditingController _controller;
 
-  String get _selectedLabel {
-    final selectedIndex = widget.selectedIndex;
-    if (selectedIndex == null) return '';
-
-    return widget.transformed[selectedIndex].label ?? '';
-  }
-
   @override
   void initState() {
     super.initState();
 
-    _controller = TextEditingController(text: _selectedLabel);
+    _controller = TextEditingController(text: _selectedLabel());
   }
 
   @override
@@ -230,13 +195,13 @@ final class _MaterialMenuPickerState() extends State<_MaterialMenuPicker> {
     searchCallback: (_, _) => widget.selectedIndex,
     onSelected: _onSelected,
     dropdownMenuEntries: List.generate(
-      widget.transformed.length,
+      widget.menuPickerItems.length,
       (index) => DropdownMenuEntry(
         value: index,
-        label: widget.transformed[index].label ?? '',
-        leadingIcon: widget.transformed[index].iconData == null
+        label: widget.menuPickerItems[index].label ?? '',
+        leadingIcon: widget.menuPickerItems[index].iconData == null
             ? null
-            : Icon(widget.transformed[index].iconData),
+            : Icon(widget.menuPickerItems[index].iconData),
       ),
       growable: false,
     ),
@@ -251,56 +216,20 @@ final class _MaterialMenuPickerState() extends State<_MaterialMenuPicker> {
   }
 
   void _showSelected() {
-    final label = _selectedLabel;
+    final label = _selectedLabel();
     if (_controller.text != label) _controller.text = label;
+  }
+
+  String _selectedLabel() {
+    final selectedIndex = widget.selectedIndex;
+    if (selectedIndex == null) return '';
+
+    return widget.menuPickerItems[selectedIndex].label ?? '';
   }
 }
 
-/// Up to [kCupertinoMenuPickerSmallItemCountThreshold] items, a [CupertinoMenuAnchor] whose menu shows
-/// one [CupertinoMenuItem] per choice.
-final class const _CupertinoPickerMenu({
-  required final List<MenuPickerItem> transformed,
-  required final int? selectedIndex,
-  required final bool isEnabled,
-  required final bool useIconButton,
-  required final Widget? leadingIcon,
-  required final String? labelText,
-  required final Color? backgroundColor,
-  required final ValueChanged<int> onPicked,
-}) extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => CupertinoMenuAnchor(
-    builder: (_, controller, _) => _CupertinoPickerField(
-      selectedIndex: selectedIndex,
-      transformed: transformed,
-      labelText: labelText,
-      leadingIcon: leadingIcon,
-      backgroundColor: backgroundColor,
-      isEnabled: isEnabled,
-      useIconButton: useIconButton,
-      onTap: controller.open,
-    ),
-    menuChildren: List.generate(
-      transformed.length,
-      (index) => CupertinoMenuItem(
-        // Not null for the current row, which would grey it out. A tap on it only closes the menu.
-        onPressed: () {
-          if (index != selectedIndex) onPicked(index);
-        },
-        // iOS's slots. Only the trailing one hides at accessibility text sizes, so the checkmark leads.
-        leading: index != selectedIndex ? null : const Icon(CupertinoIcons.check_mark),
-        trailing: transformed[index].iconData == null ? null : Icon(transformed[index].iconData),
-        child: Text(transformed[index].label ?? ''),
-      ),
-      growable: false,
-    ),
-  );
-}
-
-/// Up to [kCupertinoMenuPickerLargeItemCountThreshold] items, a field that opens a [CupertinoPicker]
-/// wheel in a popup.
-final class const _CupertinoPickerWheel({
-  required final List<MenuPickerItem> transformed,
+final class const _CupertinoMenuPicker({
+  required final List<MenuPickerItem> menuPickerItems,
   required final int? selectedIndex,
   required final bool isEnabled,
   required final bool useIconButton,
@@ -310,57 +239,145 @@ final class const _CupertinoPickerWheel({
   required final ValueChanged<int> onPicked,
 }) extends StatefulWidget {
   @override
-  State<_CupertinoPickerWheel> createState() => _CupertinoPickerWheelState();
+  State<_CupertinoMenuPicker> createState() => _CupertinoMenuPickerState();
 }
 
 /// Hands the app's value to the open wheel, which the field's rebuilds don't reach.
-final class _CupertinoPickerWheelState() extends State<_CupertinoPickerWheel> {
-  late final ValueNotifier<int?> _selectedIndex;
+final class _CupertinoMenuPickerState() extends State<_CupertinoMenuPicker> {
+  final _menuController = MenuController();
+  late final ValueNotifier<int?> _selectedIndexNotifier;
 
   @override
   void initState() {
     super.initState();
 
-    _selectedIndex = ValueNotifier(widget.selectedIndex);
+    _selectedIndexNotifier = ValueNotifier(widget.selectedIndex);
   }
 
   @override
-  void didUpdateWidget(_CupertinoPickerWheel oldWidget) {
+  void didUpdateWidget(_CupertinoMenuPicker oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    _selectedIndex.value = widget.selectedIndex;
+    _selectedIndexNotifier.value = widget.selectedIndex;
   }
 
   @override
   void dispose() {
-    _selectedIndex.dispose();
+    _selectedIndexNotifier.dispose();
 
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => _CupertinoPickerField(
-    selectedIndex: widget.selectedIndex,
-    transformed: widget.transformed,
-    labelText: widget.labelText,
-    leadingIcon: widget.leadingIcon,
-    backgroundColor: widget.backgroundColor,
-    isEnabled: widget.isEnabled,
-    useIconButton: widget.useIconButton,
-    onTap: () => showCupertinoModalPopup<void>(
-      context: context,
-      builder: (_) => _CupertinoWheelPopup(
-        transformed: widget.transformed,
-        selectedIndex: _selectedIndex,
-        onStopped: (index) => widget.onPicked(index),
+  Widget build(BuildContext context) {
+    final field = _CupertinoPickerField(
+      selectedIndex: widget.selectedIndex,
+      menuPickerItems: widget.menuPickerItems,
+      labelText: widget.labelText,
+      leadingIcon: widget.leadingIcon,
+      backgroundColor: widget.backgroundColor,
+      isEnabled: widget.isEnabled,
+      useIconButton: widget.useIconButton,
+      onTap: _open,
+    );
+    if (widget.menuPickerItems.length > kCupertinoMenuPickerSmallItemCountThreshold) return field;
+
+    return CupertinoMenuAnchor(
+      controller: _menuController,
+      menuChildren: List.generate(
+        widget.menuPickerItems.length,
+        (index) => CupertinoMenuItem(
+          // Not null for the current row, which would grey it out. A tap on it only closes the menu.
+          onPressed: () {
+            if (index != widget.selectedIndex) widget.onPicked(index);
+          },
+          // iOS's slots. Only the trailing one hides at accessibility text sizes, so the checkmark leads.
+          leading: index != widget.selectedIndex ? null : const Icon(CupertinoIcons.check_mark),
+          trailing: widget.menuPickerItems[index].iconData == null
+              ? null
+              : Icon(widget.menuPickerItems[index].iconData),
+          child: Text(widget.menuPickerItems[index].label ?? ''),
+        ),
+        growable: false,
       ),
+      child: field,
+    );
+  }
+
+  Future<void> _open() async => switch (widget.menuPickerItems.length) {
+    <= kCupertinoMenuPickerSmallItemCountThreshold => _menuController.open(),
+    <= kCupertinoMenuPickerLargeItemCountThreshold => await _openWheel(),
+    _ => await _openPage(),
+  };
+
+  Future<void> _openWheel() => showCupertinoModalPopup<void>(
+    context: context,
+    builder: (_) => _CupertinoWheelPopup(
+      menuPickerItems: widget.menuPickerItems,
+      selectedIndex: _selectedIndexNotifier,
+      onStopped: widget.onPicked,
     ),
   );
+
+  Future<void> _openPage() async {
+    final currentMenuPicker = widget;
+    final listScrollController = ScrollController();
+    final firstRow = GlobalKey();
+    // Opens on the current row once the page has laid out. Every row is as tall as the first, which
+    // says where the current one sits, and stopping at the list's end keeps it from bouncing back.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final rowHeight = firstRow.currentContext?.size?.height;
+      if (rowHeight != null && listScrollController.hasClients) {
+        listScrollController.jumpTo(
+          min(
+            (currentMenuPicker.selectedIndex ?? 0) * rowHeight,
+            listScrollController.position.maxScrollExtent,
+          ),
+        );
+      }
+    });
+
+    final picked = await Navigator.of(context).push(
+      CupertinoPageRoute<int>(
+        builder: (context) => CupertinoPageScaffold(
+          navigationBar: CupertinoNavigationBar(
+            middle: currentMenuPicker.labelText == null ? null : Text(currentMenuPicker.labelText!),
+          ),
+          child: ListView.builder(
+            controller: listScrollController,
+            itemCount: currentMenuPicker.menuPickerItems.length,
+            itemBuilder: (context, index) => DecoratedBox(
+              key: index != 0 ? null : firstRow,
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: CupertinoColors.separator.resolveFrom(context),
+                    width: 0,
+                  ),
+                ),
+              ),
+              child: CupertinoCheckmarkRow(
+                label: currentMenuPicker.menuPickerItems[index].label ?? '',
+                iconData: currentMenuPicker.menuPickerItems[index].iconData,
+                isPicked: index == currentMenuPicker.selectedIndex,
+                onTap: () => Navigator.of(context).pop(index),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    listScrollController.dispose();
+
+    if (picked != null && picked != currentMenuPicker.selectedIndex) {
+      currentMenuPicker.onPicked(picked);
+    }
+  }
 }
 
 /// Always shows the app's value, like SwiftUI's wheel.
 final class const _CupertinoWheelPopup({
-  required final List<MenuPickerItem> transformed,
+  required final List<MenuPickerItem> menuPickerItems,
   required final ValueListenable<int?> selectedIndex,
   required final ValueChanged<int> onStopped,
 }) extends StatefulWidget {
@@ -369,7 +386,7 @@ final class const _CupertinoWheelPopup({
 }
 
 final class _CupertinoWheelPopupState() extends State<_CupertinoWheelPopup> {
-  late final FixedExtentScrollController _wheel;
+  late final FixedExtentScrollController _wheelScrollController;
 
   // Moving to the app's value isn't a pick.
   var _isFollowing = false;
@@ -379,14 +396,16 @@ final class _CupertinoWheelPopupState() extends State<_CupertinoWheelPopup> {
     super.initState();
 
     // With nothing picked the wheel shows the top row.
-    _wheel = FixedExtentScrollController(initialItem: widget.selectedIndex.value ?? 0);
+    _wheelScrollController = FixedExtentScrollController(
+      initialItem: widget.selectedIndex.value ?? 0,
+    );
     widget.selectedIndex.addListener(_followAfterFrame);
   }
 
   @override
   void dispose() {
     widget.selectedIndex.removeListener(_followAfterFrame);
-    _wheel.dispose();
+    _wheelScrollController.dispose();
 
     super.dispose();
   }
@@ -397,10 +416,10 @@ final class _CupertinoWheelPopupState() extends State<_CupertinoWheelPopup> {
 
   Future<void> _follow() async {
     final row = widget.selectedIndex.value ?? 0;
-    if (!mounted || _wheel.selectedItem == row) return;
+    if (!mounted || _wheelScrollController.selectedItem == row) return;
 
     _isFollowing = true;
-    await _wheel.animateToItem(
+    await _wheelScrollController.animateToItem(
       row,
       duration: _kCupertinoPickerFollowDuration,
       curve: Curves.easeInOut,
@@ -408,12 +427,12 @@ final class _CupertinoWheelPopupState() extends State<_CupertinoWheelPopup> {
     _isFollowing = false;
   }
 
-  // Not onSelectedItemChanged, which skips the row the wheel opened on. With nothing picked, that row is
-  // still a pick.
-  bool _onStop(ScrollEndNotification notification) {
-    final row = (notification.metrics as FixedExtentMetrics).itemIndex;
-    if (!_isFollowing && row != widget.selectedIndex.value) {
-      widget.onStopped(row);
+  // Not onSelectedItemChanged, which skips the row the wheel opened on. With nothing picked, that row
+  // is still a pick.
+  bool _onNotification(ScrollEndNotification notification) {
+    final rowIndex = (notification.metrics as FixedExtentMetrics).itemIndex;
+    if (!_isFollowing && rowIndex != widget.selectedIndex.value) {
+      widget.onStopped(rowIndex);
       // An app that doesn't take the pick keeps its value, and the wheel goes back to it.
       _followAfterFrame();
     }
@@ -431,13 +450,13 @@ final class _CupertinoWheelPopupState() extends State<_CupertinoWheelPopup> {
     child: SafeArea(
       top: false,
       child: NotificationListener<ScrollEndNotification>(
-        onNotification: _onStop,
+        onNotification: _onNotification,
         child: CupertinoPicker(
           itemExtent: _kCupertinoPickerModalItemExtent,
-          scrollController: _wheel,
+          scrollController: _wheelScrollController,
           onSelectedItemChanged: null,
           children: [
-            for (final item in widget.transformed)
+            for (final item in widget.menuPickerItems)
               Row(
                 mainAxisSize: .min,
                 spacing: 8,
@@ -450,83 +469,10 @@ final class _CupertinoWheelPopupState() extends State<_CupertinoWheelPopup> {
   );
 }
 
-/// Past [kCupertinoMenuPickerLargeItemCountThreshold] items, a field that pushes a page listing them all.
-final class const _CupertinoPickerPage({
-  required final List<MenuPickerItem> transformed,
-  required final int? selectedIndex,
-  required final bool isEnabled,
-  required final bool useIconButton,
-  required final Widget? leadingIcon,
-  required final String? labelText,
-  required final Color? backgroundColor,
-  required final ValueChanged<int> onPicked,
-}) extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => _CupertinoPickerField(
-    selectedIndex: selectedIndex,
-    transformed: transformed,
-    labelText: labelText,
-    leadingIcon: leadingIcon,
-    backgroundColor: backgroundColor,
-    isEnabled: isEnabled,
-    useIconButton: useIconButton,
-    onTap: () => _onTap(context),
-  );
-
-  Future<void> _onTap(BuildContext context) async {
-    final listScrollController = ScrollController();
-    final firstRow = GlobalKey();
-    // Opens on the current row once the page has laid out. Every row is as tall as the first, which
-    // says where the current one sits, and stopping at the list's end keeps it from bouncing back.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final rowHeight = firstRow.currentContext?.size?.height;
-      if (rowHeight != null && listScrollController.hasClients) {
-        listScrollController.jumpTo(
-          min((selectedIndex ?? 0) * rowHeight, listScrollController.position.maxScrollExtent),
-        );
-      }
-    });
-
-    final picked = await Navigator.of(context).push(
-      CupertinoPageRoute<int>(
-        builder: (context) => CupertinoPageScaffold(
-          navigationBar: CupertinoNavigationBar(
-            middle: labelText == null ? null : Text(labelText!),
-          ),
-          child: ListView.builder(
-            controller: listScrollController,
-            itemCount: transformed.length,
-            itemBuilder: (context, index) => DecoratedBox(
-              key: index != 0 ? null : firstRow,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: CupertinoColors.separator.resolveFrom(context),
-                    width: 0,
-                  ),
-                ),
-              ),
-              child: CupertinoCheckmarkRow(
-                label: transformed[index].label ?? '',
-                iconData: transformed[index].iconData,
-                isPicked: index == selectedIndex,
-                onTap: () => Navigator.of(context).pop(index),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-    listScrollController.dispose();
-
-    if (picked != null && picked != selectedIndex) onPicked(picked);
-  }
-}
-
 /// What each Cupertino look shows until tapped: a row with the current value, or only the icon.
 final class const _CupertinoPickerField({
   required final int? selectedIndex,
-  required final List<MenuPickerItem> transformed,
+  required final List<MenuPickerItem> menuPickerItems,
   required final bool isEnabled,
   required final bool useIconButton,
   final String? labelText,
@@ -538,13 +484,13 @@ final class const _CupertinoPickerField({
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final selectedLabel = selectedIndex == null ? null : transformed[selectedIndex!].label;
+    final selectedLabel = selectedIndex == null ? null : menuPickerItems[selectedIndex!].label;
 
     if (useIconButton && leadingIcon != null) {
       return DisabledSemantics(
         isEnabled: isEnabled,
         child: CupertinoButton(
-          onPressed: isEnabled ? onTap : null,
+          onPressed: !isEnabled ? null : onTap,
           sizeStyle: .medium,
           padding: .zero,
           child: leadingIcon!,
