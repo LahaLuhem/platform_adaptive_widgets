@@ -20,7 +20,7 @@ enum _Build({
   android(
     reportType: 'apk',
     otherLook: 'Cupertino',
-    budget: 100 * 1024,
+    budget: 94 * 1024,
     excludedFiles: {
       'package:cupertino_ui/src/radio.dart', // material_ui's Radio keeps its `.adaptive` arm: https://github.com/flutter/flutter/issues/195489
       'package:cupertino_ui/src/checkbox.dart', // material_ui's Checkbox, keeps its `.adaptive` arm: https://github.com/flutter/flutter/issues/195489
@@ -28,7 +28,7 @@ enum _Build({
   ),
 
   /// Keeps material_ui's bundled assets and the `TimeOfDay` the time picker takes. Matching by name
-  /// also counts Flutter's `FrameAwaitingMaterialization`, a few bytes that aren't Material.
+  /// also catches Flutter's `FrameAwaitingMaterialization`, a few stray bytes.
   ios(reportType: 'ios', otherLook: 'Material', budget: 16 * 1024);
 
   bool excludes(_Symbol symbol) => excludedFiles.any((file) => symbol.path.contains('$file/'));
@@ -87,8 +87,8 @@ Future<void> main(List<String> args) async {
   stderr
     ..writeln('\nFAIL: $lookName-pathed bytes ($countedBytes) exceed budget (${build.budget}).')
     ..writeln(
-      'A refactor likely re-introduced deferred-dispatch into a public '
-      '`showPlatformXxx` helper, defeating AOT pruning of the ${build.otherLook} arm. '
+      'Likely a public `showPlatformXxx` helper takes both looks again, or `designLanguage` lost its '
+      'pragma, so the ${build.otherLook} arm no longer drops out. '
       'See APPENDIX.md#aot-pruning-rules and test/aot_pruning_regression_test.dart.',
     )
     ..writeln('\nTop $_maxOffendersShown by size:');

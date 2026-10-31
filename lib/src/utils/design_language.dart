@@ -10,7 +10,8 @@ enum DesignLanguage() {
 }
 
 /// Switch on it to match the widgets. Release builds drop the losing arm.
-DesignLanguage get designLanguage => switch (defaultTargetPlatform) {
-  .iOS || .macOS => .cupertino,
-  _ => .material,
-};
+@pragma('vm:platform-const-if', !kDebugMode)
+DesignLanguage get designLanguage =>
+    // The pragma turns this into a constant early, like `defaultTargetPlatform`'s does, so release builds
+    // only compile the look they show. That step can't read a switch expression, hence the conditional.
+    defaultTargetPlatform == .iOS || defaultTargetPlatform == .macOS ? .cupertino : .material;
