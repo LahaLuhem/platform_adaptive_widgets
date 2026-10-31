@@ -3,25 +3,45 @@
 import 'dart:convert';
 import 'dart:io';
 
-/// Budget for Cupertino-pathed bytes in the harness's Android build.
-///
-/// The harness keeps only the Cupertino that the SDK's own Material widgets hold, so this sits just above
-/// that: a leaked sheet trips it, SDK drift doesn't. Raise it only for SDK growth, never for a leak:
-/// APPENDIX.md#aot-pruning-rules. A whole file one of those widgets holds goes in [_excludedFiles].
-const _maxCupertinoBytes = 100 * 1024;
+/// A harness build, and the look its platform doesn't draw, which the check counts.
+enum _Build({
+  /// The report's `type`, which also starts its file name.
+  required final String reportType,
+  required final String otherLook,
 
-/// Cupertino files a Material widget the package builds holds whole, left out of the count.
-const _excludedFiles = {
-  'package:cupertino_ui/src/radio.dart', // material_ui's Radio keeps its `.adaptive` arm: https://github.com/flutter/flutter/issues/195489
-  'package:cupertino_ui/src/checkbox.dart', // material_ui's Checkbox, keeps its `.adaptive` arm: https://github.com/flutter/flutter/issues/195489
-};
+  /// Sits just above what the build can't help keeping, so a leaked sheet trips it and SDK drift doesn't.
+  /// Raise it only for SDK growth, never for a leak: APPENDIX.md#aot-pruning-rules.
+  required final int budget,
+
+  /// Whole files a widget of the drawn look holds, left out of the count.
+  final Set<String> excludedFiles = const {},
+}) {
+  /// Keeps the Cupertino the SDK's own Material widgets hold.
+  android(
+    reportType: 'apk',
+    otherLook: 'Cupertino',
+    budget: 100 * 1024,
+    excludedFiles: {
+      'package:cupertino_ui/src/radio.dart', // material_ui's Radio keeps its `.adaptive` arm: https://github.com/flutter/flutter/issues/195489
+      'package:cupertino_ui/src/checkbox.dart', // material_ui's Checkbox, keeps its `.adaptive` arm: https://github.com/flutter/flutter/issues/195489
+    },
+  ),
+
+  /// Keeps material_ui's bundled assets and the `TimeOfDay` the time picker takes. Matching by name
+  /// also counts Flutter's `FrameAwaitingMaterialization`, a few bytes that aren't Material.
+  ios(reportType: 'ios', otherLook: 'Material', budget: 16 * 1024);
+
+  bool excludes(_Symbol symbol) => excludedFiles.any((file) => symbol.path.contains('$file/'));
+}
 
 /// Number of top offenders to print on failure.
 const _maxOffendersShown = 30;
 
-/// `flutter build apk --analyze-size` writes its report here, and keeps the earlier ones.
+/// `flutter build --analyze-size` writes its report here, named for its type, and keeps the earlier ones.
 final _reportsDir = Directory('${Platform.environment['HOME']!}/.flutter-devtools');
-final _reportName = RegExp(r'^apk-code-size-analysis_.*\.json$');
+final _reportName = RegExp(
+  '^(${_Build.values.map((build) => build.reportType).join('|')})-code-size-analysis_.*\\.json\$',
+);
 
 Future<void> main(List<String> args) async {
   if (args.length > 1) {
@@ -38,36 +58,48 @@ Future<void> main(List<String> args) async {
     exit(66);
   }
 
-  final root = _Node(jsonDecode(file.readAsStringSync()) as Map<String, dynamic>);
-  final symbols = _cupertinoSymbols(root, root.name);
-  final hits = symbols.where((symbol) => !_isExcluded(symbol)).toList(growable: false)
+  final rootNode = _Node(jsonDecode(file.readAsStringSync()) as Map<String, dynamic>);
+  final build = _Build.values.where((build) => build.reportType == rootNode.type).firstOrNull;
+  if (build == null) {
+    stderr.writeln('No budget for "${rootNode.type}" reports: ${file.path}');
+    exit(65);
+  }
+
+  final lookName = build.otherLook.toLowerCase();
+  final symbols = _symbolsMentioning(lookName, rootNode, rootNode.name);
+  final countedSymbols = symbols.where((symbol) => !build.excludes(symbol)).toList(growable: false)
     ..sort((a, b) => b.bytes.compareTo(a.bytes));
-  final total = hits.fold<int>(0, (sum, hit) => sum + hit.bytes);
-  final excluded = symbols.where(_isExcluded).fold<int>(0, (sum, symbol) => sum + symbol.bytes);
+  final countedBytes = countedSymbols.fold<int>(0, (sum, symbol) => sum + symbol.bytes);
+  final excludedBytes = symbols
+      .where(build.excludes)
+      .fold<int>(0, (sum, symbol) => sum + symbol.bytes);
 
   const reportIndent = '  ';
   stdout
-    ..writeln('AOT-pruning size-regression check')
+    ..writeln('AOT-pruning size-regression check, ${build.name}')
     ..writeln('${reportIndent}source: ${file.path}')
-    ..writeln('${reportIndent}cupertino-pathed symbols: ${hits.length}')
-    ..writeln('${reportIndent}cupertino-pathed bytes:   $total (budget: $_maxCupertinoBytes)')
-    ..writeln('${reportIndent}left out, held by Material widgets: $excluded');
+    ..writeln('$reportIndent$lookName-pathed symbols: ${countedSymbols.length}')
+    ..writeln('$reportIndent$lookName-pathed bytes:   $countedBytes (budget: ${build.budget})')
+    ..writeln('${reportIndent}left out, held whole by the drawn look: $excludedBytes');
 
-  if (total <= _maxCupertinoBytes) return stdout.writeln('  PASS');
+  if (countedBytes <= build.budget) return stdout.writeln('  PASS');
 
   stderr
-    ..writeln('\nFAIL: cupertino-pathed bytes ($total) exceed budget ($_maxCupertinoBytes).')
+    ..writeln('\nFAIL: $lookName-pathed bytes ($countedBytes) exceed budget (${build.budget}).')
     ..writeln(
       'A refactor likely re-introduced deferred-dispatch into a public '
-      '`showPlatformXxx` helper, defeating AOT pruning of the Cupertino arm. '
+      '`showPlatformXxx` helper, defeating AOT pruning of the ${build.otherLook} arm. '
       'See APPENDIX.md#aot-pruning-rules and test/aot_pruning_regression_test.dart.',
     )
     ..writeln('\nTop $_maxOffendersShown by size:');
-  for (final hit in hits.take(_maxOffendersShown)) {
-    stderr.writeln('$reportIndent${hit.bytes.toString().padLeft(8)} B  ${hit.path}');
-  }
-  if (hits.length > _maxOffendersShown) {
-    stderr.writeln('$reportIndent... and ${hits.length - _maxOffendersShown} more.');
+  countedSymbols
+      .take(_maxOffendersShown)
+      .forEach(
+        (symbol) =>
+            stderr.writeln('$reportIndent${symbol.bytes.toString().padLeft(8)} B  ${symbol.path}'),
+      );
+  if (countedSymbols.length > _maxOffendersShown) {
+    stderr.writeln('$reportIndent... and ${countedSymbols.length - _maxOffendersShown} more.');
   }
 
   exit(1);
@@ -76,7 +108,7 @@ Future<void> main(List<String> args) async {
 File? _newestReport() {
   if (!_reportsDir.existsSync()) return null;
 
-  final reports =
+  final reportFiles =
       _reportsDir
           .listSync()
           .whereType<File>()
@@ -84,21 +116,24 @@ File? _newestReport() {
           .toList(growable: false)
         ..sort((a, b) => a.lastModifiedSync().compareTo(b.lastModifiedSync()));
 
-  return reports.lastOrNull;
+  return reportFiles.lastOrNull;
 }
 
-/// The leaves under [node], at [path], whose path mentions cupertino.
-List<_Symbol> _cupertinoSymbols(_Node node, String path) =>
-    node.name.toLowerCase().contains('cupertino')
+/// The leaves under [node], at [path], whose path mentions [lookName]. A look's name holds no `/`, so
+/// a path mentions it exactly when one of its names does.
+List<_Symbol> _symbolsMentioning(String lookName, _Node node, String path) =>
+    node.name.toLowerCase().contains(lookName)
     ? _leaves(node, path)
-    : [for (final child in node.children) ..._cupertinoSymbols(child, '$path/${child.name}')];
+    : [
+        // Spreads here and in `_leaves`, not `expand`: AOT walks a big report a little faster.
+        for (final child in node.children)
+          ..._symbolsMentioning(lookName, child, '$path/${child.name}'),
+      ];
 
 /// Every leaf under [node], at [path].
 List<_Symbol> _leaves(_Node node, String path) => node.children.isEmpty
     ? [if (node.bytes case final bytes?) _Symbol(path, bytes)]
     : [for (final child in node.children) ..._leaves(child, '$path/${child.name}')];
-
-bool _isExcluded(_Symbol symbol) => _excludedFiles.any((file) => symbol.path.contains('$file/'));
 
 class _Symbol(final String path, final int bytes);
 
@@ -106,9 +141,8 @@ class _Symbol(final String path, final int bytes);
 extension type const _Node(Map<String, dynamic> _json) {
   String get name => _json['n']?.toString() ?? '';
 
-  /// Whether [name] mentions cupertino, case-insensitively. `cupertino` holds no `/`, so a path mentions
-  /// it exactly when one of its names does.
-  bool get isCupertino => name.toLowerCase().contains('cupertino');
+  /// The report's platform, set on the root only.
+  String? get type => _json['type']?.toString();
 
   Iterable<_Node> get children =>
       (_json['children'] as List?)?.cast<Map<String, dynamic>>().map(_Node.new) ?? const [];
