@@ -249,7 +249,7 @@ column shows what you can pass to tune each side. See
 
 These build both arms, so the unused one stays in release builds
 ([measured](https://github.com/LahaLuhem/platform_adaptive_widgets/blob/master/doc/costs.md#both-looks-in-one-call)).
-Prefer an inline `switch (designLanguage)` when an arm builds a widget:
+Prefer an inline `switch (designLanguage)`, one look per case, when an arm builds a widget:
 
 | Helper                                            | Description                                                  |
 |---------------------------------------------------|--------------------------------------------------------------|
@@ -304,9 +304,8 @@ If you're ever unsure where a given property belongs,
 ## Compile-time platform pruning, verified
 
 This is the part people tend not to believe at first: the platform you're not on actually disappears
-from your release build. Under AOT, `defaultTargetPlatform` is a compile-time constant, so on
-Android the Cupertino branches are simply dead code that the compiler tree-shakes away, and the same
-in reverse on iOS.
+from your release build. Under AOT, `designLanguage` is a compile-time constant, so on Android the
+Cupertino branches are dead code that the compiler tree-shakes away, and the same in reverse on iOS.
 
 Since "trust me" is a weak engineering argument, 2 CI checks keep it honest on every PR:
 
@@ -314,8 +313,8 @@ Since "trust me" is a weak engineering argument, 2 CI checks keep it honest on e
   ([`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart)) that fails
   the build if anyone reintroduces the closure-style dispatch that quietly defeats pruning, and
 - a **real size benchmark** ([`tool/check_size_regression.dart`](./tool/check_size_regression.dart))
-  that compiles an Android-only app with `--analyze-size` and trips if any Cupertino-pathed bytes
-  slip past a calibrated budget.
+  that builds an app for Android and iOS with `--analyze-size`, and trips if either keeps more of
+  the other look than a calibrated budget allows.
 
 Want the full mechanism and the actual byte counts? They're in
 [`APPENDIX.md#aot-pruning-rules`](./APPENDIX.md#aot-pruning-rules).

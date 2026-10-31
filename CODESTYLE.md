@@ -32,6 +32,7 @@ renames don't break callers.
     * [`dart:async` `wait` extensions over static `Future.wait(...)`](#dartasync-wait-extensions-over-static-futurewait)
     * [`List.unmodifiable(…)` over `UnmodifiableListView(…)`](#listunmodifiable-over-unmodifiablelistview)
     * [`part` / `part of` only when structurally needed](#part-part-of-only-when-structurally-needed)
+    * [A switch over an if/else chain, never over a single if/else](#switch-over-if-else-chains)
 - [Prose & voice](#prose)
 - [Comments & dartdoc](#comments-dartdoc)
 - [DCM rules (applied by hand)](#dcm-rules-applied-by-hand)
@@ -211,12 +212,14 @@ The `dynamic`-escape-hatch ban and the `print()`-in-library ban are listed under
 - **Wrap text-file content at 100 columns.** `formatter.page_width: 100` in the shared lints is
   authoritative for Dart code. Markdown and **dartdoc comments** follow the same cap by hand, since
   `dart format` does *not* reflow comment prose.
-- **Don't squash prose to fit the cap.** For docs and comments the 100 is a guide, not a hard stop:
-  let the line run to the end of the word that crosses it, then break. Re-wrapping a paragraph so
-  every line lands just under 100 churns the diff and reads worse than one slightly-long line. A
+- **Don't squash prose to fit the cap.** For dartdoc and comments the 100 is a guide, not a hard
+  stop: let the line run to the end of the word that crosses it, then break. Re-wrapping a paragraph
+  so every line lands just under 100 churns the diff and reads worse than one slightly-long line. A
   `///` block hand-wrapped at 70 columns is the opposite problem and is invisible to the formatter,
   so widen those opportunistically when you're already editing the block. Don't churn unrelated
   files just to re-wrap them.
+- **Markdown stops at 100.** CI's rumdl fails any longer line, so there the word that would cross
+  it moves down.
 - **Blank lines separate logical chunks within a method.** Group guard checks, setup, the main
   action, and finalisation with one blank line between groups. Lets readers scan past chunks they
   don't need without re-parsing them line-by-line.
@@ -703,6 +706,40 @@ Not a smell on its own. Legitimate uses: sealed-class cases across files (Dart 3
 library for sealed subtypes), code-generation outputs (`*.g.dart` from `freezed`,
 `json_serializable`, etc.). Avoid for general code organisation, imports/exports are explicit, parts
 hide dependencies and leak `_private` symbols across files within the library.
+
+<a id="switch-over-if-else-chains"></a>
+### A switch over an if/else chain, never over a single if/else
+
+A switch reads nicer than a chain of `if` / `else if` on one value. A single either/or stays an
+`if`, or a conditional when it picks a value.
+
+```dart
+// Prefer:
+final label = switch (actionKind) {
+  .normal => 'Save',
+  .delete => 'Delete',
+  .discard => 'Discard',
+};
+DesignLanguage get designLanguage =>
+    defaultTargetPlatform == .iOS || defaultTargetPlatform == .macOS ? .cupertino : .material;
+
+// Over:
+final label = actionKind == .normal ? 'Save' : actionKind == .delete ? 'Delete' : 'Discard';
+DesignLanguage get designLanguage {
+  switch (defaultTargetPlatform) {
+    case .iOS || .macOS:
+      return .cupertino;
+    case _:
+      return .material;
+  }
+}
+```
+
+**Why.** A switch lines the cases up where a chain buries them, but for one either/or it's just
+ceremony.
+
+**Except** a `designLanguage` branch that builds a look's own widget. Only a switch with one look
+per case drops the other look early ([why](./APPENDIX.md#aot-pruning-rules)).
 
 ---
 
