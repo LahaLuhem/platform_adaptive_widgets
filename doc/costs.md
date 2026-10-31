@@ -25,7 +25,7 @@ the look the platform doesn't draw:
 dart tool/diff_size_reports.dart <before.json> <after.json> [filter]
 ```
 
-The Android base, the Cupertino code the harness keeps, is what the
+Each platform's base, what the harness keeps of the other look, is what the
 [size check](../.github/workflows/size-regression.yml) prints on every run.
 
 ## What each widget keeps of the other look
@@ -33,16 +33,16 @@ The Android base, the Cupertino code the harness keeps, is what the
 Bytes of the look a platform doesn't draw, Cupertino on Android and Material on iOS, that adding the
 widget to the harness brings in.
 
-| Widget                     | Android | iOS           | What stays                                                                                                                            |
-|----------------------------|---------|---------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| `PlatformSlider`           | 10.8 KB | 20.9 KB       | Android: cupertino_ui's slider, which material_ui's `Slider` keeps for its `.adaptive` arm. iOS: material_ui's slider theme and parts |
-| `PlatformTextField`        | 1.8 KB  | 3.1 KB        | Android: parts of `CupertinoTextField`'s state and gestures. iOS: bits of Material's theme. Neither is traced yet                     |
-| `PlatformSearchBar`        | 1.5 KB  | 8.7 KB        | Android: the same `CupertinoTextField` parts. iOS: material_ui's search bar theme and ink                                             |
-| `PlatformSingleSelectList` | 8.9 KB  | not split out | cupertino_ui's radio, which material_ui's `Radio` keeps whole. The size check leaves it out                                           |
-| `PlatformMultiSelectList`  | 10.2 KB | not split out | cupertino_ui's checkbox, which material_ui's `Checkbox` keeps whole. The size check leaves it out                                     |
+| Widget                     | Android | iOS | What stays                                                                                                                                         |
+|----------------------------|---------|-----|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `PlatformSlider`           | 10.8 KB | 0 B | Android: cupertino_ui's slider, which material_ui's `Slider` keeps for its `.adaptive` arm                                                         |
+| `PlatformTextField`        | 137 B   | 0 B | Android: 72 B of cupertino_ui's text selection toolbar shape, which material_ui's adaptive toolbar keeps. The rest is code shifting in other files |
+| `PlatformSearchBar`        | 185 B   | 0 B | Android: nothing of its own, only code shifting in the radio and checkbox files                                                                    |
+| `PlatformSingleSelectList` | 8.9 KB  | 0 B | cupertino_ui's radio, which material_ui's `Radio` keeps whole. The size check leaves it out                                                        |
+| `PlatformMultiSelectList`  | 10.2 KB | 0 B | cupertino_ui's checkbox, which material_ui's `Checkbox` keeps whole. The size check leaves it out                                                  |
 
-The iOS base already keeps about 497 KB of Material, so a widget that needs some of it adds less here
-than it would to an app with none.
+The iOS base keeps 7.6 KB of Material: material_ui's bundled shaders and icon font, and the
+`TimeOfDay` the time picker takes.
 
 *2026-10-31, Flutter 3.47.8, material_ui 1.9.0, cupertino_ui 1.1.5.*
 
@@ -58,6 +58,14 @@ losing look stays in the release build.**
   where an inline `switch (designLanguage)` drops it. *Size harness, 2026-06-08.* The example app
   carried about 192 KB of it. *2026-05-30.*
 - **iOS:** not measured.
+
+<a id="design-language-pragma"></a>
+### `designLanguage` without its pragma
+
+A switch on it still drops the losing arm's own code, but not what that arm builds.
+
+- **Android:** 29.8 KB more of the app on the size harness, 6.1 KB of it Cupertino. *2026-10-31.*
+- **iOS:** 885 KB more of the app, 395 KB of it Material. *2026-10-31.*
 
 <a id="runtime-override"></a>
 ### A look the app could switch at runtime
@@ -95,7 +103,7 @@ from copy to read in the harness, with a text field, search bar and slider added
 - **Android:** +800 B, where 2 builds of the same code came out 0 B apart. About 350 B of it is the
   slider: a plain `CupertinoSlider` with no `onChanged` keeps cupertino_ui's code for a disabled
   slider.
-- **iOS:** +320 B, where 2 builds of the same code came out 8 B apart. The slider is about 350 B here
-  too, and the rest nets out.
+- **iOS:** +320 B, where 2 builds of the same code came out 8 B apart. The slider is about 350 B
+  here too, and the rest nets out.
 
 *2026-10-30, Flutter 3.47.8, material_ui 1.9.0, cupertino_ui 1.1.5.*

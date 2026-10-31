@@ -209,10 +209,10 @@ disabling mechanism, the underlying platform widget receives a `null` callback w
 
 On Cupertino, a `null` callback isn't always enough. Some cupertino_ui widgets never tell VoiceOver
 they're disabled, so `DisabledSemantics` adds that half, which stays right once upstream catches up.
-The disabled look stays each widget's own: where cupertino_ui draws none (the slider, the list tile),
-a stand-in would double up once upstream draws one.
-[`disabled_state_test.dart`](./test/widget_tests/disabled_state_test.dart) checks both halves on every
-disable path, and its canaries go red when upstream closes a gap.
+The disabled look stays each widget's own: where cupertino_ui draws none (the slider, the list
+tile), a stand-in would double up once upstream draws one.
+[`disabled_state_test.dart`](./test/widget_tests/disabled_state_test.dart) checks both halves on
+every disable path, and its canaries go red when upstream closes a gap.
 
 This is a deliberate deviation from Flutter's `Widget.onChanged: null = disabled` convention. The
 trade-off, more explicit at call sites, no nullability dance, no ambiguity between "no callback
@@ -234,9 +234,10 @@ not to make the callback nullable.
 - **Bar content is shared as data, raw widgets per platform.** `PlatformAppBar.actions` and
   `.primaryAction` take `PlatformBarAction`s, which the bar builds into each platform's own bar
   button, so none can misfit the bar. A raw widget goes only in a per-platform slot
-  (`MaterialAppBarData.leading` and `.actions`, `CupertinoNavigationBarData.leading` and `.trailing`),
-  which replaces that side's own. The leading has no shared slot, since both bars fill it themselves:
-  back, a full-screen dialog's or a sheet's close or Cancel, Material's drawer button.
+  (`MaterialAppBarData.leading` and `.actions`, `CupertinoNavigationBarData.leading` and
+  `.trailing`), which replaces that side's own. The leading has no shared slot, since both bars fill
+  it themselves: back, a full-screen dialog's or a sheet's close or Cancel, Material's drawer
+  button.
 - **`showPlatformXxx` helpers** apply the same rule: functional params flat on the function
   signature. Visual via per-platform records.
 - **Platform-only *capabilities*, not just fields.** A whole feature can exist on one platform and
@@ -394,13 +395,17 @@ through as a runtime mismatch.
 <a id="aot-pruning-rules"></a>
 ## AOT pruning: which patterns prune, which leak
 
-Release builds should carry only the look they show. `defaultTargetPlatform` is
-`@pragma('vm:platform-const-if', !kDebugMode)`, so AOT folds a switch on it, or on `designLanguage`,
-down to one arm. Whether the other arm's code drops out depends on the dispatch's shape:
+Release builds should carry only the look they show. `designLanguage` carries the same
+`@pragma('vm:platform-const-if', !kDebugMode)` as `defaultTargetPlatform`, so AOT turns it into a
+constant early, before it works out which code the app can reach. It's a getter, not a field: a
+field keeps its first read, and debug builds would stop following
+`debugDefaultTargetPlatformOverride`. Whether the other arm drops out depends on the dispatch's
+shape:
 
 | Pattern                                                               | Prunes? | Why                                                                                                                                                                                          |
 |-----------------------------------------------------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Inline `switch (designLanguage)`                                      | ✓       | The other arm is dead code.                                                                                                                                                                  |
+| Inline `switch (designLanguage)`, one look per case                   | ✓       | The other arm goes, and so does everything only it builds ([cost](./doc/costs.md#design-language-pragma) if it didn't fold).                                                                 |
+| A `_` arm, `\|\|`, `when` or `==` on `designLanguage`                 | ✗       | AOT can't fold that shape early, so what the other arm builds stays. The AST lint fails it in `lib/src/`.                                                                                    |
 | `PlatformWidgetBase.build` calling `buildMaterial` / `buildCupertino` | ✓       | The base's switch folds and the halves devirtualize. With many subclasses, each keeps a `buildCupertino` vtable slot and its name ([cost](./doc/costs.md#base-dispatch)), but the bodies go. |
 | Value selectors (`platformValue` and co)                              | ✗       | Both values are built at the call site, before the selector picks one.                                                                                                                       |
 | A builder closure passed as an argument                               | ✗       | The closure exists whether or not it's called.                                                                                                                                               |
@@ -436,16 +441,17 @@ wrong one on macOS.
 1. **AST lint**, [`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart),
    in `ci / Tests`. Fails if `lib/src/` calls a value selector, or an internal helper (a `_` name,
    or anything in a file the barrel doesn't export) takes both a `material*` and a `cupertino*`
-   builder, the two usual ways dispatch slips.
+   builder, or reads `designLanguage` anywhere but a switch with one look per case, the usual ways
+   dispatch slips.
 2. **Size benchmark**, [`tool/check_size_regression.dart`](./tool/check_size_regression.dart) over
    [`tool/size_harness/`](./tool/size_harness/), in `size-regression.yml`. Builds the harness for
-   Android and fails once Cupertino-named bytes pass the budget at the top of the script. The
-   harness touches every dispatch surface, so a leak the lint misses still trips it.
+   Android and iOS, and fails once either keeps more of the look it doesn't draw than its budget at
+   the top of the script. The harness touches every dispatch surface, so a leak the lint misses
+   still trips it.
 
-Raise the budget only when an SDK update grows the Cupertino baseline, never to quiet a leak. A whole
-Cupertino file that a Material widget the package builds holds onto, like the `.adaptive` arms of
-material_ui's `Radio` and `Checkbox`, goes in the script's excluded files instead, with that widget
-named beside it.
+Raise a budget only when an SDK update grows its baseline, never to quiet a leak. A whole file that
+a widget the package builds holds onto, like the Cupertino `.adaptive` arms of material_ui's `Radio`
+and `Checkbox`, goes in that build's excluded files instead, with the widget named beside it.
 
 ---
 

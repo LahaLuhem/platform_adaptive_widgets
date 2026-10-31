@@ -151,10 +151,11 @@ under `lib/src/models/<category>/platform_xxx_data.dart`. The same sub-categorie
    [`APPENDIX.md#android-ios-only`](../APPENDIX.md#android-ios-only)).
 7. **Every new `PlatformXxx` follows the widget pattern above.** See
    [`APPENDIX.md#platform-widget-base-hierarchy`](../APPENDIX.md#platform-widget-base-hierarchy).
-8. **Inside `lib/src/`, dispatch with an inline `switch (designLanguage)`**, each arm calling a
-   helper for one look. Never hand both looks to `platformValue` and co, or to a helper taking both
-   builders: the loser gets compiled in anyway ([cost](../doc/costs.md#both-looks-in-one-call)). The
-   selectors stay public for callers who accept that. The AST lint in
+8. **Inside `lib/src/`, dispatch with an inline `switch (designLanguage)`, one look per case**, each
+   arm calling a helper for one look. Never hand both looks to `platformValue` and co, or to a
+   helper taking both builders: the loser gets compiled in anyway
+   ([cost](../doc/costs.md#both-looks-in-one-call)). The selectors stay public for callers who
+   accept that. The AST lint in
    [`test/aot_pruning_regression_test.dart`](../test/aot_pruning_regression_test.dart) and the size
    benchmark over `tool/size_harness/` enforce it on every PR, so don't weaken either without a
    conversation. See [`APPENDIX.md#aot-pruning-rules`](../APPENDIX.md#aot-pruning-rules).

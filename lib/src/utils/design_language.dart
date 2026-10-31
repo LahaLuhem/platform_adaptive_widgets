@@ -9,7 +9,8 @@ enum DesignLanguage() {
   cupertino,
 }
 
-/// Switch on it to match the widgets. Release builds drop the losing arm.
+/// Switch on it to match the widgets, one look per case, and release builds drop the losing arm with
+/// everything only it builds. A `_` arm, `||`, `when` or `==` keeps all that in.
 @pragma('vm:platform-const-if', !kDebugMode)
 DesignLanguage get designLanguage =>
     // The pragma turns this into a constant early, like `defaultTargetPlatform`'s does, so release builds
