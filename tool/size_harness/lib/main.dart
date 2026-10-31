@@ -54,7 +54,7 @@ class _Surfaces extends StatelessWidget {
       // The delete reaches the confirm's own top-level switch.
       PlatformActionsMenu(
         builder: (_, onPressed) =>
-            TextButton(onPressed: onPressed, child: const Text('actions menu')),
+            PlatformButton(onPressed: onPressed, emphasis: .low, child: const Text('actions menu')),
         actions: {
           PlatformMenuAction.normal(label: 'share', onPressed: () {}),
           PlatformMenuAction.delete(label: 'delete', confirmMessage: 'sure?', onPressed: () {}),
@@ -62,7 +62,7 @@ class _Surfaces extends StatelessWidget {
       ),
 
       // showPlatformSheet, top-level switch dispatch. The guard reaches the confirm's switch too.
-      TextButton(
+      PlatformButton(
         onPressed: () => showPlatformSheet<void>(
           context: context,
           appBarBuilder: (_) => PlatformAppBar(
@@ -76,23 +76,25 @@ class _Surfaces extends StatelessWidget {
           ),
           builder: (_) => const Text('sheet'),
         ),
+        emphasis: .low,
         child: const Text('sheet'),
       ),
 
       // showPlatformRawDialog, top-level switch dispatch, with a builder per platform.
-      TextButton(
+      PlatformButton(
         onPressed: () => showPlatformRawDialog<void>(
           context: context,
-          materialBuilder: (_) => const AlertDialog(content: Text('m')),
-          // Not a Cupertino widget: one in a closure stays in the Android build and hides a leak of the
-          // same widgets.
+          // Not platform widgets: one in a closure stays in the other platform's build and hides a leak
+          // of the same widgets.
+          materialBuilder: (_) => const Text('m'),
           cupertinoBuilder: (_) => const Text('c'),
         ),
+        emphasis: .low,
         child: const Text('raw dialog'),
       ),
 
       // showPlatformFullscreenDialog, top-level switch dispatch. Its bar builds both kinds of action.
-      TextButton(
+      PlatformButton(
         onPressed: () => showPlatformFullscreenDialog<void>(
           context: context,
           appBarBuilder: (_) => PlatformAppBar(
@@ -104,11 +106,12 @@ class _Surfaces extends StatelessWidget {
           ),
           builder: (_) => const Text('page'),
         ),
+        emphasis: .low,
         child: const Text('fullscreen dialog'),
       ),
 
       // showPlatformConfirm, through the alert's top-level switch dispatch.
-      TextButton(
+      PlatformButton(
         onPressed: () => showPlatformConfirm(
           context: context,
           title: 'title',
@@ -116,41 +119,45 @@ class _Surfaces extends StatelessWidget {
           confirmLabel: 'confirm',
           actionKind: .discard,
         ),
+        emphasis: .low,
         child: const Text('confirm'),
       ),
 
       // showPlatformToast, single inline switch.
-      TextButton(
+      PlatformButton(
         onPressed: () => showPlatformToast(
           context: context,
           message: 'hi',
           action: PlatformToastAction(label: 'undo', onPressed: () {}),
         ),
+        emphasis: .low,
         child: const Text('toast'),
       ),
 
       // showPlatformDatePicker, top-level switch dispatch.
-      TextButton(
+      PlatformButton(
         onPressed: () => showPlatformDatePicker(
           context: context,
           firstDate: Date.of(2020).getOrThrow(),
           lastDate: Date.of(2030).getOrThrow(),
           initialDate: Date.of(2024).getOrThrow(),
         ),
+        emphasis: .low,
         child: const Text('date'),
       ),
 
       // showPlatformTimePicker, top-level switch dispatch.
-      TextButton(
+      PlatformButton(
         onPressed: () => showPlatformTimePicker(
           context: context,
           initialTime: const TimeOfDay(hour: 12, minute: 0),
         ),
+        emphasis: .low,
         child: const Text('time'),
       ),
 
       // showPlatformChoices, top-level switch dispatch.
-      TextButton(
+      PlatformButton(
         onPressed: () => showPlatformChoices(
           context: context,
           choices: const {
@@ -158,6 +165,7 @@ class _Surfaces extends StatelessWidget {
             PlatformChoice(value: 2, label: 'delete', actionKind: .delete),
           },
         ),
+        emphasis: .low,
         child: const Text('choices'),
       ),
 
