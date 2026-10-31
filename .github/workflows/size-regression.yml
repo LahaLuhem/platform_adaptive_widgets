@@ -12,13 +12,25 @@ permissions:
 
 jobs:
   size-regression:
-    name: AOT pruning size regression
-    runs-on: ubuntu-latest
+    name: AOT pruning size regression (${{ matrix.platform }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      # Each platform reports its own count, so one failing doesn't cancel the other.
+      fail-fast: false
+      matrix:
+        include:
+          - platform: android
+            runner: ubuntu-latest
+            build: apk --target-platform=android-arm64
+          - platform: ios
+            runner: macos-latest
+            build: ios --no-codesign
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
-      - uses: actions/setup-java@v6
+      - if: matrix.platform == 'android'
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "17"
@@ -29,11 +41,11 @@ jobs:
       - uses: LahaLuhem/dartender/actions/setup-flutter@main
         with:
           pub-get: false
-      # The harness keeps no android/ folder in git, so this makes one.
+      # The harness keeps no platform folders in git, so this makes the one it builds.
       - working-directory: tool/size_harness
-        run: flutter create --platforms=android .
+        run: flutter create --platforms=${{ matrix.platform }} .
       - working-directory: tool/size_harness
-        run: flutter build apk --release --analyze-size --target-platform=android-arm64
+        run: flutter build ${{ matrix.build }} --release --analyze-size
       - run: dart tool/check_size_regression.dart
 
   # The ruleset requires this job's id, so it gets no `name:`.
