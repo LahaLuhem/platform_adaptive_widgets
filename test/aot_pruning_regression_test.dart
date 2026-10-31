@@ -1,5 +1,5 @@
 // Regression guard for the AOT-pruning contract documented in
-// APPENDIX.md#aot-pruning-rules. 2 static checks over `lib/src/`:
+// APPENDIX.md#aot-pruning-rules. 3 static checks over `lib/src/`:
 //
 //   1. No call to the closure-arg dispatch helpers (`platformValue`,
 //      `platformLazyValue`, `platformValueNullable`, `platformLazyNullable`)
@@ -12,6 +12,9 @@
 //      function-typed parameter. That shape is the deferred-dispatch trap
 //      (`_showBasePlatformDialog`-style) that constructs both closures at the
 //      call site and prevents the AOT compiler from folding the unused arm.
+//
+//   3. Every read of `designLanguage` is a switch whose cases are each one look. Release builds fold
+//      only that shape early, so an `==`, a `_`, an `||` or a `when` keeps the other arm's code in.
 //
 // Necessary-but-not-sufficient. The empirical guarantee lives in the
 // size-regression CI job. See `tool/check_size_regression.dart`.
@@ -79,6 +82,24 @@ void main() {
             'that each take only one builder. See '
             'APPENDIX.md#aot-pruning-rules.',
         offenders,
+      ).isEmpty();
+    });
+
+    test('every designLanguage read in lib/src is a switch whose cases are each one look', () {
+      final visitors = libSrcUnits
+          .map((unit) {
+            final visitor = _LookReadVisitor(unit.path, unit.parsed.lineInfo);
+            unit.parsed.unit.accept(visitor);
+
+            return visitor;
+          })
+          .toList(growable: false);
+      check(visitors.fold(0, (sum, visitor) => sum + visitor.readCount)).isGreaterThan(0);
+      check(
+        because:
+            'Release builds fold `designLanguage` early only in a switch whose cases are each one '
+            'look. Anything else keeps the other arm reachable. See APPENDIX.md#aot-pruning-rules.',
+        visitors.expand((visitor) => visitor.offenders),
       ).isEmpty();
     });
   });
@@ -153,4 +174,39 @@ class _DispatchHelperVisitor(
         src.contains('Callback') ||
         src.contains('Getter');
   }
+}
+
+class _LookReadVisitor(final String _filePath, final LineInfo _lineInfo)
+    extends RecursiveAstVisitor<void> {
+  final List<String> offenders = [];
+  var readCount = 0;
+
+  @override
+  void visitSimpleIdentifier(SimpleIdentifier node) {
+    // Doc comments may still name it.
+    if (node.name == 'designLanguage' && node.thisOrAncestorOfType<Comment>() == null) {
+      readCount++;
+      final foldsEarly = switch (node.parent) {
+        SwitchExpression(:final expression, :final cases) when expression == node => cases.every(
+          (switchCase) => _isOneLook(switchCase.guardedPattern),
+        ),
+        SwitchStatement(:final expression, :final members) when expression == node =>
+          members.whereType<SwitchPatternCase>().every(
+            (member) => _isOneLook(member.guardedPattern),
+          ),
+        _ => false,
+      };
+      if (!foldsEarly) {
+        final location = _lineInfo.getLocation(node.offset);
+        offenders.add(
+          '$_filePath:${location.lineNumber}: reads designLanguage in a shape release builds '
+          "can't fold early",
+        );
+      }
+    }
+    super.visitSimpleIdentifier(node);
+  }
+
+  bool _isOneLook(GuardedPattern guardedPattern) =>
+      guardedPattern.whenClause == null && guardedPattern.pattern is ConstantPattern;
 }
