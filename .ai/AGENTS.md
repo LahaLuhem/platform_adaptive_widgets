@@ -75,9 +75,8 @@ platform_adaptive_widgets/
 │           ├── layout/                         `PlatformApp` / `Scaffold` / `AppBar` / …
 │           └── painting/                       `PlatformListTile` / `ProgressIndicator`
 ├── example/                                    Runnable Flutter demo (see example/.ai/AGENTS.md)
-├── tool/                                       Size harness and its check, AOT bench, size-report
-│                                                differ
-├── doc/costs.md                                What package patterns cost: AOT time, app size
+├── tool/                                       Size harness and its check, size-report differ
+├── doc/costs.md                                What widgets and patterns add to app size
 ├── analysis_options.yaml                       Includes dartender's shared lints
 ├── pubspec.yaml                                Deps + topics
 ├── .pubignore                                  What `flutter pub publish` ships

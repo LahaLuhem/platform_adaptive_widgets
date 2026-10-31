@@ -16,7 +16,8 @@ class _App extends StatelessWidget {
   const _App();
 
   @override
-  Widget build(BuildContext context) => MaterialApp(home: Scaffold(body: _Surfaces()));
+  // Not `MaterialApp`, whose Material would sit in an iOS build and hide what a widget brings there.
+  Widget build(BuildContext context) => PlatformApp(home: PlatformScaffold(body: _Surfaces()));
 }
 
 class _Surfaces extends StatelessWidget {
