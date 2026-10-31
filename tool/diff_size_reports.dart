@@ -3,22 +3,23 @@
 import 'dart:convert';
 import 'dart:io';
 
-const _usage = 'Usage: dart tool/diff_size_reports.dart <before.json> <after.json> [rows]';
+const _usage = 'Usage: dart tool/diff_size_reports.dart <before.json> <after.json> [path filter]';
 
-const _defaultRows = 25;
+const _rows = 25;
 
 /// Name salts (`_build@123`), which differ between 2 builds of the same code.
 final _nameSalt = RegExp(r'@\d+');
 
-/// Lists what moved between 2 `--analyze-size` reports, biggest first.
+/// Lists what moved between 2 `--analyze-size` reports, biggest first. A filter keeps only the paths
+/// that mention it.
 void main(List<String> args) {
-  final rows = args.length == 3 ? int.tryParse(args[2]) : _defaultRows;
-  if (args.length < 2 || args.length > 3 || rows == null) {
+  if (args.length < 2 || args.length > 3) {
     stderr.writeln(_usage);
     exit(64);
   }
-  final before = _leafBytes(File(args.first));
-  final after = _leafBytes(File(args[1]));
+  final filter = args.length == 3 ? args[2].toLowerCase() : '';
+  final before = _leafBytes(File(args.first), filter);
+  final after = _leafBytes(File(args[1]), filter);
   int moved(String path) => (after[path] ?? 0) - (before[path] ?? 0);
   final movedPaths =
       {...before.keys, ...after.keys}.where((path) => moved(path) != 0).toList(growable: false)
@@ -29,18 +30,18 @@ void main(List<String> args) {
       'total ${_total(before)} B -> ${_total(after)} B: ${_total(after) - _total(before)} B',
     )
     ..writeln('${movedPaths.length} leaves moved');
-  for (final path in movedPaths.take(rows)) {
+  for (final path in movedPaths.take(_rows)) {
     stdout.writeln('${moved(path).toString().padLeft(8)} B  $path');
   }
 }
 
 int _total(Map<String, int> leafBytes) => leafBytes.values.fold(0, (sum, bytes) => sum + bytes);
 
-Map<String, int> _leafBytes(File report) {
+Map<String, int> _leafBytes(File report, String filter) {
   final leafBytes = <String, int>{};
   void walk(_Node node, String path) {
     if (node.children.isEmpty) {
-      if (node.bytes case final bytes?) {
+      if (node.bytes case final bytes? when path.toLowerCase().contains(filter)) {
         leafBytes.update(path, (sum) => sum + bytes, ifAbsent: () => bytes);
       }
 
