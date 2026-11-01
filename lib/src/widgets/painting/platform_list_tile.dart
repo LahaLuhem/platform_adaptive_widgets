@@ -111,17 +111,8 @@ class const PlatformListTile({
   @visibleForOverriding
   Widget buildCupertino(BuildContext context) {
     final isNotched = cupertinoListTileData?.isNotched ?? kDefaultCupertinoListTileIsNotched;
-    final resolvedLeadingSize =
-        cupertinoListTileData?.leadingWidth ??
-        leadingWidth ??
-        (isNotched
-            ? kDefaultCupertinoNotchedListTileLeadingSize
-            : kDefaultCupertinoListTileLeadingSize);
-    final resolvedLeadingToTitle =
-        cupertinoListTileData?.leadingToTitle ??
-        (isNotched
-            ? kDefaultCupertinoNotchedListTileLeadingToTitle
-            : kDefaultCupertinoListTileLeadingToTitle);
+    final leadingSize = cupertinoListTileData?.leadingWidth ?? leadingWidth;
+    final leadingToTitle = cupertinoListTileData?.leadingToTitle;
     final resolvedOnTap = isEnabled ? onTap : null;
     final resolvedColor = cupertinoListTileData?.color ?? color;
     final resolvedPadding = cupertinoListTileData?.padding ?? padding;
@@ -140,8 +131,8 @@ class const PlatformListTile({
               onTap: resolvedOnTap,
               backgroundColor: resolvedColor,
               padding: resolvedPadding,
-              leadingSize: resolvedLeadingSize,
-              leadingToTitle: resolvedLeadingToTitle,
+              leadingSize: leadingSize ?? kDefaultCupertinoNotchedListTileLeadingSize,
+              leadingToTitle: leadingToTitle ?? kDefaultCupertinoNotchedListTileLeadingToTitle,
               additionalInfo: cupertinoListTileData?.additionalInfo,
               backgroundColorActivated: cupertinoListTileData?.backgroundColorActivated,
             )
@@ -154,8 +145,8 @@ class const PlatformListTile({
               onTap: resolvedOnTap,
               backgroundColor: resolvedColor,
               padding: resolvedPadding,
-              leadingSize: resolvedLeadingSize,
-              leadingToTitle: resolvedLeadingToTitle,
+              leadingSize: leadingSize ?? kDefaultCupertinoListTileLeadingSize,
+              leadingToTitle: leadingToTitle ?? kDefaultCupertinoListTileLeadingToTitle,
               additionalInfo: cupertinoListTileData?.additionalInfo,
               backgroundColorActivated: cupertinoListTileData?.backgroundColorActivated,
             ),
