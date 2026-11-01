@@ -14,27 +14,32 @@ renames don't break callers.
 
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 
-- [Type safety & nullability](#type-safety-nullability)
+- [Type safety & nullability](#type-safety--nullability)
 - [Naming](#naming)
 - [Formatting](#formatting)
-- [Constants & magic numbers](#constants-magic-numbers)
+- [Constants & magic numbers](#constants--magic-numbers)
 - [Class structure](#class-structure)
 - [Platform-adaptive widget patterns](#platform-adaptive-widget-patterns)
-    * [Subclass `PlatformWidgetBase`, override the 2 builders](#subclass-platformwidgetbase-override-the-2-builders)
-    * [Field classification: functional vs visual](#field-classification-functional-vs-visual)
+  * [Subclass `PlatformWidgetBase`, override the 2 builders](#subclass-platformwidgetbase-override-the-2-builders)
+  * [Field classification: functional vs visual](#field-classification-functional-vs-visual)
 - [Idioms](#idioms)
-    * [Static dot shorthands (Dart 3.10+)](#static-dot-shorthands-dart-310)
-    * [Drop redundant `<Type>` on collection literals](#drop-redundant-collection-literal-type-args)
-    * [`Row.spacing` / `Column.spacing` / `Wrap.spacing` over interleaved `SizedBox` gaps](#flex-spacing-over-sizedbox-gaps)
-    * [Enhanced enums for per-variant config](#enhanced-enums-for-per-variant-config)
-    * [`Navigator.maybeOf` over `Navigator.of` for fire-and-forget pops](#navigator-maybeof-over-of)
-    * [Collection-for / collection-if over `Iterable.map(…).toList()`](#collection-for-collection-if-over-iterablemaptolist)
-    * [`dart:async` `wait` extensions over static `Future.wait(...)`](#dartasync-wait-extensions-over-static-futurewait)
-    * [`List.unmodifiable(…)` over `UnmodifiableListView(…)`](#listunmodifiable-over-unmodifiablelistview)
-    * [`part` / `part of` only when structurally needed](#part-part-of-only-when-structurally-needed)
-    * [A switch over an if/else chain, never over a single if/else](#switch-over-if-else-chains)
-- [Prose & voice](#prose)
-- [Comments & dartdoc](#comments-dartdoc)
+  * [Static dot shorthands (Dart 3.10+)](#static-dot-shorthands-dart-310)
+  * [Drop redundant `<Type>` on collection literals](#drop-redundant-type-on-collection-literals)
+  * [`Row.spacing` / `Column.spacing` / `Wrap.spacing` over interleaved `SizedBox` gaps](#rowspacing--columnspacing--wrapspacing-over-interleaved-sizedbox-gaps)
+  * [Enhanced enums for per-variant config](#enhanced-enums-for-per-variant-config)
+  * [`Navigator.maybeOf` over `Navigator.of` for fire-and-forget pops](#navigatormaybeof-over-navigatorof-for-fire-and-forget-pops)
+  * [Collection-for / collection-if over `Iterable.map(…).toList()`](#collection-for--collection-if-over-iterablemaptolist)
+  * [Library pipeline methods over hand-rolled loops (for data manipulation)](#library-pipeline-methods-over-hand-rolled-loops-for-data-manipulation)
+  * [`dart:async` `wait` extensions over static `Future.wait(...)`](#dartasync-wait-extensions-over-static-futurewait)
+  * [`List.unmodifiable(…)` over `UnmodifiableListView(…)`](#listunmodifiable-over-unmodifiablelistview)
+  * [`part` / `part of` only when structurally needed](#part--part-of-only-when-structurally-needed)
+  * [A switch over an if/else chain, never over a single if/else](#a-switch-over-an-ifelse-chain-never-over-a-single-ifelse)
+- [Prose & voice](#prose--voice)
+- [Comments & dartdoc](#comments--dartdoc)
+  * [A field doc has to earn its place](#a-field-doc-has-to-earn-its-place)
+  * [Link the M3 and HIG pages behind a widget](#link-the-m3-and-hig-pages-behind-a-widget)
+  * [Wrap dartdoc past 100, not before it](#wrap-dartdoc-past-100-not-before-it)
+  * [`@docImport` for dartdoc-only references](#docimport-for-dartdoc-only-references)
 - [DCM rules (applied by hand)](#dcm-rules-applied-by-hand)
 - [Documentation conventions (Markdown)](#documentation-conventions-markdown)
 
@@ -100,7 +105,7 @@ The `dynamic`-escape-hatch ban and the `print()`-in-library ban are listed under
   opaque to the next reader and indistinguishable from a typo:
 
   | Don't write            | Write instead                                                                                                     |
-  |------------------------|-------------------------------------------------------------------------------------------------------------------|
+    |------------------------|-------------------------------------------------------------------------------------------------------------------|
   | `cb`                   | `callback` (with the type-suffix rule below: `<context>Callback` if shared scope makes bare `callback` ambiguous) |
   | `fn`                   | `function` / `handler` / spell out the semantic role                                                              |
   | `cfg`                  | `config`                                                                                                          |
@@ -255,7 +260,9 @@ The `dynamic`-escape-hatch ban and the `print()`-in-library ban are listed under
      With only one reader, there's nothing to diverge from.
 
   A copy of upstream's own default keeps its name even with one reader. It pegs a value that an
-  upstream release can move, so the name marks it as upstream's and is the one place to update.
+  upstream release can move, so the name marks it as upstream's and is the one place to update. The
+  [upstream-default guard](./test/upstream_defaults_guard_test.dart) checks every `kDefault…` the
+  package sends against that default.
 
   Counts as a real second use:
   - A `build*` branch substituting the constant when a per-platform record's field is `null` (the
@@ -387,7 +394,7 @@ final class PlatformSwitch extends PlatformWidgetBase {
 class PlatformSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
-      Platform.isIOS ? CupertinoSwitch(…) : Switch(…);
+          Platform.isIOS ? CupertinoSwitch(…) : Switch(…);
 }
 ```
 
@@ -535,8 +542,8 @@ const kDefaultRegularChipPadding = 8.0;
 enum ChipDensity { compact, regular }
 
 // Build site:
-.compact => Chip(padding: padding ?? kDefaultCompactChipPadding, ...)
-.regular => Chip(padding: padding ?? kDefaultRegularChipPadding, ...)
+        .compact => Chip(padding: padding ?? kDefaultCompactChipPadding, ...)
+        .regular => Chip(padding: padding ?? kDefaultRegularChipPadding, ...)
 ```
 
 **Why.** 3 real wins:
@@ -571,18 +578,18 @@ buttons, snackbar action callbacks, modal close handlers, etc., reach for
 ```dart
 // Prefer:
 PlatformDialogAction(
-  onPressed: (ctx) => Navigator.maybeOf(ctx)?.pop(true),
-  child: const Text('OK'),
+onPressed: (ctx) => Navigator.maybeOf(ctx)?.pop(true),
+child: const Text('OK'),
 )
 
 // Over:
 PlatformDialogAction(
-  onPressed: (ctx) => Navigator.of(ctx).pop(true),       // throws if no Navigator
-  child: const Text('OK'),
+onPressed: (ctx) => Navigator.of(ctx).pop(true),       // throws if no Navigator
+child: const Text('OK'),
 )
 PlatformDialogAction(
-  onPressed: (ctx) => Navigator.pop(ctx, true),          // same, wraps `.of`
-  child: const Text('OK'),
+onPressed: (ctx) => Navigator.pop(ctx, true),          // same, wraps `.of`
+child: const Text('OK'),
 )
 ```
 
@@ -616,7 +623,7 @@ as a pipeline that happens to produce data.
 ```dart
 // Prefer:
 children: [
-  for (final dir in AxisDirection.values) DirectionTile(dir),
+for (final dir in AxisDirection.values) DirectionTile(dir),
 ]
 
 // Over:
@@ -645,18 +652,18 @@ final missingFields = baseFields.difference(widgetFields);
 // Over, a loop that re-derives `difference` by hand:
 final missingFields = <String>{};
 for (final field in baseFields) {
-  if (!widgetFields.contains(field)) missingFields.add(field);
+if (!widgetFields.contains(field)) missingFields.add(field);
 }
 ```
 
 ```dart
 // Prefer, whereType + where + expand + map + toSet:
 Set<String> fieldNames(ClassDeclaration node) => node.body.members
-    .whereType<FieldDeclaration>()
-    .where((member) => !member.isStatic)
-    .expand((member) => member.fields.variables)
-    .map((variable) => variable.name.lexeme)
-    .toSet();
+        .whereType<FieldDeclaration>()
+        .where((member) => !member.isStatic)
+        .expand((member) => member.fields.variables)
+        .map((variable) => variable.name.lexeme)
+        .toSet();
 ```
 
 When a symmetric check repeats per case (e.g. the Material vs Cupertino build branches), key the
@@ -716,12 +723,12 @@ A switch reads nicer than a chain of `if` / `else if` on one value. A single eit
 ```dart
 // Prefer:
 final label = switch (actionKind) {
-  .normal => 'Save',
-  .delete => 'Delete',
-  .discard => 'Discard',
+          .normal => 'Save',
+          .delete => 'Delete',
+          .discard => 'Discard',
 };
 DesignLanguage get designLanguage =>
-    defaultTargetPlatform == .iOS || defaultTargetPlatform == .macOS ? .cupertino : .material;
+        defaultTargetPlatform == .iOS || defaultTargetPlatform == .macOS ? .cupertino : .material;
 
 // Over:
 final label = actionKind == .normal ? 'Save' : actionKind == .delete ? 'Delete' : 'Discard';
