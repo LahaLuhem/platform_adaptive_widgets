@@ -129,6 +129,10 @@ under `lib/src/models/<category>/platform_xxx_data.dart`. The same sub-categorie
    [`APPENDIX.md#field-classification`](../APPENDIX.md#field-classification)
    (*Enforcement*).
 
+   A field left out sends upstream's own default, so its type, default and `null` mirror the
+   parameter it feeds. The [upstream-default guard](../test/upstream_defaults_guard_test.dart)
+   fails the PR otherwise. See [`APPENDIX.md#left-out-fields`](../APPENDIX.md#left-out-fields).
+
 ## Hard rules
 
 1. **The public API lives only in `lib/platform_adaptive_widgets.dart`.** That file re-exports from

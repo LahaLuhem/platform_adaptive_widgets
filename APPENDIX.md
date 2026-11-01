@@ -335,7 +335,8 @@ When the 2 underlying parameters diverge:
   the latter silently raises "active or inactive?".
 - **Names match, types / nullability differ.** Prefer the looser type so neither platform's full
   surface is lost: Material `Color?` + Cupertino `Color` → package exposes `Color?` and the
-  Cupertino branch supplies a default when null. Material `MouseCursor?` + Cupertino
+  Cupertino branch supplies Cupertino's own default when null (see
+  [what a left-out field sends](#left-out-fields)). Material `MouseCursor?` + Cupertino
   `WidgetStateProperty<MouseCursor>?` → package exposes the richer
   `WidgetStateProperty<MouseCursor>?` and the Material branch resolves at build time.
 - Don't invent a third name unless both native names are bad. Pick one, document the mapping for the
@@ -349,6 +350,26 @@ Per-field dartdoc handles the dev writing one `PlatformSwitch(activeThumbColor: 
 is for the **maintainer**: when a Flutter SDK update renames a parameter, this is the canonical list
 of fields whose mapping could silently break. Without it, a renamed underlying parameter slips
 through as a runtime mismatch.
+
+<a id="left-out-fields"></a>
+### What a left-out field sends
+
+A wrapper writes every argument, and Dart applies a default only to one that's left out. So the
+package decides what each left-out field becomes, and it picks upstream's: the parameter's type,
+its default, and what its `null` means. A widget set up plainly then acts like the plain upstream
+widget. Where the 2 platforms' defaults disagree (`cursorRadius`), the field is nullable and `null`
+gets each side its own.
+
+Same everywhere first. A field that should do better than upstream, say by reading a theme that
+upstream's default skips, is a change of its own, with its reason next to its row on the guard's
+list.
+
+**Enforcement:** the
+[upstream-default guard](./test/upstream_defaults_guard_test.dart) follows each value the package
+sends to an optional material_ui or cupertino_ui parameter back to the field's default, and fails
+where that isn't upstream's own. The package's own picks sit on its list, each with its reason. CI
+resolves the newest material_ui and cupertino_ui, so a copy goes red on the first run after
+upstream moves. A value the package builds in code, such as a closure or a widget, isn't checked.
 
 ---
 
