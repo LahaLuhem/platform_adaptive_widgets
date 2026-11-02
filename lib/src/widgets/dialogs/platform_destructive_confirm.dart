@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_choice.dart';
 import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 import '/src/utils/design_language.dart';
@@ -36,7 +35,7 @@ Future<bool> showPlatformDestructiveConfirm({
     anchorPoint: null,
     barrierColor: null,
     routeSettings: null,
-    useRootNavigator: kDefaultUseRootNavigator,
+    useRootNavigator: null,
     requestFocus: null,
   ).then((isConfirmed) => isConfirmed ?? false),
 };

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show showModalBottomSheet;
 
+import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 
 /// Feeds [showModalBottomSheet] from [materialModalBottomSheetData] and the flat settings. One builder,
@@ -17,7 +18,7 @@ Future<T?> showMaterialSheetRoute<T>({
   required Color? barrierColor,
   required bool barrierDismissible,
   required RouteSettings? routeSettings,
-  required bool useRootNavigator,
+  required bool? useRootNavigator,
   required bool? requestFocus,
 }) => showModalBottomSheet(
   context: context,
@@ -32,7 +33,7 @@ Future<T?> showMaterialSheetRoute<T>({
   isScrollControlled: materialModalBottomSheetData.isScrollControlled,
   scrollControlDisabledMaxHeightRatio:
       materialModalBottomSheetData.scrollControlDisabledMaxHeightRatio,
-  useRootNavigator: useRootNavigator,
+  useRootNavigator: useRootNavigator ?? kMaterialSheetUseRootNavigator,
   isDismissible: barrierDismissible,
   enableDrag: materialModalBottomSheetData.enableDrag,
   showDragHandle: materialModalBottomSheetData.showDragHandle,
@@ -55,7 +56,7 @@ Future<T?> showCupertinoPopupRoute<T>({
   required Color? barrierColor,
   required bool barrierDismissible,
   required RouteSettings? routeSettings,
-  required bool useRootNavigator,
+  required bool? useRootNavigator,
   required bool? requestFocus,
 }) => showCupertinoModalPopup(
   context: context,
@@ -63,7 +64,7 @@ Future<T?> showCupertinoPopupRoute<T>({
   filter: cupertinoModalPopupData.filter,
   barrierColor: barrierColor ?? kCupertinoModalBarrierColor,
   barrierDismissible: barrierDismissible,
-  useRootNavigator: useRootNavigator,
+  useRootNavigator: useRootNavigator ?? kDefaultUseRootNavigator,
   semanticsDismissible: cupertinoModalPopupData.semanticsDismissible,
   routeSettings: routeSettings,
   anchorPoint: anchorPoint,

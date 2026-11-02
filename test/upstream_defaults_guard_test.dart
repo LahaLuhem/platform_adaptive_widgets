@@ -19,15 +19,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 // Grouped by what's wrong, so a fix takes its group off, sees red, then turns it green.
 
-// Copies of a default that don't match upstream's own.
-const _copiesThatDiffer = {
-  'cupertino_picker_popup.dart: showCupertinoModalPopup.barrierDismissible',
-  'platform_dialog.dart: Dialog.fullscreen.insetAnimationDuration',
-  'platform_expansion_tile.dart: ExpansionTile.showTrailingIcon',
-  'platform_list_tile.dart: ListTile.internalAddSemanticForOnTap',
-  'sheet_routes.dart: showModalBottomSheet.useRootNavigator',
-};
-
 // `null` where upstream has a default of its own.
 const _sendsNullForDefault = {
   'platform_app.dart: MaterialApp.router.themeMode',
@@ -66,7 +57,7 @@ const _ownPicks = {
 const _upstreamPackages = {'material': 'material_ui', 'cupertino': 'cupertino_ui'};
 
 void main() {
-  final listed = {..._copiesThatDiffer, ..._sendsNullForDefault, ..._ownPicks.keys};
+  final listed = {..._sendsNullForDefault, ..._ownPicks.keys};
   late final List<_Offender> offenders;
   late final Iterable<String> nullableRecords;
 

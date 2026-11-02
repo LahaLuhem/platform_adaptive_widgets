@@ -14,13 +14,13 @@ import 'package:flutter/widgets.dart';
 /// What the package's dialogs pass as `showDialog`'s `useSafeArea`, its own default.
 const kDefaultMaterialDialogUseSafeArea = true;
 
-/// Default value for [MaterialFullscreenDialogData.insetAnimationDuration]. Same as `Dialog`'s.
-const kDefaultMaterialDialogInsetAnimationDuration = Duration(milliseconds: 100);
+/// Default value for [MaterialFullscreenDialogData.insetAnimationDuration]. Same as `Dialog.fullscreen`'s.
+const kDefaultMaterialDialogInsetAnimationDuration = Duration.zero;
 
-/// Default value for [MaterialFullscreenDialogData.insetAnimationCurve]. Same as `Dialog`'s.
+/// Default value for [MaterialFullscreenDialogData.insetAnimationCurve]. Same as `Dialog.fullscreen`'s.
 const kDefaultMaterialDialogInsetAnimationCurve = Curves.decelerate;
 
-/// Default value for [MaterialFullscreenDialogData.semanticsRole]. Same as `Dialog`'s.
+/// Default value for [MaterialFullscreenDialogData.semanticsRole]. Same as `Dialog.fullscreen`'s.
 const kDefaultMaterialDialogSemanticsRole = SemanticsRole.dialog;
 
 /// Material-side settings for `showPlatformFullscreenDialog`, passed as its `materialDialogData`.

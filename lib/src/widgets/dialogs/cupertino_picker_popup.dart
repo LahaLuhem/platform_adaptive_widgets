@@ -6,7 +6,6 @@ import 'package:cupertino_ui/cupertino_ui.dart'
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_date_picker_data.dart';
 
 /// One popup for both pickers, since Cupertino only changes the [CupertinoDatePicker]'s `mode` between
@@ -18,7 +17,7 @@ Future<DateTime?> showCupertinoPickerPopup({
   required DateTime? initialDateTime,
   required Offset? anchorPoint,
   required Color? barrierColor,
-  required bool? barrierDismissible,
+  required bool barrierDismissible,
   required RouteSettings? routeSettings,
   required bool useRootNavigator,
   required bool? requestFocus,
@@ -53,7 +52,7 @@ Future<DateTime?> showCupertinoPickerPopup({
     context: context,
     anchorPoint: anchorPoint,
     barrierColor: barrierColor ?? kDefaultCupertinoDatePickerBarrierColor,
-    barrierDismissible: barrierDismissible ?? kCupertinoBarrierDismissible,
+    barrierDismissible: barrierDismissible,
     routeSettings: routeSettings,
     useRootNavigator: useRootNavigator,
     filter: cupertinoDatePickerData.filter,

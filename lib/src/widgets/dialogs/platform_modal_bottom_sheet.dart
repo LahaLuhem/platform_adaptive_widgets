@@ -34,7 +34,7 @@ Future<T?> showPlatformRawModalBottomSheet<T>({
   Color? barrierColor,
   bool barrierDismissible = kDefaultModalBottomSheetBarrierDismissible,
   RouteSettings? routeSettings,
-  bool useRootNavigator = kDefaultUseRootNavigator,
+  bool? useRootNavigator,
   bool? requestFocus,
   MaterialModalBottomSheetData materialModalBottomSheetData = const MaterialModalBottomSheetData(),
   CupertinoModalPopupData cupertinoModalPopupData = const CupertinoModalPopupData(),

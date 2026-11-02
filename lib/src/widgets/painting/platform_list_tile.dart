@@ -84,7 +84,6 @@ class const PlatformListTile({
     horizontalTitleGap: materialListTileData.horizontalTitleGap,
     hoverColor: materialListTileData.hoverColor,
     iconColor: materialListTileData.iconColor,
-    internalAddSemanticForOnTap: materialListTileData.internalAddSemanticForOnTap,
     isThreeLine: materialListTileData.isThreeLine,
     leadingAndTrailingTextStyle: materialListTileData.leadingAndTrailingTextStyle,
     minTileHeight: materialListTileData.minTileHeight,

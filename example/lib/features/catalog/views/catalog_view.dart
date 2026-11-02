@@ -59,9 +59,6 @@ class CatalogView extends StatelessWidget {
               for (final category in WidgetCategory.values)
                 PlatformExpansionTile(
                   controller: viewModel.controllerFor(category),
-                  materialExpansionTileData: const MaterialExpansionTileData(
-                    showTrailingIcon: true,
-                  ),
                   cupertinoExpansionTileData: const CupertinoExpansionTileData(
                     transitionMode: .scroll,
                   ),
