@@ -19,9 +19,6 @@ const kDefaultListTileInternalAddSemanticForOnTap = false;
 /// Default value for [MaterialListTileData.selected].
 const kDefaultListTileSelected = false;
 
-/// Default value for [MaterialListTileData.titleAlignment].
-const kDefaultListTileTitleAlignment = ListTileTitleAlignment.threeLine;
-
 /// Leading size for the base Cupertino [PlatformListTile], used when `leadingWidth` is `null`.
 ///
 /// Mirrors Flutter's private `_kLeadingSize`. Recheck on SDK bumps, nothing warns us when it moves.
@@ -126,7 +123,8 @@ final class const MaterialListTileData({
 
   final Color? textColor,
 
-  final ListTileTitleAlignment titleAlignment = kDefaultListTileTitleAlignment,
+  /// Left out, upstream reads `ListTileTheme`.
+  final ListTileTitleAlignment? titleAlignment,
 
   final TextStyle? titleTextStyle,
 

@@ -108,8 +108,9 @@ class const PlatformTextField({
 
   final int? maxLength,
 
-  /// Whether going over [maxLength] is blocked outright or merely flagged.
-  final MaxLengthEnforcement? maxLengthEnforcement = MaxLengthEnforcement.enforced,
+  /// Whether going over [maxLength] is blocked outright or merely flagged. Left out, upstream picks
+  /// per platform.
+  final MaxLengthEnforcement? maxLengthEnforcement,
 
   final List<TextInputFormatter>? inputFormatters,
 
@@ -122,10 +123,12 @@ class const PlatformTextField({
   /// Left out, the field sizes it from the text.
   final double? cursorHeight,
 
-  final Radius? cursorRadius = const Radius.circular(2),
+  /// Left out, upstream's own per look: square on Material, rounded on Cupertino.
+  final Radius? cursorRadius,
 
-  /// Whether the cursor fades in and out rather than blinking.
-  final bool cursorOpacityAnimates = true,
+  /// Whether the cursor fades in and out rather than blinking. Left out, upstream's own per look:
+  /// Material blinks, Cupertino fades.
+  final bool? cursorOpacityAnimates,
 
   final Color? cursorColor,
 
@@ -134,8 +137,9 @@ class const PlatformTextField({
 
   final BoxWidthStyle? selectionWidthStyle,
 
-  /// Lets the user select and copy text at all.
-  final bool? enableInteractiveSelection = true,
+  /// Lets the user select and copy text at all. Left out, upstream allows it except in a read-only
+  /// password field.
+  final bool? enableInteractiveSelection,
 
   final bool? selectAllOnFocus,
 
@@ -324,9 +328,10 @@ class const PlatformTextField({
     enabled: isEnabled,
     cursorWidth: cursorWidth,
     cursorHeight: cursorHeight,
-    // Cupertino's own default, since its cursorRadius can't take null.
-    cursorRadius: cursorRadius ?? const Radius.circular(2),
-    cursorOpacityAnimates: cursorOpacityAnimates,
+    // cupertino_ui takes no null for these 2.
+    cursorRadius: cursorRadius ?? const CupertinoTextField().cursorRadius,
+    cursorOpacityAnimates:
+        cursorOpacityAnimates ?? const CupertinoTextField().cursorOpacityAnimates,
     cursorColor: cursorColor,
     selectionHeightStyle: selectionHeightStyle,
     selectionWidthStyle: selectionWidthStyle,

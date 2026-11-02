@@ -70,7 +70,8 @@ final class const MaterialAppBarData({
   /// Leaves room for the status bar.
   final bool primary = kDefaultPrimary,
 
-  final bool centerTitle = false,
+  /// Left out, upstream reads `AppBarTheme`, then the platform.
+  final bool? centerTitle,
 
   final bool excludeHeaderSemantics = kExcludeHeaderSemantics,
 
