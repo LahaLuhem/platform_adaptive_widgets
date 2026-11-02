@@ -101,7 +101,7 @@ class const PlatformListTile({
     style: materialListTileData?.style,
     subtitleTextStyle: materialListTileData?.subtitleTextStyle,
     textColor: materialListTileData?.textColor,
-    titleAlignment: materialListTileData?.titleAlignment ?? kDefaultListTileTitleAlignment,
+    titleAlignment: materialListTileData?.titleAlignment,
     titleTextStyle: materialListTileData?.titleTextStyle,
     visualDensity: materialListTileData?.visualDensity,
   );

@@ -41,18 +41,6 @@ const _copiesThatDiffer = {
   'sheet_routes.dart: showModalBottomSheet.useRootNavigator',
 };
 
-// A fixed value where upstream's `null` reads the theme or the platform.
-const _fixedForThemed = {
-  'platform_app_bar.dart: AppBar.centerTitle',
-  'platform_list_tile.dart: ListTile.titleAlignment',
-  'platform_text_field.dart: CupertinoTextField.enableInteractiveSelection',
-  'platform_text_field.dart: CupertinoTextField.maxLengthEnforcement',
-  'platform_text_field.dart: TextField.cursorOpacityAnimates',
-  'platform_text_field.dart: TextField.cursorRadius',
-  'platform_text_field.dart: TextField.enableInteractiveSelection',
-  'platform_text_field.dart: TextField.maxLengthEnforcement',
-};
-
 // `null` where upstream has a default of its own.
 const _sendsNullForDefault = {
   'platform_app.dart: MaterialApp.router.themeMode',
@@ -93,7 +81,6 @@ void main() {
   final listed = {
     ..._sendsNullForOff,
     ..._copiesThatDiffer,
-    ..._fixedForThemed,
     ..._sendsNullForDefault,
     ..._ownPicks.keys,
   };
