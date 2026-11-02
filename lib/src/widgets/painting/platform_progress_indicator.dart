@@ -28,10 +28,12 @@ class const PlatformProgressIndicator({
   final String? semanticsLabel,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
-  final MaterialProgressIndicatorData? materialProgressIndicatorData,
+  final MaterialProgressIndicatorData materialProgressIndicatorData =
+      const MaterialProgressIndicatorData(),
 
   /// Cupertino-branch overrides, plus the knobs Material has no answer for.
-  final CupertinoProgressIndicatorData? cupertinoProgressIndicatorData,
+  final CupertinoProgressIndicatorData cupertinoProgressIndicatorData =
+      const CupertinoProgressIndicatorData(),
   super.widgetKey,
   super.key,
 }) extends PlatformWidgetKeyedBase {
@@ -43,17 +45,17 @@ class const PlatformProgressIndicator({
   @visibleForOverriding
   Widget buildMaterial(BuildContext context) => CircularProgressIndicator(
     key: widgetKey,
-    color: materialProgressIndicatorData?.color ?? color,
-    backgroundColor: materialProgressIndicatorData?.backgroundColor,
-    valueColor: materialProgressIndicatorData?.valueColor,
-    strokeWidth: materialProgressIndicatorData?.strokeWidth,
-    strokeAlign: materialProgressIndicatorData?.strokeAlign,
+    color: materialProgressIndicatorData.color ?? color,
+    backgroundColor: materialProgressIndicatorData.backgroundColor,
+    valueColor: materialProgressIndicatorData.valueColor,
+    strokeWidth: materialProgressIndicatorData.strokeWidth,
+    strokeAlign: materialProgressIndicatorData.strokeAlign,
     semanticsLabel: semanticsLabel,
-    strokeCap: materialProgressIndicatorData?.strokeCap,
-    constraints: materialProgressIndicatorData?.constraints,
-    trackGap: materialProgressIndicatorData?.trackGap,
-    padding: materialProgressIndicatorData?.padding,
-    controller: materialProgressIndicatorData?.controller,
+    strokeCap: materialProgressIndicatorData.strokeCap,
+    constraints: materialProgressIndicatorData.constraints,
+    trackGap: materialProgressIndicatorData.trackGap,
+    padding: materialProgressIndicatorData.padding,
+    controller: materialProgressIndicatorData.controller,
   );
 
   @override
@@ -65,9 +67,9 @@ class const PlatformProgressIndicator({
     role: SemanticsRole.loadingSpinner,
     child: CupertinoActivityIndicator(
       key: widgetKey,
-      color: cupertinoProgressIndicatorData?.color ?? color,
-      animating: cupertinoProgressIndicatorData?.animating ?? kDefaultProgressIndicatorAnimating,
-      radius: cupertinoProgressIndicatorData?.radius ?? kDefaultProgressIndicatorRadius,
+      color: cupertinoProgressIndicatorData.color ?? color,
+      animating: cupertinoProgressIndicatorData.animating,
+      radius: cupertinoProgressIndicatorData.radius,
     ),
   );
 }

@@ -45,10 +45,11 @@ class const PlatformSegmentButton<T extends Object>({
   required final ValueChanged<T?> onSelectionChanged,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
-  final MaterialSegmentButtonData? materialSegmentButtonData,
+  final MaterialSegmentButtonData materialSegmentButtonData = const MaterialSegmentButtonData(),
 
   /// Cupertino-branch overrides, plus the knobs Material has no answer for.
-  final CupertinoSegmentButtonData<T>? cupertinoSegmentButtonData,
+  final CupertinoSegmentButtonData<T> cupertinoSegmentButtonData =
+      const CupertinoSegmentButtonData<Never>(),
   super.widgetKey,
   super.key,
 }) extends PlatformWidgetKeyedBase {
@@ -68,15 +69,12 @@ class const PlatformSegmentButton<T extends Object>({
       ],
       selected: {?selectedChoice},
       onSelectionChanged: (set) => onSelectionChanged(set.firstOrNull),
-      emptySelectionAllowed:
-          materialSegmentButtonData?.emptySelectionAllowed ??
-          kDefaultSegmentButtonEmptySelectionAllowed,
-      expandedInsets: materialSegmentButtonData?.expandedInsets,
-      style: materialSegmentButtonData?.style,
-      showSelectedIcon:
-          materialSegmentButtonData?.showSelectedIcon ?? kDefaultSegmentButtonShowSelectedIcon,
-      selectedIcon: materialSegmentButtonData?.selectedIcon,
-      direction: materialSegmentButtonData?.direction ?? kDefaultSegmentButtonDirection,
+      emptySelectionAllowed: materialSegmentButtonData.emptySelectionAllowed,
+      expandedInsets: materialSegmentButtonData.expandedInsets,
+      style: materialSegmentButtonData.style,
+      showSelectedIcon: materialSegmentButtonData.showSelectedIcon,
+      selectedIcon: materialSegmentButtonData.selectedIcon,
+      direction: materialSegmentButtonData.direction,
     );
   }
 
@@ -85,9 +83,7 @@ class const PlatformSegmentButton<T extends Object>({
   @visibleForOverriding
   Widget buildCupertino(BuildContext context) {
     _assertChoices();
-    final disabledChildren =
-        cupertinoSegmentButtonData?.disabledChildren ??
-        kDefaultCupertinoSegmentButtonDisabledChildren;
+    final disabledChildren = cupertinoSegmentButtonData.disabledChildren;
 
     return CupertinoSlidingSegmentedControl<T>(
       key: widgetKey,
@@ -101,17 +97,11 @@ class const PlatformSegmentButton<T extends Object>({
       groupValue: selectedChoice,
       onValueChanged: onSelectionChanged,
       disabledChildren: disabledChildren,
-      thumbColor:
-          cupertinoSegmentButtonData?.thumbColor ?? kDefaultCupertinoSegmentButtonThumbColor,
-      padding: cupertinoSegmentButtonData?.padding ?? kDefaultCupertinoSegmentButtonPadding,
-      backgroundColor:
-          cupertinoSegmentButtonData?.backgroundColor ??
-          kDefaultCupertinoSegmentButtonBackgroundColor,
-      proportionalWidth:
-          cupertinoSegmentButtonData?.proportionalWidth ??
-          kDefaultCupertinoSegmentButtonProportionalWidth,
-      isMomentary:
-          cupertinoSegmentButtonData?.isMomentary ?? kDefaultCupertinoSegmentButtonIsMomentary,
+      thumbColor: cupertinoSegmentButtonData.thumbColor,
+      padding: cupertinoSegmentButtonData.padding,
+      backgroundColor: cupertinoSegmentButtonData.backgroundColor,
+      proportionalWidth: cupertinoSegmentButtonData.proportionalWidth,
+      isMomentary: cupertinoSegmentButtonData.isMomentary,
     );
   }
 

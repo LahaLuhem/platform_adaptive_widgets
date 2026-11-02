@@ -22,10 +22,10 @@ class const PlatformScaffold({
   required final Widget body,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
-  final MaterialScaffoldData? materialScaffoldData,
+  final MaterialScaffoldData materialScaffoldData = const MaterialScaffoldData(),
 
   /// Cupertino-branch overrides, plus the knobs Material has no answer for.
-  final CupertinoScaffoldData? cupertinoScaffoldData,
+  final CupertinoScaffoldData cupertinoScaffoldData = const CupertinoScaffoldData(),
 
   /// The bar across the top. [PlatformAppBar] is the ready-made one, and gets unwrapped to the right
   /// widget on each branch.
@@ -49,61 +49,49 @@ class const PlatformScaffold({
   @visibleForOverriding
   Widget buildMaterial(BuildContext context) {
     // Shared values resolved once, both bottomSheetScrimBuilder branches below pass the identical set.
-    final appBar = materialScaffoldData?.appBar ?? appBarData?.materialBuilder(context);
+    final appBar = materialScaffoldData.appBar ?? appBarData?.materialBuilder(context);
     final resolvedBody = useSafeArea ? SafeArea(child: body) : body;
-    final resolvedBackgroundColor = materialScaffoldData?.backgroundColor ?? backgroundColor;
-    final persistentFooterAlignment =
-        materialScaffoldData?.persistentFooterAlignment ??
-        MaterialScaffoldData.kDefaultPersistentFooterAlignment;
-    final primary = materialScaffoldData?.primary ?? MaterialScaffoldData.kPrimary;
-    final drawerDragStartBehavior =
-        materialScaffoldData?.drawerDragStartBehavior ??
-        MaterialScaffoldData.kDrawerDragStartBehavior;
-    final extendBody = materialScaffoldData?.extendBody ?? MaterialScaffoldData.kExtendBody;
-    final drawerBarrierDismissible =
-        materialScaffoldData?.drawerBarrierDismissible ??
-        MaterialScaffoldData.kDrawerBarrierDismissible;
-    final extendBodyBehindAppBar =
-        materialScaffoldData?.extendBodyBehindAppBar ??
-        MaterialScaffoldData.kExtendBodyBehindAppBar;
-    final drawerEnableOpenDragGesture =
-        materialScaffoldData?.drawerEnableOpenDragGesture ??
-        MaterialScaffoldData.kDrawerEnableOpenDragGesture;
-    final endDrawerEnableOpenDragGesture =
-        materialScaffoldData?.endDrawerEnableOpenDragGesture ??
-        MaterialScaffoldData.kEndDrawerEnableOpenDragGesture;
+    final resolvedBackgroundColor = materialScaffoldData.backgroundColor ?? backgroundColor;
+    final persistentFooterAlignment = materialScaffoldData.persistentFooterAlignment;
+    final primary = materialScaffoldData.primary;
+    final drawerDragStartBehavior = materialScaffoldData.drawerDragStartBehavior;
+    final extendBody = materialScaffoldData.extendBody;
+    final drawerBarrierDismissible = materialScaffoldData.drawerBarrierDismissible;
+    final extendBodyBehindAppBar = materialScaffoldData.extendBodyBehindAppBar;
+    final drawerEnableOpenDragGesture = materialScaffoldData.drawerEnableOpenDragGesture;
+    final endDrawerEnableOpenDragGesture = materialScaffoldData.endDrawerEnableOpenDragGesture;
 
     // Scaffold's own default for bottomSheetScrimBuilder is private, so the param is omitted rather
     // than filled with a copy of it that could drift.
-    return materialScaffoldData?.bottomSheetScrimBuilder == null
+    return materialScaffoldData.bottomSheetScrimBuilder == null
         ? Scaffold(
             key: widgetKey,
             appBar: appBar,
             backgroundColor: resolvedBackgroundColor,
             resizeToAvoidBottomInset: resizeToAvoidBottomInset,
             body: resolvedBody,
-            floatingActionButton: materialScaffoldData?.floatingActionButton,
-            floatingActionButtonLocation: materialScaffoldData?.floatingActionButtonLocation,
-            floatingActionButtonAnimator: materialScaffoldData?.floatingActionButtonAnimator,
-            persistentFooterButtons: materialScaffoldData?.persistentFooterButtons,
+            floatingActionButton: materialScaffoldData.floatingActionButton,
+            floatingActionButtonLocation: materialScaffoldData.floatingActionButtonLocation,
+            floatingActionButtonAnimator: materialScaffoldData.floatingActionButtonAnimator,
+            persistentFooterButtons: materialScaffoldData.persistentFooterButtons,
             persistentFooterAlignment: persistentFooterAlignment,
-            persistentFooterDecoration: materialScaffoldData?.persistentFooterDecoration,
-            drawer: materialScaffoldData?.drawer,
-            onDrawerChanged: materialScaffoldData?.onDrawerChanged,
-            endDrawer: materialScaffoldData?.endDrawer,
-            onEndDrawerChanged: materialScaffoldData?.onEndDrawerChanged,
-            bottomSheet: materialScaffoldData?.bottomSheet,
-            bottomNavigationBar: materialScaffoldData?.bottomNavigationBar,
+            persistentFooterDecoration: materialScaffoldData.persistentFooterDecoration,
+            drawer: materialScaffoldData.drawer,
+            onDrawerChanged: materialScaffoldData.onDrawerChanged,
+            endDrawer: materialScaffoldData.endDrawer,
+            onEndDrawerChanged: materialScaffoldData.onEndDrawerChanged,
+            bottomSheet: materialScaffoldData.bottomSheet,
+            bottomNavigationBar: materialScaffoldData.bottomNavigationBar,
             primary: primary,
             drawerDragStartBehavior: drawerDragStartBehavior,
             extendBody: extendBody,
             drawerBarrierDismissible: drawerBarrierDismissible,
             extendBodyBehindAppBar: extendBodyBehindAppBar,
-            drawerScrimColor: materialScaffoldData?.drawerScrimColor,
-            drawerEdgeDragWidth: materialScaffoldData?.drawerEdgeDragWidth,
+            drawerScrimColor: materialScaffoldData.drawerScrimColor,
+            drawerEdgeDragWidth: materialScaffoldData.drawerEdgeDragWidth,
             drawerEnableOpenDragGesture: drawerEnableOpenDragGesture,
             endDrawerEnableOpenDragGesture: endDrawerEnableOpenDragGesture,
-            restorationId: materialScaffoldData?.restorationId,
+            restorationId: materialScaffoldData.restorationId,
           )
         : Scaffold(
             key: widgetKey,
@@ -111,29 +99,29 @@ class const PlatformScaffold({
             backgroundColor: resolvedBackgroundColor,
             resizeToAvoidBottomInset: resizeToAvoidBottomInset,
             body: resolvedBody,
-            floatingActionButton: materialScaffoldData?.floatingActionButton,
-            floatingActionButtonLocation: materialScaffoldData?.floatingActionButtonLocation,
-            floatingActionButtonAnimator: materialScaffoldData?.floatingActionButtonAnimator,
-            persistentFooterButtons: materialScaffoldData?.persistentFooterButtons,
+            floatingActionButton: materialScaffoldData.floatingActionButton,
+            floatingActionButtonLocation: materialScaffoldData.floatingActionButtonLocation,
+            floatingActionButtonAnimator: materialScaffoldData.floatingActionButtonAnimator,
+            persistentFooterButtons: materialScaffoldData.persistentFooterButtons,
             persistentFooterAlignment: persistentFooterAlignment,
-            persistentFooterDecoration: materialScaffoldData?.persistentFooterDecoration,
-            drawer: materialScaffoldData?.drawer,
-            onDrawerChanged: materialScaffoldData?.onDrawerChanged,
-            endDrawer: materialScaffoldData?.endDrawer,
-            onEndDrawerChanged: materialScaffoldData?.onEndDrawerChanged,
-            bottomSheet: materialScaffoldData?.bottomSheet,
-            bottomNavigationBar: materialScaffoldData?.bottomNavigationBar,
+            persistentFooterDecoration: materialScaffoldData.persistentFooterDecoration,
+            drawer: materialScaffoldData.drawer,
+            onDrawerChanged: materialScaffoldData.onDrawerChanged,
+            endDrawer: materialScaffoldData.endDrawer,
+            onEndDrawerChanged: materialScaffoldData.onEndDrawerChanged,
+            bottomSheet: materialScaffoldData.bottomSheet,
+            bottomNavigationBar: materialScaffoldData.bottomNavigationBar,
             primary: primary,
             drawerDragStartBehavior: drawerDragStartBehavior,
             extendBody: extendBody,
             drawerBarrierDismissible: drawerBarrierDismissible,
             extendBodyBehindAppBar: extendBodyBehindAppBar,
-            drawerScrimColor: materialScaffoldData?.drawerScrimColor,
-            bottomSheetScrimBuilder: materialScaffoldData!.bottomSheetScrimBuilder!,
-            drawerEdgeDragWidth: materialScaffoldData?.drawerEdgeDragWidth,
+            drawerScrimColor: materialScaffoldData.drawerScrimColor,
+            bottomSheetScrimBuilder: materialScaffoldData.bottomSheetScrimBuilder!,
+            drawerEdgeDragWidth: materialScaffoldData.drawerEdgeDragWidth,
             drawerEnableOpenDragGesture: drawerEnableOpenDragGesture,
             endDrawerEnableOpenDragGesture: endDrawerEnableOpenDragGesture,
-            restorationId: materialScaffoldData?.restorationId,
+            restorationId: materialScaffoldData.restorationId,
           );
   }
 
@@ -142,8 +130,8 @@ class const PlatformScaffold({
   @visibleForOverriding
   Widget buildCupertino(BuildContext context) => CupertinoPageScaffold(
     key: widgetKey,
-    navigationBar: cupertinoScaffoldData?.navigationBar ?? appBarData?.cupertinoBuilder(context),
-    backgroundColor: cupertinoScaffoldData?.backgroundColor ?? backgroundColor,
+    navigationBar: cupertinoScaffoldData.navigationBar ?? appBarData?.cupertinoBuilder(context),
+    backgroundColor: cupertinoScaffoldData.backgroundColor ?? backgroundColor,
     resizeToAvoidBottomInset: resizeToAvoidBottomInset,
     child: useSafeArea ? SafeArea(child: body) : body,
   );

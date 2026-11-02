@@ -37,8 +37,8 @@ Future<void> showPlatformAcknowledge({
   RouteSettings? routeSettings,
   bool useRootNavigator = kDefaultUseRootNavigator,
   bool? requestFocus,
-  MaterialAlertDialogData? materialAlertDialogData,
-  CupertinoAlertDialogData? cupertinoAlertDialogData,
+  MaterialAlertDialogData materialAlertDialogData = const MaterialAlertDialogData(),
+  CupertinoAlertDialogData cupertinoAlertDialogData = const CupertinoAlertDialogData(),
 }) => showPlatformAlertDialog(
   context: context,
   title: Text(title),

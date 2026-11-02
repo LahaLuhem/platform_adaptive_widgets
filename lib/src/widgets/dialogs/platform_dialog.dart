@@ -40,7 +40,7 @@ Future<T?> showPlatformFullscreenDialog<T>({
   RouteSettings? routeSettings,
   bool useRootNavigator = kDefaultUseRootNavigator,
   bool? requestFocus,
-  MaterialFullscreenDialogData? materialDialogData,
+  MaterialFullscreenDialogData materialDialogData = const MaterialFullscreenDialogData(),
 }) {
   // Built by the package rather than the caller, so the close button and page background can't be
   // forgotten.
@@ -55,12 +55,9 @@ Future<T?> showPlatformFullscreenDialog<T>({
     .material => showMaterialDialogRoute(
       context: context,
       builder: (context) => Dialog.fullscreen(
-        insetAnimationDuration:
-            materialDialogData?.insetAnimationDuration ??
-            kDefaultMaterialDialogInsetAnimationDuration,
-        insetAnimationCurve:
-            materialDialogData?.insetAnimationCurve ?? kDefaultMaterialDialogInsetAnimationCurve,
-        semanticsRole: materialDialogData?.semanticsRole ?? kDefaultMaterialDialogSemanticsRole,
+        insetAnimationDuration: materialDialogData.insetAnimationDuration,
+        insetAnimationCurve: materialDialogData.insetAnimationCurve,
+        semanticsRole: materialDialogData.semanticsRole,
         child: page(context),
       ),
       isFullscreenRoute: true,
@@ -69,12 +66,12 @@ Future<T?> showPlatformFullscreenDialog<T>({
       barrierColor: null,
       barrierLabel: null,
       useSafeArea: false,
-      anchorPoint: materialDialogData?.anchorPoint,
+      anchorPoint: materialDialogData.anchorPoint,
       routeSettings: routeSettings,
       useRootNavigator: useRootNavigator,
       requestFocus: requestFocus,
-      animationStyle: materialDialogData?.animationStyle,
-      traversalEdgeBehavior: materialDialogData?.traversalEdgeBehavior,
+      animationStyle: materialDialogData.animationStyle,
+      traversalEdgeBehavior: materialDialogData.traversalEdgeBehavior,
     ),
     .cupertino => _showCupertinoFullscreenDialog(
       context: context,

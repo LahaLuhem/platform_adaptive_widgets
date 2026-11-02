@@ -37,10 +37,10 @@ class const PlatformProgressBar({
   final String? semanticsValue,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
-  final MaterialProgressBarData? materialProgressBarData,
+  final MaterialProgressBarData materialProgressBarData = const MaterialProgressBarData(),
 
   /// Cupertino-branch overrides.
-  final CupertinoProgressBarData? cupertinoProgressBarData,
+  final CupertinoProgressBarData cupertinoProgressBarData = const CupertinoProgressBarData(),
   super.widgetKey,
   super.key,
 }) extends PlatformWidgetKeyedBase {
@@ -53,15 +53,15 @@ class const PlatformProgressBar({
   Widget buildMaterial(BuildContext context) => LinearProgressIndicator(
     key: widgetKey,
     value: value,
-    color: materialProgressBarData?.color ?? color,
+    color: materialProgressBarData.color ?? color,
     semanticsLabel: semanticsLabel,
     semanticsValue: semanticsValue,
-    backgroundColor: materialProgressBarData?.backgroundColor,
-    valueColor: materialProgressBarData?.valueColor,
-    borderRadius: materialProgressBarData?.borderRadius,
-    stopIndicatorColor: materialProgressBarData?.stopIndicatorColor,
-    stopIndicatorRadius: materialProgressBarData?.stopIndicatorRadius,
-    trackGap: materialProgressBarData?.trackGap,
+    backgroundColor: materialProgressBarData.backgroundColor,
+    valueColor: materialProgressBarData.valueColor,
+    borderRadius: materialProgressBarData.borderRadius,
+    stopIndicatorColor: materialProgressBarData.stopIndicatorColor,
+    stopIndicatorRadius: materialProgressBarData.stopIndicatorRadius,
+    trackGap: materialProgressBarData.trackGap,
   );
 
   @override
@@ -78,7 +78,7 @@ class const PlatformProgressBar({
     child: CupertinoLinearActivityIndicator(
       key: widgetKey,
       progress: value,
-      color: cupertinoProgressBarData?.color ?? color,
+      color: cupertinoProgressBarData.color ?? color,
     ),
   );
 }

@@ -181,10 +181,10 @@ void main() {
             primaryAction: _saveAction,
             materialAppBarData: overridden == .material
                 ? const MaterialAppBarData(actions: [custom])
-                : null,
+                : const MaterialAppBarData(),
             cupertinoNavigationBarData: overridden == .cupertino
                 ? const CupertinoNavigationBarData(trailing: custom)
-                : null,
+                : const CupertinoNavigationBarData(),
           ),
         );
         final shown = {
@@ -210,10 +210,10 @@ void main() {
           PlatformAppBar(
             materialAppBarData: given == .material
                 ? const MaterialAppBarData(leading: custom)
-                : null,
+                : const MaterialAppBarData(),
             cupertinoNavigationBarData: given == .cupertino
                 ? const CupertinoNavigationBarData(leading: custom)
-                : null,
+                : const CupertinoNavigationBarData(),
           ),
         );
 

@@ -36,10 +36,10 @@ class const PlatformAppBar({
   final Key? widgetKey,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
-  final MaterialAppBarData? materialAppBarData,
+  final MaterialAppBarData materialAppBarData = const MaterialAppBarData(),
 
   /// Cupertino-branch overrides, plus the knobs Material has no answer for.
-  final CupertinoNavigationBarData? cupertinoNavigationBarData,
+  final CupertinoNavigationBarData cupertinoNavigationBarData = const CupertinoNavigationBarData(),
 
   final Widget? title,
 
@@ -69,79 +69,62 @@ class const PlatformAppBar({
   PreferredSizeWidget materialBuilder(BuildContext context) => AppBar(
     key: widgetKey,
     leading:
-        materialAppBarData?.leading ??
+        materialAppBarData.leading ??
         // AppBar swaps its back arrow for a close button only in a full-screen dialog.
         (automaticallyImplyLeading && ModalRoute.of(context) is ModalBottomSheetRoute
             ? const CloseButton()
             : null),
     title: title,
-    backgroundColor: materialAppBarData?.backgroundColor ?? backgroundColor,
+    backgroundColor: materialAppBarData.backgroundColor ?? backgroundColor,
     automaticallyImplyLeading: automaticallyImplyLeading,
     bottom: bottom,
     actions:
-        materialAppBarData?.actions ??
+        materialAppBarData.actions ??
         [
           for (final action in actions) _MaterialBarAction(action),
           if (primaryAction case final primary?) _MaterialBarAction(primary),
         ],
-    automaticallyImplyActions:
-        materialAppBarData?.automaticallyImplyActions ??
-        MaterialAppBarData.kAutomaticallyImplyActions,
-    flexibleSpace: materialAppBarData?.flexibleSpace,
-    elevation: materialAppBarData?.elevation,
-    scrolledUnderElevation: materialAppBarData?.scrolledUnderElevation,
-    notificationPredicate:
-        materialAppBarData?.notificationPredicate ??
-        MaterialAppBarData.kDefaultScrollNotificationPredicate,
-    shadowColor: materialAppBarData?.shadowColor,
-    surfaceTintColor: materialAppBarData?.surfaceTintColor,
-    shape: materialAppBarData?.shape,
-    foregroundColor: materialAppBarData?.foregroundColor,
-    iconTheme: materialAppBarData?.iconTheme,
-    actionsIconTheme: materialAppBarData?.actionsIconTheme,
-    primary: materialAppBarData?.primary ?? MaterialAppBarData.kDefaultPrimary,
-    centerTitle: materialAppBarData?.centerTitle,
-    excludeHeaderSemantics:
-        materialAppBarData?.excludeHeaderSemantics ?? MaterialAppBarData.kExcludeHeaderSemantics,
-    titleSpacing: materialAppBarData?.titleSpacing,
-    toolbarOpacity: materialAppBarData?.toolbarOpacity ?? MaterialAppBarData.kToolbarOpacity,
-    bottomOpacity: materialAppBarData?.bottomOpacity ?? MaterialAppBarData.kBottomOpacity,
-    toolbarHeight: materialAppBarData?.toolbarHeight,
-    leadingWidth: materialAppBarData?.leadingWidth,
-    toolbarTextStyle: materialAppBarData?.toolbarTextStyle,
-    titleTextStyle: materialAppBarData?.titleTextStyle,
-    systemOverlayStyle: materialAppBarData?.systemOverlayStyle,
-    forceMaterialTransparency:
-        materialAppBarData?.forceMaterialTransparency ??
-        MaterialAppBarData.kForceMaterialTransparency,
-    useDefaultSemanticsOrder:
-        materialAppBarData?.useDefaultSemanticsOrder ??
-        MaterialAppBarData.kUseDefaultSemanticsOrder,
-    clipBehavior: materialAppBarData?.clipBehavior,
-    actionsPadding: materialAppBarData?.actionsPadding,
-    animateColor: materialAppBarData?.animateColor ?? MaterialAppBarData.kAnimateColor,
+    automaticallyImplyActions: materialAppBarData.automaticallyImplyActions,
+    flexibleSpace: materialAppBarData.flexibleSpace,
+    elevation: materialAppBarData.elevation,
+    scrolledUnderElevation: materialAppBarData.scrolledUnderElevation,
+    notificationPredicate: materialAppBarData.notificationPredicate,
+    shadowColor: materialAppBarData.shadowColor,
+    surfaceTintColor: materialAppBarData.surfaceTintColor,
+    shape: materialAppBarData.shape,
+    foregroundColor: materialAppBarData.foregroundColor,
+    iconTheme: materialAppBarData.iconTheme,
+    actionsIconTheme: materialAppBarData.actionsIconTheme,
+    primary: materialAppBarData.primary,
+    centerTitle: materialAppBarData.centerTitle,
+    excludeHeaderSemantics: materialAppBarData.excludeHeaderSemantics,
+    titleSpacing: materialAppBarData.titleSpacing,
+    toolbarOpacity: materialAppBarData.toolbarOpacity,
+    bottomOpacity: materialAppBarData.bottomOpacity,
+    toolbarHeight: materialAppBarData.toolbarHeight,
+    leadingWidth: materialAppBarData.leadingWidth,
+    toolbarTextStyle: materialAppBarData.toolbarTextStyle,
+    titleTextStyle: materialAppBarData.titleTextStyle,
+    systemOverlayStyle: materialAppBarData.systemOverlayStyle,
+    forceMaterialTransparency: materialAppBarData.forceMaterialTransparency,
+    useDefaultSemanticsOrder: materialAppBarData.useDefaultSemanticsOrder,
+    clipBehavior: materialAppBarData.clipBehavior,
+    actionsPadding: materialAppBarData.actionsPadding,
+    animateColor: materialAppBarData.animateColor,
   );
 
   @override
   ObstructingPreferredSizeWidget cupertinoBuilder(BuildContext context) {
     // Resolved once, since every branch below passes the same set.
-    final resolvedBackgroundColor = cupertinoNavigationBarData?.backgroundColor ?? backgroundColor;
-    final automaticallyImplyMiddle =
-        cupertinoNavigationBarData?.automaticallyImplyMiddle ??
-        CupertinoNavigationBarData.kAutomaticallyImplyMiddle;
-    final automaticBackgroundVisibility =
-        cupertinoNavigationBarData?.automaticBackgroundVisibility ??
-        CupertinoNavigationBarData.kAutomaticBackgroundVisibility;
-    final enableBackgroundFilterBlur =
-        cupertinoNavigationBarData?.enableBackgroundFilterBlur ??
-        CupertinoNavigationBarData.kEnableBackgroundFilterBlur;
-    final transitionBetweenRoutes =
-        cupertinoNavigationBarData?.transitionBetweenRoutes ??
-        CupertinoNavigationBarData.kTransitionBetweenRoutes;
+    final resolvedBackgroundColor = cupertinoNavigationBarData.backgroundColor ?? backgroundColor;
+    final automaticallyImplyMiddle = cupertinoNavigationBarData.automaticallyImplyMiddle;
+    final automaticBackgroundVisibility = cupertinoNavigationBarData.automaticBackgroundVisibility;
+    final enableBackgroundFilterBlur = cupertinoNavigationBarData.enableBackgroundFilterBlur;
+    final transitionBetweenRoutes = cupertinoNavigationBarData.transitionBetweenRoutes;
     // Promoted to non-null inside the branches below, so no force-unwrap is needed there.
-    final heroTag = cupertinoNavigationBarData?.heroTag;
+    final heroTag = cupertinoNavigationBarData.heroTag;
     final leading =
-        cupertinoNavigationBarData?.leading ??
+        cupertinoNavigationBarData.leading ??
         // cupertino_ui gives a full-screen dialog's bar a Cancel, but leaves a sheet's empty.
         (automaticallyImplyLeading && ModalRoute.of(context) is CupertinoSheetRoute
             ? _CupertinoBarAction(
@@ -152,7 +135,7 @@ class const PlatformAppBar({
               )
             : null);
     final trailing =
-        cupertinoNavigationBarData?.trailing ??
+        cupertinoNavigationBarData.trailing ??
         (actions.isEmpty && primaryAction == null
             ? null
             : Row(
@@ -166,7 +149,7 @@ class const PlatformAppBar({
                 ],
               ));
 
-    if (cupertinoNavigationBarData?.large ?? CupertinoNavigationBarData.kLarge) {
+    if (cupertinoNavigationBarData.large) {
       return heroTag == null
           ? CupertinoNavigationBar.large(
               key: widgetKey,
@@ -174,14 +157,14 @@ class const PlatformAppBar({
               leading: leading,
               automaticallyImplyLeading: automaticallyImplyLeading,
               automaticallyImplyTitle: automaticallyImplyMiddle,
-              previousPageTitle: cupertinoNavigationBarData?.previousPageTitle,
+              previousPageTitle: cupertinoNavigationBarData.previousPageTitle,
               trailing: trailing,
-              border: cupertinoNavigationBarData?.border,
+              border: cupertinoNavigationBarData.border,
               backgroundColor: resolvedBackgroundColor,
               automaticBackgroundVisibility: automaticBackgroundVisibility,
               enableBackgroundFilterBlur: enableBackgroundFilterBlur,
-              brightness: cupertinoNavigationBarData?.brightness,
-              padding: cupertinoNavigationBarData?.padding,
+              brightness: cupertinoNavigationBarData.brightness,
+              padding: cupertinoNavigationBarData.padding,
               transitionBetweenRoutes: transitionBetweenRoutes,
               bottom: bottom,
             )
@@ -191,14 +174,14 @@ class const PlatformAppBar({
               leading: leading,
               automaticallyImplyLeading: automaticallyImplyLeading,
               automaticallyImplyTitle: automaticallyImplyMiddle,
-              previousPageTitle: cupertinoNavigationBarData?.previousPageTitle,
+              previousPageTitle: cupertinoNavigationBarData.previousPageTitle,
               trailing: trailing,
-              border: cupertinoNavigationBarData?.border,
+              border: cupertinoNavigationBarData.border,
               backgroundColor: resolvedBackgroundColor,
               automaticBackgroundVisibility: automaticBackgroundVisibility,
               enableBackgroundFilterBlur: enableBackgroundFilterBlur,
-              brightness: cupertinoNavigationBarData?.brightness,
-              padding: cupertinoNavigationBarData?.padding,
+              brightness: cupertinoNavigationBarData.brightness,
+              padding: cupertinoNavigationBarData.padding,
               transitionBetweenRoutes: transitionBetweenRoutes,
               bottom: bottom,
               heroTag: heroTag,
@@ -214,13 +197,13 @@ class const PlatformAppBar({
             automaticallyImplyLeading: automaticallyImplyLeading,
             bottom: bottom,
             automaticallyImplyMiddle: automaticallyImplyMiddle,
-            previousPageTitle: cupertinoNavigationBarData?.previousPageTitle,
+            previousPageTitle: cupertinoNavigationBarData.previousPageTitle,
             trailing: trailing,
-            border: cupertinoNavigationBarData?.border,
+            border: cupertinoNavigationBarData.border,
             automaticBackgroundVisibility: automaticBackgroundVisibility,
             enableBackgroundFilterBlur: enableBackgroundFilterBlur,
-            brightness: cupertinoNavigationBarData?.brightness,
-            padding: cupertinoNavigationBarData?.padding,
+            brightness: cupertinoNavigationBarData.brightness,
+            padding: cupertinoNavigationBarData.padding,
             transitionBetweenRoutes: transitionBetweenRoutes,
           )
         : CupertinoNavigationBar(
@@ -231,13 +214,13 @@ class const PlatformAppBar({
             automaticallyImplyLeading: automaticallyImplyLeading,
             bottom: bottom,
             automaticallyImplyMiddle: automaticallyImplyMiddle,
-            previousPageTitle: cupertinoNavigationBarData?.previousPageTitle,
+            previousPageTitle: cupertinoNavigationBarData.previousPageTitle,
             trailing: trailing,
-            border: cupertinoNavigationBarData?.border,
+            border: cupertinoNavigationBarData.border,
             automaticBackgroundVisibility: automaticBackgroundVisibility,
             enableBackgroundFilterBlur: enableBackgroundFilterBlur,
-            brightness: cupertinoNavigationBarData?.brightness,
-            padding: cupertinoNavigationBarData?.padding,
+            brightness: cupertinoNavigationBarData.brightness,
+            padding: cupertinoNavigationBarData.padding,
             transitionBetweenRoutes: transitionBetweenRoutes,
             heroTag: heroTag,
           );

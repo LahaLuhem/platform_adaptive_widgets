@@ -48,8 +48,8 @@ Future<T?> showPlatformChoices<T extends Object>({
   bool useRootNavigator = kDefaultUseRootNavigator,
   bool? requestFocus,
   ScrollController? scrollController,
-  MaterialModalBottomSheetData? materialModalBottomSheetData,
-  CupertinoModalPopupData? cupertinoModalPopupData,
+  MaterialModalBottomSheetData materialModalBottomSheetData = const MaterialModalBottomSheetData(),
+  CupertinoModalPopupData cupertinoModalPopupData = const CupertinoModalPopupData(),
 }) {
   assert(
     choices.length >= 2,
@@ -96,7 +96,7 @@ Future<T?> _showMaterialChoices<T extends Object>({
   required String? title,
   required String? message,
   required ScrollController? scrollController,
-  required MaterialModalBottomSheetData? materialModalBottomSheetData,
+  required MaterialModalBottomSheetData materialModalBottomSheetData,
   required Offset? anchorPoint,
   required Color? barrierColor,
   required RouteSettings? routeSettings,

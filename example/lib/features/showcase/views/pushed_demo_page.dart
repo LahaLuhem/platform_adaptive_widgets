@@ -15,7 +15,7 @@ class PushedDemoPage extends StatelessWidget {
   Widget build(BuildContext context) => PlatformScaffold(
     appBarData: PlatformAppBar(
       title: const Text('Pushed page'),
-      cupertinoNavigationBarData: large ? const CupertinoNavigationBarData(large: true) : null,
+      cupertinoNavigationBarData: CupertinoNavigationBarData(large: large),
     ),
     body: SafeArea(
       child: ListView(

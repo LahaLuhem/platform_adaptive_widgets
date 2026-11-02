@@ -12,7 +12,7 @@ import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 Future<T?> showMaterialSheetRoute<T>({
   required BuildContext context,
   required WidgetBuilder builder,
-  required MaterialModalBottomSheetData? materialModalBottomSheetData,
+  required MaterialModalBottomSheetData materialModalBottomSheetData,
   required Offset? anchorPoint,
   required Color? barrierColor,
   required bool barrierDismissible,
@@ -22,30 +22,25 @@ Future<T?> showMaterialSheetRoute<T>({
 }) => showModalBottomSheet(
   context: context,
   builder: builder,
-  backgroundColor: materialModalBottomSheetData?.backgroundColor,
-  barrierLabel: materialModalBottomSheetData?.barrierLabel,
-  elevation: materialModalBottomSheetData?.elevation,
-  shape: materialModalBottomSheetData?.shape,
-  clipBehavior: materialModalBottomSheetData?.clipBehavior,
-  constraints: materialModalBottomSheetData?.constraints,
+  backgroundColor: materialModalBottomSheetData.backgroundColor,
+  barrierLabel: materialModalBottomSheetData.barrierLabel,
+  elevation: materialModalBottomSheetData.elevation,
+  shape: materialModalBottomSheetData.shape,
+  clipBehavior: materialModalBottomSheetData.clipBehavior,
+  constraints: materialModalBottomSheetData.constraints,
   barrierColor: barrierColor,
-  isScrollControlled:
-      materialModalBottomSheetData?.isScrollControlled ??
-      kDefaultMaterialModalBottomSheetIsScrollControlled,
+  isScrollControlled: materialModalBottomSheetData.isScrollControlled,
   scrollControlDisabledMaxHeightRatio:
-      materialModalBottomSheetData?.scrollControlDisabledMaxHeightRatio ??
-      kDefaultMaterialModalBottomSheetScrollControlDisabledMaxHeightRatio,
+      materialModalBottomSheetData.scrollControlDisabledMaxHeightRatio,
   useRootNavigator: useRootNavigator,
   isDismissible: barrierDismissible,
-  enableDrag:
-      materialModalBottomSheetData?.enableDrag ?? kDefaultMaterialModalBottomSheetEnableDrag,
-  showDragHandle: materialModalBottomSheetData?.showDragHandle,
-  useSafeArea:
-      materialModalBottomSheetData?.useSafeArea ?? kDefaultMaterialModalBottomSheetUseSafeArea,
+  enableDrag: materialModalBottomSheetData.enableDrag,
+  showDragHandle: materialModalBottomSheetData.showDragHandle,
+  useSafeArea: materialModalBottomSheetData.useSafeArea,
   routeSettings: routeSettings,
-  transitionAnimationController: materialModalBottomSheetData?.transitionAnimationController,
+  transitionAnimationController: materialModalBottomSheetData.transitionAnimationController,
   anchorPoint: anchorPoint,
-  sheetAnimationStyle: materialModalBottomSheetData?.sheetAnimationStyle,
+  sheetAnimationStyle: materialModalBottomSheetData.sheetAnimationStyle,
   requestFocus: requestFocus,
 );
 
@@ -55,7 +50,7 @@ Future<T?> showMaterialSheetRoute<T>({
 Future<T?> showCupertinoPopupRoute<T>({
   required BuildContext context,
   required WidgetBuilder builder,
-  required CupertinoModalPopupData? cupertinoModalPopupData,
+  required CupertinoModalPopupData cupertinoModalPopupData,
   required Offset? anchorPoint,
   required Color? barrierColor,
   required bool barrierDismissible,
@@ -65,13 +60,11 @@ Future<T?> showCupertinoPopupRoute<T>({
 }) => showCupertinoModalPopup(
   context: context,
   builder: builder,
-  filter: cupertinoModalPopupData?.filter,
+  filter: cupertinoModalPopupData.filter,
   barrierColor: barrierColor ?? kCupertinoModalBarrierColor,
   barrierDismissible: barrierDismissible,
   useRootNavigator: useRootNavigator,
-  semanticsDismissible:
-      cupertinoModalPopupData?.semanticsDismissible ??
-      kDefaultCupertinoModalPopupSemanticsDismissible,
+  semanticsDismissible: cupertinoModalPopupData.semanticsDismissible,
   routeSettings: routeSettings,
   anchorPoint: anchorPoint,
   requestFocus: requestFocus,

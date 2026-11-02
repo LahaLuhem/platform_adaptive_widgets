@@ -44,8 +44,12 @@ class const _Picker({
     onSelected: onSelected,
     menuPickerItemTransformer: (item) =>
         MenuPickerItem(label: label(item), iconData: withIcons ? _icon : null),
-    materialMenuPickerData: asIconButton ? const MaterialMenuPickerData.iconButton() : null,
-    cupertinoMenuPickerData: asIconButton ? const CupertinoMenuPickerData.iconButton() : null,
+    materialMenuPickerData: asIconButton
+        ? const MaterialMenuPickerData.iconButton()
+        : const MaterialMenuPickerData(),
+    cupertinoMenuPickerData: asIconButton
+        ? const CupertinoMenuPickerData.iconButton()
+        : const CupertinoMenuPickerData(),
   );
 }
 

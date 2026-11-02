@@ -47,11 +47,11 @@ class const PlatformSlider({
   final Color? thumbColor,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
-  final MaterialSliderData? materialSliderData,
+  final MaterialSliderData materialSliderData = const MaterialSliderData(),
 
   /// Cupertino-branch overrides. Thin, since [CupertinoSlider] has nothing of its own beyond the shared
   /// fields, but here so you can retune those on Cupertino alone.
-  final CupertinoSliderData? cupertinoSliderData,
+  final CupertinoSliderData cupertinoSliderData = const CupertinoSliderData(),
   super.widgetKey,
   super.key,
 }) extends PlatformWidgetKeyedBase {
@@ -70,20 +70,20 @@ class const PlatformSlider({
     min: min,
     max: max,
     divisions: divisions,
-    activeColor: materialSliderData?.activeColor ?? activeColor,
-    thumbColor: materialSliderData?.thumbColor ?? thumbColor,
-    secondaryTrackValue: materialSliderData?.secondaryTrackValue,
-    label: materialSliderData?.label,
-    inactiveColor: materialSliderData?.inactiveColor,
-    secondaryActiveColor: materialSliderData?.secondaryActiveColor,
-    overlayColor: materialSliderData?.overlayColor,
-    mouseCursor: materialSliderData?.mouseCursor,
-    semanticFormatterCallback: materialSliderData?.semanticFormatterCallback,
-    focusNode: materialSliderData?.focusNode,
-    autofocus: materialSliderData?.autofocus ?? kDefaultSliderAutofocus,
-    allowedInteraction: materialSliderData?.allowedInteraction,
-    padding: materialSliderData?.padding,
-    showValueIndicator: materialSliderData?.showValueIndicator,
+    activeColor: materialSliderData.activeColor ?? activeColor,
+    thumbColor: materialSliderData.thumbColor ?? thumbColor,
+    secondaryTrackValue: materialSliderData.secondaryTrackValue,
+    label: materialSliderData.label,
+    inactiveColor: materialSliderData.inactiveColor,
+    secondaryActiveColor: materialSliderData.secondaryActiveColor,
+    overlayColor: materialSliderData.overlayColor,
+    mouseCursor: materialSliderData.mouseCursor,
+    semanticFormatterCallback: materialSliderData.semanticFormatterCallback,
+    focusNode: materialSliderData.focusNode,
+    autofocus: materialSliderData.autofocus,
+    allowedInteraction: materialSliderData.allowedInteraction,
+    padding: materialSliderData.padding,
+    showValueIndicator: materialSliderData.showValueIndicator,
   );
 
   @override
@@ -100,9 +100,8 @@ class const PlatformSlider({
       min: min,
       max: max,
       divisions: divisions,
-      activeColor: cupertinoSliderData?.activeColor ?? activeColor,
-      thumbColor:
-          cupertinoSliderData?.thumbColor ?? thumbColor ?? kDefaultCupertinoSliderThumbColor,
+      activeColor: cupertinoSliderData.activeColor ?? activeColor,
+      thumbColor: cupertinoSliderData.thumbColor ?? thumbColor ?? kDefaultCupertinoSliderThumbColor,
     ),
   );
 }

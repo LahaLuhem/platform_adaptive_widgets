@@ -32,10 +32,10 @@ class const PlatformScrollbar({
   final ScrollbarOrientation? scrollbarOrientation,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
-  final MaterialScrollbarData? materialScrollbarData,
+  final MaterialScrollbarData materialScrollbarData = const MaterialScrollbarData(),
 
   /// Cupertino-branch overrides, plus the knobs Material has no answer for.
-  final CupertinoScrollbarData? cupertinoScrollbarData,
+  final CupertinoScrollbarData cupertinoScrollbarData = const CupertinoScrollbarData(),
   super.widgetKey,
   super.key,
 }) extends PlatformWidgetKeyedBuilderBase {
@@ -50,11 +50,11 @@ class const PlatformScrollbar({
     controller: controller,
     thumbVisibility: thumbVisibility,
     notificationPredicate: notificationPredicate,
-    thickness: materialScrollbarData?.thickness ?? thickness,
-    radius: materialScrollbarData?.radius ?? radius,
-    scrollbarOrientation: materialScrollbarData?.scrollbarOrientation ?? scrollbarOrientation,
-    trackVisibility: materialScrollbarData?.trackVisibility,
-    interactive: materialScrollbarData?.interactive,
+    thickness: materialScrollbarData.thickness ?? thickness,
+    radius: materialScrollbarData.radius ?? radius,
+    scrollbarOrientation: materialScrollbarData.scrollbarOrientation ?? scrollbarOrientation,
+    trackVisibility: materialScrollbarData.trackVisibility,
+    interactive: materialScrollbarData.interactive,
     child: child,
   );
 
@@ -66,18 +66,12 @@ class const PlatformScrollbar({
     controller: controller,
     thumbVisibility: thumbVisibility,
     notificationPredicate: notificationPredicate,
-    thickness:
-        cupertinoScrollbarData?.thickness ?? thickness ?? CupertinoScrollbar.defaultThickness,
-    radius: cupertinoScrollbarData?.radius ?? radius ?? CupertinoScrollbar.defaultRadius,
-    scrollbarOrientation: cupertinoScrollbarData?.scrollbarOrientation ?? scrollbarOrientation,
-    thicknessWhileDragging:
-        cupertinoScrollbarData?.thicknessWhileDragging ??
-        CupertinoScrollbar.defaultThicknessWhileDragging,
-    radiusWhileDragging:
-        cupertinoScrollbarData?.radiusWhileDragging ??
-        CupertinoScrollbar.defaultRadiusWhileDragging,
-    mainAxisMargin:
-        cupertinoScrollbarData?.mainAxisMargin ?? kDefaultCupertinoScrollbarMainAxisMargin,
+    thickness: cupertinoScrollbarData.thickness ?? thickness ?? CupertinoScrollbar.defaultThickness,
+    radius: cupertinoScrollbarData.radius ?? radius ?? CupertinoScrollbar.defaultRadius,
+    scrollbarOrientation: cupertinoScrollbarData.scrollbarOrientation ?? scrollbarOrientation,
+    thicknessWhileDragging: cupertinoScrollbarData.thicknessWhileDragging,
+    radiusWhileDragging: cupertinoScrollbarData.radiusWhileDragging,
+    mainAxisMargin: cupertinoScrollbarData.mainAxisMargin,
     child: child,
   );
 }

@@ -45,7 +45,7 @@ class const PlatformTabScaffold({
   final String? restorationId,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
-  final MaterialTabScaffoldData? materialTabScaffoldData,
+  final MaterialTabScaffoldData materialTabScaffoldData = const MaterialTabScaffoldData(),
   super.widgetKey,
   super.key,
 }) extends PlatformWidgetKeyedBase {
@@ -187,7 +187,7 @@ class const _MaterialTabScaffold({
   final String? restorationId,
   final ValueChanged<int>? onTabDestinationTap,
   final IndexedWidgetBuilder? tabBodyBuilder,
-  final MaterialTabScaffoldData? materialTabScaffoldData,
+  final MaterialTabScaffoldData materialTabScaffoldData = const MaterialTabScaffoldData(),
   final Key? widgetKey,
 }) extends StatefulWidget {
   @override
@@ -216,45 +216,33 @@ class _MaterialTabScaffoldState() extends State<_MaterialTabScaffold> {
   Widget build(BuildContext context) => Scaffold(
     key: widget.widgetKey,
     // Material only. See MaterialTabScaffoldData.appBar for why Cupertino has none.
-    appBar: widget.materialTabScaffoldData?.appBar,
-    backgroundColor: widget.materialTabScaffoldData?.backgroundColor ?? widget.backgroundColor,
+    appBar: widget.materialTabScaffoldData.appBar,
+    backgroundColor: widget.materialTabScaffoldData.backgroundColor ?? widget.backgroundColor,
     resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
-    floatingActionButton: widget.materialTabScaffoldData?.floatingActionButton,
-    floatingActionButtonLocation: widget.materialTabScaffoldData?.floatingActionButtonLocation,
-    floatingActionButtonAnimator: widget.materialTabScaffoldData?.floatingActionButtonAnimator,
-    persistentFooterButtons: widget.materialTabScaffoldData?.persistentFooterButtons,
-    persistentFooterAlignment:
-        widget.materialTabScaffoldData?.persistentFooterAlignment ??
-        MaterialScaffoldData.kDefaultPersistentFooterAlignment,
-    persistentFooterDecoration: widget.materialTabScaffoldData?.persistentFooterDecoration,
-    drawer: widget.materialTabScaffoldData?.drawer,
-    onDrawerChanged: widget.materialTabScaffoldData?.onDrawerChanged,
-    endDrawer: widget.materialTabScaffoldData?.endDrawer,
-    onEndDrawerChanged: widget.materialTabScaffoldData?.onEndDrawerChanged,
-    bottomSheet: widget.materialTabScaffoldData?.bottomSheet,
-    primary: widget.materialTabScaffoldData?.primary ?? MaterialScaffoldData.kPrimary,
-    drawerDragStartBehavior:
-        widget.materialTabScaffoldData?.drawerDragStartBehavior ??
-        MaterialScaffoldData.kDrawerDragStartBehavior,
-    extendBody: widget.materialTabScaffoldData?.extendBody ?? MaterialScaffoldData.kExtendBody,
-    drawerBarrierDismissible:
-        widget.materialTabScaffoldData?.drawerBarrierDismissible ??
-        MaterialScaffoldData.kDrawerBarrierDismissible,
-    extendBodyBehindAppBar:
-        widget.materialTabScaffoldData?.extendBodyBehindAppBar ??
-        MaterialScaffoldData.kExtendBodyBehindAppBar,
-    drawerScrimColor: widget.materialTabScaffoldData?.drawerScrimColor,
+    floatingActionButton: widget.materialTabScaffoldData.floatingActionButton,
+    floatingActionButtonLocation: widget.materialTabScaffoldData.floatingActionButtonLocation,
+    floatingActionButtonAnimator: widget.materialTabScaffoldData.floatingActionButtonAnimator,
+    persistentFooterButtons: widget.materialTabScaffoldData.persistentFooterButtons,
+    persistentFooterAlignment: widget.materialTabScaffoldData.persistentFooterAlignment,
+    persistentFooterDecoration: widget.materialTabScaffoldData.persistentFooterDecoration,
+    drawer: widget.materialTabScaffoldData.drawer,
+    onDrawerChanged: widget.materialTabScaffoldData.onDrawerChanged,
+    endDrawer: widget.materialTabScaffoldData.endDrawer,
+    onEndDrawerChanged: widget.materialTabScaffoldData.onEndDrawerChanged,
+    bottomSheet: widget.materialTabScaffoldData.bottomSheet,
+    primary: widget.materialTabScaffoldData.primary,
+    drawerDragStartBehavior: widget.materialTabScaffoldData.drawerDragStartBehavior,
+    extendBody: widget.materialTabScaffoldData.extendBody,
+    drawerBarrierDismissible: widget.materialTabScaffoldData.drawerBarrierDismissible,
+    extendBodyBehindAppBar: widget.materialTabScaffoldData.extendBodyBehindAppBar,
+    drawerScrimColor: widget.materialTabScaffoldData.drawerScrimColor,
     bottomSheetScrimBuilder:
-        widget.materialTabScaffoldData?.bottomSheetScrimBuilder ??
+        widget.materialTabScaffoldData.bottomSheetScrimBuilder ??
         MaterialScaffoldData.kDefaultBottomSheetScrimBuilder,
-    drawerEdgeDragWidth: widget.materialTabScaffoldData?.drawerEdgeDragWidth,
-    drawerEnableOpenDragGesture:
-        widget.materialTabScaffoldData?.drawerEnableOpenDragGesture ??
-        MaterialScaffoldData.kDrawerEnableOpenDragGesture,
-    endDrawerEnableOpenDragGesture:
-        widget.materialTabScaffoldData?.endDrawerEnableOpenDragGesture ??
-        MaterialScaffoldData.kEndDrawerEnableOpenDragGesture,
-    restorationId: widget.materialTabScaffoldData?.restorationId ?? widget.restorationId,
+    drawerEdgeDragWidth: widget.materialTabScaffoldData.drawerEdgeDragWidth,
+    drawerEnableOpenDragGesture: widget.materialTabScaffoldData.drawerEnableOpenDragGesture,
+    endDrawerEnableOpenDragGesture: widget.materialTabScaffoldData.endDrawerEnableOpenDragGesture,
+    restorationId: widget.materialTabScaffoldData.restorationId ?? widget.restorationId,
     bottomNavigationBar: _selectedIndexNotifier == null
         // Driven from outside.
         ? _MaterialNavigationBar(

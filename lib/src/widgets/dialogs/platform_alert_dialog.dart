@@ -34,8 +34,8 @@ Future<T?> showPlatformAlertDialog<T>({
   RouteSettings? routeSettings,
   bool useRootNavigator = kDefaultUseRootNavigator,
   bool? requestFocus,
-  MaterialAlertDialogData? materialAlertDialogData,
-  CupertinoAlertDialogData? cupertinoAlertDialogData,
+  MaterialAlertDialogData materialAlertDialogData = const MaterialAlertDialogData(),
+  CupertinoAlertDialogData cupertinoAlertDialogData = const CupertinoAlertDialogData(),
 }) => switch (designLanguage) {
   .material => showMaterialDialogRoute(
     context: context,
@@ -46,37 +46,35 @@ Future<T?> showPlatformAlertDialog<T>({
       title: content == null ? null : title,
       content: content ?? title,
       actions: actions,
-      icon: materialAlertDialogData?.icon,
-      iconPadding: materialAlertDialogData?.iconPadding,
-      iconColor: materialAlertDialogData?.iconColor,
-      titlePadding: materialAlertDialogData?.titlePadding,
-      titleTextStyle: materialAlertDialogData?.titleTextStyle,
+      icon: materialAlertDialogData.icon,
+      iconPadding: materialAlertDialogData.iconPadding,
+      iconColor: materialAlertDialogData.iconColor,
+      titlePadding: materialAlertDialogData.titlePadding,
+      titleTextStyle: materialAlertDialogData.titleTextStyle,
       contentPadding:
-          materialAlertDialogData?.contentPadding ??
+          materialAlertDialogData.contentPadding ??
           // An icon keeps M3's gap of 16 under it, which Flutter already gets right.
-          (content == null && materialAlertDialogData?.icon == null
+          (content == null && materialAlertDialogData.icon == null
               ? _kMaterialUntitledContentPadding
               : null),
-      contentTextStyle: materialAlertDialogData?.contentTextStyle,
-      actionsPadding: materialAlertDialogData?.actionsPadding,
-      actionsAlignment: materialAlertDialogData?.actionsAlignment,
-      actionsOverflowAlignment: materialAlertDialogData?.actionsOverflowAlignment,
-      actionsOverflowDirection:
-          materialAlertDialogData?.actionsOverflowDirection ??
-          kDefaultMaterialAlertDialogActionsOverflowDirection,
-      actionsOverflowButtonSpacing: materialAlertDialogData?.actionsOverflowButtonSpacing,
-      buttonPadding: materialAlertDialogData?.buttonPadding,
-      backgroundColor: materialAlertDialogData?.backgroundColor,
-      elevation: materialAlertDialogData?.elevation,
-      shadowColor: materialAlertDialogData?.shadowColor,
-      surfaceTintColor: materialAlertDialogData?.surfaceTintColor,
-      semanticLabel: materialAlertDialogData?.semanticLabel,
-      insetPadding: materialAlertDialogData?.insetPadding,
-      clipBehavior: materialAlertDialogData?.clipBehavior,
-      shape: materialAlertDialogData?.shape,
-      alignment: materialAlertDialogData?.alignment,
-      constraints: materialAlertDialogData?.constraints,
-      scrollable: materialAlertDialogData?.scrollable ?? kDefaultMaterialAlertDialogScrollable,
+      contentTextStyle: materialAlertDialogData.contentTextStyle,
+      actionsPadding: materialAlertDialogData.actionsPadding,
+      actionsAlignment: materialAlertDialogData.actionsAlignment,
+      actionsOverflowAlignment: materialAlertDialogData.actionsOverflowAlignment,
+      actionsOverflowDirection: materialAlertDialogData.actionsOverflowDirection,
+      actionsOverflowButtonSpacing: materialAlertDialogData.actionsOverflowButtonSpacing,
+      buttonPadding: materialAlertDialogData.buttonPadding,
+      backgroundColor: materialAlertDialogData.backgroundColor,
+      elevation: materialAlertDialogData.elevation,
+      shadowColor: materialAlertDialogData.shadowColor,
+      surfaceTintColor: materialAlertDialogData.surfaceTintColor,
+      semanticLabel: materialAlertDialogData.semanticLabel,
+      insetPadding: materialAlertDialogData.insetPadding,
+      clipBehavior: materialAlertDialogData.clipBehavior,
+      shape: materialAlertDialogData.shape,
+      alignment: materialAlertDialogData.alignment,
+      constraints: materialAlertDialogData.constraints,
+      scrollable: materialAlertDialogData.scrollable,
     ),
     isFullscreenRoute: false,
     anchorPoint: anchorPoint,
@@ -97,14 +95,10 @@ Future<T?> showPlatformAlertDialog<T>({
       title: title,
       content: content,
       actions: actions,
-      scrollController: cupertinoAlertDialogData?.scrollController,
-      actionScrollController: cupertinoAlertDialogData?.actionScrollController,
-      insetAnimationDuration:
-          cupertinoAlertDialogData?.insetAnimationDuration ??
-          kDefaultCupertinoAlertDialogInsetAnimationDuration,
-      insetAnimationCurve:
-          cupertinoAlertDialogData?.insetAnimationCurve ??
-          kDefaultCupertinoAlertDialogInsetAnimationCurve,
+      scrollController: cupertinoAlertDialogData.scrollController,
+      actionScrollController: cupertinoAlertDialogData.actionScrollController,
+      insetAnimationDuration: cupertinoAlertDialogData.insetAnimationDuration,
+      insetAnimationCurve: cupertinoAlertDialogData.insetAnimationCurve,
     ),
     anchorPoint: anchorPoint,
     barrierColor: barrierColor,

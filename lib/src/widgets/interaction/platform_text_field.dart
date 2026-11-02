@@ -193,11 +193,11 @@ class const PlatformTextField({
   // ---- Per-platform records -------------------------------------------------
   /// Material-branch overrides, plus the knobs Cupertino has no answer for. Its `decoration` slots beat
   /// the flat [hintText] / [prefix] / [suffix] here.
-  final MaterialTextFieldData? materialTextFieldData,
+  final MaterialTextFieldData materialTextFieldData = const MaterialTextFieldData(),
 
   /// Cupertino-branch overrides, plus the knobs Material has no answer for. Its `placeholder` / `prefix`
   /// / `suffix` beat the flat ones here.
-  final CupertinoTextFieldData? cupertinoTextFieldData,
+  final CupertinoTextFieldData cupertinoTextFieldData = const CupertinoTextFieldData(),
   super.widgetKey,
   super.key,
 }) extends PlatformWidgetKeyedBase {
@@ -208,7 +208,7 @@ class const PlatformTextField({
   @protected
   @visibleForOverriding
   Widget buildMaterial(BuildContext context) {
-    final baseDecoration = materialTextFieldData?.decoration ?? kDefaultMaterialTextFieldDecoration;
+    final baseDecoration = materialTextFieldData.decoration;
     final mergedDecoration = baseDecoration.copyWith(
       hintText: baseDecoration.hintText ?? hintText,
       prefixIcon: baseDecoration.prefixIcon ?? prefix,
@@ -275,18 +275,16 @@ class const PlatformTextField({
       contextMenuBuilder: contextMenuBuilder,
       spellCheckConfiguration: spellCheckConfiguration,
       magnifierConfiguration: magnifierConfiguration,
-      buildCounter: materialTextFieldData?.buildCounter,
-      canRequestFocus:
-          materialTextFieldData?.canRequestFocus ?? kDefaultMaterialTextFieldCanRequestFocus,
-      cursorErrorColor: materialTextFieldData?.cursorErrorColor,
+      buildCounter: materialTextFieldData.buildCounter,
+      canRequestFocus: materialTextFieldData.canRequestFocus,
+      cursorErrorColor: materialTextFieldData.cursorErrorColor,
       decoration: mergedDecoration,
-      hintLocales: materialTextFieldData?.hintLocales,
-      ignorePointers: materialTextFieldData?.ignorePointers,
-      mouseCursor: materialTextFieldData?.mouseCursor,
-      onAppPrivateCommand: materialTextFieldData?.onAppPrivateCommand,
-      onTapAlwaysCalled:
-          materialTextFieldData?.onTapAlwaysCalled ?? kDefaultMaterialTextFieldOnTapAlwaysCalled,
-      statesController: materialTextFieldData?.statesController,
+      hintLocales: materialTextFieldData.hintLocales,
+      ignorePointers: materialTextFieldData.ignorePointers,
+      mouseCursor: materialTextFieldData.mouseCursor,
+      onAppPrivateCommand: materialTextFieldData.onAppPrivateCommand,
+      onTapAlwaysCalled: materialTextFieldData.onTapAlwaysCalled,
+      statesController: materialTextFieldData.statesController,
     );
   }
 
@@ -359,19 +357,17 @@ class const PlatformTextField({
     contextMenuBuilder: contextMenuBuilder,
     spellCheckConfiguration: spellCheckConfiguration,
     magnifierConfiguration: magnifierConfiguration,
-    decoration: cupertinoTextFieldData?.decoration ?? kDefaultCupertinoTextFieldDecoration,
-    clearButtonMode:
-        cupertinoTextFieldData?.clearButtonMode ?? kDefaultCupertinoTextFieldClearButtonMode,
-    clearButtonSemanticLabel: cupertinoTextFieldData?.clearButtonSemanticLabel,
-    crossAxisAlignment:
-        cupertinoTextFieldData?.crossAxisAlignment ?? kDefaultCupertinoTextFieldCrossAxisAlignment,
-    padding: cupertinoTextFieldData?.padding ?? kDefaultCupertinoTextFieldPadding,
-    placeholder: cupertinoTextFieldData?.placeholder ?? hintText,
-    placeholderStyle: cupertinoTextFieldData?.placeholderStyle,
-    prefix: cupertinoTextFieldData?.prefix ?? prefix,
-    prefixMode: cupertinoTextFieldData?.prefixMode ?? kDefaultCupertinoTextFieldPrefixMode,
-    suffix: cupertinoTextFieldData?.suffix ?? suffix,
-    suffixMode: cupertinoTextFieldData?.suffixMode ?? kDefaultCupertinoTextFieldSuffixMode,
+    decoration: cupertinoTextFieldData.decoration ?? kDefaultCupertinoTextFieldDecoration,
+    clearButtonMode: cupertinoTextFieldData.clearButtonMode,
+    clearButtonSemanticLabel: cupertinoTextFieldData.clearButtonSemanticLabel,
+    crossAxisAlignment: cupertinoTextFieldData.crossAxisAlignment,
+    padding: cupertinoTextFieldData.padding,
+    placeholder: cupertinoTextFieldData.placeholder ?? hintText,
+    placeholderStyle: cupertinoTextFieldData.placeholderStyle,
+    prefix: cupertinoTextFieldData.prefix ?? prefix,
+    prefixMode: cupertinoTextFieldData.prefixMode,
+    suffix: cupertinoTextFieldData.suffix ?? suffix,
+    suffixMode: cupertinoTextFieldData.suffixMode,
   );
 }
 

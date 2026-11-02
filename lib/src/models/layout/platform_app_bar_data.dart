@@ -142,7 +142,7 @@ final class const CupertinoNavigationBarData({
   /// Swaps the centred bar for Cupertino's tall left-aligned one. Material has no such thing and ignores
   /// it. Turn it on and `PlatformAppBar.title` becomes the large title, with [automaticallyImplyMiddle]
   /// driving the small one that appears on scroll.
-  final bool large = kLarge,
+  final bool large = false,
 
   final bool automaticallyImplyMiddle = kAutomaticallyImplyMiddle,
 
@@ -176,9 +176,6 @@ final class const CupertinoNavigationBarData({
   /// properly. Left out, Cupertino picks its own.
   final Object? heroTag,
 }) extends _PlatformAppBarData {
-  /// Default value for [large].
-  static const kLarge = false;
-
   /// Default value for [automaticallyImplyMiddle].
   static const kAutomaticallyImplyMiddle = true;
 

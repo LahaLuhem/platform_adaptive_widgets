@@ -155,8 +155,8 @@ buckets. The bucket determines where the field lives and whether per-platform ov
 Build-method resolution:
 
 - **Functional**: `this.field` directly.
-- **Shared visual**: `materialXxxData?.field ?? this.field` on Material branch,
-  `cupertinoXxxData?.field ?? this.field` on Cupertino branch.
+- **Shared visual**: `materialXxxData.field ?? this.field` on Material branch,
+  `cupertinoXxxData.field ?? this.field` on Cupertino branch.
 - **Platform-only visual**: read only on its own branch.
 
 ### Why this shape
@@ -272,8 +272,8 @@ widget, those whose shared-visual fields live on a private `_PlatformXxxData` ba
    the matching `PlatformXxx` widget. Dart already checks `super.x` forwarding (base → records) and
    constructor-params → field declarations, but nothing forces the widget to mirror the base: a base
    field with no flat twin compiles, yet can never be set at the call site.
-2. **Build-method wiring**: every base field is merged via `materialXxxData?.field ?? field` in
-   `buildMaterial` *and* `cupertinoXxxData?.field ?? field` in `buildCupertino` (the resolution
+2. **Build-method wiring**: every base field is merged via `materialXxxData.field ?? field` in
+   `buildMaterial` *and* `cupertinoXxxData.field ?? field` in `buildCupertino` (the resolution
    idiom from [*Where each bucket lives*](#field-classification)). A forgotten or misdirected
    fallback compiles, type-checks, and silently drops the per-platform override, the more dangerous
    edge, and the one the compiler is blindest to.
@@ -362,6 +362,10 @@ its default, and what its `null` means. A widget set up plainly then acts like t
 widget. Where the 2 platforms' defaults disagree (`cursorRadius`), the field is nullable and `null`
 gets each side its own.
 
+A record is never absent: each `materialXxxData` and `cupertinoXxxData` defaults to its `const`
+empty record. So a record left out and a field left out send the same thing, and a caller's own
+`null` keeps the meaning upstream gives it.
+
 Same everywhere first. A field that should do better than upstream, say by reading a theme that
 upstream's default skips, is a change of its own, with its reason next to its row on the guard's
 list.
@@ -372,6 +376,7 @@ sends to an optional material_ui or cupertino_ui parameter back to the field's d
 where that isn't upstream's own. The package's own picks sit on its list, each with its reason. CI
 resolves the newest material_ui and cupertino_ui, so a copy goes red on the first run after
 upstream moves. A value the package builds in code, such as a closure or a widget, isn't checked.
+The same guard fails a record parameter that can be null.
 
 ---
 

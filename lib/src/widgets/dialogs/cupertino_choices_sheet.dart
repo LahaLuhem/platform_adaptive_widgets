@@ -18,7 +18,7 @@ Future<T?> showCupertinoChoicesSheet<T extends Object>({
   required String? title,
   required String? message,
   required ScrollController? scrollController,
-  required CupertinoModalPopupData? cupertinoModalPopupData,
+  required CupertinoModalPopupData cupertinoModalPopupData,
   required Offset? anchorPoint,
   required Color? barrierColor,
   required RouteSettings? routeSettings,
