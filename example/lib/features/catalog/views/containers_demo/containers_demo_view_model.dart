@@ -14,7 +14,7 @@ final class ContainersDemoViewModel extends ViewModel {
   Color? _listTileColor;
   Color? _listTileIconColor;
   Color? _listTileTextColor;
-  var _listTileTitleAlignment = ListTileTitleAlignment.threeLine;
+  ListTileTitleAlignment? _listTileTitleAlignment;
 
   var _shouldShowScrollbarThumb = true;
   double _scrollbarThickness = 8;
@@ -41,7 +41,7 @@ final class ContainersDemoViewModel extends ViewModel {
 
   Color? get listTileTextColor => _listTileTextColor;
 
-  ListTileTitleAlignment get listTileTitleAlignment => _listTileTitleAlignment;
+  ListTileTitleAlignment? get listTileTitleAlignment => _listTileTitleAlignment;
 
   bool get shouldShowScrollbarThumb => _shouldShowScrollbarThumb;
 
@@ -105,7 +105,7 @@ final class ContainersDemoViewModel extends ViewModel {
     notifyListeners();
   }
 
-  void onListTileTitleAlignmentSelected(ListTileTitleAlignment alignment) {
+  void onListTileTitleAlignmentSelected(ListTileTitleAlignment? alignment) {
     _listTileTitleAlignment = alignment;
     notifyListeners();
   }
