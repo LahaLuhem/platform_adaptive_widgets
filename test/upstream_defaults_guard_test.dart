@@ -75,7 +75,8 @@ const _ownPicks = {
   'platform_text_field.dart: TextField.enabled': _ownBool,
 };
 
-const _upstreamPackages = {'material_ui', 'cupertino_ui'};
+/// Each `DesignLanguage` look's upstream package.
+const _upstreamPackages = {'material': 'material_ui', 'cupertino': 'cupertino_ui'};
 
 void main() {
   final listed = {
@@ -175,6 +176,7 @@ final class _Tracer(
   final Map<ExecutableElement, List<_Call>> _sites,
   final Map<LocalVariableElement, Expression> _locals,
   final Map<ConstructorElement, List<ConstructorFieldInitializer>> _initializers,
+  final Map<ExecutableElement, Expression> _bodies,
 ) {
   factory of(List<ResolvedUnitResult> units) {
     final barrel = units.singleWhere(
@@ -228,6 +230,20 @@ final class _Tracer(
                 );
         }).nonNulls,
       ),
+      Map.fromEntries(
+        nodes
+            .whereType<FunctionDeclaration>()
+            .map(
+              (node) => switch ((node.declaredFragment?.element, node.functionExpression.body)) {
+                (final element?, ExpressionFunctionBody(:final expression)) => MapEntry(
+                  element.baseElement,
+                  expression,
+                ),
+                _ => null,
+              },
+            )
+            .nonNulls,
+      ),
     );
   }
 
@@ -252,6 +268,8 @@ final class _Tracer(
           final line = call.unit.lineInfo.getLocation(argument.offset).lineNumber;
 
           return _trace(expression)
+              // A `designLanguage` arm only runs where its look draws.
+              .where((value) => value is! _InLook || value.package == _packageOf(call.callee))
               // A branch where the type already rules null out, like a `heroTag` promoted after a
               // check.
               .where(
@@ -265,7 +283,7 @@ final class _Tracer(
                   row: '${call.unit.uri.pathSegments.last}: $target',
                   description:
                       '${call.unit.uri}:$line: $target sends $value, upstream defaults to '
-                      '${upstream ?? 'null'}',
+                      '${_Value.of(upstream)}',
                 ),
               );
         }),
@@ -395,9 +413,29 @@ final class _Tracer(
   Iterable<_Value> _defaultOf(FormalParameterElement formal) {
     if (!formal.hasDefaultValue) return const [_Null()];
     final value = formal.computeConstantValue();
+    if (value == null) return const [];
+    final body = _bodies[value.toFunctionValue()?.baseElement];
 
-    return value == null ? const [] : [_Value.of(value)];
+    return body == null ? [_Value.of(value)] : _handOver(body, value);
   }
+
+  /// A package function standing in for upstream's sends what its [body] calls, per look where it
+  /// switches on `designLanguage`. Any other body sends the function itself, which matches nothing.
+  Iterable<_Value> _handOver(Expression body, DartObject handOver) => switch (body) {
+    FunctionExpressionInvocation(:final function) => _trace(function),
+    SwitchExpression(:final cases) => cases.expand((arm) {
+      final package = switch (arm.guardedPattern.pattern) {
+        ConstantPattern(expression: DotShorthandPropertyAccess(:final propertyName)) =>
+          _upstreamPackages[propertyName.name],
+        _ => null,
+      };
+
+      return package == null
+          ? [_Value.of(handOver)]
+          : _handOver(arm.expression, handOver).map((value) => _InLook(value, package));
+    }),
+    _ => [_Value.of(handOver)],
+  };
 
   bool _isPublic(ExecutableElement executable) {
     final owner = executable.enclosingElement;
@@ -416,7 +454,8 @@ Iterable<AstNode> _nodesUnder(AstNode node) sync* {
 
 /// What a left-out field can send: `null`, a constant, or a literal filled in after `??`.
 sealed class const _Value() {
-  factory of(DartObject object) => object.isNull ? const _Null() : _Constant(object);
+  factory of(DartObject? object) =>
+      object == null || object.isNull ? const _Null() : _Constant(object);
 
   bool get isNull => this is _Null;
 
@@ -437,8 +476,13 @@ final class const _Constant(final DartObject _object) extends _Value {
   bool matches(DartObject? upstream) =>
       upstream != null && (_object == upstream || _sameInsets(_object, upstream));
 
+  /// Names a method with its class, since upstream's builders share a name.
   @override
-  String toString() => '$_object';
+  String toString() => switch (_object.toFunctionValue()) {
+    MethodElement(:final enclosingElement?, :final name) => '${enclosingElement.name}.$name',
+    final function? => '${function.name}',
+    null => '$_object',
+  };
 }
 
 final class const _Literal(final Object _value) extends _Value {
@@ -451,6 +495,18 @@ final class const _Literal(final Object _value) extends _Value {
         upstream.toDoubleValue(),
         upstream.toStringValue(),
       ].contains(_value);
+
+  @override
+  String toString() => '$_value';
+}
+
+/// A value sent only where [package] draws, from its look's `designLanguage` arm.
+final class const _InLook(final _Value _value, final String package) extends _Value {
+  @override
+  bool get isNull => _value.isNull;
+
+  @override
+  bool matches(DartObject? upstream) => _value.matches(upstream);
 
   @override
   String toString() => '$_value';
@@ -478,7 +534,7 @@ String? _packageOf(Element element) => element.library?.uri.pathSegments.firstOr
 
 bool _isOurs(Element element) => _packageOf(element) == 'platform_adaptive_widgets';
 
-bool _isUpstream(Element element) => _upstreamPackages.contains(_packageOf(element));
+bool _isUpstream(Element element) => _upstreamPackages.containsValue(_packageOf(element));
 
 String _nameOf(ExecutableElement callee) => switch (callee) {
   ConstructorElement(:final enclosingElement, :final name) when name != 'new' =>
