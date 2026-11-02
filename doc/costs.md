@@ -107,3 +107,12 @@ from copy to read in the harness, with a text field, search bar and slider added
   here too, and the rest nets out.
 
 *2026-10-30, Flutter 3.47.8, material_ui 1.9.0, cupertino_ui 1.1.5.*
+
+In a `*Data` record's default, such a function stays in the other look's build with everything it
+builds, though only its own look reads the field. **Switch its body on `designLanguage`.**
+
+- **iOS:** the search bar's menu default took the Material kept from 7,634 to 247,724 B: `SearchBar`
+  and the whole theme. Inside a switch it was back to 7,634 B. *Size harness.*
+- **Android:** not measured.
+
+*2026-11-02, Flutter 3.47.9, material_ui 1.9.0, cupertino_ui 1.1.5.*

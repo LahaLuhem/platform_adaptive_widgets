@@ -52,6 +52,12 @@ const kDefaultCupertinoTextFieldCrossAxisAlignment = CrossAxisAlignment.center;
 /// Default value for [CupertinoTextFieldData.padding]. Matches upstream `CupertinoTextField.padding`.
 const kDefaultCupertinoTextFieldPadding = EdgeInsets.all(7);
 
+/// Default value for [CupertinoTextFieldData.placeholderStyle]. Matches upstream `CupertinoTextField.placeholderStyle`.
+const kDefaultCupertinoTextFieldPlaceholderStyle = TextStyle(
+  fontWeight: FontWeight.w400,
+  color: CupertinoColors.placeholderText,
+);
+
 /// Default value for [CupertinoTextFieldData.prefixMode]. Matches upstream.
 const kDefaultCupertinoTextFieldPrefixMode = OverlayVisibilityMode.always;
 
@@ -118,7 +124,8 @@ final class const CupertinoTextFieldData({
   /// Cupertino's name for the hint text.
   final String? placeholder,
 
-  final TextStyle? placeholderStyle,
+  /// `null` draws it like the typed text.
+  final TextStyle? placeholderStyle = kDefaultCupertinoTextFieldPlaceholderStyle,
 
   /// Sits before the input. [prefixMode] decides when it's on screen.
   final Widget? prefix,

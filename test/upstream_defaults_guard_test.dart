@@ -19,19 +19,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 // Grouped by what's wrong, so a fix takes its group off, sees red, then turns it green.
 
-// Upstream's own default leaves these on, and its `null` turns them off.
-const _sendsNullForOff = {
-  'platform_app_bar.dart: CupertinoNavigationBar.border',
-  'platform_app_bar.dart: CupertinoNavigationBar.large.border',
-  'platform_button.dart: TextButton.isSemanticButton',
-  'platform_search_bar.dart: SearchBar.contextMenuBuilder',
-  'platform_text_field.dart: CupertinoTextField.autofillHints',
-  'platform_text_field.dart: CupertinoTextField.contextMenuBuilder',
-  'platform_text_field.dart: CupertinoTextField.placeholderStyle',
-  'platform_text_field.dart: TextField.autofillHints',
-  'platform_text_field.dart: TextField.contextMenuBuilder',
-};
-
 // Copies of a default that don't match upstream's own.
 const _copiesThatDiffer = {
   'cupertino_picker_popup.dart: showCupertinoModalPopup.barrierDismissible',
@@ -79,12 +66,7 @@ const _ownPicks = {
 const _upstreamPackages = {'material': 'material_ui', 'cupertino': 'cupertino_ui'};
 
 void main() {
-  final listed = {
-    ..._sendsNullForOff,
-    ..._copiesThatDiffer,
-    ..._sendsNullForDefault,
-    ..._ownPicks.keys,
-  };
+  final listed = {..._copiesThatDiffer, ..._sendsNullForDefault, ..._ownPicks.keys};
   late final List<_Offender> offenders;
   late final Iterable<String> nullableRecords;
 

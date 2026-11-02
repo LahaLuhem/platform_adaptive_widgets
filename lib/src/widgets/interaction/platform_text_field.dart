@@ -11,6 +11,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '/src/models/interaction/platform_text_field_data.dart';
 import '/src/models/platform_widget_base.dart';
+import '/src/utils/design_language.dart';
 
 /// [TextField] on Material, [CupertinoTextField] on Cupertino.
 ///
@@ -175,15 +176,16 @@ class const PlatformTextField({
   final Clip clipBehavior = .hardEdge,
 
   // ---- Autofill / context ---------------------------------------------------
-  /// Tells the OS autofill service what kind of value goes here.
-  final Iterable<String>? autofillHints,
+  /// Tells the OS autofill service what kind of value goes here. `null` turns autofill off.
+  final Iterable<String>? autofillHints = const [],
 
   /// Covers pasting and drag-and-drop of non-text content.
   final ContentInsertionConfiguration? contentInsertionConfiguration,
 
   final String? restorationId,
 
-  final EditableTextContextMenuBuilder? contextMenuBuilder,
+  /// Left out, each look shows its own upstream menu. `null` turns it off.
+  final EditableTextContextMenuBuilder? contextMenuBuilder = _upstreamContextMenu,
 
   final SpellCheckConfiguration? spellCheckConfiguration,
 
@@ -398,3 +400,12 @@ extension _PointerEventConversionExtension on PointerDownEvent {
     viewId: viewId,
   );
 }
+
+// Upstream keeps each look's menu builder private, so this calls it through the plain widget.
+// The parameter takes a function, which a widget class can't stand in for.
+// ignore: avoid-returning-widgets
+Widget _upstreamContextMenu(BuildContext context, EditableTextState editableTextState) =>
+    switch (designLanguage) {
+      .material => const TextField().contextMenuBuilder!(context, editableTextState),
+      .cupertino => const CupertinoTextField().contextMenuBuilder!(context, editableTextState),
+    };

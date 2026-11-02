@@ -157,8 +157,8 @@ final class const CupertinoNavigationBarData({
   /// can't describe.
   final Widget? trailing,
 
-  /// Hairline along the bottom edge.
-  final Border? border,
+  /// Hairline along the bottom edge. `null` drops it.
+  final Border? border = kBorder,
 
   final bool automaticBackgroundVisibility = kAutomaticBackgroundVisibility,
 
@@ -178,6 +178,9 @@ final class const CupertinoNavigationBarData({
 }) extends _PlatformAppBarData {
   /// Default value for [automaticallyImplyMiddle].
   static const kAutomaticallyImplyMiddle = true;
+
+  /// Default value for [border].
+  static const kBorder = Border(bottom: BorderSide(color: Color(0x4D000000), width: 0));
 
   /// Default value for [automaticBackgroundVisibility].
   static const kAutomaticBackgroundVisibility = true;

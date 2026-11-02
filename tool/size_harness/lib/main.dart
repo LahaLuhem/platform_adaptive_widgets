@@ -49,6 +49,9 @@ class _Surfaces extends StatelessWidget {
         onChanged: (_) {},
         header: 'multi select',
       ),
+      // Menu hand-overs: functions in a default that build upstream widgets, one in a Material record.
+      const PlatformTextField(),
+      PlatformSearchBar(onChanged: (_) {}),
       // The delete reaches the confirm's own top-level switch.
       PlatformActionsMenu(
         builder: (_, onPressed) =>
