@@ -17,22 +17,6 @@ import 'package:checks/checks.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter_test/flutter_test.dart';
 
-// Grouped by what's wrong, so a fix takes its group off, sees red, then turns it green.
-
-// `null` where upstream has a default of its own.
-const _sendsNullForDefault = {
-  'platform_app.dart: MaterialApp.router.themeMode',
-  'platform_app.dart: MaterialApp.themeMode',
-  'platform_app.dart: MaterialApp.title',
-  'platform_button.dart: FilledButton.clipBehavior',
-  'platform_button.dart: FilledButton.icon.clipBehavior',
-  'platform_button.dart: FilledButton.tonal.clipBehavior',
-  'platform_button.dart: FilledButton.tonalIcon.clipBehavior',
-  'platform_button.dart: TextButton.icon.clipBehavior',
-  'platform_expansion_tile.dart: ExpansionTile.enableFeedback',
-  'platform_search_bar.dart: CupertinoSearchTextField.keyboardType',
-};
-
 const _ownBool = "The package's own non-null bool, which upstream reads the same as its null.";
 const _grayButton = "iOS's gray button for `.mediumNeutral`, cupertino_ui's own recipe.";
 
@@ -57,7 +41,7 @@ const _ownPicks = {
 const _upstreamPackages = {'material': 'material_ui', 'cupertino': 'cupertino_ui'};
 
 void main() {
-  final listed = {..._sendsNullForDefault, ..._ownPicks.keys};
+  final listed = _ownPicks.keys.toSet();
   late final List<_Offender> offenders;
   late final Iterable<String> nullableRecords;
 

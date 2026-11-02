@@ -27,6 +27,10 @@ const kDefaultCupertinoButtonAlignment = Alignment.center;
 /// already handles its own spacing.
 const kDefaultButtonIconLabelGap = 8.0;
 
+/// Default value for [MaterialButtonData.clipBehavior] on the filled, tonal and `TextButton.icon`
+/// buttons. Matches upstream.
+const kDefaultMaterialButtonClipBehavior = Clip.none;
+
 /// Material-side settings for [PlatformButton], passed as `materialButtonData`. Everything declared
 /// here has no Cupertino counterpart at all.
 ///
@@ -39,7 +43,8 @@ final class const MaterialButtonData({
   /// Material's whole visual surface, keyed by [WidgetState]. `null` leaves it to the theme.
   final ButtonStyle? style,
 
-  /// Doesn't reach an icon-only button, since Material's icon button takes none.
+  /// Doesn't reach an icon-only button, since Material's icon button takes none. `null` gives each
+  /// button its own constructor's default.
   final Clip? clipBehavior,
 
   final WidgetStatesController? statesController,

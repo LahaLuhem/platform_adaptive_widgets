@@ -112,7 +112,7 @@ class const PlatformSearchBar({
     decoration: cupertinoSearchBarData.decoration,
     backgroundColor: cupertinoSearchBarData.backgroundColor,
     borderRadius: cupertinoSearchBarData.borderRadius,
-    keyboardType: keyboardType,
+    keyboardType: keyboardType ?? const CupertinoSearchTextField().keyboardType,
     padding: cupertinoSearchBarData.padding,
     itemColor: cupertinoSearchBarData.itemColor,
     itemSize: cupertinoSearchBarData.itemSize,

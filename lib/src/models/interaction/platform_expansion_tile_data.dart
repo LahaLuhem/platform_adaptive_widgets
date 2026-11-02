@@ -15,6 +15,9 @@ import 'package:material_ui/material_ui.dart' show ListTileControlAffinity, Visu
 /// Default value for [MaterialExpansionTileData.showTrailingIcon]. Matches upstream.
 const kDefaultExpansionTileShowTrailingIcon = true;
 
+/// Default value for [MaterialExpansionTileData.enableFeedback]. Matches upstream.
+const kDefaultExpansionTileEnableFeedback = true;
+
 /// Default value for [MaterialExpansionTileData.initiallyExpanded].
 const kDefaultExpansionTileInitiallyExpanded = false;
 
@@ -86,8 +89,8 @@ final class const MaterialExpansionTileData({
 
   final double? minTileHeight,
 
-  /// Haptic feedback on tap. Material's own default is `true`.
-  final bool? enableFeedback,
+  /// Haptic feedback on tap. `null` reads `ListTileTheme`'s.
+  final bool? enableFeedback = kDefaultExpansionTileEnableFeedback,
 
   /// Cupertino has no off switch, so wrap that one in an [IgnorePointer] instead.
   final bool enabled = kDefaultExpansionTileEnabled,
