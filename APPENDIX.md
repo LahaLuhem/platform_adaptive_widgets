@@ -362,6 +362,12 @@ its default, and what its `null` means. A widget set up plainly then acts like t
 widget. Where the 2 platforms' defaults disagree (`cursorRadius`), the field is nullable and `null`
 gets each side its own.
 
+Where upstream's default is a function it keeps private, like a text field's menu builder, the field
+defaults to a hand-over: a package function that calls the plain widget's own,
+`const TextField().contextMenuBuilder!(…)`, so `null` still turns the menu off. It switches on
+`designLanguage`, which gives each look its own builder and lets the other look's build drop it
+([AOT pruning](#aot-pruning-rules)).
+
 A record is never absent: each `materialXxxData` and `cupertinoXxxData` defaults to its `const`
 empty record. So a record left out and a field left out send the same thing, and a caller's own
 `null` keeps the meaning upstream gives it.
@@ -373,10 +379,11 @@ list.
 **Enforcement:** the
 [upstream-default guard](./test/upstream_defaults_guard_test.dart) follows each value the package
 sends to an optional material_ui or cupertino_ui parameter back to the field's default, and fails
-where that isn't upstream's own. The package's own picks sit on its list, each with its reason. CI
-resolves the newest material_ui and cupertino_ui, so a copy goes red on the first run after
-upstream moves. A value the package builds in code, such as a closure or a widget, isn't checked.
-The same guard fails a record parameter that can be null.
+where that isn't upstream's own. A hand-over counts as the builder it calls, each arm only for its
+own look. The package's own picks sit on its list, each with its reason. CI resolves the newest
+material_ui and cupertino_ui, so a copy goes red on the first run after upstream moves. A value the
+package builds in code, such as a closure or a widget, isn't checked. The same guard fails a record
+parameter that can be null.
 
 ---
 
@@ -437,6 +444,7 @@ shape:
 | `PlatformWidgetBase.build` calling `buildMaterial` / `buildCupertino` | ✓       | The base's switch folds and the halves devirtualize. With many subclasses, each keeps a `buildCupertino` vtable slot and its name ([cost](./doc/costs.md#base-dispatch)), but the bodies go. |
 | Value selectors (`platformValue` and co)                              | ✗       | Both values are built at the call site, before the selector picks one.                                                                                                                       |
 | A builder closure passed as an argument                               | ✗       | The closure exists whether or not it's called.                                                                                                                                               |
+| A function in a `*Data` record's default                              | ✗       | The record's constant keeps it, and all it builds, though only one look reads the field. Its body switches on `designLanguage` ([cost](./doc/costs.md#plain-widget-read)).                   |
 
 ### Internal rules the package follows
 

@@ -45,8 +45,8 @@ final class const MaterialButtonData({
   final WidgetStatesController? statesController,
 
   /// Only reaches a `low` button built through [PlatformButton.new], since upstream's plain [TextButton]
-  /// is the only one that takes it.
-  final bool? isSemanticButton,
+  /// is the only one that takes it. `null` drops its button role for screen readers.
+  final bool? isSemanticButton = true,
 }) {
   /// Creates Material-side settings for [PlatformButton].
   this;

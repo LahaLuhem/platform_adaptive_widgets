@@ -9,9 +9,12 @@
 library;
 
 import 'package:cupertino_ui/cupertino_ui.dart'
-    show CupertinoColors, CupertinoIcons, OverlayVisibilityMode;
+    show CupertinoColors, CupertinoIcons, CupertinoTextField, OverlayVisibilityMode;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show SearchBar;
+
+import '/src/utils/design_language.dart';
 
 /// Leading widget the Cupertino branch falls back to.
 ///
@@ -117,8 +120,8 @@ final class const MaterialSearchBarData({
   /// How much room to keep around the field when scrolling it into view.
   final EdgeInsets scrollPadding = kDefaultSearchBarScrollPadding,
 
-  /// Left out, you get Material's own context menu.
-  final EditableTextContextMenuBuilder? contextMenuBuilder,
+  /// Left out, you get Material's own context menu. `null` turns it off.
+  final EditableTextContextMenuBuilder? contextMenuBuilder = _upstreamContextMenu,
 
   final bool readOnly = kDefaultSearchBarReadOnly,
 }) {
@@ -187,3 +190,13 @@ final class const CupertinoSearchBarData({
   /// Creates Cupertino-side settings for [PlatformSearchBar].
   this;
 }
+
+// Upstream keeps its menu builder private, so this calls it through a plain widget. Only the Material
+// branch reads it, but the switch lets an iOS build drop `SearchBar` (APPENDIX.md#aot-pruning-rules).
+// The parameter takes a function, which a widget class can't stand in for.
+// ignore: avoid-returning-widgets
+Widget _upstreamContextMenu(BuildContext context, EditableTextState editableTextState) =>
+    switch (designLanguage) {
+      .material => const SearchBar().contextMenuBuilder!(context, editableTextState),
+      .cupertino => const CupertinoTextField().contextMenuBuilder!(context, editableTextState),
+    };
