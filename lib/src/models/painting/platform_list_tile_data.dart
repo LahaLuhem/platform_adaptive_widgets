@@ -13,9 +13,6 @@ import 'package:material_ui/material_ui.dart'
 /// Default value for [MaterialListTileData.autofocus].
 const kDefaultListTileAutofocus = false;
 
-/// Default value for [MaterialListTileData.internalAddSemanticForOnTap].
-const kDefaultListTileInternalAddSemanticForOnTap = false;
-
 /// Default value for [MaterialListTileData.selected].
 const kDefaultListTileSelected = false;
 
@@ -85,9 +82,6 @@ final class const MaterialListTileData({
 
   /// Colours the leading and trailing icons.
   final Color? iconColor,
-
-  /// Adds semantic annotations for tap events.
-  final bool internalAddSemanticForOnTap = kDefaultListTileInternalAddSemanticForOnTap,
 
   final bool? isThreeLine,
 

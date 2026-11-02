@@ -22,7 +22,7 @@ Future<T?> showCupertinoChoicesSheet<T extends Object>({
   required Offset? anchorPoint,
   required Color? barrierColor,
   required RouteSettings? routeSettings,
-  required bool useRootNavigator,
+  required bool? useRootNavigator,
   required bool? requestFocus,
 }) => showCupertinoPopupRoute(
   context: context,

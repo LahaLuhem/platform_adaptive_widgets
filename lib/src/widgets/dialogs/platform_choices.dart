@@ -4,7 +4,6 @@ library;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show ListTile, Theme;
 
-import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_choice.dart';
 import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 import '/src/utils/design_language.dart';
@@ -45,7 +44,7 @@ Future<T?> showPlatformChoices<T extends Object>({
   Offset? anchorPoint,
   Color? barrierColor,
   RouteSettings? routeSettings,
-  bool useRootNavigator = kDefaultUseRootNavigator,
+  bool? useRootNavigator,
   bool? requestFocus,
   ScrollController? scrollController,
   MaterialModalBottomSheetData materialModalBottomSheetData = const MaterialModalBottomSheetData(),
@@ -100,7 +99,7 @@ Future<T?> _showMaterialChoices<T extends Object>({
   required Offset? anchorPoint,
   required Color? barrierColor,
   required RouteSettings? routeSettings,
-  required bool useRootNavigator,
+  required bool? useRootNavigator,
   required bool? requestFocus,
 }) => showMaterialSheetRoute(
   context: context,

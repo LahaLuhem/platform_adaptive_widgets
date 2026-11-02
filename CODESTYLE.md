@@ -269,7 +269,7 @@ The `dynamic`-escape-hatch ban and the `print()`-in-library ban are listed under
     literal would otherwise appear in both the data class default and the build branch).
   - Multiple constructors / call sites in different files reading the same upstream-Flutter
     sentinel, e.g. [`kDefaultUseRootNavigator`](./lib/src/models/dialogs/const_values.dart) feeding
-    every `show*` helper.
+    the dialog and picker helpers.
 
   Does **not** count:
   - A dartdoc reference (`Defaults to [kDefaultXxx]`), that's documentation of the value, not a
