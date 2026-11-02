@@ -32,6 +32,12 @@
 - **BREAKING** \[#55\] `showPlatformFullscreenDialog`'s bar is an `appBarBuilder`, given the dialog's context
 - **BREAKING** \[#47\] `PlatformAppBar` in a sheet shows the sheet's close X or Cancel
 - **BREAKING** \[#69\] `PlatformMenuPicker.items`, `PlatformSegmentButton.choices`: a `Set`, so options can't repeat
+- \[#73\] A field left out sends upstream's own default, so a plain widget acts like the one it wraps
+- \[#73\] `centerTitle`, `titleAlignment` and the text field's cursor default to `null`: the theme and platform decide (Material)
+- \[#73\] Sheets and choices open on the nearest navigator (Material)
+- \[#73\] Left-out `clipBehavior` no longer clips a style's builder, left-out `enableFeedback` ignores `ListTileTheme` (Material)
+- **BREAKING** \[#73\] `*Data` records can't be `null`: each defaults to its empty record
+- **BREAKING** \[#73\] Pickers' `barrierDismissible` is a `bool`, sheets' and choices' `useRootNavigator` a `bool?`
 
 ### Fixed
 - \[#56\] Menu picker: same behaviour on both looks
@@ -41,6 +47,9 @@
 - \[#71\] VoiceOver reads disabled widgets as dimmed, buttons offer no dead tap (Cupertino)
 - \[#69\] Open menu picker follows the app's new items, an open menu stays open past 5 (Cupertino)
 - \[#69\] Segment button asserts on 1 choice or a selection outside them (Material)
+- \[#73\] Text field and search bar: copy and paste menu and autofill
+- \[#73\] Bar hairline, gray placeholder, date and time pickers close on a tap outside (Cupertino)
+- \[#73\] Expansion tile chevron, button role on low buttons and tappable tiles, full-screen dialog clears the keyboard at once (Material)
 
 ### Removed
 - **BREAKING** \[#51\] `MaterialToastData.action`, `.persist`, `PlatformToastClosedReason`: use flat `action`
@@ -54,6 +63,8 @@
 - **BREAKING** \[#50\] `showPlatformModalBottomSheet`: use `showPlatformSheet`, or `showPlatformRawModalBottomSheet` for your own surface
 - **BREAKING** \[#53\] `PlatformCheckbox`, `MaterialCheckboxData`, `CupertinoCheckboxData`: use `PlatformMultiSelectList`
 - **BREAKING** \[#54\] `PlatformRadio`, `PlatformRadioGroupBuilder`, `MaterialRadioData`, `CupertinoRadioData`: use `PlatformSingleSelectList`
+- **BREAKING** \[#73\] `MaterialListTileData.internalAddSemanticForOnTap`, a flag Flutter calls temporary
+- **BREAKING** \[#73\] `kDefaultListTileTitleAlignment`, `kDefaultListTileInternalAddSemanticForOnTap`, `kDefaultMaterialAlertDialogActionsOverflowDirection`, `kDefaultCupertinoListTileIsNotched`, `kDefaultCupertinoMenuPickerUseIconButtonVariant`, `CupertinoNavigationBarData.kLarge` and the 7 `kDefaultCupertinoToast*`: their values sit in the signatures
 
 ## [2.2.0] - 2026-09-13
 ### Added
