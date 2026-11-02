@@ -72,10 +72,10 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   final PlatformActionKind actionKind;
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
-  final MaterialButtonData? materialButtonData;
+  final MaterialButtonData materialButtonData;
 
   /// Cupertino-branch overrides, plus the knobs Material has no answer for.
-  final CupertinoButtonData? cupertinoButtonData;
+  final CupertinoButtonData cupertinoButtonData;
 
   // Content slots, filled by the constructor that ran, which also sets `_shape`: `_child` alone,
   // `_icon` with `_label`, or `_icon` with `_iconOnlyLabel`.
@@ -96,8 +96,8 @@ class PlatformButton extends PlatformWidgetKeyedBase {
     this.focusNode,
     this.autofocus = false,
     this.onFocusChange,
-    this.materialButtonData,
-    this.cupertinoButtonData,
+    this.materialButtonData = const MaterialButtonData(),
+    this.cupertinoButtonData = const CupertinoButtonData(),
     super.widgetKey,
     super.key,
   }) : _shape = .child,
@@ -120,8 +120,8 @@ class PlatformButton extends PlatformWidgetKeyedBase {
     this.focusNode,
     this.autofocus = false,
     this.onFocusChange,
-    this.materialButtonData,
-    this.cupertinoButtonData,
+    this.materialButtonData = const MaterialButtonData(),
+    this.cupertinoButtonData = const CupertinoButtonData(),
     super.widgetKey,
     super.key,
   }) : _shape = .iconAndLabel,
@@ -141,8 +141,8 @@ class PlatformButton extends PlatformWidgetKeyedBase {
     this.isEnabled = true,
     this.focusNode,
     this.autofocus = false,
-    this.materialButtonData,
-    this.cupertinoButtonData,
+    this.materialButtonData = const MaterialButtonData(),
+    this.cupertinoButtonData = const CupertinoButtonData(),
     super.widgetKey,
     super.key,
   }) : onLongPress = null,
@@ -159,10 +159,10 @@ class PlatformButton extends PlatformWidgetKeyedBase {
   Widget buildMaterial(BuildContext context) {
     final pressed = isEnabled ? onPressed : null;
     final long = isEnabled ? onLongPress : null;
-    final onHover = materialButtonData?.onHover;
-    final style = materialButtonData?.style;
-    final clipBehavior = materialButtonData?.clipBehavior;
-    final statesController = materialButtonData?.statesController;
+    final onHover = materialButtonData.onHover;
+    final style = materialButtonData.style;
+    final clipBehavior = materialButtonData.clipBehavior;
+    final statesController = materialButtonData.statesController;
 
     return switch ((emphasis, _shape)) {
       (.high, .child) => FilledButton(
@@ -292,7 +292,7 @@ class PlatformButton extends PlatformWidgetKeyedBase {
         autofocus: autofocus,
         clipBehavior: clipBehavior,
         statesController: statesController,
-        isSemanticButton: materialButtonData?.isSemanticButton,
+        isSemanticButton: materialButtonData.isSemanticButton,
         child: _child!,
       ),
       (.low, .iconAndLabel) => TextButton.icon(
@@ -340,27 +340,26 @@ class PlatformButton extends PlatformWidgetKeyedBase {
       // The label names it, in place of anything the icon says about itself.
       .iconOnly => Semantics(label: _iconOnlyLabel, excludeSemantics: true, child: _icon),
     };
-    final sizeStyle = cupertinoButtonData?.sizeStyle ?? kDefaultCupertinoButtonSizeStyle;
-    final padding = cupertinoButtonData?.padding;
+    final sizeStyle = cupertinoButtonData.sizeStyle;
+    final padding = cupertinoButtonData.padding;
     // cupertino_ui's recipe for iOS's gray button.
     final color =
-        cupertinoButtonData?.color ??
+        cupertinoButtonData.color ??
         (emphasis == .mediumNeutral ? CupertinoColors.systemGrey : null);
-    final foregroundColor = cupertinoButtonData?.foregroundColor;
+    final foregroundColor = cupertinoButtonData.foregroundColor;
     // cupertino_ui won't take a null here, so each constructor gets its own default back.
     final disabledColor =
-        cupertinoButtonData?.disabledColor ??
+        cupertinoButtonData.disabledColor ??
         switch (emphasis) {
           .low => CupertinoColors.quaternarySystemFill,
           .high || .medium || .mediumNeutral => CupertinoColors.tertiarySystemFill,
         };
-    final minimumSize = cupertinoButtonData?.minimumSize;
-    final pressedOpacity =
-        cupertinoButtonData?.pressedOpacity ?? kDefaultCupertinoButtonPressedOpacity;
-    final borderRadius = cupertinoButtonData?.borderRadius;
-    final alignment = cupertinoButtonData?.alignment ?? kDefaultCupertinoButtonAlignment;
-    final focusColor = cupertinoButtonData?.focusColor;
-    final mouseCursor = cupertinoButtonData?.mouseCursor;
+    final minimumSize = cupertinoButtonData.minimumSize;
+    final pressedOpacity = cupertinoButtonData.pressedOpacity;
+    final borderRadius = cupertinoButtonData.borderRadius;
+    final alignment = cupertinoButtonData.alignment;
+    final focusColor = cupertinoButtonData.focusColor;
+    final mouseCursor = cupertinoButtonData.mouseCursor;
 
     final button = switch (emphasis) {
       .high => CupertinoButton.filled(

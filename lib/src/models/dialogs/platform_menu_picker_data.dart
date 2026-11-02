@@ -10,9 +10,6 @@ import 'package:material_ui/material_ui.dart' show InputBorder, InputDecorationT
 /// Matches `DropdownMenu`'s own default.
 const kDefaultMaterialMenuPickerShowTrailingIcon = true;
 
-/// Off, so the full-width field is what you get unless you ask for `.iconButton`.
-const kDefaultCupertinoMenuPickerUseIconButtonVariant = false;
-
 /// Material-only settings for [PlatformMenuPicker]'s `DropdownMenu`.
 final class MaterialMenuPickerData {
   /// Only read when the dropdown lays out full-width.
@@ -50,8 +47,7 @@ final class CupertinoMenuPickerData {
   final bool useIconButtonVariant;
 
   /// Creates Cupertino-side settings for the usual full-width field.
-  const new({this.backgroundColor})
-    : useIconButtonVariant = kDefaultCupertinoMenuPickerUseIconButtonVariant;
+  const new({this.backgroundColor}) : useIconButtonVariant = false;
 
   /// Shrinks the picker to a button showing [PlatformMenuPicker.leadingIcon].
   const new iconButton({this.backgroundColor}) : useIconButtonVariant = true;

@@ -23,7 +23,7 @@ Future<DateTime?> showCupertinoPickerPopup({
   required bool useRootNavigator,
   required bool? requestFocus,
   required TransitionBuilder? builder,
-  required CupertinoDatePickerData? cupertinoDatePickerData,
+  required CupertinoDatePickerData cupertinoDatePickerData,
   DateTime? firstDateTime,
   DateTime? lastDateTime,
 }) async {
@@ -34,24 +34,19 @@ Future<DateTime?> showCupertinoPickerPopup({
     initialDateTime: initialDateTime,
     minimumDate: firstDateTime,
     maximumDate: lastDateTime,
-    selectableDayPredicate: cupertinoDatePickerData?.selectableDayPredicate,
+    selectableDayPredicate: cupertinoDatePickerData.selectableDayPredicate,
     onDateTimeChanged: (dateTime) => selectedDateTime = dateTime,
-    backgroundColor: cupertinoDatePickerData?.backgroundColor,
-    changeReportingBehavior:
-        cupertinoDatePickerData?.changeReportingBehavior ??
-        kDefaultCupertinoDatePickerChangeReportingBehavior,
-    dateOrder: cupertinoDatePickerData?.dateOrder,
-    itemExtent: cupertinoDatePickerData?.itemExtent ?? kDefaultCupertinoDatePickerItemExtent,
-    maximumYear: cupertinoDatePickerData?.maximumYear,
-    minimumYear: cupertinoDatePickerData?.minimumYear ?? kDefaultCupertinoDatePickerMinimumYear,
-    minuteInterval:
-        cupertinoDatePickerData?.minuteInterval ?? kDefaultCupertinoDatePickerMinuteInterval,
-    selectionOverlayBuilder: cupertinoDatePickerData?.selectionOverlayBuilder,
-    showDayOfWeek:
-        cupertinoDatePickerData?.showDayOfWeek ?? kDefaultCupertinoDatePickerShowDayOfWeek,
-    showTimeSeparator:
-        cupertinoDatePickerData?.showTimeSeparator ?? kDefaultCupertinoDatePickerShowTimeSeparator,
-    use24hFormat: cupertinoDatePickerData?.use24hFormat ?? kDefaultCupertinoDatePickerUse24hFormat,
+    backgroundColor: cupertinoDatePickerData.backgroundColor,
+    changeReportingBehavior: cupertinoDatePickerData.changeReportingBehavior,
+    dateOrder: cupertinoDatePickerData.dateOrder,
+    itemExtent: cupertinoDatePickerData.itemExtent,
+    maximumYear: cupertinoDatePickerData.maximumYear,
+    minimumYear: cupertinoDatePickerData.minimumYear,
+    minuteInterval: cupertinoDatePickerData.minuteInterval,
+    selectionOverlayBuilder: cupertinoDatePickerData.selectionOverlayBuilder,
+    showDayOfWeek: cupertinoDatePickerData.showDayOfWeek,
+    showTimeSeparator: cupertinoDatePickerData.showTimeSeparator,
+    use24hFormat: cupertinoDatePickerData.use24hFormat,
   );
 
   await showCupertinoModalPopup<void>(
@@ -61,11 +56,9 @@ Future<DateTime?> showCupertinoPickerPopup({
     barrierDismissible: barrierDismissible ?? kCupertinoBarrierDismissible,
     routeSettings: routeSettings,
     useRootNavigator: useRootNavigator,
-    filter: cupertinoDatePickerData?.filter,
+    filter: cupertinoDatePickerData.filter,
     requestFocus: requestFocus,
-    semanticsDismissible:
-        cupertinoDatePickerData?.semanticsDismissible ??
-        kDefaultCupertinoDatePickerSemanticsDismissible,
+    semanticsDismissible: cupertinoDatePickerData.semanticsDismissible,
     builder: (context) =>
         builder?.call(context, pickerWidget) ??
         _CupertinoPickerContainer(pickerWidget: pickerWidget),

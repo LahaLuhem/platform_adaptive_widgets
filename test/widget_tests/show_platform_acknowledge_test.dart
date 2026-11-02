@@ -77,11 +77,16 @@ void main() {
 
     // M3 tucks the text closer under a headline or an icon than the dialog's own padding.
     scenarioOutlineWidgets<
-      ({String? message, MaterialAlertDialogData? data, Finder above, String text})
+      ({String? message, MaterialAlertDialogData data, Finder above, String text})
     >(
       'keeps the text closer under what tops it than to the side on Android',
       examples: {
-        'a title': (message: _message, data: null, above: find.text(_title), text: _message),
+        'a title': (
+          message: _message,
+          data: const MaterialAlertDialogData(),
+          above: find.text(_title),
+          text: _message,
+        ),
         'an icon': (
           message: null,
           data: const MaterialAlertDialogData(icon: Icon(_icon)),

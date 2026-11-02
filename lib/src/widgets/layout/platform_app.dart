@@ -123,10 +123,10 @@ class PlatformApp extends PlatformWidgetKeyedBase {
   final BackButtonDispatcher? backButtonDispatcher;
 
   /// Material-branch overrides: themes, and the scaffold messenger key.
-  final MaterialAppData? materialAppData;
+  final MaterialAppData materialAppData;
 
   /// Cupertino-branch overrides: the theme.
-  final CupertinoAppData? cupertinoAppData;
+  final CupertinoAppData cupertinoAppData;
 
   /// Which of the 2 constructors ran, and so which upstream app gets built.
   final bool _useRouter;
@@ -160,8 +160,8 @@ class PlatformApp extends PlatformWidgetKeyedBase {
     this.onGenerateInitialRoutes,
     this.onUnknownRoute,
     this.navigatorObservers = const [],
-    this.materialAppData,
-    this.cupertinoAppData,
+    this.materialAppData = const MaterialAppData(),
+    this.cupertinoAppData = const CupertinoAppData(),
     super.widgetKey,
     super.key,
   }) : _useRouter = false,
@@ -197,8 +197,8 @@ class PlatformApp extends PlatformWidgetKeyedBase {
     this.routerDelegate,
     this.routerConfig,
     this.backButtonDispatcher,
-    this.materialAppData,
-    this.cupertinoAppData,
+    this.materialAppData = const MaterialAppData(),
+    this.cupertinoAppData = const CupertinoAppData(),
     super.widgetKey,
     super.key,
   }) : _useRouter = true,
@@ -241,18 +241,16 @@ class PlatformApp extends PlatformWidgetKeyedBase {
           actions: actions,
           restorationScopeId: restorationScopeId,
           scrollBehavior: scrollBehavior,
-          scaffoldMessengerKey: materialAppData?.scaffoldMessengerKey,
-          theme: materialAppData?.theme,
-          darkTheme: materialAppData?.darkTheme,
-          highContrastTheme: materialAppData?.highContrastTheme,
-          highContrastDarkTheme: materialAppData?.highContrastDarkTheme,
-          themeMode: materialAppData?.themeMode,
-          themeAnimationDuration:
-              materialAppData?.themeAnimationDuration ?? kMaterialDefaultThemeAnimationDuration,
-          themeAnimationCurve:
-              materialAppData?.themeAnimationCurve ?? kMaterialDefaultThemeAnimationCurve,
-          debugShowMaterialGrid: materialAppData?.debugShowMaterialGrid ?? kDebugShowMaterialGrid,
-          themeAnimationStyle: materialAppData?.themeAnimationStyle,
+          scaffoldMessengerKey: materialAppData.scaffoldMessengerKey,
+          theme: materialAppData.theme,
+          darkTheme: materialAppData.darkTheme,
+          highContrastTheme: materialAppData.highContrastTheme,
+          highContrastDarkTheme: materialAppData.highContrastDarkTheme,
+          themeMode: materialAppData.themeMode,
+          themeAnimationDuration: materialAppData.themeAnimationDuration,
+          themeAnimationCurve: materialAppData.themeAnimationCurve,
+          debugShowMaterialGrid: materialAppData.debugShowMaterialGrid,
+          themeAnimationStyle: materialAppData.themeAnimationStyle,
         )
       : MaterialApp(
           key: widgetKey,
@@ -283,18 +281,16 @@ class PlatformApp extends PlatformWidgetKeyedBase {
           actions: actions,
           restorationScopeId: restorationScopeId,
           scrollBehavior: scrollBehavior,
-          scaffoldMessengerKey: materialAppData?.scaffoldMessengerKey,
-          theme: materialAppData?.theme,
-          darkTheme: materialAppData?.darkTheme,
-          highContrastTheme: materialAppData?.highContrastTheme,
-          highContrastDarkTheme: materialAppData?.highContrastDarkTheme,
-          themeMode: materialAppData?.themeMode,
-          themeAnimationDuration:
-              materialAppData?.themeAnimationDuration ?? kMaterialDefaultThemeAnimationDuration,
-          themeAnimationCurve:
-              materialAppData?.themeAnimationCurve ?? kMaterialDefaultThemeAnimationCurve,
-          debugShowMaterialGrid: materialAppData?.debugShowMaterialGrid ?? kDebugShowMaterialGrid,
-          themeAnimationStyle: materialAppData?.themeAnimationStyle,
+          scaffoldMessengerKey: materialAppData.scaffoldMessengerKey,
+          theme: materialAppData.theme,
+          darkTheme: materialAppData.darkTheme,
+          highContrastTheme: materialAppData.highContrastTheme,
+          highContrastDarkTheme: materialAppData.highContrastDarkTheme,
+          themeMode: materialAppData.themeMode,
+          themeAnimationDuration: materialAppData.themeAnimationDuration,
+          themeAnimationCurve: materialAppData.themeAnimationCurve,
+          debugShowMaterialGrid: materialAppData.debugShowMaterialGrid,
+          themeAnimationStyle: materialAppData.themeAnimationStyle,
         );
 
   @override
@@ -327,7 +323,7 @@ class PlatformApp extends PlatformWidgetKeyedBase {
           actions: actions,
           restorationScopeId: restorationScopeId,
           scrollBehavior: scrollBehavior,
-          theme: cupertinoAppData?.theme,
+          theme: cupertinoAppData.theme,
         )
       : CupertinoApp(
           key: widgetKey,
@@ -358,6 +354,6 @@ class PlatformApp extends PlatformWidgetKeyedBase {
           actions: actions,
           restorationScopeId: restorationScopeId,
           scrollBehavior: scrollBehavior,
-          theme: cupertinoAppData?.theme,
+          theme: cupertinoAppData.theme,
         );
 }

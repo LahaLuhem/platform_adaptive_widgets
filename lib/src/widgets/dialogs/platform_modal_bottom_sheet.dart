@@ -36,8 +36,8 @@ Future<T?> showPlatformRawModalBottomSheet<T>({
   RouteSettings? routeSettings,
   bool useRootNavigator = kDefaultUseRootNavigator,
   bool? requestFocus,
-  MaterialModalBottomSheetData? materialModalBottomSheetData,
-  CupertinoModalPopupData? cupertinoModalPopupData,
+  MaterialModalBottomSheetData materialModalBottomSheetData = const MaterialModalBottomSheetData(),
+  CupertinoModalPopupData cupertinoModalPopupData = const CupertinoModalPopupData(),
 }) {
   _assertBuilderInvariant(
     hasBuilder: builder != null,

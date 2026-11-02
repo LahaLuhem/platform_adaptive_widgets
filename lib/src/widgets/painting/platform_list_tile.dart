@@ -51,10 +51,10 @@ class const PlatformListTile({
   final EdgeInsetsGeometry? padding,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
-  final MaterialListTileData? materialListTileData,
+  final MaterialListTileData materialListTileData = const MaterialListTileData(),
 
   /// Cupertino-branch overrides, plus the knobs Material has no answer for.
-  final CupertinoListTileData? cupertinoListTileData,
+  final CupertinoListTileData cupertinoListTileData = const CupertinoListTileData(),
   super.widgetKey,
   super.key,
 }) extends PlatformWidgetKeyedBase {
@@ -72,50 +72,48 @@ class const PlatformListTile({
     trailing: trailing,
     onTap: isEnabled ? onTap : null,
     enabled: isEnabled,
-    minLeadingWidth: materialListTileData?.leadingWidth ?? leadingWidth,
-    tileColor: materialListTileData?.color ?? color,
-    contentPadding: materialListTileData?.padding ?? padding,
-    statesController: materialListTileData?.statesController,
-    mouseCursor: materialListTileData?.mouseCursor,
-    autofocus: materialListTileData?.autofocus ?? kDefaultListTileAutofocus,
-    enableFeedback: materialListTileData?.enableFeedback,
-    focusColor: materialListTileData?.focusColor,
-    focusNode: materialListTileData?.focusNode,
-    horizontalTitleGap: materialListTileData?.horizontalTitleGap,
-    hoverColor: materialListTileData?.hoverColor,
-    iconColor: materialListTileData?.iconColor,
-    internalAddSemanticForOnTap:
-        materialListTileData?.internalAddSemanticForOnTap ??
-        kDefaultListTileInternalAddSemanticForOnTap,
-    isThreeLine: materialListTileData?.isThreeLine,
-    leadingAndTrailingTextStyle: materialListTileData?.leadingAndTrailingTextStyle,
-    minTileHeight: materialListTileData?.minTileHeight,
-    minVerticalPadding: materialListTileData?.minVerticalPadding,
-    onFocusChange: materialListTileData?.onFocusChange,
-    onLongPress: materialListTileData?.onLongPress,
-    selected: materialListTileData?.selected ?? kDefaultListTileSelected,
-    selectedColor: materialListTileData?.selectedColor,
-    selectedTileColor: materialListTileData?.selectedTileColor,
-    shape: materialListTileData?.shape,
-    splashColor: materialListTileData?.splashColor,
-    style: materialListTileData?.style,
-    subtitleTextStyle: materialListTileData?.subtitleTextStyle,
-    textColor: materialListTileData?.textColor,
-    titleAlignment: materialListTileData?.titleAlignment,
-    titleTextStyle: materialListTileData?.titleTextStyle,
-    visualDensity: materialListTileData?.visualDensity,
+    minLeadingWidth: materialListTileData.leadingWidth ?? leadingWidth,
+    tileColor: materialListTileData.color ?? color,
+    contentPadding: materialListTileData.padding ?? padding,
+    statesController: materialListTileData.statesController,
+    mouseCursor: materialListTileData.mouseCursor,
+    autofocus: materialListTileData.autofocus,
+    enableFeedback: materialListTileData.enableFeedback,
+    focusColor: materialListTileData.focusColor,
+    focusNode: materialListTileData.focusNode,
+    horizontalTitleGap: materialListTileData.horizontalTitleGap,
+    hoverColor: materialListTileData.hoverColor,
+    iconColor: materialListTileData.iconColor,
+    internalAddSemanticForOnTap: materialListTileData.internalAddSemanticForOnTap,
+    isThreeLine: materialListTileData.isThreeLine,
+    leadingAndTrailingTextStyle: materialListTileData.leadingAndTrailingTextStyle,
+    minTileHeight: materialListTileData.minTileHeight,
+    minVerticalPadding: materialListTileData.minVerticalPadding,
+    onFocusChange: materialListTileData.onFocusChange,
+    onLongPress: materialListTileData.onLongPress,
+    selected: materialListTileData.selected,
+    selectedColor: materialListTileData.selectedColor,
+    selectedTileColor: materialListTileData.selectedTileColor,
+    shape: materialListTileData.shape,
+    splashColor: materialListTileData.splashColor,
+    style: materialListTileData.style,
+    subtitleTextStyle: materialListTileData.subtitleTextStyle,
+    textColor: materialListTileData.textColor,
+    titleAlignment: materialListTileData.titleAlignment,
+    titleTextStyle: materialListTileData.titleTextStyle,
+    visualDensity: materialListTileData.visualDensity,
   );
 
   @override
   @protected
   @visibleForOverriding
   Widget buildCupertino(BuildContext context) {
-    final isNotched = cupertinoListTileData?.isNotched ?? kDefaultCupertinoListTileIsNotched;
-    final leadingSize = cupertinoListTileData?.leadingWidth ?? leadingWidth;
-    final leadingToTitle = cupertinoListTileData?.leadingToTitle;
+    final isNotched = cupertinoListTileData.isNotched;
+    final leadingSize = cupertinoListTileData.leadingWidth ?? leadingWidth;
+    final leadingToTitle = cupertinoListTileData.leadingToTitle;
     final resolvedOnTap = isEnabled ? onTap : null;
-    final resolvedColor = cupertinoListTileData?.color ?? color;
-    final resolvedPadding = cupertinoListTileData?.padding ?? padding;
+    final resolvedColor = cupertinoListTileData.color ?? color;
+    final resolvedPadding = cupertinoListTileData.padding ?? padding;
 
     return Semantics(
       // Not DisabledSemantics, whose IgnorePointer would stop a switch in the row, which Material keeps
@@ -133,8 +131,8 @@ class const PlatformListTile({
               padding: resolvedPadding,
               leadingSize: leadingSize ?? kDefaultCupertinoNotchedListTileLeadingSize,
               leadingToTitle: leadingToTitle ?? kDefaultCupertinoNotchedListTileLeadingToTitle,
-              additionalInfo: cupertinoListTileData?.additionalInfo,
-              backgroundColorActivated: cupertinoListTileData?.backgroundColorActivated,
+              additionalInfo: cupertinoListTileData.additionalInfo,
+              backgroundColorActivated: cupertinoListTileData.backgroundColorActivated,
             )
           : CupertinoListTile(
               key: widgetKey,
@@ -147,8 +145,8 @@ class const PlatformListTile({
               padding: resolvedPadding,
               leadingSize: leadingSize ?? kDefaultCupertinoListTileLeadingSize,
               leadingToTitle: leadingToTitle ?? kDefaultCupertinoListTileLeadingToTitle,
-              additionalInfo: cupertinoListTileData?.additionalInfo,
-              backgroundColorActivated: cupertinoListTileData?.backgroundColorActivated,
+              additionalInfo: cupertinoListTileData.additionalInfo,
+              backgroundColorActivated: cupertinoListTileData.backgroundColorActivated,
             ),
     );
   }

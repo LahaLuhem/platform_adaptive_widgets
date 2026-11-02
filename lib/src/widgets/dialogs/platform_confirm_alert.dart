@@ -28,8 +28,8 @@ Future<bool> showPlatformConfirmAlert({
   RouteSettings? routeSettings,
   bool useRootNavigator = kDefaultUseRootNavigator,
   bool? requestFocus,
-  MaterialAlertDialogData? materialAlertDialogData,
-  CupertinoAlertDialogData? cupertinoAlertDialogData,
+  MaterialAlertDialogData materialAlertDialogData = const MaterialAlertDialogData(),
+  CupertinoAlertDialogData cupertinoAlertDialogData = const CupertinoAlertDialogData(),
 }) async {
   final cancelLabel = switch (designLanguage) {
     .material => MaterialLocalizations.of(context).cancelButtonLabel,

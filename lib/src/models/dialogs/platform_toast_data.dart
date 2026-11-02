@@ -13,35 +13,6 @@ import 'package:material_ui/material_ui.dart' show SnackBarBehavior;
 /// Default value for the toast's display duration on both platforms. Same as `SnackBar.duration`'s.
 const kDefaultPlatformToastDuration = Duration(seconds: 4);
 
-/// Default value for [CupertinoToastData.backgroundColor]. Translucent, and flips with the theme.
-const kDefaultCupertinoToastBackgroundColor = CupertinoDynamicColor.withBrightness(
-  color: Color(0xCC1F1F1F),
-  darkColor: Color(0xCCFAFAFA),
-);
-
-/// Default value for [CupertinoToastData.foregroundColor]. The background inverted, so the text reads.
-const kDefaultCupertinoToastForegroundColor = CupertinoDynamicColor.withBrightness(
-  color: CupertinoColors.white,
-  darkColor: CupertinoColors.black,
-);
-
-/// Default value for [CupertinoToastData.padding]. Matches the inset on iOS's own notification banner.
-const kDefaultCupertinoToastPadding = EdgeInsets.symmetric(horizontal: 16, vertical: 12);
-
-/// Default value for [CupertinoToastData.outerMargin], keeping the toast off the screen edges so it
-/// doesn't hug the sides of a phone.
-const kDefaultCupertinoToastOuterMargin = EdgeInsets.symmetric(horizontal: 16, vertical: 8);
-
-/// Default value for [CupertinoToastData.borderRadius]. Matches iOS's own notification banner.
-const kDefaultCupertinoToastBorderRadius = BorderRadius.all(Radius.circular(14));
-
-/// Default value for [CupertinoToastData.maxWidth], stopping the toast spanning a tablet or desktop
-/// screen.
-const kDefaultCupertinoToastMaxWidth = 480.0;
-
-/// Default value for [CupertinoToastData.transitionDuration], covering the slide and fade in.
-const kDefaultCupertinoToastTransitionDuration = Duration(milliseconds: 250);
-
 /// The toast's one action, like Undo ([M3 snackbar](https://m3.material.io/components/snackbar/guidelines)).
 /// A [SnackBarAction] on Material, a text button in the banner on Cupertino. Tapping it runs [onPressed]
 /// and closes the toast.
@@ -96,24 +67,34 @@ final class const MaterialToastData({
 /// Cupertino-side settings for `showPlatformToast`. iOS has no toast of its own, so this styles the
 /// banner the package draws instead.
 final class const CupertinoToastData({
-  final Color backgroundColor = kDefaultCupertinoToastBackgroundColor,
+  final Color backgroundColor = const CupertinoDynamicColor.withBrightness(
+    color: Color(0xCC1F1F1F),
+    darkColor: Color(0xCCFAFAFA),
+  ),
 
-  /// Colours the message text.
-  final Color foregroundColor = kDefaultCupertinoToastForegroundColor,
+  /// Colours the message text. The background inverted, so the text reads.
+  final Color foregroundColor = const CupertinoDynamicColor.withBrightness(
+    color: CupertinoColors.white,
+    darkColor: CupertinoColors.black,
+  ),
 
-  /// Around the message text, where [outerMargin] holds the whole toast off the screen edges.
-  final EdgeInsetsGeometry padding = kDefaultCupertinoToastPadding,
+  /// Around the message text, where [outerMargin] holds the whole toast off the screen edges. Matches
+  /// the inset on iOS's own notification banner.
+  final EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
 
-  final EdgeInsetsGeometry outerMargin = kDefaultCupertinoToastOuterMargin,
+  final EdgeInsetsGeometry outerMargin = const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
 
-  final BorderRadiusGeometry borderRadius = kDefaultCupertinoToastBorderRadius,
+  /// Matches iOS's own notification banner.
+  final BorderRadiusGeometry borderRadius = const BorderRadius.all(Radius.circular(14)),
 
-  final double maxWidth = kDefaultCupertinoToastMaxWidth,
+  /// Stops the toast spanning a tablet or desktop screen.
+  final double maxWidth = 480,
 
   /// Left out, you get 15pt in [foregroundColor].
   final TextStyle? textStyle,
 
-  final Duration transitionDuration = kDefaultCupertinoToastTransitionDuration,
+  /// Covers the slide and fade in.
+  final Duration transitionDuration = const Duration(milliseconds: 250),
 }) {
   /// Creates Cupertino-side settings for `showPlatformToast`.
   this;

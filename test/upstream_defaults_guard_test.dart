@@ -85,8 +85,13 @@ void main() {
     ..._ownPicks.keys,
   };
   late final List<_Offender> offenders;
+  late final Iterable<String> nullableRecords;
 
-  setUpAll(() async => offenders = (await _Tracer.resolve()).offenders());
+  setUpAll(() async {
+    final units = await _resolveLib();
+    offenders = _Tracer.of(units).offenders();
+    nullableRecords = _nullableRecords(units);
+  });
 
   test('a field left out sends what the plain upstream widget defaults to, or is listed', () {
     check(
@@ -105,7 +110,55 @@ void main() {
       listed.difference(offenders.map((offender) => offender.row).toSet()),
     ).isEmpty();
   });
+
+  test('a record left out is its empty record, never null', () {
+    check(
+      because:
+          'Default the record to its `const` empty one, or a left-out record and a left-out field '
+          'send different things (APPENDIX.md#left-out-fields).',
+      nullableRecords,
+    ).isEmpty();
+  });
 }
+
+/// lib/, resolved.
+Future<List<ResolvedUnitResult>> _resolveLib() async {
+  final collection = AnalysisContextCollection(
+    includedPaths: [Directory('lib').absolute.path],
+    // `flutter test` runs on flutter_tester, which the analyzer can't take for a Dart SDK.
+    sdkPath: '${Platform.environment['FLUTTER_ROOT']}/bin/cache/dart-sdk',
+  );
+
+  return (await collection.contexts
+          .expand(
+            (context) => context.contextRoot
+                .analyzedFiles()
+                .where((path) => path.endsWith('.dart'))
+                .map(context.currentSession.getResolvedUnit),
+          )
+          .wait)
+      .whereType<ResolvedUnitResult>()
+      .toList(growable: false);
+}
+
+/// Every parameter that takes one of the package's records but lets it be null.
+Iterable<String> _nullableRecords(List<ResolvedUnitResult> units) => units.expand(
+  (unit) => _nodesUnder(unit.unit)
+      .whereType<FormalParameter>()
+      .where(
+        (node) => switch (node.declaredFragment?.element.type) {
+          InterfaceType(:final element, nullabilitySuffix: NullabilitySuffix.question) =>
+            _isOurs(element) &&
+                (element.name ?? '').startsWith(RegExp('Material|Cupertino')) &&
+                (element.name ?? '').endsWith('Data'),
+          _ => false,
+        },
+      )
+      .map(
+        (node) =>
+            '${unit.uri}:${unit.lineInfo.getLocation(node.offset).lineNumber}: ${node.name?.lexeme}',
+      ),
+);
 
 /// A value that isn't upstream's default: its `'<file>: <call>.<parameter>'` row, and what and where.
 typedef _Offender = ({String row, String description});
@@ -123,23 +176,7 @@ final class _Tracer(
   final Map<LocalVariableElement, Expression> _locals,
   final Map<ConstructorElement, List<ConstructorFieldInitializer>> _initializers,
 ) {
-  static Future<_Tracer> resolve() async {
-    final collection = AnalysisContextCollection(
-      includedPaths: [Directory('lib').absolute.path],
-      // `flutter test` runs on flutter_tester, which the analyzer can't take for a Dart SDK.
-      sdkPath: '${Platform.environment['FLUTTER_ROOT']}/bin/cache/dart-sdk',
-    );
-    final units =
-        (await collection.contexts
-                .expand(
-                  (context) => context.contextRoot
-                      .analyzedFiles()
-                      .where((path) => path.endsWith('.dart'))
-                      .map(context.currentSession.getResolvedUnit),
-                )
-                .wait)
-            .whereType<ResolvedUnitResult>()
-            .toList(growable: false);
+  factory of(List<ResolvedUnitResult> units) {
     final barrel = units.singleWhere(
       (unit) => unit.uri.path == 'platform_adaptive_widgets/platform_adaptive_widgets.dart',
     );

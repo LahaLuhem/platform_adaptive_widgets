@@ -40,9 +40,6 @@ const kDefaultCupertinoNotchedListTileLeadingSize = 30.0;
 /// Mirrors Flutter's private `_kNotchedLeadingToTitle`. Recheck on SDK bumps.
 const kDefaultCupertinoNotchedListTileLeadingToTitle = 12.0;
 
-/// Default value for [CupertinoListTileData.isNotched].
-const kDefaultCupertinoListTileIsNotched = false;
-
 /// Shared-visual fields for [PlatformListTile], forwarded into both records via `super.x`. Private,
 /// never exported. The names diverge across platforms, so see `APPENDIX.md#field-classification` and
 /// `APPENDIX.md#cross-platform-field-mappings`.
@@ -158,7 +155,7 @@ final class const CupertinoListTileData({
 
   /// Renders [CupertinoListTile.notched] instead of the plain [CupertinoListTile], which mostly changes
   /// the default geometry.
-  final bool isNotched = kDefaultCupertinoListTileIsNotched,
+  final bool isNotched = false,
 }) extends _PlatformListTileData {
   /// Creates Cupertino-side settings for [PlatformListTile].
   this;

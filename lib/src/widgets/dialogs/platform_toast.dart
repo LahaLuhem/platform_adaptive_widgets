@@ -35,8 +35,8 @@ Future<void> showPlatformToast({
   required String message,
   Duration duration = kDefaultPlatformToastDuration,
   PlatformToastAction? action,
-  MaterialToastData? materialToastData,
-  CupertinoToastData? cupertinoToastData,
+  MaterialToastData materialToastData = const MaterialToastData(),
+  CupertinoToastData cupertinoToastData = const CupertinoToastData(),
 }) => switch (designLanguage) {
   .material =>
     ScaffoldMessenger.of(context)
@@ -44,24 +44,24 @@ Future<void> showPlatformToast({
           SnackBar(
             content: Text(message),
             duration: duration,
-            backgroundColor: materialToastData?.backgroundColor,
-            elevation: materialToastData?.elevation,
-            margin: materialToastData?.margin,
-            padding: materialToastData?.padding,
-            width: materialToastData?.width,
-            shape: materialToastData?.shape,
-            hitTestBehavior: materialToastData?.hitTestBehavior,
-            behavior: materialToastData?.snackBarBehavior,
+            backgroundColor: materialToastData.backgroundColor,
+            elevation: materialToastData.elevation,
+            margin: materialToastData.margin,
+            padding: materialToastData.padding,
+            width: materialToastData.width,
+            shape: materialToastData.shape,
+            hitTestBehavior: materialToastData.hitTestBehavior,
+            behavior: materialToastData.snackBarBehavior,
             action: action == null
                 ? null
                 : SnackBarAction(label: action.label, onPressed: action.onPressed),
-            actionOverflowThreshold: materialToastData?.actionOverflowThreshold,
-            showCloseIcon: materialToastData?.showCloseIcon,
-            closeIconColor: materialToastData?.closeIconColor,
-            clipBehavior: materialToastData?.clipBehavior ?? Clip.hardEdge,
-            animation: materialToastData?.animation,
-            onVisible: materialToastData?.onVisible,
-            dismissDirection: materialToastData?.dismissDirection,
+            actionOverflowThreshold: materialToastData.actionOverflowThreshold,
+            showCloseIcon: materialToastData.showCloseIcon,
+            closeIconColor: materialToastData.closeIconColor,
+            clipBehavior: materialToastData.clipBehavior,
+            animation: materialToastData.animation,
+            onVisible: materialToastData.onVisible,
+            dismissDirection: materialToastData.dismissDirection,
           ),
         )
         .closed,
@@ -70,7 +70,7 @@ Future<void> showPlatformToast({
     message: message,
     duration: duration,
     action: action,
-    data: cupertinoToastData ?? const CupertinoToastData(),
+    data: cupertinoToastData,
   ),
 };
 

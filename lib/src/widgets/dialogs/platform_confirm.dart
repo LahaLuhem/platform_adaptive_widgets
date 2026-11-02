@@ -33,8 +33,8 @@ Future<bool> showPlatformConfirm({
   RouteSettings? routeSettings,
   bool useRootNavigator = kDefaultUseRootNavigator,
   bool? requestFocus,
-  MaterialAlertDialogData? materialAlertDialogData,
-  CupertinoAlertDialogData? cupertinoAlertDialogData,
+  MaterialAlertDialogData materialAlertDialogData = const MaterialAlertDialogData(),
+  CupertinoAlertDialogData cupertinoAlertDialogData = const CupertinoAlertDialogData(),
 }) => showPlatformConfirmAlert(
   context: context,
   title: title,

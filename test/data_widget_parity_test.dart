@@ -8,8 +8,8 @@
 //      and ctor-params -> field-decls, but nothing forces the widget to mirror the base. A base field
 //      added without a flat widget twin compiles, yet can never be set at the call site.
 //
-//   2. Build-method wiring, every base field is merged via `materialXxxData?.field ?? field` in
-//      `buildMaterial` AND `cupertinoXxxData?.field ?? field` in `buildCupertino`. A forgotten fallback
+//   2. Build-method wiring, every base field is merged via `materialXxxData.field ?? field` in
+//      `buildMaterial` AND `cupertinoXxxData.field ?? field` in `buildCupertino`. A forgotten fallback
 //      (or one pointing at the wrong flat field) compiles, type-checks, and silently drops the per-platform
 //      override. This is the more dangerous edge and the one the compiler is blindest to.
 //
@@ -104,7 +104,7 @@ void main() {
       ).isEmpty();
     });
 
-    test('every shared-visual field is merged via `data?.field ?? field` in '
+    test('every shared-visual field is merged via `data.field ?? field` in '
         'both build methods', () {
       final offenders = bases.expand((base) {
         final widget = widgetsByName[base.widgetName];
@@ -121,14 +121,14 @@ void main() {
               .map(
                 (field) =>
                     '${widget.filePath}: ${branch.key} does not merge `$field` '
-                    'via `${branch.value.accessor}?.$field ?? $field`',
+                    'via `${branch.value.accessor}.$field ?? $field`',
               ),
         );
       });
       check(
         because:
             'A shared-visual base field is not merged with the documented '
-            '`materialXxxData?.field ?? field` / `cupertinoXxxData?.field ?? '
+            '`materialXxxData.field ?? field` / `cupertinoXxxData.field ?? '
             'field` idiom in one or both build methods. A missing fallback '
             'compiles but silently drops the per-platform override (or the flat '
             'default). Wire the field in both `buildMaterial` and '
@@ -179,7 +179,7 @@ Map<String, _Widget> _collectWidgetClasses() => Map.fromEntries(
   ),
 );
 
-/// Fields merged as `<accessorPrefix>…?.field ?? field` inside [node]'s [methodName].
+/// Fields merged as `<accessorPrefix>….field ?? field` inside [node]'s [methodName].
 Set<String> _mergedFields(ClassDeclaration node, String methodName, String accessorPrefix) {
   final visitor = _MergeVisitor(accessorPrefix);
   final methods = node.body.members.whereType<MethodDeclaration>().where(
@@ -199,13 +199,12 @@ class _MergeVisitor(final String _accessorPrefix) extends RecursiveAstVisitor<vo
   void visitBinaryExpression(BinaryExpression node) {
     final left = node.leftOperand;
     final right = node.rightOperand;
-    if (node.operator.lexeme == '??' && right is SimpleIdentifier && left is PropertyAccess) {
-      final target = left.target;
-      if (target is SimpleIdentifier &&
-          target.name.toLowerCase().startsWith(_accessorPrefix) &&
-          left.propertyName.name == right.name) {
-        merged.add(right.name);
-      }
+    if (node.operator.lexeme == '??' &&
+        right is SimpleIdentifier &&
+        left is PrefixedIdentifier &&
+        left.prefix.name.toLowerCase().startsWith(_accessorPrefix) &&
+        left.identifier.name == right.name) {
+      merged.add(right.name);
     }
     super.visitBinaryExpression(node);
   }

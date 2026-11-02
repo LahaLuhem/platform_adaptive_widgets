@@ -105,7 +105,7 @@ The `dynamic`-escape-hatch ban and the `print()`-in-library ban are listed under
   opaque to the next reader and indistinguishable from a typo:
 
   | Don't write            | Write instead                                                                                                     |
-    |------------------------|-------------------------------------------------------------------------------------------------------------------|
+  |------------------------|-------------------------------------------------------------------------------------------------------------------|
   | `cb`                   | `callback` (with the type-suffix rule below: `<context>Callback` if shared scope makes bare `callback` ambiguous) |
   | `fn`                   | `function` / `handler` / spell out the semantic role                                                              |
   | `cfg`                  | `config`                                                                                                          |
@@ -250,7 +250,7 @@ The `dynamic`-escape-hatch ban and the `print()`-in-library ban are listed under
 - **Inline single-use defaults. Don't promote to a named `kDefault…` constant.** A `kDefaultXxx`
   declaration earns its name when the value is read from **more than one place**: typically a data
   class's field default *and* a widget's `build*`-method substitution
-  (`materialFooData?.bar ?? kDefaultFooBar`). When the value appears only as one constructor's
+  (`materialFooData.bar ?? kDefaultFooBar`). When the value appears only as one constructor's
   parameter default, no second reader, no cross-file substitution, leave it as a literal at the
   constructor and skip the constant. 2 reasons:
   1. **API pollution.** Top-level `kDefaultXxx` constants (and public `static const` defaults on
@@ -364,14 +364,14 @@ final class PlatformSwitch extends PlatformWidgetBase {
   // visual tuning is opt-in via the two records.
   final bool value;
   final ValueChanged<bool> onChanged;
-  final MaterialSwitchData? materialSwitchData;
-  final CupertinoSwitchData? cupertinoSwitchData;
+  final MaterialSwitchData materialSwitchData;
+  final CupertinoSwitchData cupertinoSwitchData;
 
   const PlatformSwitch({
     required this.value,
     required this.onChanged,
-    this.materialSwitchData,
-    this.cupertinoSwitchData,
+    this.materialSwitchData = const MaterialSwitchData(),
+    this.cupertinoSwitchData = const CupertinoSwitchData(),
     super.key,
   });
 

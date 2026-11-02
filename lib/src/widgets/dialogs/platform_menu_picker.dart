@@ -76,8 +76,8 @@ class const PlatformMenuPicker<T extends Object>({
   final ValueChanged<T>? onSelected,
   MenuPickerItem Function(T choice)? menuPickerItemTransformer,
 
-  final MaterialMenuPickerData? materialMenuPickerData,
-  final CupertinoMenuPickerData? cupertinoMenuPickerData,
+  final MaterialMenuPickerData materialMenuPickerData = const MaterialMenuPickerData(),
+  final CupertinoMenuPickerData cupertinoMenuPickerData = const CupertinoMenuPickerData(),
   super.widgetKey,
   super.key,
 }) extends PlatformWidgetKeyedBase {
@@ -116,12 +116,10 @@ class const PlatformMenuPicker<T extends Object>({
   Widget buildCupertino(BuildContext context) => _CupertinoMenuPicker(
     pickerSnapshot: _pickerSnapshot(),
     isEnabled: _canOpen,
-    useIconButton:
-        cupertinoMenuPickerData?.useIconButtonVariant ??
-        kDefaultCupertinoMenuPickerUseIconButtonVariant,
+    useIconButton: cupertinoMenuPickerData.useIconButtonVariant,
     leadingIcon: leadingIcon,
     labelText: labelText,
-    backgroundColor: cupertinoMenuPickerData?.backgroundColor,
+    backgroundColor: cupertinoMenuPickerData.backgroundColor,
   );
 
   // A set can't be read by row, so one walk over it makes the rows and finds the current one.
@@ -152,7 +150,7 @@ final class const _MaterialMenuPicker({
   required final Widget? leadingIcon,
   required final String? labelText,
   required final ValueChanged<int> onPicked,
-  required final MaterialMenuPickerData? data,
+  required final MaterialMenuPickerData data,
 }) extends StatefulWidget {
   @override
   State<_MaterialMenuPicker> createState() => _MaterialMenuPickerState();
@@ -185,9 +183,9 @@ final class _MaterialMenuPickerState() extends State<_MaterialMenuPicker> {
   @override
   Widget build(BuildContext context) => DropdownMenu<int>(
     controller: _controller,
-    expandedInsets: widget.data?.expandedInsets,
-    showTrailingIcon: widget.data?.showTrailingIcon ?? kDefaultMaterialMenuPickerShowTrailingIcon,
-    inputDecorationTheme: widget.data?.inputDecorationThemeData,
+    expandedInsets: widget.data.expandedInsets,
+    showTrailingIcon: widget.data.showTrailingIcon,
+    inputDecorationTheme: widget.data.inputDecorationThemeData,
     enabled: widget.isEnabled,
     leadingIcon: widget.leadingIcon,
     label: widget.labelText == null ? null : Text(widget.labelText!),
