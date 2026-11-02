@@ -88,6 +88,7 @@ class ContainersDemoView extends StatelessWidget {
                 // Center draws like threeLine on this two-line tile.
                 values: const {.threeLine, .titleHeight, .top, .bottom},
                 onChanged: viewModel.onListTileTitleAlignmentSelected,
+                onCleared: () => viewModel.onListTileTitleAlignmentSelected(null),
               ),
             ],
           ),
