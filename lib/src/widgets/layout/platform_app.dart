@@ -264,7 +264,7 @@ class PlatformApp extends PlatformWidgetKeyedBase {
           navigatorObservers: navigatorObservers,
           onNavigationNotification: onNavigationNotification,
           builder: builder,
-          title: title,
+          title: title ?? const MaterialApp().title,
           onGenerateTitle: onGenerateTitle,
           color: color,
           locale: locale,

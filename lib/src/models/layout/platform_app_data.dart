@@ -28,6 +28,9 @@ const kDefaultShowSemanticsDebugger = false;
 /// Default value for `debugShowCheckedModeBanner` on [PlatformApp] / [PlatformApp.router].
 const kDefaultDebugShowCheckedModeBanner = true;
 
+/// Default value for [MaterialAppData.themeMode]. Matches upstream.
+const kDefaultMaterialAppThemeMode = ThemeMode.system;
+
 /// Default value for `supportedLocales` on [PlatformApp] / [PlatformApp.router].
 const kDefaultSupportedLocales = [Locale('en', 'US')];
 
@@ -59,7 +62,7 @@ final class const MaterialAppData({
   final ThemeData? highContrastDarkTheme,
 
   /// Light, dark, or follow the system.
-  final ThemeMode? themeMode,
+  final ThemeMode? themeMode = kDefaultMaterialAppThemeMode,
 
   /// How long a theme change takes to cross-fade.
   final Duration themeAnimationDuration = kMaterialDefaultThemeAnimationDuration,
