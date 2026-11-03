@@ -128,10 +128,7 @@ class const SelectionDemoView({required final bool shouldEnable, super.key})
                 selectedChoice: viewModel.selectedDirection,
                 segmentBuilder: (direction) => Text(direction.name),
                 onSelectionChanged: viewModel.onDirectionChanged,
-                // Material can't disable a segment upstream, so only Cupertino dims these.
-                cupertinoSegmentButtonData: CupertinoSegmentButtonData(
-                  disabledChildren: {if (!shouldEnable) ...AxisDirection.values},
-                ),
+                disabledChildren: {if (!shouldEnable) ...AxisDirection.values},
               ),
               PlatformSingleSelectList(
                 options: AxisDirection.values.toSet(),
