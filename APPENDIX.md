@@ -278,14 +278,17 @@ widget, those whose shared-visual fields live on a private `_PlatformXxxData` ba
    idiom from [*Where each bucket lives*](#field-classification)). A forgotten or misdirected
    fallback compiles, type-checks, and silently drops the per-platform override, the more dangerous
    edge, and the one the compiler is blindest to.
-3. **Finds a base**, so a future analyzer-AST change or a `lib/src/models/` move can't quietly
+3. **Every record field is read**: every field of every `MaterialXxxData` and `CupertinoXxxData`,
+   canonical widget or not, is read somewhere in `lib/src/`. A field nothing reads compiles, yet
+   drops what the caller set.
+4. **Finds a base**, so a future analyzer-AST change or a `lib/src/models/` move can't quietly
    reduce 1 and 2 to a vacuous pass.
-4. **Finds fields on every base**, since a new way of declaring them hides them all: the move to
+5. **Finds fields on every base**, since a new way of declaring them hides them all: the move to
    primary constructors did, and 1 and 2 passed on nothing until this one.
 
-1 and 2 catch the 2 *mechanical* drift modes (a new shared field left unmirrored, or wired in only
-one builder). They don't adjudicate whether a field *belongs* on the shared base vs a per-platform
-record. That's the human judgement the buckets above describe.
+1 to 3 catch the *mechanical* drift modes (a new shared field left unmirrored, wired in only one
+builder, or read nowhere). They don't adjudicate whether a field *belongs* on the shared base vs a
+per-platform record. That's the human judgement the buckets above describe.
 
 ---
 

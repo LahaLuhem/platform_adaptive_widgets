@@ -6,6 +6,7 @@
 
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:minted_chronology/minted_chronology.dart' show DateConstants;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 void main() => runApp(const _App());
@@ -139,9 +140,9 @@ class _Surfaces extends StatelessWidget {
       PlatformButton(
         onPressed: () => showPlatformDatePicker(
           context: context,
-          firstDate: Date.of(2020).getOrThrow(),
-          lastDate: Date.of(2030).getOrThrow(),
-          initialDate: Date.of(2024).getOrThrow(),
+          firstDate: DateConstants.min,
+          lastDate: DateConstants.max,
+          initialDate: Date.now(),
         ),
         emphasis: .low,
         child: const Text('date'),

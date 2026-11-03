@@ -5,6 +5,7 @@
 
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -17,12 +18,13 @@ final _halfNames = {
 };
 
 void dataWidgetParityGuard() {
+  late final List<LibSrcUnit> units;
   late final List<_Base> bases;
   late final Map<String, _Widget> widgetsByName;
 
   group('Data/widget parity guard', () {
     setUpAll(() async {
-      final units = await analyzedLibSrc;
+      units = await analyzedLibSrc;
       bases = _collectBases(units).toList(growable: false);
       widgetsByName = _collectWidgetClasses(units);
     });
@@ -102,7 +104,41 @@ void dataWidgetParityGuard() {
         offenders,
       ).isEmpty();
     });
+
+    test('every per-look record field is read somewhere in lib/src', () {
+      final fields = _recordFields(units);
+      check(
+        because: 'Found no record field at all, so the check below passes on nothing.',
+        fields,
+      ).isNotEmpty();
+      final read = visitAll(
+        units,
+        (_) => _FieldReadVisitor(),
+      ).expand((visitor) => visitor.read).toSet();
+      check(
+        because: 'A field nothing reads drops what the caller set. Pass it on, or remove it.',
+        fields.difference(read).map((field) => '${field.enclosingElement.name}.${field.name}'),
+      ).isEmpty();
+    });
   });
+}
+
+/// The instance fields of every per-look record, and of the bases it shares them from.
+Set<FieldElement> _recordFields(List<LibSrcUnit> units) {
+  final records = units
+      .expand((unit) => unit.ast.declaredFragment!.classes)
+      .map((fragment) => fragment.element)
+      .where((element) => isLookRecord(element.thisType));
+  final owners = <InterfaceElement>{};
+  for (final record in records) {
+    InterfaceElement? owner = record;
+    // Up the superclass chain, stopping at a base another record already took in.
+    while (owner != null && isOurs(owner) && owners.add(owner)) {
+      owner = owner.supertype?.element;
+    }
+  }
+
+  return owners.expand((owner) => owner.fields).where((field) => !field.isStatic).toSet();
 }
 
 Iterable<_Base> _collectBases(List<LibSrcUnit> units) => _under(units, 'lib/src/models/').expand(
@@ -153,6 +189,20 @@ _Half _half(ClassDeclaration node, String look, Set<String> names) {
   method?.body.accept(visitor);
 
   return _Half(name: method?.name.lexeme ?? names.first, look: look, merged: visitor.merged);
+}
+
+class _FieldReadVisitor() extends RecursiveAstVisitor<void> {
+  final Set<FieldElement> read = {};
+
+  @override
+  void visitSimpleIdentifier(SimpleIdentifier node) {
+    // A doc comment's `[Record.field]` resolves too, but reads nothing.
+    if (node.element case GetterElement(variable: final FieldElement field)
+        when node.thisOrAncestorOfType<Comment>() == null) {
+      read.add(field.baseElement);
+    }
+    super.visitSimpleIdentifier(node);
+  }
 }
 
 class _MergeVisitor(final String _accessorPrefix) extends RecursiveAstVisitor<void> {
