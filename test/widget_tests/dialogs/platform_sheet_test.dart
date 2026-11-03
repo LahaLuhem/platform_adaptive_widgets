@@ -1,12 +1,10 @@
 import 'dart:async';
 
 import 'package:checks/checks.dart';
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoLocalizations;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:material_ui/material_ui.dart'
-    show AppBar, BottomSheet, CloseButton, MaterialLocalizations;
+import 'package:material_ui/material_ui.dart' show AppBar, BottomSheet, CloseButton;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 import '../../support/support.dart';
@@ -75,28 +73,19 @@ Future<String?> _open(
 PlatformUnsavedChanges _guard(bool Function() hasChanges) =>
     PlatformUnsavedChanges(hasChanges: hasChanges, message: _message, discardLabel: _discard);
 
-bool _isUp(WidgetTester tester) => tester.any(find.byKey(_bodyKey));
+bool _isUp() => find.byKey(_bodyKey).evaluate().isNotEmpty;
 
-bool _isAsking(WidgetTester tester) => tester.any(find.text(_message));
+bool _isAsking() => find.text(_message).evaluate().isNotEmpty;
 
 // Each bar adds its own way out. An open ask brings a second Cancel above the sheet, so the bar's is
 // the first one and the ask's the last.
 Finder _wayOut(WidgetTester tester) => switch (designLanguage) {
   .material => find.byType(CloseButton),
-  .cupertino =>
-    find
-        .text(CupertinoLocalizations.of(tester.element(find.byKey(_bodyKey))).cancelButtonLabel)
-        .first,
+  .cupertino => find.text(cancelLabel(tester.element(find.byKey(_bodyKey)))).first,
 };
 
-Finder _askCancel(WidgetTester tester) {
-  final context = tester.element(find.byKey(_bodyKey));
-
-  return find.text(switch (designLanguage) {
-    .material => MaterialLocalizations.of(context).cancelButtonLabel,
-    .cupertino => CupertinoLocalizations.of(context).cancelButtonLabel,
-  }).last;
-}
+Finder _askCancel(WidgetTester tester) =>
+    find.text(cancelLabel(tester.element(find.byKey(_bodyKey)))).last;
 
 Future<double> _sheetHeightAround(WidgetTester tester, double bodyHeight) async {
   unawaited(
@@ -105,7 +94,7 @@ Future<double> _sheetHeightAround(WidgetTester tester, double bodyHeight) async 
       body: SizedBox(key: _bodyKey, height: bodyHeight),
     ),
   );
-  await tester.pumpAndSettle();
+  await pumpTransition(tester);
   final height = tester.getSize(find.byType(BottomSheet)).height;
   await tester.pumpWidget(const SizedBox());
 
@@ -121,13 +110,13 @@ void main() {
   feature('showPlatformSheet', () {
     scenarioWidgets("closes with null through its bar's own way out", (tester) async {
       final result = _open(await _pumpPhone(tester));
-      await tester.pumpAndSettle();
-      check(_isUp(tester)).isTrue();
+      await pumpTransition(tester);
+      check(_isUp()).isTrue();
 
       await tester.tap(_wayOut(tester));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(_isUp(tester)).isFalse();
+      check(_isUp()).isFalse();
       check(await result).isNull();
     });
 
@@ -141,19 +130,19 @@ void main() {
         ),
       );
       final result = _open(context, appBarBuilder: _saveBar);
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       await tester.tap(find.text(_save));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       // Closed first, or the result never comes.
-      check(_isUp(tester)).isFalse();
+      check(_isUp()).isFalse();
       check(await result).equals(_saved);
     });
 
     scenarioWidgets('keeps a low text field above the keyboard', (tester) async {
       unawaited(_open(await _pumpPhone(tester), body: _lowField));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
       final keyboardTop = _phone.height - _keyboardHeight;
       // Low enough for the keyboard to cover it, or the last check proves nothing.
       check(tester.getRect(find.byKey(_fieldKey)).bottom).isGreaterThan(keyboardTop);
@@ -161,7 +150,7 @@ void main() {
       tester.view.viewInsets = FakeViewPadding(
         bottom: _keyboardHeight * tester.view.devicePixelRatio,
       );
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(tester.getRect(find.byKey(_fieldKey)).bottom).isLessOrEqual(keyboardTop);
     });
@@ -175,7 +164,7 @@ void main() {
 
     scenarioWidgets("draws an Android sheet's bar on the sheet's own color", (tester) async {
       unawaited(_open(await _pumpPhone(tester)));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
       final bar = tester.getRect(find.byType(AppBar));
       final body = tester.getRect(find.byKey(_bodyKey));
 
@@ -192,100 +181,101 @@ void main() {
     scenarioWidgets('opens a long Android sheet up to the status bar', (tester) async {
       final context = await _pumpPhone(tester, statusBarHeight: _statusBarHeight);
       unawaited(_open(context, body: _longList));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(tester.getRect(find.byType(BottomSheet)).top).equals(_statusBarHeight);
     }, variant: androidOnly);
 
     scenarioWidgets('still gives an iOS sheet without a bar its Cancel', (tester) async {
       final result = _open(await _pumpPhone(tester), appBarBuilder: null);
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
+      check(find.text(cancelLabel(tester.element(find.byKey(_bodyKey)))).evaluate()).isNotEmpty();
 
       await tester.tap(_wayOut(tester));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(_isUp(tester)).isFalse();
+      check(_isUp()).isFalse();
       check(await result).isNull();
     }, variant: iosOnly);
 
     scenarioWidgets("shows M3's plain sheet on Android without a bar", (tester) async {
       unawaited(_open(await _pumpPhone(tester), appBarBuilder: null));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(_isUp(tester)).isTrue();
-      check(tester.any(find.byType(AppBar))).isFalse();
+      check(_isUp()).isTrue();
+      check(find.byType(AppBar).evaluate()).isEmpty();
     }, variant: androidOnly);
 
     scenarioWidgets('asks before Back closes it with unsaved changes', (tester) async {
       unawaited(_open(await _pumpPhone(tester), unsavedChanges: _guard(() => true)));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       await tester.binding.handlePopRoute();
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(_isAsking(tester)).isTrue();
-      check(_isUp(tester)).isTrue();
+      check(_isAsking()).isTrue();
+      check(_isUp()).isTrue();
     });
 
     scenarioWidgets('asks before its scrim closes it with unsaved changes', (tester) async {
       unawaited(_open(await _pumpPhone(tester), unsavedChanges: _guard(() => true)));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       await tester.tapAt(const Offset(4, 4));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(_isAsking(tester)).isTrue();
-      check(_isUp(tester)).isTrue();
+      check(_isAsking()).isTrue();
+      check(_isUp()).isTrue();
     }, variant: androidOnly);
 
     scenarioWidgets('stays up when the person keeps their changes', (tester) async {
       unawaited(_open(await _pumpPhone(tester), unsavedChanges: _guard(() => true)));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
       await tester.tap(_wayOut(tester));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       await tester.tap(_askCancel(tester));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(_isAsking(tester)).isFalse();
-      check(_isUp(tester)).isTrue();
+      check(_isAsking()).isFalse();
+      check(_isUp()).isTrue();
     });
 
     scenarioWidgets('closes with null when the person discards their changes', (tester) async {
       final result = _open(await _pumpPhone(tester), unsavedChanges: _guard(() => true));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
       await tester.tap(_wayOut(tester));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       await tester.tap(find.text(_discard));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(_isUp(tester)).isFalse();
+      check(_isUp()).isFalse();
       check(await result).isNull();
     });
 
     scenarioWidgets('asks about changes made after it opened', (tester) async {
       var hasChanges = false;
       unawaited(_open(await _pumpPhone(tester), unsavedChanges: _guard(() => hasChanges)));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
       // The person types something.
       hasChanges = true;
 
       await tester.tap(_wayOut(tester));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(_isAsking(tester)).isTrue();
+      check(_isAsking()).isTrue();
     });
 
     scenarioWidgets('closes at once when nothing is unsaved', (tester) async {
       unawaited(_open(await _pumpPhone(tester), unsavedChanges: _guard(() => false)));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       await tester.tap(_wayOut(tester));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(_isAsking(tester)).isFalse();
-      check(_isUp(tester)).isFalse();
+      check(_isAsking()).isFalse();
+      check(_isUp()).isFalse();
     });
 
     scenarioWidgets("closes with a Save's value without asking", (tester) async {
@@ -294,12 +284,12 @@ void main() {
         appBarBuilder: _saveBar,
         unsavedChanges: _guard(() => true),
       );
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       await tester.tap(find.text(_save));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(_isAsking(tester)).isFalse();
+      check(_isAsking()).isFalse();
       check(await result).equals(_saved);
     });
 
@@ -308,13 +298,13 @@ void main() {
       examples: {'without a guard': null, 'with unsaved changes': _guard(() => true)},
       outline: (tester, unsavedChanges) async {
         unawaited(_open(await _pumpPhone(tester), unsavedChanges: unsavedChanges));
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
 
         await tester.flingFrom(tester.getCenter(find.byKey(_bodyKey)), const Offset(0, 500), 2000);
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
 
         // The unguarded row proves the fling is strong enough to close a sheet.
-        check(_isUp(tester)).equals(unsavedChanges != null);
+        check(_isUp()).equals(unsavedChanges != null);
       },
     );
   });

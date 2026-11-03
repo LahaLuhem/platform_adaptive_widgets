@@ -77,9 +77,11 @@ void main() {
     }, variant: androidOnly);
 
     scenarioWidgets("lists the options top to bottom, in the set's order", (tester) async {
-      await pumpInPlatformScaffold(tester, const _Fruits());
+      // Neither the enum's order nor the alphabet's, so a sort shows.
+      const options = {_Fruit.plum, _Fruit.apple, _Fruit.pear};
+      await pumpInPlatformScaffold(tester, const _Fruits(options: options));
 
-      final corners = [for (final fruit in _Fruit.values) tester.getTopLeft(find.text(fruit.name))];
+      final corners = [for (final fruit in options) tester.getTopLeft(find.text(fruit.name))];
       final tops = [for (final corner in corners) corner.dy];
 
       check(corners.map((corner) => corner.dx).toSet()).length.equals(1);

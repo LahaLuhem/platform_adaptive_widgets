@@ -5,11 +5,7 @@ import 'dart:async';
 
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart'
-    show
-        CupertinoButton,
-        CupertinoLocalizations,
-        CupertinoNavigationBarBackButton,
-        CupertinoSheetRoute;
+    show CupertinoButton, CupertinoNavigationBarBackButton, CupertinoSheetRoute;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart'
@@ -63,14 +59,12 @@ Future<void> _openInSheet(WidgetTester tester, Widget page) async {
       context,
     ).push(CupertinoSheetRoute<void>(scrollableBuilder: (_, _) => page)),
   });
-  await tester.pumpAndSettle();
+  await pumpTransition(tester);
 }
 
 Finder _sheetWayOut(WidgetTester tester) => switch (designLanguage) {
   .material => find.byType(CloseButton),
-  .cupertino => find.text(
-    CupertinoLocalizations.of(tester.element(find.byKey(_sheetBody))).cancelButtonLabel,
-  ),
+  .cupertino => find.text(cancelLabel(tester.element(find.byKey(_sheetBody)))),
 };
 
 // Where the action's content sits, and the button around it.
@@ -202,13 +196,13 @@ void main() {
               const PlatformScaffold(appBarData: PlatformAppBar(), body: SizedBox()),
         ),
       );
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       await tester.tap(switch (designLanguage) {
         .material => find.byType(BackButton),
         .cupertino => find.byType(CupertinoNavigationBarBackButton),
       });
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(find.text(_first).evaluate()).isNotEmpty();
     });
@@ -217,7 +211,7 @@ void main() {
       await _openInSheet(tester, _sheetPage);
 
       await tester.tap(_sheetWayOut(tester));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(find.byKey(_sheetBody).evaluate()).isEmpty();
     });
@@ -237,7 +231,7 @@ void main() {
       );
 
       await tester.tap(_sheetWayOut(tester));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(find.byKey(_sheetBody).evaluate()).isNotEmpty();
       check(attempts).equals(1);

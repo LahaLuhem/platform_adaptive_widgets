@@ -41,7 +41,7 @@ void main() {
       check(await _seeThroughPixels(tester)).isGreaterThan(0);
 
       unawaited(_open(context));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(await _seeThroughPixels(tester)).equals(0);
     });
@@ -52,7 +52,7 @@ void main() {
       final context = await pumpForContext(tester);
 
       unawaited(_open(context));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       // The flag both bars read, not the button, since what each bar draws is Flutter's call.
       check(ModalRoute.of(tester.element(find.byWidget(_body)))!.fullscreenDialog).isTrue();
@@ -77,10 +77,10 @@ void main() {
         ),
         builder: (_) => _body,
       );
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       await tester.tap(find.text(_save));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       // Closed first, or the result never comes.
       check(find.byWidget(_body).evaluate()).isEmpty();

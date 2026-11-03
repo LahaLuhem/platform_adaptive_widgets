@@ -40,7 +40,7 @@ Future<bool> _show(
   actionKind: actionKind,
 );
 
-bool _isShowing(WidgetTester tester) => tester.any(find.text(_title));
+bool _isShowing() => find.text(_title).evaluate().isNotEmpty;
 
 Offset _center(WidgetTester tester, String label) => tester.getCenter(find.text(label).last);
 
@@ -55,12 +55,12 @@ void main() {
       outline: (tester, row) async {
         final context = await _pumpPage(tester);
         final answerFuture = _show(context);
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
 
         await tester.tap(find.text(row.button).last);
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
 
-        check(_isShowing(tester)).isFalse();
+        check(_isShowing()).isFalse();
         check(await answerFuture).equals(row.answer);
       },
     );
@@ -68,19 +68,19 @@ void main() {
     scenarioWidgets('answers no when closed from outside', (tester) async {
       final context = await _pumpPage(tester);
       final answerFuture = _show(context);
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       await tester.tapAt(const Offset(4, 4));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(_isShowing(tester)).isFalse();
+      check(_isShowing()).isFalse();
       check(await answerFuture).isFalse();
     }, variant: androidOnly);
 
     scenarioWidgets('puts Cancel before the confirming button', (tester) async {
       final context = await _pumpPage(tester);
       unawaited(_show(context));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(_center(tester, 'Cancel').dy).equals(_center(tester, _confirm).dy);
       check(_center(tester, 'Cancel').dx).isLessThan(_center(tester, _confirm).dx);
@@ -98,11 +98,12 @@ void main() {
       final context = await _pumpPage(tester);
 
       unawaited(_show(context, confirmLabel: longConfirm));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(_center(tester, 'Cancel').dy).isGreaterThan(_center(tester, longConfirm).dy);
     }, variant: androidOnly);
 
+    // German, so a hard-coded English Cancel can't pass.
     scenarioWidgets("labels Cancel in the app's language", (tester) async {
       await tester.pumpWidget(
         const PlatformApp(
@@ -113,11 +114,11 @@ void main() {
         ),
       );
 
-      unawaited(_show(tester.element(find.byWidget(_page))));
-      await tester.pumpAndSettle();
+      final context = tester.element(find.byWidget(_page));
+      unawaited(_show(context));
+      await pumpTransition(tester);
 
-      check(tester.any(find.text(_confirm))).isTrue();
-      check(tester.any(find.text('Abbrechen'))).isTrue();
+      check(find.text(cancelLabel(context)).evaluate()).isNotEmpty();
     });
 
     scenarioOutlineWidgets<PlatformActionKind>(
@@ -127,7 +128,7 @@ void main() {
       outline: (tester, actionKind) async {
         final context = await _pumpPage(tester);
         unawaited(_show(context, actionKind: actionKind));
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
 
         final confirmTextStyle = labelStyle(tester, _confirm);
         final cancelTextStyle = labelStyle(tester, 'Cancel');
@@ -147,7 +148,7 @@ void main() {
       outline: (tester, row) async {
         final context = await _pumpPage(tester);
         unawaited(_show(context, actionKind: row.actionKind));
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
 
         final confirmTextStyle = labelStyle(tester, _confirm);
         final cancelTextStyle = labelStyle(tester, 'Cancel');

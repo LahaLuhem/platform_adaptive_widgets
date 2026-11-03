@@ -21,7 +21,7 @@ void main() {
       );
 
       await tester.tap(find.byType(DrawerButton));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(find.text(_drawer).evaluate()).isNotEmpty();
     }, variant: androidOnly);

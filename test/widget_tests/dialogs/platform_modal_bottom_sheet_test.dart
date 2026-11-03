@@ -26,20 +26,20 @@ void main() {
       outline: (tester, barrierDismissible) async {
         final context = await pumpForContext(tester);
         unawaited(_show(context, barrierDismissible: barrierDismissible));
-        await tester.pumpAndSettle();
-        check(tester.any(find.text(_content))).isTrue();
+        await pumpTransition(tester);
+        check(find.text(_content).evaluate()).isNotEmpty();
 
         await tester.tapAt(const Offset(4, 4));
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
 
-        check(tester.any(find.text(_content))).equals(!barrierDismissible);
+        check(find.text(_content).evaluate().isNotEmpty).equals(!barrierDismissible);
       },
     );
 
     scenarioWidgets('tints the barrier with barrierColor', (tester) async {
       final context = await pumpForContext(tester);
       unawaited(_show(context, barrierColor: _tint));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(tester.widget<ModalBarrier>(find.byType(ModalBarrier).last).color).equals(_tint);
     });

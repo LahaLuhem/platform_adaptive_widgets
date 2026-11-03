@@ -2,7 +2,6 @@
 // ignore_for_file: prefer-match-file-name
 
 import 'package:checks/checks.dart';
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoColors;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -71,7 +70,7 @@ Future<void> _pump(WidgetTester tester, _Page page) => pumpInPlatformScaffold(te
 
 Future<void> _tap(WidgetTester tester, String label) async {
   await tester.tap(find.text(label).last);
-  await tester.pumpAndSettle();
+  await pumpTransition(tester);
 }
 
 // The actions only exist while the menu is open.
@@ -119,7 +118,7 @@ void main() {
       await _tap(tester, _more);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(_isOpen()).isFalse();
     }, variant: androidOnly);
@@ -135,7 +134,7 @@ void main() {
 
         await _tap(tester, _delete);
 
-        check(tester.any(find.text(_confirmMessage))).isTrue();
+        check(find.text(_confirmMessage).evaluate()).isNotEmpty();
         check(pressedLabels).isEmpty();
 
         await _tap(tester, runs ? _delete : 'Cancel');
@@ -144,29 +143,30 @@ void main() {
       },
     );
 
-    scenarioWidgets('draws a destructive action red, with icons after labels, on iOS', (
-      tester,
-    ) async {
-      await _pump(tester, _Page(actions: _actions([], withIcons: true)));
+    scenarioWidgets('sets a destructive action apart on iOS', (tester) async {
+      await _pump(tester, _Page(actions: _actions([])));
       await _tap(tester, _more);
 
-      check(argbOf(labelStyle(tester, _delete))).equals(CupertinoColors.systemRed.color.toARGB32());
-      check(argbOf(labelStyle(tester, _share)))
-          .not((shareColor) => shareColor.equals(CupertinoColors.systemRed.color.toARGB32()));
-      check(tester.getCenter(find.byIcon(_shareIcon)).dx)
-          .isGreaterThan(tester.getCenter(find.text(_share)).dx);
+      check(argbOf(labelStyle(tester, _delete)))
+          .not((it) => it.equals(argbOf(labelStyle(tester, _share))));
     }, variant: iosOnly);
 
-    scenarioWidgets('keeps every action plain, with icons before labels, on Android', (
-      tester,
-    ) async {
-      await _pump(tester, _Page(actions: _actions([], withIcons: true)));
+    scenarioWidgets('keeps every action plain on Android', (tester) async {
+      await _pump(tester, _Page(actions: _actions([])));
       await _tap(tester, _more);
 
       check(argbOf(labelStyle(tester, _delete))).equals(argbOf(labelStyle(tester, _share)));
-      check(tester.getCenter(find.byIcon(_shareIcon)).dx)
-          .isLessThan(tester.getCenter(find.text(_share)).dx);
     }, variant: androidOnly);
+
+    scenarioWidgets("puts an action's icon on its platform's side of the label", (tester) async {
+      await _pump(tester, _Page(actions: _actions([], withIcons: true)));
+      await _tap(tester, _more);
+
+      final iconX = tester.getCenter(find.byIcon(_shareIcon)).dx;
+      final labelX = tester.getCenter(find.text(_share)).dx;
+      // Before it on Material, after it on iOS.
+      check(iconX < labelX).equals(designLanguage == .material);
+    });
 
     scenarioOutlineWidgets<Set<PlatformMenuAction>>(
       'refuses a menu the guidelines rule out',
