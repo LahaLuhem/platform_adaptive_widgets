@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import '/src/models/dialogs/platform_choice.dart';
 import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 import '/src/utils/design_language.dart';
-import 'cupertino_choices_sheet.dart';
+import 'internal/cupertino_choices_sheet.dart';
 import 'platform_confirm_alert.dart';
 
 /// Asks once more before a destructive action, and answers true only on a confirm. Cupertino gets the

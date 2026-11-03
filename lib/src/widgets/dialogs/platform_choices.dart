@@ -7,8 +7,8 @@ import 'package:material_ui/material_ui.dart' show ListTile, Theme;
 import '/src/models/dialogs/platform_choice.dart';
 import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 import '/src/utils/design_language.dart';
-import 'cupertino_choices_sheet.dart';
-import 'sheet_routes.dart';
+import 'internal/cupertino_choices_sheet.dart';
+import 'internal/sheet_routes.dart';
 
 /// Lines the header up with the rows' text.
 const _kMaterialChoicesHeaderPadding = EdgeInsetsDirectional.fromSTEB(16, 16, 24, 8);

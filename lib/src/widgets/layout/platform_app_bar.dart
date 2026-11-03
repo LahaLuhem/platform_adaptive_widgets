@@ -14,7 +14,7 @@ import 'package:material_ui/material_ui.dart'
 
 import '/src/models/layout/platform_app_bar_data.dart';
 import '/src/models/layout/platform_bar_action.dart';
-import '/src/widgets/interaction/disabled_semantics.dart';
+import '/src/widgets/interaction/internal/disabled_semantics.dart';
 
 /// `AppBar` on Material, `CupertinoNavigationBar` on Cupertino.
 ///

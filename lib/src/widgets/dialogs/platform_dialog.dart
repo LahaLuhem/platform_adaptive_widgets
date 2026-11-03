@@ -12,8 +12,8 @@ import '/src/models/layout/platform_app_bar_data.dart';
 import '/src/models/layout/platform_scaffold_data.dart';
 import '/src/utils/design_language.dart';
 import '/src/widgets/layout/platform_scaffold.dart';
-import 'builder_invariant.dart';
-import 'dialog_routes.dart';
+import 'internal/builder_invariant.dart';
+import 'internal/dialog_routes.dart';
 
 /// Shows a full-screen modal dialog: [Dialog.fullscreen] on Material, a full-screen [CupertinoPageRoute]
 /// on Cupertino. It's for long or multistep tasks. Extra content or a short task fits [showPlatformSheet].

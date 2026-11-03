@@ -5,7 +5,7 @@ import 'package:material_ui/material_ui.dart' show Slider;
 
 import '/src/models/interaction/platform_slider_data.dart';
 import '/src/models/platform_widget_base.dart';
-import '/src/widgets/interaction/disabled_semantics.dart';
+import '/src/widgets/interaction/internal/disabled_semantics.dart';
 
 /// [Slider] on Material, [CupertinoSlider] on Cupertino.
 ///

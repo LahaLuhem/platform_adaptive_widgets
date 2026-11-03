@@ -16,7 +16,7 @@ import '/src/models/dialogs/platform_action_kind.dart';
 import '/src/models/interaction/platform_button_data.dart';
 import '/src/models/interaction/platform_button_emphasis.dart';
 import '/src/models/platform_widget_base.dart';
-import '/src/widgets/interaction/disabled_semantics.dart';
+import '/src/widgets/interaction/internal/disabled_semantics.dart';
 
 /// One of Material's buttons or one of Cupertino's, at the rank [emphasis] asks for.
 ///

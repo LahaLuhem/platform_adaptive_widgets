@@ -6,7 +6,7 @@ import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoRadio;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
-import 'package:platform_adaptive_widgets/src/widgets/interaction/cupertino_checkmark_row.dart';
+import 'package:platform_adaptive_widgets/src/widgets/interaction/internal/cupertino_checkmark_row.dart';
 
 import '../../support/support.dart';
 
