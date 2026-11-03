@@ -78,6 +78,9 @@ class const PlatformTextField({
   /// Lets the keyboard learn from what gets typed here.
   final bool enableIMEPersonalizedLearning = true,
 
+  /// The keyboard's inline predictions, on iOS 17 and later. Left out, iOS keeps them off.
+  final bool? enableInlinePrediction,
+
   final bool stylusHandwritingEnabled = true,
 
   final Brightness? keyboardAppearance,
@@ -274,6 +277,7 @@ class const PlatformTextField({
       restorationId: restorationId,
       stylusHandwritingEnabled: stylusHandwritingEnabled,
       enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
+      enableInlinePrediction: enableInlinePrediction,
       contextMenuBuilder: contextMenuBuilder,
       spellCheckConfiguration: spellCheckConfiguration,
       magnifierConfiguration: magnifierConfiguration,
@@ -356,6 +360,7 @@ class const PlatformTextField({
     restorationId: restorationId,
     stylusHandwritingEnabled: stylusHandwritingEnabled,
     enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
+    enableInlinePrediction: enableInlinePrediction,
     contextMenuBuilder: contextMenuBuilder,
     spellCheckConfiguration: spellCheckConfiguration,
     magnifierConfiguration: magnifierConfiguration,

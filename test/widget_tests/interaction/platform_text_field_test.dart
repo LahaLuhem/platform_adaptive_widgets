@@ -22,5 +22,13 @@ void main() {
 
       check(_drawnDecoration(tester)).equals(decoration);
     }, variant: iosOnly);
+
+    scenarioWidgets('tells the keyboard to show inline predictions', (tester) async {
+      await pumpInPlatformScaffold(tester, const PlatformTextField(enableInlinePrediction: true));
+
+      await tester.showKeyboard(find.byType(PlatformTextField));
+
+      check(tester.testTextInput.setClientArgs?['enableInlinePrediction']).equals(true);
+    });
   });
 }
