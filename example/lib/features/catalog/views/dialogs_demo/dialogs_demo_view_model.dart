@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show TimeOfDay;
+import 'package:minted_chronology/minted_chronology.dart' show DateConstants;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 import 'package:pmvvm/pmvvm.dart';
 
@@ -216,7 +217,7 @@ final class DialogsDemoViewModel extends ViewModel {
   Future<void> onShowDatePickerPressed() async {
     final picked = await showPlatformDatePicker(
       context: context,
-      firstDate: Date.of(1900).getOrThrow(),
+      firstDate: DateConstants.min,
       lastDate: Date.now().tryAddDays(365)!,
     );
     _selectedDate = picked;

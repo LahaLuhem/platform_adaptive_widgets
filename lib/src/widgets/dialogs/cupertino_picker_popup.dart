@@ -20,7 +20,6 @@ Future<DateTime?> showCupertinoPickerPopup({
   required bool barrierDismissible,
   required RouteSettings? routeSettings,
   required bool useRootNavigator,
-  required bool? requestFocus,
   required TransitionBuilder? builder,
   required CupertinoDatePickerData cupertinoDatePickerData,
   DateTime? firstDateTime,
@@ -56,7 +55,7 @@ Future<DateTime?> showCupertinoPickerPopup({
     routeSettings: routeSettings,
     useRootNavigator: useRootNavigator,
     filter: cupertinoDatePickerData.filter,
-    requestFocus: requestFocus,
+    requestFocus: cupertinoDatePickerData.requestFocus,
     semanticsDismissible: cupertinoDatePickerData.semanticsDismissible,
     builder: (context) =>
         builder?.call(context, pickerWidget) ??

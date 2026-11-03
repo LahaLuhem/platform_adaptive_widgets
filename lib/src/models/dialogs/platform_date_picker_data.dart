@@ -14,7 +14,13 @@ import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoDynamicColor, DatePickerDateOrder, SelectionOverlayBuilder;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart'
-    show CalendarDelegate, DatePickerEntryMode, DatePickerMode, GregorianCalendarDelegate;
+    show
+        CalendarDatePickerDayBuilder,
+        CalendarDatePickerWeekdayBuilder,
+        CalendarDelegate,
+        DatePickerEntryMode,
+        DatePickerMode,
+        GregorianCalendarDelegate;
 
 /// Default value for [MaterialDatePickerData.initialEntryMode]. Matches upstream `showDatePicker`'s
 /// default.
@@ -114,6 +120,12 @@ final class const MaterialDatePickerData({
 
   /// Gregorian, Buddhist, and so on.
   final CalendarDelegate<DateTime> calendarDelegate = kDefaultMaterialDatePickerCalendarDelegate,
+
+  /// Draws each day in the grid, from the default one. Taps, focus and semantics stay the picker's.
+  final CalendarDatePickerDayBuilder? dayBuilder,
+
+  /// Draws each weekday header above the grid, from the default one.
+  final CalendarDatePickerWeekdayBuilder? weekdayBuilder,
 }) {
   /// Creates Material-side settings for `showPlatformDatePicker`.
   this;
@@ -129,6 +141,7 @@ final class const CupertinoDatePickerData({
   /// Usually a Gaussian blur, for the frosted glass look iOS goes in for.
   final ImageFilter? filter,
 
+  /// Whether the popup takes focus as it opens. Left out, the navigator decides.
   final bool? requestFocus,
 
   /// Offers the dismiss action to screen readers.

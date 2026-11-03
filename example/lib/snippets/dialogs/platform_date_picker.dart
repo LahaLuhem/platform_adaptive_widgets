@@ -2,6 +2,7 @@
 // ignore_for_file: prefer-match-file-name
 
 import 'package:flutter/widgets.dart';
+import 'package:minted_chronology/minted_chronology.dart' show DateConstants;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 class PlatformDatePickerSnippet extends StatelessWidget {
@@ -18,7 +19,7 @@ class PlatformDatePickerSnippet extends StatelessWidget {
     // #region platform_date_picker
     final picked = await showPlatformDatePicker(
       context: context,
-      firstDate: Date.of(2020).getOrThrow(),
+      firstDate: DateConstants.min,
       lastDate: Date.now().tryAddDays(365)!,
       initialDate: Date.now(),
     );
