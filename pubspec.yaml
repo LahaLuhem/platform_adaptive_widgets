@@ -54,7 +54,6 @@ dev_dependencies:
       url: https://github.com/LahaLuhem/dartender.git
       path: lints
       ref: main
-  dependency_validator: ^5.0.6
   flutter_test:
     sdk: flutter
   # Analysis
