@@ -5,11 +5,8 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformListTileSnippet extends StatelessWidget {
-  const PlatformListTileSnippet({required this.onSettingsPressed, super.key});
-
-  final VoidCallback onSettingsPressed;
-
+class const PlatformListTileSnippet({required final VoidCallback onSettingsPressed, super.key})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       // #region platform_list_tile

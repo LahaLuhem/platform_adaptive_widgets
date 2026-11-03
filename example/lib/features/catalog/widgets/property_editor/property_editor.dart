@@ -7,27 +7,20 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 /// Only the knobs for the platform currently being rendered show up, since the preview can only be one
 /// of them at a time. Flip the About tab's platform override to see the other side. With both sets in
 /// play the groups get labelled, otherwise [knobs] render bare.
-class PropertyEditor extends StatelessWidget {
+class const PropertyEditor({
   /// The widget under edit, rebuilt by the enclosing `Consumer`.
-  final Widget preview;
+  required final Widget preview,
 
   /// Always shown.
-  final List<Widget> knobs;
+  required final List<Widget> knobs,
 
   /// Shown only while the app renders as Material.
-  final List<Widget> materialKnobs;
+  final List<Widget> materialKnobs = const [],
 
   /// Shown only while the app renders as Cupertino.
-  final List<Widget> cupertinoKnobs;
-
-  const PropertyEditor({
-    required this.preview,
-    required this.knobs,
-    this.materialKnobs = const [],
-    this.cupertinoKnobs = const [],
-    super.key,
-  });
-
+  final List<Widget> cupertinoKnobs = const [],
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // A switch, not platformValue, since a List<Widget> through it trips DCM's avoid-returning-widgets.
@@ -57,12 +50,8 @@ class PropertyEditor extends StatelessWidget {
 }
 
 /// A labelled group of knobs within a [PropertyEditor].
-final class _KnobGroup extends StatelessWidget {
-  final String label;
-  final List<Widget> knobs;
-
-  const _KnobGroup({required this.label, required this.knobs});
-
+final class const _KnobGroup({required final String label, required final List<Widget> knobs})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: .stretch,

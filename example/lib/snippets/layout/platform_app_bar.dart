@@ -6,17 +6,11 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformAppBarSnippet extends StatelessWidget {
-  const PlatformAppBarSnippet({
-    required this.onSharePressed,
-    required this.onSavePressed,
-    super.key,
-  });
-
-  final VoidCallback onSharePressed;
-
-  final VoidCallback onSavePressed;
-
+class const PlatformAppBarSnippet({
+  required final VoidCallback onSharePressed,
+  required final VoidCallback onSavePressed,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       PlatformScaffold(appBarData: _appBar(context), body: const SizedBox.shrink());

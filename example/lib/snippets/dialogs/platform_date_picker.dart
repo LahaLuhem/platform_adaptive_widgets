@@ -5,9 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:minted_chronology/minted_chronology.dart' show DateConstants;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformDatePickerSnippet extends StatelessWidget {
-  const PlatformDatePickerSnippet({super.key});
-
+class const PlatformDatePickerSnippet({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => PlatformButton(
     onPressed: () => _pickPressed(context),

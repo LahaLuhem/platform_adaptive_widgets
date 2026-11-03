@@ -4,14 +4,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformSheetSnippet extends StatefulWidget {
-  const PlatformSheetSnippet({super.key});
-
+class const PlatformSheetSnippet({super.key}) extends StatefulWidget {
   @override
   State<PlatformSheetSnippet> createState() => _PlatformSheetSnippetState();
 }
 
-class _PlatformSheetSnippetState extends State<PlatformSheetSnippet> {
+class _PlatformSheetSnippetState() extends State<PlatformSheetSnippet> {
   final _nameController = TextEditingController();
 
   @override

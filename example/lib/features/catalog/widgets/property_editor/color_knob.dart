@@ -17,27 +17,16 @@ const _defaultSwatches = <Color>[
 
 /// A tap-to-select grid of [swatches]. A grid rather than a full HSV picker, which would mean another
 /// dependency for a demo app.
-class ColorKnob extends StatelessWidget {
-  final String label;
-
-  final Color? value;
-
-  final ValueChanged<Color> onChanged;
+class const ColorKnob({
+  required final String label,
+  required final Color? value,
+  required final ValueChanged<Color> onChanged,
 
   /// Adds a "none" swatch, which clears the colour so the widget falls back to its own default.
-  final VoidCallback? onCleared;
-
-  final List<Color> swatches;
-
-  const ColorKnob({
-    required this.label,
-    required this.value,
-    required this.onChanged,
-    this.onCleared,
-    this.swatches = _defaultSwatches,
-    super.key,
-  });
-
+  final VoidCallback? onCleared,
+  final List<Color> swatches = _defaultSwatches,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: .stretch,
@@ -66,12 +55,8 @@ class ColorKnob extends StatelessWidget {
 
 /// One square in [ColorKnob]. Ringed when selected, faintly outlined otherwise so pale swatches stay
 /// visible against the background. No [color] makes it the "none" swatch.
-final class _Swatch extends StatelessWidget {
-  final Color? color;
-  final bool isSelected;
-
-  const _Swatch({required this.color, required this.isSelected});
-
+final class const _Swatch({required final Color? color, required final bool isSelected})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = this.color;

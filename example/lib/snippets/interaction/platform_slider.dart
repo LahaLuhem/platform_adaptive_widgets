@@ -4,14 +4,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformSliderSnippet extends StatefulWidget {
-  const PlatformSliderSnippet({super.key});
-
+class const PlatformSliderSnippet({super.key}) extends StatefulWidget {
   @override
   State<PlatformSliderSnippet> createState() => _PlatformSliderSnippetState();
 }
 
-class _PlatformSliderSnippetState extends State<PlatformSliderSnippet> {
+class _PlatformSliderSnippetState() extends State<PlatformSliderSnippet> {
   var _value = 0.5;
 
   @override

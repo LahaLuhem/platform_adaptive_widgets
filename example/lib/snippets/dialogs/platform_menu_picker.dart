@@ -4,14 +4,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformMenuPickerSnippet extends StatefulWidget {
-  const PlatformMenuPickerSnippet({super.key});
-
+class const PlatformMenuPickerSnippet({super.key}) extends StatefulWidget {
   @override
   State<PlatformMenuPickerSnippet> createState() => _PlatformMenuPickerSnippetState();
 }
 
-class _PlatformMenuPickerSnippetState extends State<PlatformMenuPickerSnippet> {
+class _PlatformMenuPickerSnippetState() extends State<PlatformMenuPickerSnippet> {
   var _view = 'Day';
 
   @override

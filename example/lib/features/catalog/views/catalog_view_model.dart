@@ -9,7 +9,7 @@ import '/features/catalog/data/enums/widget_category.dart';
 ///
 /// Sections start open, set through the controller rather than `initiallyExpanded`, which is Material's
 /// alone.
-final class CatalogViewModel extends ViewModel {
+final class CatalogViewModel() extends ViewModel {
   final _sectionControllers = {
     for (final category in WidgetCategory.values) category: ExpansibleController()..expand(),
   };

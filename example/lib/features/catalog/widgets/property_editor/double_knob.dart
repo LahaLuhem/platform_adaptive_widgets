@@ -2,33 +2,18 @@ import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 /// A [PlatformSlider] knob over a fixed [min] to [max] range, with the live value beside the label.
-class DoubleKnob extends StatelessWidget {
-  final String label;
-
-  final double value;
-
-  final ValueChanged<double> onChanged;
-
-  final double min;
-
-  final double max;
-
-  final int? divisions;
+class const DoubleKnob({
+  required final String label,
+  required final double value,
+  required final ValueChanged<double> onChanged,
+  required final double min,
+  required final double max,
+  final int? divisions,
 
   /// Left out, the readout is the value to 1 decimal place. Useful for naming a sentinel value.
-  final String Function(double)? valueLabel;
-
-  const DoubleKnob({
-    required this.label,
-    required this.value,
-    required this.onChanged,
-    required this.min,
-    required this.max,
-    this.divisions,
-    this.valueLabel,
-    super.key,
-  });
-
+  final String Function(double)? valueLabel,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: .stretch,

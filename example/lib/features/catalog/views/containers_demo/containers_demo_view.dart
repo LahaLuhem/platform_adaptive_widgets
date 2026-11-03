@@ -16,11 +16,8 @@ import 'containers_demo_view_model.dart';
 
 /// The Lists & containers section of the Catalog accordion, list tile, scrollbar, progress-indicator
 /// and expansion-tile playgrounds.
-class ContainersDemoView extends StatelessWidget {
-  final bool shouldEnable;
-
-  const ContainersDemoView({required this.shouldEnable, super.key});
-
+class const ContainersDemoView({required final bool shouldEnable, super.key})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MVVM.builder(
     viewModel: ContainersDemoViewModel(),
@@ -202,8 +199,7 @@ class ContainersDemoView extends StatelessWidget {
         ),
         DemoCard(
           title: 'Progress',
-          description:
-              'PlatformProgressIndicator for an unknown end, PlatformProgressBar for known progress.',
+          description: 'PlatformProgressIndicator for an unknown end, PlatformProgressBar for known progress.',
           child: PropertyEditor(
             preview: Column(
               spacing: 16,

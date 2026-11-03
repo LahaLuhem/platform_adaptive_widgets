@@ -4,14 +4,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformMultiSelectListSnippet extends StatefulWidget {
-  const PlatformMultiSelectListSnippet({super.key});
-
+class const PlatformMultiSelectListSnippet({super.key}) extends StatefulWidget {
   @override
   State<PlatformMultiSelectListSnippet> createState() => _PlatformMultiSelectListSnippetState();
 }
 
-class _PlatformMultiSelectListSnippetState extends State<PlatformMultiSelectListSnippet> {
+class _PlatformMultiSelectListSnippetState() extends State<PlatformMultiSelectListSnippet> {
   var _days = {Weekday.saturday, Weekday.sunday};
 
   @override

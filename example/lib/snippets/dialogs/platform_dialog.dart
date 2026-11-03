@@ -4,9 +4,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class FullscreenDialogSnippet extends StatelessWidget {
-  const FullscreenDialogSnippet({super.key});
-
+class const FullscreenDialogSnippet({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => PlatformButton(
     onPressed: () => _openPressed(context),

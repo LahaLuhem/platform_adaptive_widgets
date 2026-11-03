@@ -4,14 +4,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformSingleSelectListSnippet extends StatefulWidget {
-  const PlatformSingleSelectListSnippet({super.key});
-
+class const PlatformSingleSelectListSnippet({super.key}) extends StatefulWidget {
   @override
   State<PlatformSingleSelectListSnippet> createState() => _PlatformSingleSelectListSnippetState();
 }
 
-class _PlatformSingleSelectListSnippetState extends State<PlatformSingleSelectListSnippet> {
+class _PlatformSingleSelectListSnippetState() extends State<PlatformSingleSelectListSnippet> {
   var _size = 'Medium';
 
   @override

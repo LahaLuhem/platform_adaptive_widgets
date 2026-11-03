@@ -5,14 +5,12 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformTextFieldSnippet extends StatefulWidget {
-  const PlatformTextFieldSnippet({super.key});
-
+class const PlatformTextFieldSnippet({super.key}) extends StatefulWidget {
   @override
   State<PlatformTextFieldSnippet> createState() => _PlatformTextFieldSnippetState();
 }
 
-class _PlatformTextFieldSnippetState extends State<PlatformTextFieldSnippet> {
+class _PlatformTextFieldSnippetState() extends State<PlatformTextFieldSnippet> {
   final _controller = TextEditingController();
 
   @override

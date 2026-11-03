@@ -4,9 +4,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformAcknowledgeSnippet extends StatelessWidget {
-  const PlatformAcknowledgeSnippet({super.key});
-
+class const PlatformAcknowledgeSnippet({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => PlatformButton(
     onPressed: () => _notifyPressed(context),

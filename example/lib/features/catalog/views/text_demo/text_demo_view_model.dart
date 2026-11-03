@@ -5,7 +5,7 @@ import 'package:pmvvm/pmvvm.dart';
 
 /// State for the Text & search demos: the controllers the views bind to, the live query, and the text
 /// field playground's editable properties.
-final class TextDemoViewModel extends ViewModel {
+final class TextDemoViewModel() extends ViewModel {
   final searchController = TextEditingController();
   final textFieldController = TextEditingController();
   var _searchQuery = '';

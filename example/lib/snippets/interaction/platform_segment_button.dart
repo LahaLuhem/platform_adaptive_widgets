@@ -4,14 +4,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformSegmentButtonSnippet extends StatefulWidget {
-  const PlatformSegmentButtonSnippet({super.key});
-
+class const PlatformSegmentButtonSnippet({super.key}) extends StatefulWidget {
   @override
   State<PlatformSegmentButtonSnippet> createState() => _PlatformSegmentButtonSnippetState();
 }
 
-class _PlatformSegmentButtonSnippetState extends State<PlatformSegmentButtonSnippet> {
+class _PlatformSegmentButtonSnippetState() extends State<PlatformSegmentButtonSnippet> {
   String? _selectedView = 'Day';
 
   @override

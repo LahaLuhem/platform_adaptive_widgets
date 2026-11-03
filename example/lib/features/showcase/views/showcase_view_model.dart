@@ -5,7 +5,7 @@ import '/features/showcase/data/navigation/platform_route.dart';
 import 'pushed_demo_page.dart';
 
 /// State for the "Under the hood" tab's live proofs, and the 2 page pushes, which go through [pushPlatformRoute].
-final class ShowcaseViewModel extends ViewModel {
+final class ShowcaseViewModel() extends ViewModel {
   final _tapCountNotifier = ValueNotifier(0);
   final _controlEnabledNotifier = ValueNotifier(true);
   final _gatedValueNotifier = ValueNotifier(true);

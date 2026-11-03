@@ -4,7 +4,7 @@ import 'package:material_ui/material_ui.dart' show ColorScheme, ThemeData;
 
 /// One seed colour drives a Material 3 light and dark scheme plus a matching Cupertino theme, so the
 /// demo looks designed on both platforms and the About tab's toggle has something to switch.
-abstract final class ConstTheme {
+abstract final class ConstTheme() {
   /// The brand seed. Everything else is derived from it.
   static const seedColor = Color(0xFF4F46E5);
 

@@ -4,9 +4,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformProgressBarSnippet extends StatelessWidget {
-  const PlatformProgressBarSnippet({super.key});
-
+class const PlatformProgressBarSnippet({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       // #region platform_progress_bar

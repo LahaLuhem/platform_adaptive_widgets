@@ -4,16 +4,14 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 /// A labelled frame around one live demo, so the catalog reads as a gallery rather than a wall of bare
 /// controls. Outlined rather than filled, which keeps it cross-platform and stops a coloured box hiding
 /// a Material child's own background and ink.
-class DemoCard extends StatelessWidget {
-  final String title;
+class const DemoCard({
+  required final String title,
+  required final Widget child,
 
   /// One line, under the title.
-  final String? description;
-
-  final Widget child;
-
-  const DemoCard({required this.title, required this.child, this.description, super.key});
-
+  final String? description,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final primaryColor = PlatformTheme.of(context).primaryColor;

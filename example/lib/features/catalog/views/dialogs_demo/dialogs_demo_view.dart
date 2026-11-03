@@ -14,12 +14,8 @@ import 'dialogs_demo_view_model.dart';
 
 /// The Dialogs & pickers section of the Catalog accordion. Dialogs open from a function call, not as a
 /// widget, so each playground is configure-then-trigger: knobs set the args, the button opens the dialog.
-class DialogsDemoView extends StatelessWidget {
+class const DialogsDemoView({required final bool shouldEnable, super.key}) extends StatelessWidget {
   // Reaches what the dialogs hold, not the buttons that open them, so they still open.
-  final bool shouldEnable;
-
-  const DialogsDemoView({required this.shouldEnable, super.key});
-
   @override
   Widget build(BuildContext context) => MVVM.builder(
     viewModel: DialogsDemoViewModel(),
@@ -60,8 +56,7 @@ class DialogsDemoView extends StatelessWidget {
         ),
         DemoCard(
           title: 'Full-screen dialog',
-          description:
-              'A full-screen dialog on Material, a page that slides up on Cupertino. Its bar closes it.',
+          description: 'A full-screen dialog on Material, a page that slides up on Cupertino. Its bar closes it.',
           child: PlatformButton(
             onPressed: () => viewModel.onShowFullscreenDialogPressed(shouldEnable: shouldEnable),
             emphasis: .medium,
@@ -115,8 +110,7 @@ class DialogsDemoView extends StatelessWidget {
         ),
         DemoCard(
           title: 'Toast',
-          description:
-              'A snackbar on Material, a banner on Cupertino. With an action, it waits to be tapped.',
+          description: 'A snackbar on Material, a banner on Cupertino. With an action, it waits to be tapped.',
           child: PropertyEditor(
             preview: PlatformButton(
               onPressed: viewModel.onShowToastPressed,

@@ -6,9 +6,8 @@ import 'package:flutter/widgets.dart';
 /// The root widget owns the notifier, mirrors it into `debugDefaultTargetPlatformOverride` and rebuilds
 /// on every tick. The About tab writes to it, which is how you preview the other platform without its
 /// hardware.
-class PlatformScope extends InheritedNotifier<ValueNotifier<TargetPlatform?>> {
-  const PlatformScope({required super.notifier, required super.child, super.key});
-
+class const PlatformScope({required super.notifier, required super.child, super.key})
+    extends InheritedNotifier<ValueNotifier<TargetPlatform?>> {
   /// Asserts a [PlatformScope] is above you.
   static ValueNotifier<TargetPlatform?> of(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<PlatformScope>();

@@ -15,7 +15,7 @@ final _aboutNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'About');
 
 /// One [StatefulShellRoute] branch per tab, wrapped in [RootTabsRouterView], with anything unmatched
 /// falling through to [ErrorView].
-final class AppRouter {
+final class AppRouter() {
   static const _args = AppArgs(isUsingGoRouter: true);
 
   static final router = GoRouter(

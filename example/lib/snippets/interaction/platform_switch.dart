@@ -4,14 +4,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformSwitchSnippet extends StatefulWidget {
-  const PlatformSwitchSnippet({super.key});
-
+class const PlatformSwitchSnippet({super.key}) extends StatefulWidget {
   @override
   State<PlatformSwitchSnippet> createState() => _PlatformSwitchSnippetState();
 }
 
-class _PlatformSwitchSnippetState extends State<PlatformSwitchSnippet> {
+class _PlatformSwitchSnippetState() extends State<PlatformSwitchSnippet> {
   var _isOn = false;
 
   @override

@@ -1,5 +1,5 @@
 /// Which `PlatformButton` constructor the Buttons playground builds.
-enum ButtonShape {
+enum ButtonShape() {
   /// `PlatformButton.new`, around a text child.
   child,
 

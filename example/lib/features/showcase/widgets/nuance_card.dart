@@ -3,19 +3,17 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 /// One entry in the Under-the-hood tour. Outlined rather than filled, so it stays clear of Material's
 /// surface and works on both platforms.
-class NuanceCard extends StatelessWidget {
-  final String title;
+class const NuanceCard({
+  required final String title,
 
   /// What a naive wrapper gets wrong, and what this one does instead.
-  final String body;
+  required final String body,
 
   /// Rendered in a monospace block.
-  final String? code;
-
-  final Widget? demo;
-
-  const NuanceCard({required this.title, required this.body, this.code, this.demo, super.key});
-
+  final String? code,
+  final Widget? demo,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final primaryColor = PlatformTheme.of(context).primaryColor;
@@ -42,11 +40,7 @@ class NuanceCard extends StatelessWidget {
 }
 
 /// The tinted monospace block inside a [NuanceCard].
-class _CodeBlock extends StatelessWidget {
-  final String code;
-
-  const _CodeBlock({required this.code});
-
+class const _CodeBlock({required final String code}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     width: double.infinity,

@@ -5,9 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Colors;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformProgressIndicatorSnippet extends StatelessWidget {
-  const PlatformProgressIndicatorSnippet({super.key});
-
+class const PlatformProgressIndicatorSnippet({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       // #region platform_progress_indicator

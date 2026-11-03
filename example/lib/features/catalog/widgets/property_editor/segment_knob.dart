@@ -2,23 +2,13 @@ import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 /// A [PlatformSegmentButton] knob, labelling each option with the value's `name`. Takes 2 values or more.
-class SegmentKnob<T extends Enum> extends StatelessWidget {
-  final String label;
-
-  final T value;
-
-  final Set<T> values;
-
-  final ValueChanged<T> onChanged;
-
-  const SegmentKnob({
-    required this.label,
-    required this.value,
-    required this.values,
-    required this.onChanged,
-    super.key,
-  });
-
+class const SegmentKnob<T extends Enum>({
+  required final String label,
+  required final T value,
+  required final Set<T> values,
+  required final ValueChanged<T> onChanged,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: .stretch,

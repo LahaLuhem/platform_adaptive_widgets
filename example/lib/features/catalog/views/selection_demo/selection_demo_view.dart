@@ -15,11 +15,8 @@ import '/features/catalog/widgets/property_editor/string_knob.dart';
 import 'selection_demo_view_model.dart';
 
 /// The Catalog's Selection controls section.
-class SelectionDemoView extends StatelessWidget {
-  final bool shouldEnable;
-
-  const SelectionDemoView({required this.shouldEnable, super.key});
-
+class const SelectionDemoView({required final bool shouldEnable, super.key})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MVVM.builder(
     viewModel: SelectionDemoViewModel(),

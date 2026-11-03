@@ -4,18 +4,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformActionsMenuSnippet extends StatelessWidget {
-  const PlatformActionsMenuSnippet({
-    required this.onShareListPressed,
-    required this.onPrintPressed,
-    required this.onDeleteListPressed,
-    super.key,
-  });
-
-  final VoidCallback onShareListPressed;
-  final VoidCallback onPrintPressed;
-  final VoidCallback onDeleteListPressed;
-
+class const PlatformActionsMenuSnippet({
+  required final VoidCallback onShareListPressed,
+  required final VoidCallback onPrintPressed,
+  required final VoidCallback onDeleteListPressed,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       // #region platform_actions_menu

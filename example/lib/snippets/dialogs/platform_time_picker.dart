@@ -5,9 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show TimeOfDay;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformTimePickerSnippet extends StatelessWidget {
-  const PlatformTimePickerSnippet({super.key});
-
+class const PlatformTimePickerSnippet({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => PlatformButton(
     onPressed: () => _pickPressed(context),

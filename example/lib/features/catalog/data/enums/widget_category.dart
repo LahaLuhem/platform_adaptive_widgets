@@ -4,7 +4,10 @@ import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 /// One expandable section of the Catalog tab. Declaration order is display order.
-enum WidgetCategory {
+enum WidgetCategory({
+  /// Shown on the section header.
+  required final String label,
+}) {
   /// Filled, tonal, outlined, text, icon and disabled buttons.
   buttons(label: 'Buttons'),
 
@@ -19,11 +22,6 @@ enum WidgetCategory {
 
   /// Dialogs, alerts, toast, bottom sheet, choices, actions menu, date & time pickers.
   dialogs(label: 'Dialogs & pickers');
-
-  /// Shown on the section header.
-  final String label;
-
-  const WidgetCategory({required this.label});
 
   /// Adapted per platform.
   Icon icon(BuildContext context) => Icon(_iconData(context));

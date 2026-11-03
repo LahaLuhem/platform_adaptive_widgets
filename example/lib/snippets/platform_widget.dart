@@ -6,11 +6,8 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Card, ElevatedButton;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformWidgetSnippet extends StatelessWidget {
-  const PlatformWidgetSnippet({required this.onSavePressed, super.key});
-
-  final VoidCallback onSavePressed;
-
+class const PlatformWidgetSnippet({required final VoidCallback onSavePressed, super.key})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       // #region platform_widget
@@ -23,9 +20,7 @@ class PlatformWidgetSnippet extends StatelessWidget {
   // #endregion
 }
 
-class PlatformWidgetBuilderSnippet extends StatelessWidget {
-  const PlatformWidgetBuilderSnippet({super.key});
-
+class const PlatformWidgetBuilderSnippet({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       // #region platform_widget_builder

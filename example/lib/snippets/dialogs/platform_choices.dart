@@ -4,11 +4,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-enum DraftAction { save, delete }
+enum DraftAction() {
+  save,
+  delete,
+}
 
-class PlatformChoicesSnippet extends StatelessWidget {
-  const PlatformChoicesSnippet({super.key});
-
+class const PlatformChoicesSnippet({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => PlatformButton(
     onPressed: () => _draftPressed(context),

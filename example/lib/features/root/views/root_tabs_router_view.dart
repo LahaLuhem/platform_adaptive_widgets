@@ -6,15 +6,14 @@ import '/features/root/data/enums/root_tab.dart';
 
 /// The `main_go_router.dart` tab shell, where go_router owns selection and the scaffold just reflects
 /// it. Taps go back out through [StatefulNavigationShell.goBranch].
-class RootTabsRouterView extends StatelessWidget {
+class const RootTabsRouterView({
   /// go_router's shell, the source of truth for the selected tab.
-  final StatefulNavigationShell navigationShell;
+  required final StatefulNavigationShell navigationShell,
 
   /// One per tab, in tab order.
-  final List<Widget> children;
-
-  const RootTabsRouterView({required this.navigationShell, required this.children, super.key});
-
+  required final List<Widget> children,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => PlatformTabScaffold(
     selectedIndex: navigationShell.currentIndex,
