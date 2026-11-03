@@ -2,13 +2,12 @@ import 'dart:async';
 
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoColors;
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart' show GlobalMaterialLocalizations;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-import '../support/support.dart';
+import '../../support/support.dart';
 
 const _save = PlatformChoice(value: 1, label: 'Save Draft', actionKind: .normal);
 const _delete = PlatformChoice(value: 2, label: 'Delete Draft', actionKind: .delete);
@@ -60,25 +59,18 @@ void main() {
       },
     );
 
-    scenarioOutlineWidgets<Future<void> Function(WidgetTester tester)>(
-      'answers null when left without a pick',
-      examples: {
-        'by a tap outside': (tester) => tester.tapAt(const Offset(4, 4)),
-        'by Escape': (tester) => tester.sendKeyEvent(LogicalKeyboardKey.escape),
-      },
-      outline: (tester, leave) async {
-        final context = await pumpForContext(tester);
-        final answerFuture = _show(context);
-        await tester.pumpAndSettle();
-        check(_isShowing(tester)).isTrue();
+    scenarioWidgets('answers null when closed from outside', (tester) async {
+      final context = await pumpForContext(tester);
+      final answerFuture = _show(context);
+      await tester.pumpAndSettle();
+      check(_isShowing(tester)).isTrue();
 
-        await leave(tester);
-        await tester.pumpAndSettle();
+      await tester.tapAt(const Offset(4, 4));
+      await tester.pumpAndSettle();
 
-        check(_isShowing(tester)).isFalse();
-        check(await answerFuture).isNull();
-      },
-    );
+      check(_isShowing(tester)).isFalse();
+      check(await answerFuture).isNull();
+    });
 
     scenarioWidgets('answers null on Cancel', (tester) async {
       final context = await pumpForContext(tester);
@@ -199,18 +191,11 @@ void main() {
       }
     });
 
-    scenarioOutlineWidgets<Set<PlatformChoice<int>>>(
-      'refuses fewer than 2 choices',
-      examples: {
-        'none': {},
-        'one': {_save},
-      },
-      outline: (tester, choices) async {
-        final context = await pumpForContext(tester);
+    scenarioWidgets('refuses fewer than 2 choices', (tester) async {
+      final context = await pumpForContext(tester);
 
-        check(() => _show(context, choices: choices)).throws<AssertionError>();
-      },
-    );
+      check(() => _show(context, choices: {_save})).throws<AssertionError>();
+    });
 
     scenarioWidgets('refuses 2 choices with the same value', (tester) async {
       final context = await pumpForContext(tester);

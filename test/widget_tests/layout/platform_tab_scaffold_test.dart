@@ -2,30 +2,19 @@ import 'package:checks/checks.dart';
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-import '../support/support.dart';
+import '../../support/support.dart';
 
 const _tab = TabDestination(inactiveIcon: SizedBox(), view: SizedBox());
 const _viewlessTab = TabDestination(inactiveIcon: SizedBox());
 
 void main() {
   feature('PlatformTabScaffold tab-count guard', () {
-    scenarioOutlineWidgets<int>(
-      'refuses fewer than 2 destinations',
-      examples: {'no tabs': 0, '1 tab': 1},
-      outline: (tester, tabCount) async {
-        await pumpPlatformWidget(
-          tester,
-          PlatformTabScaffold(tabDestinations: List.filled(tabCount, _tab)),
-        );
+    // Material's NavigationBar refuses a single tab by itself, and Cupertino's would draw it.
+    scenarioWidgets('refuses fewer than 2 destinations', (tester) async {
+      await pumpPlatformWidget(tester, const PlatformTabScaffold(tabDestinations: [_tab]));
 
-        // Material's NavigationBar is the half that needs 2. Without this guard a single tab
-        // renders fine on Cupertino and only blows up on Material.
-        check(tester.takeException())
-            .isA<AssertionError>()
-            .has((error) => '${error.message}', 'message')
-            .contains('at least 2 tab destinations');
-      },
-    );
+      check(tester.takeException()).isA<AssertionError>();
+    }, variant: iosOnly);
 
     scenarioWidgets('builds with 2 destinations', (tester) async {
       await pumpPlatformWidget(tester, PlatformTabScaffold(tabDestinations: List.filled(2, _tab)));

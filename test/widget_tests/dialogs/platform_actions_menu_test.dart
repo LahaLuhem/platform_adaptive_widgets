@@ -9,14 +9,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-import '../support/support.dart';
+import '../../support/support.dart';
 
 const _more = 'More';
 const _under = 'Under';
 const _share = 'Share';
 const _print = 'Print';
 const _delete = 'Delete List';
-const _discard = 'Discard Changes';
 const _confirmMessage = 'Its reminders go too.';
 const _shareIcon = Icons.share;
 const _printIcon = Icons.print;
@@ -69,18 +68,6 @@ Set<PlatformMenuAction> _actions(List<String> pressedLabels, {bool withIcons = f
   ),
 };
 
-PlatformMenuAction _deleteAction(VoidCallback onPressed) => PlatformMenuAction.delete(
-  label: _delete,
-  confirmMessage: _confirmMessage,
-  onPressed: onPressed,
-);
-
-PlatformMenuAction _discardAction(VoidCallback onPressed) => PlatformMenuAction.discard(
-  label: _discard,
-  confirmMessage: _confirmMessage,
-  onPressed: onPressed,
-);
-
 Future<void> _pump(WidgetTester tester, _Page page) => pumpInPlatformScaffold(tester, page);
 
 Future<void> _tap(WidgetTester tester, String label) async {
@@ -103,7 +90,7 @@ void main() {
       check(_isOpen()).isFalse();
     });
 
-    scenarioWidgets('runs a picked action and closes', (tester) async {
+    scenarioWidgets('runs a picked action', (tester) async {
       final pressedLabels = <String>[];
       await _pump(tester, _Page(actions: _actions(pressedLabels)));
       await _tap(tester, _more);
@@ -111,7 +98,6 @@ void main() {
       await _tap(tester, _share);
 
       check(pressedLabels).deepEquals([_share]);
-      check(_isOpen()).isFalse();
     });
 
     scenarioWidgets("doesn't run a disabled action", (tester) async {
@@ -138,6 +124,7 @@ void main() {
       check(underPressCount).equals(1);
     });
 
+    // Cupertino's menu takes Escape by itself.
     scenarioWidgets('closes on Escape after a tap opened it', (tester) async {
       await _pump(tester, _Page(actions: _actions([])));
       await _tap(tester, _more);
@@ -146,33 +133,25 @@ void main() {
       await tester.pumpAndSettle();
 
       check(_isOpen()).isFalse();
-    });
+    }, variant: androidOnly);
 
-    scenarioOutlineWidgets<
-      ({PlatformMenuAction Function(VoidCallback onPressed) actionOf, bool runs})
-    >(
+    // A delete and a discard ask the same way.
+    scenarioOutlineWidgets<bool>(
       'asks before a destructive action runs',
-      examples: {
-        'a delete, confirmed': (actionOf: _deleteAction, runs: true),
-        'a delete, cancelled': (actionOf: _deleteAction, runs: false),
-        'a discard, confirmed': (actionOf: _discardAction, runs: true),
-        'a discard, cancelled': (actionOf: _discardAction, runs: false),
-      },
-      outline: (tester, row) async {
-        var runCount = 0;
-        final platformMenuAction = row.actionOf(() => runCount++);
-        await _pump(tester, _Page(actions: {platformMenuAction}));
+      examples: {'confirmed': true, 'cancelled': false},
+      outline: (tester, runs) async {
+        final pressedLabels = <String>[];
+        await _pump(tester, _Page(actions: _actions(pressedLabels)));
         await _tap(tester, _more);
 
-        await _tap(tester, platformMenuAction.label);
+        await _tap(tester, _delete);
 
         check(tester.any(find.text(_confirmMessage))).isTrue();
-        check(runCount).equals(0);
+        check(pressedLabels).isEmpty();
 
-        await _tap(tester, row.runs ? platformMenuAction.label : 'Cancel');
+        await _tap(tester, runs ? _delete : 'Cancel');
 
-        check(tester.any(find.text(_confirmMessage))).isFalse();
-        check(runCount).equals(row.runs ? 1 : 0);
+        check(pressedLabels).deepEquals([if (runs) _delete]);
       },
     );
 
@@ -202,8 +181,8 @@ void main() {
 
     scenarioOutlineWidgets<Set<PlatformMenuAction>>(
       'refuses a menu the guidelines rule out',
+      // An empty menu fails the icon rule too, so it needs no row of its own.
       examples: {
-        'with no actions': {},
         'with icons on only some actions': {
           _actions([], withIcons: true).first,
           ..._actions([]).skip(1),

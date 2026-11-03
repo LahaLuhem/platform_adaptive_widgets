@@ -46,6 +46,7 @@ dependencies:
 
 dev_dependencies:
   analyzer: ^14.4.0   # AOT-pruning regression guard
+  bdd_framework: ^4.0.7
   checks: ^0.3.2
   collection: ^1.19.1
   dartender_lints:

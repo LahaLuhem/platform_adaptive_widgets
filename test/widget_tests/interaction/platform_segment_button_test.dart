@@ -2,7 +2,7 @@ import 'package:checks/checks.dart';
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-import '../support/support.dart';
+import '../../support/support.dart';
 
 void main() {
   feature('PlatformSegmentButton', () {

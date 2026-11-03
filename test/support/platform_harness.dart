@@ -7,7 +7,7 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 /// nothing about Cupertino.
 const bothPlatforms = TargetPlatformVariant({TargetPlatform.android, TargetPlatform.iOS});
 
-/// For the rare scenario about one branch only, say a Material-only field with no Cupertino counterpart.
+/// The Android half of [bothPlatforms].
 const androidOnly = TargetPlatformVariant({TargetPlatform.android});
 
 /// The iOS half of [bothPlatforms].
