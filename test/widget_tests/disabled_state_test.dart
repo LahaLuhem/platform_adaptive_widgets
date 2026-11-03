@@ -203,6 +203,14 @@ final _segment = _Path(
 // Each has its own row under 'until upstream' below.
 const _noLookOnIos = {'slider', 'row', 'search bar'};
 
+// iOS draws every shape through the same button, so its look only needs the plain one.
+final _buttonIconShapes = {
+  for (final emphasis in PlatformButtonEmphasis.values) ...{
+    'button, ${emphasis.name}, icon and label',
+    'button, ${emphasis.name}, icon only',
+  },
+};
+
 Map<String, _Path> _where(bool Function(String name) keep) =>
     Map.fromEntries(_paths.entries.where((path) => keep(path.key)));
 
@@ -262,15 +270,20 @@ void main() {
 
     scenarioOutlineWidgets<_Path>(
       'looks disabled',
-      examples: {..._where((name) => !_noLookOnIos.contains(name)), 'segment': _segment},
+      examples: {
+        ..._where((name) => !_noLookOnIos.contains(name) && !_buttonIconShapes.contains(name)),
+        'segment': _segment,
+      },
       outline: _looksDisabled,
       variant: iosOnly,
     );
 
+    // Material's widgets say it by themselves once disabled, and 'looks disabled' shows they are.
     scenarioOutlineWidgets<_Path>(
       'tells screen readers it is disabled',
       examples: _paths,
       outline: _saysDisabled,
+      variant: iosOnly,
     );
 
     scenarioWidgets('tells screen readers a disabled segment is disabled', (tester) async {
@@ -278,24 +291,6 @@ void main() {
 
       check(segment.flagsCollection.isEnabled).equals(.isFalse);
     }, variant: iosOnly);
-
-    scenarioWidgets('leaves a control inside a disabled row working', (tester) async {
-      var toggles = 0;
-      await pumpPlatformWidget(
-        tester,
-        _InBody(
-          PlatformListTile(
-            title: const Text(_label),
-            isEnabled: false,
-            trailing: PlatformSwitch(value: true, onChanged: (_) => toggles++),
-          ),
-        ),
-      );
-      await tester.tap(find.byType(PlatformSwitch));
-      await tester.pump();
-
-      check(toggles).equals(1);
-    });
 
     scenarioWidgets("keeps a widget's state when it's disabled", (tester) async {
       // The slider stands in for every path that disables through the package's own wrapper.

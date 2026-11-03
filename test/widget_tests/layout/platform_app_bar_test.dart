@@ -13,17 +13,16 @@ import 'package:cupertino_ui/cupertino_ui.dart'
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart'
-    show BackButton, CloseButton, DrawerButton, IconButton, Icons, TextButton, showModalBottomSheet;
+    show BackButton, CloseButton, IconButton, Icons, TextButton, showModalBottomSheet;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-import '../support/support.dart';
+import '../../support/support.dart';
 
 const _share = 'Share';
 const _edit = 'Edit';
 const _save = 'Save';
 const _custom = 'Custom';
 const _first = 'First';
-const _drawer = 'Drawer';
 
 const _sheetBody = Key('sheet body');
 const _sheetPage = PlatformScaffold(
@@ -200,29 +199,23 @@ void main() {
       },
     );
 
-    scenarioOutlineWidgets<DesignLanguage>(
-      "puts one platform's own leading widget on its side only",
-      examples: {'Material': .material, 'Cupertino': .cupertino},
-      outline: (tester, given) async {
-        const custom = Text(_custom);
-        await _pump(
-          tester,
-          PlatformAppBar(
-            materialAppBarData: given == .material
-                ? const MaterialAppBarData(leading: custom)
-                : const MaterialAppBarData(),
-            cupertinoNavigationBarData: given == .cupertino
-                ? const CupertinoNavigationBarData(leading: custom)
-                : const CupertinoNavigationBarData(),
-          ),
-        );
+    // Its own side's leading is checked below, where it swaps a sheet's way out.
+    scenarioWidgets('leaves out a leading widget given for the other platform', (tester) async {
+      const custom = Text(_custom);
+      await _pump(
+        tester,
+        PlatformAppBar(
+          materialAppBarData: designLanguage == .cupertino
+              ? const MaterialAppBarData(leading: custom)
+              : const MaterialAppBarData(),
+          cupertinoNavigationBarData: designLanguage == .material
+              ? const CupertinoNavigationBarData(leading: custom)
+              : const CupertinoNavigationBarData(),
+        ),
+      );
 
-        check(
-          because: designLanguage.name,
-          find.text(_custom).evaluate().isNotEmpty,
-        ).equals(designLanguage == given);
-      },
-    );
+      check(find.text(_custom).evaluate()).isEmpty();
+    });
 
     scenarioWidgets("goes back through the platform's own back button", (tester) async {
       await pumpInPlatformScaffold(tester, const Text(_first));
@@ -243,22 +236,6 @@ void main() {
       check(find.text(_first).evaluate()).isNotEmpty();
     });
 
-    scenarioWidgets("opens the drawer through Material's own drawer button", (tester) async {
-      await pumpPlatformWidget(
-        tester,
-        const PlatformScaffold(
-          appBarData: PlatformAppBar(),
-          materialScaffoldData: MaterialScaffoldData(drawer: Text(_drawer)),
-          body: SizedBox(),
-        ),
-      );
-
-      await tester.tap(find.byType(DrawerButton));
-      await tester.pumpAndSettle();
-
-      check(find.text(_drawer).evaluate()).isNotEmpty();
-    }, variant: androidOnly);
-
     scenarioWidgets("closes a sheet through the platform's own way out", (tester) async {
       await _openInSheet(tester, _sheetPage);
 
@@ -268,6 +245,7 @@ void main() {
       check(find.byKey(_sheetBody).evaluate()).isEmpty();
     });
 
+    // Material's CloseButton asks it by itself.
     scenarioWidgets("asks the sheet's PopScope before closing it", (tester) async {
       var attempts = 0;
       await _openInSheet(
@@ -286,7 +264,7 @@ void main() {
 
       check(find.byKey(_sheetBody).evaluate()).isNotEmpty();
       check(attempts).equals(1);
-    });
+    }, variant: iosOnly);
 
     scenarioOutlineWidgets<PlatformAppBar>(
       "lets a sheet's bar swap or drop its way out",

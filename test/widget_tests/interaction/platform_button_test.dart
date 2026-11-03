@@ -11,7 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart' show Icons, Material;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-import '../support/support.dart';
+import '../../support/support.dart';
 
 const _label = 'Save';
 
@@ -20,7 +20,8 @@ const _icon = Icons.save;
 // Below this, a fill or an outline reads as gray. M3's grays keep a trace of the theme's hue.
 const _grayChromaLimit = 0.07;
 
-const _destructiveKinds = {PlatformActionKind.delete, PlatformActionKind.discard};
+// A delete and a discard take the same branch.
+const _destructive = PlatformActionKind.delete;
 
 final _emphases = {for (final emphasis in PlatformButtonEmphasis.values) emphasis.name: emphasis};
 
@@ -182,37 +183,22 @@ void main() {
             cupertinoTheme: const CupertinoThemeData(primaryColor: CupertinoColors.systemRed),
           );
           final harmlessInRed = _drawn(tester);
+          await _pump(tester, _Button(emphasis, shape: shape, actionKind: _destructive));
 
-          for (final actionKind in _destructiveKinds) {
-            await _pump(tester, _Button(emphasis, shape: shape, actionKind: actionKind));
-
-            check(
-              because: '${shape.name}, ${actionKind.name}',
-              _drawn(tester),
-            ).equals(harmlessInRed);
-          }
+          check(because: shape.name, _drawn(tester)).equals(harmlessInRed);
         }
       },
       variant: iosOnly,
     );
 
-    scenarioOutlineWidgets<PlatformButtonEmphasis>(
-      'keeps a destructive action plain on Android',
-      examples: _emphases,
-      outline: (tester, emphasis) async {
-        for (final shape in _Shape.values) {
-          await _pump(tester, _Button(emphasis, shape: shape));
-          final harmless = _drawn(tester);
+    // Android never reads the kind, so one button stands in for every emphasis and shape.
+    scenarioWidgets('keeps a destructive action plain on Android', (tester) async {
+      await _pump(tester, const _Button(.high));
+      final harmless = _drawn(tester);
+      await _pump(tester, const _Button(.high, actionKind: _destructive));
 
-          for (final actionKind in _destructiveKinds) {
-            await _pump(tester, _Button(emphasis, shape: shape, actionKind: actionKind));
-
-            check(because: '${shape.name}, ${actionKind.name}', _drawn(tester)).equals(harmless);
-          }
-        }
-      },
-      variant: androidOnly,
-    );
+      check(_drawn(tester)).equals(harmless);
+    }, variant: androidOnly);
 
     scenarioOutlineWidgets<PlatformButtonEmphasis>(
       'names an icon-only button for screen readers on both platforms',

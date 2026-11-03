@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-import '../support/support.dart';
+import '../../support/support.dart';
 
 const _page = SizedBox.expand(key: Key('page'));
 const _message = 'Deleted';
@@ -44,6 +44,7 @@ void main() {
       check(_isShowing(tester)).isFalse();
     });
 
+    // Material's SnackBarAction takes only the first tap by itself.
     scenarioWidgets('runs its action once, however fast it is tapped', (tester) async {
       var undoCount = 0;
       final context = await _pumpPage(tester);
@@ -56,8 +57,9 @@ void main() {
       await tester.pumpAndSettle();
 
       check(undoCount).equals(1);
-    });
+    }, variant: iosOnly);
 
+    // Material's SnackBar stays up by itself while it has an action.
     scenarioWidgets('stays up past its duration while it has an action', (tester) async {
       final context = await _pumpPage(tester);
 
@@ -67,7 +69,7 @@ void main() {
       await tester.pumpAndSettle();
 
       check(_isShowing(tester)).isTrue();
-    });
+    }, variant: iosOnly);
 
     scenarioWidgets('leaves after its duration without an action', (tester) async {
       final context = await _pumpPage(tester);
@@ -81,6 +83,7 @@ void main() {
       check(_isShowing(tester)).isFalse();
     });
 
+    // Material's SnackBar marks itself a live region.
     scenarioWidgets('is read out by screen readers', (tester) async {
       final semantics = tester.ensureSemantics();
       final context = await _pumpPage(tester);
@@ -96,6 +99,6 @@ void main() {
       semantics.dispose();
 
       check(isReadOut).isTrue();
-    });
+    }, variant: iosOnly);
   });
 }

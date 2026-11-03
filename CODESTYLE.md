@@ -34,6 +34,8 @@ renames don't break callers.
   * [`List.unmodifiable(…)` over `UnmodifiableListView(…)`](#listunmodifiable-over-unmodifiablelistview)
   * [`part` / `part of` only when structurally needed](#part--part-of-only-when-structurally-needed)
   * [A switch over an if/else chain, never over a single if/else](#a-switch-over-an-ifelse-chain-never-over-a-single-ifelse)
+- [Test style](#test-style)
+  * [Conventions](#conventions)
 - [Prose & voice](#prose--voice)
 - [Comments & dartdoc](#comments--dartdoc)
   * [A field doc has to earn its place](#a-field-doc-has-to-earn-its-place)
@@ -747,6 +749,66 @@ ceremony.
 
 **Except** a `designLanguage` branch that builds a look's own widget. Only a switch with one look
 per case drops the other look early ([why](./APPENDIX.md#aot-pruning-rules)).
+
+---
+
+<a id="test-style"></a>
+## Test style
+
+Tests split by kind under `test/` (`unit_tests/`, `widget_tests/`), each kind mirroring
+`lib/src/`, and the guards at its root.
+
+- **One test file per library,** its `part`s included. A file with no behaviour of its own (a
+  typedef, an enum, a plain value) gets none.
+- **A scenario goes with the file that owns the rule it pins,** so a suite spanning files splits
+  along them.
+- **A library too big for one file gets a folder of its name,** one file per behaviour.
+- **A rule all widgets share gets one file of its own,** at its kind's root, like
+  `widget_tests/disabled_state_test.dart`, which finds the widgets it covers by reading `lib/src`.
+
+The 3 kinds:
+
+- **`test/unit_tests/`**: pure logic in `bdd_framework`, a `BddFeature` with
+  `Bdd(...).scenario().given().when().then()`. The parameter matrix sits in one place, as
+  `.example(val(...))` rows read via `context.example.val('name')`.
+- **`test/widget_tests/`**: widget behaviour through the local Gherkin helper in
+  `test/support/bdd.dart` (`feature`, `scenarioWidgets`, `scenarioOutlineWidgets`), since
+  `bdd_framework` wraps `test()` and can't hand out a `WidgetTester`. A scenario runs as Android and
+  as iOS (`bothPlatforms`), since each look builds its own subtree. `androidOnly` and `iosOnly` are
+  for what only one look's code does.
+- **The guards at `test/`'s root**: rules over the package's own source, read through the analyzer.
+  `test/support/lib_src.dart` parses `lib/src` once for them.
+
+Assert with `checks`. It has no finder API, so evaluate the finder:
+`check(find.text(...).evaluate()).length.equals(1)`. Drive fixed `pump()`s, never
+`pumpAndSettle`, which hides how many frames ran and skips in-between states like a sheet halfway
+up. Cover the failure paths too.
+
+**Widget tests share one harness** in `test/support/`, behind the `support.dart` barrel. Check it
+before writing a helper, and keep a per-suite `_pump*` wrapper a thin delegation to
+`pumpPlatformWidget` or `pumpInPlatformScaffold`, carrying only that suite's setup.
+
+<a id="test-conventions"></a>
+### Conventions
+
+- **Test the library, not its dependencies.** What Flutter, material_ui or cupertino_ui does by
+  itself (a sheet's drag, a picker wheel's physics) is its authors' to test. Test what the package
+  adds, like the look a platform gets or what a left-out field sends.
+- **A test pins a behaviour a user would agree with, said as a sentence.** A value that only carries
+  it (a default, a log line, an enum's name) isn't one: compare against its source or the state
+  before.
+- **A guarantee the design rests on is a behaviour too,** with no screen to show it breaking: a
+  release build drops the look its platform doesn't draw.
+- **One behaviour, one scenario.** A check another scenario already makes goes, one 2 scenarios
+  share moves into its own, and each example row takes a branch no other row does.
+- **Assert what the user gets, not the string,** unless 2 messages on one screen mean different
+  things.
+- **Prove a regression test fails:** break what it guards, watch it go red, put it back.
+- **A scenario asserting that nothing happened needs the same in reverse:** break the mechanism
+  itself, or it passes just as happily when the feature never worked.
+- **`// coverage:ignore-*` marks only code no test can usefully reach:** unreachable today, guarded
+  another way, or with no effect to see. Its reason goes on a `//` line above, since anything but
+  plain words after the marker switches it off.
 
 ---
 

@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart' show GlobalMaterialLocalizations;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-import '../support/support.dart';
+import '../../support/support.dart';
 
 const _page = SizedBox.expand(key: Key('page'));
 const _title = 'Discard changes?';
@@ -122,11 +122,8 @@ void main() {
 
     scenarioOutlineWidgets<PlatformActionKind>(
       'keeps the confirming button as plain as Cancel on Material',
-      examples: {
-        "when it's harmless": .normal,
-        'when it deletes': .delete,
-        'when it discards': .discard,
-      },
+      // One row per flag the confirming button can set. A delete sets none, same as Cancel.
+      examples: {"when it's harmless": .normal, 'when it discards': .discard},
       outline: (tester, actionKind) async {
         final context = await _pumpPage(tester);
         unawaited(_show(context, actionKind: actionKind));
