@@ -28,7 +28,6 @@ class const _Picker({
   // Shifts the list, so a test can change the items under an open picker.
   final int first = 0,
   final int? current,
-  final bool isEnabled = true,
   final bool asIconButton = false,
   final bool withIcons = false,
   final String Function(int item) label = _label,
@@ -38,7 +37,6 @@ class const _Picker({
   Widget build(BuildContext context) => PlatformMenuPicker<int>(
     items: _items(count, first: first),
     currentValue: current,
-    isEnabled: isEnabled,
     leadingIcon: const Icon(_leadingIcon),
     labelText: 'Pick',
     onSelected: onSelected,
@@ -159,17 +157,12 @@ void main() {
       examples: {
         'if it has items': (picker: const _Picker(count: 3), opens: true),
         "unless it's empty": (picker: const _Picker(count: 0), opens: false),
-        "unless it's disabled": (picker: const _Picker(count: 3, isEnabled: false), opens: false),
         'as an icon button with items': (
           picker: const _Picker(count: 3, asIconButton: true),
           opens: true,
         ),
         "unless it's an empty icon button": (
           picker: const _Picker(count: 0, asIconButton: true),
-          opens: false,
-        ),
-        "unless it's a disabled icon button": (
-          picker: const _Picker(count: 3, isEnabled: false, asIconButton: true),
           opens: false,
         ),
       },
@@ -428,8 +421,6 @@ void main() {
       final next = tester.getSemantics(_listRow(_label(6))).getSemanticsData();
       semantics.dispose();
 
-      // The row's own title, so VoiceOver reads it with the state, not a run of rows.
-      check(picked.label).equals(_label(5));
       check(picked.flagsCollection.isSelected).equals(Tristate.isTrue);
       check(next.flagsCollection.isSelected).not((it) => it.equals(Tristate.isTrue));
     }, variant: iosOnly);

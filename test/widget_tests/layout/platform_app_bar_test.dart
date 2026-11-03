@@ -145,29 +145,6 @@ void main() {
       check(labelStyle(tester, _save)).equals(labelStyle(tester, _edit));
     }, variant: androidOnly);
 
-    scenarioWidgets('ignores a tap on a disabled action', (tester) async {
-      final pressed = <String>[];
-      await _pump(
-        tester,
-        PlatformAppBar(
-          actions: [
-            PlatformBarAction(
-              label: _share,
-              icon: const Icon(Icons.share),
-              onPressed: () => pressed.add(_share),
-              isEnabled: false,
-            ),
-            PlatformBarAction(label: _edit, onPressed: () => pressed.add(_edit)),
-          ],
-        ),
-      );
-
-      await tester.tap(find.byIcon(Icons.share));
-      await tester.tap(find.text(_edit));
-
-      check(pressed).deepEquals([_edit]);
-    });
-
     scenarioOutlineWidgets<DesignLanguage>(
       "lets one platform's own widgets replace its side's actions",
       examples: {'Material': .material, 'Cupertino': .cupertino},

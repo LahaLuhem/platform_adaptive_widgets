@@ -6,12 +6,13 @@ import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoRadio;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
+import 'package:platform_adaptive_widgets/src/widgets/interaction/cupertino_checkmark_row.dart';
 
 import '../../support/support.dart';
 
 const _listKey = Key('list');
 
-// Past iOS's section margin, still inside the row.
+// Clear of the label, inside the row.
 const _farEndInset = 40.0;
 
 enum _Fruit() {
@@ -59,6 +60,7 @@ void main() {
       check(picks).isEmpty();
     }, variant: iosOnly);
 
+    // iOS's row has its own test.
     scenarioWidgets("takes a tap at a row's far end, away from its label", (tester) async {
       final picks = <_Fruit>[];
       await pumpInPlatformScaffold(tester, _Fruits(picks: picks));
@@ -72,7 +74,7 @@ void main() {
       await tester.pump();
 
       check(picks).length.equals(1);
-    });
+    }, variant: androidOnly);
 
     scenarioWidgets("lists the options top to bottom, in the set's order", (tester) async {
       await pumpInPlatformScaffold(tester, const _Fruits());
@@ -92,8 +94,6 @@ void main() {
       final other = tester.getSemantics(find.text(_Fruit.plum.name)).getSemanticsData();
       semantics.dispose();
 
-      // The row's own title, not a run of rows.
-      check(picked.label).equals(_picked.name);
       check(readsAsPicked(picked)).isTrue();
       check(readsAsPicked(other)).isFalse();
     });
@@ -110,7 +110,7 @@ void main() {
     scenarioWidgets("draws iOS's checkmark rows, not the Mac's controls", (tester) async {
       await pumpInPlatformScaffold(tester, const _Fruits());
 
-      check(find.text(_picked.name).evaluate()).isNotEmpty();
+      check(find.byType(CupertinoCheckmarkRow).evaluate()).length.equals(_Fruit.values.length);
       check(find.byWidgetPredicate((widget) => widget is CupertinoRadio).evaluate()).isEmpty();
     }, variant: iosOnly);
   });

@@ -19,6 +19,7 @@ import '../support/support.dart';
 
 const _label = 'Target';
 const _open = 'Open';
+const _other = 'Other';
 
 // Room for a slider or a field, which take whatever width they're given.
 const _width = 300.0;
@@ -26,15 +27,34 @@ const _width = 300.0;
 bool _named(SemanticsData data) =>
     data.label == _label || data.value == _label || data.tooltip == _label;
 
+// Not by name: an icon's is the package's own label, tested on its own.
+bool _isButton(SemanticsData data) => data.flagsCollection.isButton;
+
+Future<void> _tapLabel(WidgetTester tester) =>
+    tester.tap(find.text(_label).last, warnIfMissed: false);
+
+Future<void> _tapIcon(WidgetTester tester) =>
+    tester.tap(find.byIcon(Icons.share), warnIfMissed: false);
+
+// Opens the picker, then picks the other item if it opened.
+Future<void> _pickOtherWith(WidgetTester tester, Finder opener) async {
+  await tester.tap(opener, warnIfMissed: false);
+  await tester.pumpAndSettle();
+  final other = find.text(_other);
+  if (other.evaluate().isNotEmpty) await tester.tap(other.last);
+}
+
 /// One way to disable something, built enabled or disabled.
 class _Path({
   // The class whose field disables it, for the coverage check.
   required final String owner,
-  required final Widget Function({required bool isEnabled}) screen,
+  required final Widget Function({required bool isEnabled, VoidCallback onUse}) screen,
   // The node a screen reader lands on.
   final bool Function(SemanticsData data) target = _named,
   // Whatever has to open before the disabled part shows.
   final Future<void> Function(WidgetTester tester)? open,
+  // How a person uses it, reaching `onUse` while enabled.
+  final Future<void> Function(WidgetTester tester) use = _tapLabel,
 });
 
 class const _InBody(final Widget child) extends StatelessWidget {
@@ -59,27 +79,30 @@ Future<void> _openMenu(WidgetTester tester) async {
 final _paths = <String, _Path>{
   'slider': _Path(
     owner: 'PlatformSlider',
-    screen: ({required isEnabled}) =>
-        _InBody(PlatformSlider(value: 0.5, onChanged: (_) => noop(), isEnabled: isEnabled)),
+    screen: ({required isEnabled, onUse = noop}) =>
+        _InBody(PlatformSlider(value: 0.5, onChanged: (_) => onUse(), isEnabled: isEnabled)),
     target: (data) => data.flagsCollection.isSlider,
+    use: (tester) =>
+        tester.drag(find.byType(PlatformSlider), const Offset(60, 0), warnIfMissed: false),
   ),
   'row': _Path(
     owner: 'PlatformListTile',
-    screen: ({required isEnabled}) =>
-        _InBody(PlatformListTile(title: const Text(_label), onTap: noop, isEnabled: isEnabled)),
+    screen: ({required isEnabled, onUse = noop}) =>
+        _InBody(PlatformListTile(title: const Text(_label), onTap: onUse, isEnabled: isEnabled)),
   ),
   'switch': _Path(
     owner: 'PlatformSwitch',
-    screen: ({required isEnabled}) =>
-        _InBody(PlatformSwitch(value: true, onChanged: (_) => noop(), isEnabled: isEnabled)),
+    screen: ({required isEnabled, onUse = noop}) =>
+        _InBody(PlatformSwitch(value: true, onChanged: (_) => onUse(), isEnabled: isEnabled)),
     target: (data) => data.flagsCollection.isToggled != .none,
+    use: (tester) => tester.tap(find.byType(PlatformSwitch), warnIfMissed: false),
   ),
   for (final emphasis in PlatformButtonEmphasis.values) ...{
     'button, ${emphasis.name}': _Path(
       owner: 'PlatformButton',
-      screen: ({required isEnabled}) => _InBody(
+      screen: ({required isEnabled, onUse = noop}) => _InBody(
         PlatformButton(
-          onPressed: noop,
+          onPressed: onUse,
           emphasis: emphasis,
           isEnabled: isEnabled,
           child: const Text(_label),
@@ -88,9 +111,9 @@ final _paths = <String, _Path>{
     ),
     'button, ${emphasis.name}, icon and label': _Path(
       owner: 'PlatformButton',
-      screen: ({required isEnabled}) => _InBody(
+      screen: ({required isEnabled, onUse = noop}) => _InBody(
         PlatformButton.icon(
-          onPressed: noop,
+          onPressed: onUse,
           emphasis: emphasis,
           isEnabled: isEnabled,
           icon: const Icon(Icons.share),
@@ -100,84 +123,95 @@ final _paths = <String, _Path>{
     ),
     'button, ${emphasis.name}, icon only': _Path(
       owner: 'PlatformButton',
-      screen: ({required isEnabled}) => _InBody(
+      screen: ({required isEnabled, onUse = noop}) => _InBody(
         PlatformButton.iconOnly(
-          onPressed: noop,
+          onPressed: onUse,
           emphasis: emphasis,
           isEnabled: isEnabled,
           icon: const Icon(Icons.share),
           label: _label,
         ),
       ),
+      target: _isButton,
+      use: _tapIcon,
     ),
   },
   'text field': _Path(
     owner: 'PlatformTextField',
-    screen: ({required isEnabled}) =>
-        _InBody(PlatformTextField(hintText: _label, isEnabled: isEnabled)),
+    screen: ({required isEnabled, onUse = noop}) =>
+        _InBody(PlatformTextField(hintText: _label, onTap: onUse, isEnabled: isEnabled)),
     target: (data) => data.flagsCollection.isTextField,
   ),
   'search bar': _Path(
     owner: 'PlatformSearchBar',
-    screen: ({required isEnabled}) => _InBody(
-      PlatformSearchBar(onChanged: (_) => noop(), hintText: _label, isEnabled: isEnabled),
+    screen: ({required isEnabled, onUse = noop}) => _InBody(
+      PlatformSearchBar(
+        onChanged: (_) => noop(),
+        onTap: onUse,
+        hintText: _label,
+        isEnabled: isEnabled,
+      ),
     ),
     target: (data) => data.flagsCollection.isTextField,
   ),
   'menu picker': _Path(
     owner: 'PlatformMenuPicker',
-    screen: ({required isEnabled}) => _InBody(
+    screen: ({required isEnabled, onUse = noop}) => _InBody(
       PlatformMenuPicker<String>(
-        items: const {_label},
+        items: const {_label, _other},
         currentValue: _label,
-        onSelected: (_) => noop(),
+        onSelected: (_) => onUse(),
         isEnabled: isEnabled,
       ),
     ),
+    use: (tester) => _pickOtherWith(tester, find.text(_label)),
   ),
   'menu picker, icon button': _Path(
     owner: 'PlatformMenuPicker',
-    screen: ({required isEnabled}) => _InBody(
+    screen: ({required isEnabled, onUse = noop}) => _InBody(
       PlatformMenuPicker<String>(
-        items: const {_label},
+        items: const {_label, _other},
         leadingIcon: const Icon(Icons.sort),
-        onSelected: (_) => noop(),
+        onSelected: (_) => onUse(),
         isEnabled: isEnabled,
         materialMenuPickerData: const MaterialMenuPickerData.iconButton(),
         cupertinoMenuPickerData: const CupertinoMenuPickerData.iconButton(),
       ),
     ),
-    target: (data) => data.flagsCollection.isButton,
+    target: _isButton,
+    use: (tester) => _pickOtherWith(tester, find.byIcon(Icons.sort)),
   ),
   'bar action': _Path(
     owner: 'PlatformBarAction',
-    screen: ({required isEnabled}) => _InBar(
+    screen: ({required isEnabled, onUse = noop}) => _InBar(
       PlatformAppBar(
-        primaryAction: PlatformBarAction(label: _label, onPressed: noop, isEnabled: isEnabled),
+        primaryAction: PlatformBarAction(label: _label, onPressed: onUse, isEnabled: isEnabled),
       ),
     ),
   ),
   'bar action, icon': _Path(
     owner: 'PlatformBarAction',
-    screen: ({required isEnabled}) => _InBar(
+    screen: ({required isEnabled, onUse = noop}) => _InBar(
       PlatformAppBar(
         actions: [
           PlatformBarAction(
             label: _label,
             icon: const Icon(Icons.share),
-            onPressed: noop,
+            onPressed: onUse,
             isEnabled: isEnabled,
           ),
         ],
       ),
     ),
+    target: _isButton,
+    use: _tapIcon,
   ),
   'actions menu item': _Path(
     owner: 'PlatformMenuAction',
-    screen: ({required isEnabled}) => _InBody(
+    screen: ({required isEnabled, onUse = noop}) => _InBody(
       PlatformActionsMenu(
         builder: (_, onPressed) => GestureDetector(onTap: onPressed, child: const Text(_open)),
-        actions: {PlatformMenuAction.normal(label: _label, onPressed: noop, isEnabled: isEnabled)},
+        actions: {PlatformMenuAction.normal(label: _label, onPressed: onUse, isEnabled: isEnabled)},
       ),
     ),
     open: _openMenu,
@@ -187,12 +221,12 @@ final _paths = <String, _Path>{
 // Only Cupertino can disable a single segment.
 final _segment = _Path(
   owner: 'CupertinoSegmentButtonData',
-  screen: ({required isEnabled}) => _InBody(
+  screen: ({required isEnabled, onUse = noop}) => _InBody(
     PlatformSegmentButton<String>(
-      choices: const {'Other', _label},
+      choices: const {_other, _label},
       segmentBuilder: Text.new,
-      selectedChoice: 'Other',
-      onSelectionChanged: (_) => noop(),
+      selectedChoice: _other,
+      onSelectionChanged: (_) => onUse(),
       cupertinoSegmentButtonData: CupertinoSegmentButtonData(
         disabledChildren: {if (!isEnabled) _label},
       ),
@@ -214,12 +248,27 @@ final _buttonIconShapes = {
 Map<String, _Path> _where(bool Function(String name) keep) =>
     Map.fromEntries(_paths.entries.where((path) => keep(path.key)));
 
-Future<void> _pump(WidgetTester tester, _Path path, {required bool isEnabled}) async {
+Future<void> _pump(
+  WidgetTester tester,
+  _Path path, {
+  required bool isEnabled,
+  VoidCallback onUse = noop,
+}) async {
   // A fresh tree, so nothing carries over from the other state, like an open menu.
   await tester.pumpWidget(const SizedBox());
-  await pumpPlatformWidget(tester, path.screen(isEnabled: isEnabled));
+  await pumpPlatformWidget(tester, path.screen(isEnabled: isEnabled, onUse: onUse));
   await tester.pumpAndSettle();
   await path.open?.call(tester);
+}
+
+/// How many times using [path] reached its callback.
+Future<int> _usesOf(WidgetTester tester, _Path path, {required bool isEnabled}) async {
+  var uses = 0;
+  await _pump(tester, path, isEnabled: isEnabled, onUse: () => uses++);
+  await path.use(tester);
+  await tester.pumpAndSettle();
+
+  return uses;
 }
 
 /// Whether disabling [path] changes how the screen looks.
@@ -283,6 +332,17 @@ void main() {
       'tells screen readers it is disabled',
       examples: _paths,
       outline: _saysDisabled,
+      variant: iosOnly,
+    );
+
+    // Used enabled first, so a tap that misses can't pass.
+    scenarioOutlineWidgets<_Path>(
+      'ignores a tap while disabled',
+      examples: {..._paths, 'segment': _segment},
+      outline: (tester, path) async {
+        check(because: 'enabled', await _usesOf(tester, path, isEnabled: true)).isGreaterThan(0);
+        check(because: 'disabled', await _usesOf(tester, path, isEnabled: false)).equals(0);
+      },
       variant: iosOnly,
     );
 
