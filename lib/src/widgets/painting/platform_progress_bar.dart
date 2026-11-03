@@ -29,6 +29,10 @@ class const PlatformProgressBar({
 
   final Color? color,
 
+  /// The bar's thickness: [LinearProgressIndicator.minHeight] on Material, [CupertinoLinearActivityIndicator.height]
+  /// on Cupertino. Left out, each look keeps its own default.
+  final double? height,
+
   /// What's loading, like "Loading inbox"
   /// ([M3 accessibility](https://m3.material.io/components/progress-indicators/accessibility)).
   final String? semanticsLabel,
@@ -54,6 +58,7 @@ class const PlatformProgressBar({
     key: widgetKey,
     value: value,
     color: materialProgressBarData.color ?? color,
+    minHeight: materialProgressBarData.height ?? height,
     semanticsLabel: semanticsLabel,
     semanticsValue: semanticsValue,
     backgroundColor: materialProgressBarData.backgroundColor,
@@ -78,6 +83,7 @@ class const PlatformProgressBar({
     child: CupertinoLinearActivityIndicator(
       key: widgetKey,
       progress: value,
+      height: cupertinoProgressBarData.height ?? height ?? kDefaultCupertinoProgressBarHeight,
       color: cupertinoProgressBarData.color ?? color,
     ),
   );
