@@ -188,9 +188,8 @@ void main() {
     );
 
     test('covers every entry point that takes useSafeArea', () {
-      final entryPoints = libSrcUnits
-          .where((unit) => exportedPaths.contains(unit.path))
-          .expand((unit) => unit.parsed.unit.declarations)
+      final entryPoints = parsedLibSrc
+          .expand((unit) => unit.ast.declarations.where(unit.barrelExports))
           .where(_takesSafeArea)
           .map(_nameOf);
 

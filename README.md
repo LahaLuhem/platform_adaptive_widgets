@@ -310,7 +310,7 @@ Cupertino branches are dead code that the compiler tree-shakes away, and the sam
 Since "trust me" is a weak engineering argument, 2 CI checks keep it honest on every PR:
 
 - a **static AST guard**
-  ([`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart)) that fails
+  ([`test/guards/aot_pruning.dart`](./test/guards/aot_pruning.dart)) that fails
   the build if anyone reintroduces the closure-style dispatch that quietly defeats pruning, and
 - a **real size benchmark** ([`tool/check_size_regression.dart`](./tool/check_size_regression.dart))
   that builds an app for Android and iOS with `--analyze-size`, and trips if either keeps more of

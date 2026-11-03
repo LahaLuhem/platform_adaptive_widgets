@@ -3,15 +3,12 @@
 // This guard declares several private visitor / record classes in one file.
 // ignore_for_file: prefer-match-file-name
 
-@TestOn('vm')
-library;
-
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'support/lib_src.dart';
+import '../support/lib_src.dart';
 
 /// The method each look builds in, a `PlatformWidgetBase` half or a `PlatformAppBarData` builder.
 final _halfNames = {
@@ -19,11 +16,17 @@ final _halfNames = {
   'cupertino': {lookHalves.cupertino, 'cupertinoBuilder'},
 };
 
-void main() {
-  final bases = _collectBases().toList(growable: false);
-  final widgetsByName = _collectWidgetClasses();
+void dataWidgetParityGuard() {
+  late final List<_Base> bases;
+  late final Map<String, _Widget> widgetsByName;
 
   group('Data/widget parity guard', () {
+    setUpAll(() async {
+      final units = await analyzedLibSrc;
+      bases = _collectBases(units).toList(growable: false);
+      widgetsByName = _collectWidgetClasses(units);
+    });
+
     test('finds the bases at all (guards against a vacuous pass)', () {
       check(
         because:
@@ -102,11 +105,8 @@ void main() {
   });
 }
 
-Iterable<LibSrcUnit> _unitsIn(String folder) =>
-    libSrcUnits.where((unit) => unit.path.startsWith(folder));
-
-Iterable<_Base> _collectBases() => _unitsIn('lib/src/models/').expand(
-  (unit) => unit.parsed.unit.declarations
+Iterable<_Base> _collectBases(List<LibSrcUnit> units) => _under(units, 'lib/src/models/').expand(
+  (unit) => unit.ast.declarations
       .whereType<ClassDeclaration>()
       .map((declaration) => (declaration: declaration, name: declaration.namePart.typeName.lexeme))
       .where(
@@ -122,9 +122,9 @@ Iterable<_Base> _collectBases() => _unitsIn('lib/src/models/').expand(
       ),
 );
 
-Map<String, _Widget> _collectWidgetClasses() => Map.fromEntries(
-  _unitsIn('lib/src/widgets/').expand(
-    (unit) => unit.parsed.unit.declarations.whereType<ClassDeclaration>().map(
+Map<String, _Widget> _collectWidgetClasses(List<LibSrcUnit> units) => Map.fromEntries(
+  _under(units, 'lib/src/widgets/').expand(
+    (unit) => unit.ast.declarations.whereType<ClassDeclaration>().map(
       (declaration) => MapEntry(
         declaration.namePart.typeName.lexeme,
         _Widget(
@@ -139,6 +139,9 @@ Map<String, _Widget> _collectWidgetClasses() => Map.fromEntries(
     ),
   ),
 );
+
+Iterable<LibSrcUnit> _under(List<LibSrcUnit> units, String folder) =>
+    units.where((unit) => unit.path.startsWith(folder));
 
 /// [node]'s half for [look], the first of [names] it declares, and what that merges.
 _Half _half(ClassDeclaration node, String look, Set<String> names) {

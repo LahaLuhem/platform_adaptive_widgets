@@ -123,7 +123,7 @@ under `lib/src/models/<category>/platform_xxx_data.dart`. The same sub-categorie
 
    A new shared-visual field must be added in **both** places, flat on the widget *and* on the
    `_PlatformXxxData` base, and merged with `??` in both `buildMaterial` and `buildCupertino`. The
-   [data ↔ widget parity guard](../test/data_widget_parity_test.dart) fails the PR if either edge
+   [data ↔ widget parity guard](../test/guards/data_widget_parity.dart) fails the PR if either edge
    drifts (these 2 edges are the ones the Dart compiler does not catch, unlike `super.x` forwarding
    base → records). See
    [`APPENDIX.md#field-classification`](../APPENDIX.md#field-classification)
@@ -131,7 +131,7 @@ under `lib/src/models/<category>/platform_xxx_data.dart`. The same sub-categorie
 
    A field left out sends upstream's own default, so its type, default and `null` mirror the
    parameter it feeds. A record parameter defaults to its `const` empty record, never `null`. The
-   [upstream-default guard](../test/upstream_defaults_guard_test.dart) fails the PR otherwise. See
+   [upstream-default guard](../test/guards/upstream_defaults.dart) fails the PR otherwise. See
    [`APPENDIX.md#left-out-fields`](../APPENDIX.md#left-out-fields).
 
 ## Hard rules
@@ -151,9 +151,9 @@ under `lib/src/models/<category>/platform_xxx_data.dart`. The same sub-categorie
 5. **Semver, strictly.** Breaking changes only on a major bump. Any change to a public widget's
    constructor signature, a public `*Data` field, a deletion, or a behavioural change of a
    documented contract is breaking. Surface the implication before the diff lands.
-6. **Switch on `designLanguage`, never `defaultTargetPlatform`.** A guard fails any other read in
-   `lib/src/`. Moving a platform between looks, or adding a third, needs a conversation first (see
-   [`APPENDIX.md#android-ios-only`](../APPENDIX.md#android-ios-only)).
+6. **Switch on `designLanguage`, never `defaultTargetPlatform`.** A guard fails anything else in
+   `lib/src/` typed `TargetPlatform`. Moving a platform between looks, or adding a third, needs a
+   conversation first (see [`APPENDIX.md#android-ios-only`](../APPENDIX.md#android-ios-only)).
 7. **Every new `PlatformXxx` follows the widget pattern above.** See
    [`APPENDIX.md#platform-widget-base-hierarchy`](../APPENDIX.md#platform-widget-base-hierarchy).
 8. **Inside `lib/src/`, dispatch with an inline `switch (designLanguage)`, one look per case**, each
@@ -161,7 +161,7 @@ under `lib/src/models/<category>/platform_xxx_data.dart`. The same sub-categorie
    helper taking both builders: the loser gets compiled in anyway
    ([cost](../doc/costs.md#both-looks-in-one-call)). The selectors stay public for callers who
    accept that. The AST lint in
-   [`test/aot_pruning_regression_test.dart`](../test/aot_pruning_regression_test.dart) and the size
+   [`test/guards/aot_pruning.dart`](../test/guards/aot_pruning.dart) and the size
    benchmark over `tool/size_harness/` enforce it on every PR, so don't weaken either without a
    conversation. See [`APPENDIX.md#aot-pruning-rules`](../APPENDIX.md#aot-pruning-rules).
 9. **`CHANGELOG.md` and `version:` move together with the release tag, in the Release run.** Routine
