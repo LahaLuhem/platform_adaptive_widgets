@@ -37,6 +37,12 @@ void main() {
       check(listEquals(atThird, atTwoThirds)).isFalse();
     });
 
+    scenarioWidgets('draws the bar as thick as asked', (tester) async {
+      await _pump(tester, const PlatformProgressBar(value: 0.3, height: 9));
+
+      check(tester.getSize(find.byKey(_barKey)).height).equals(9);
+    });
+
     // Material's bar says it by itself.
     scenarioWidgets('tells screen readers how far along known progress is', (tester) async {
       final semantics = tester.ensureSemantics();
