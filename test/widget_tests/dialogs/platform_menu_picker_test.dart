@@ -146,6 +146,24 @@ int _iconsInMenuRow(String label) => find
 
 void main() {
   feature('PlatformMenuPicker', () {
+    scenarioWidgets('puts widgetKey on the picker it builds', (tester) async {
+      const widgetKey = Key('inner');
+      await pumpInPlatformScaffold(
+        tester,
+        PlatformMenuPicker<int>(
+          items: _items(2),
+          menuPickerItemTransformer: (item) => MenuPickerItem(label: _label(item)),
+          widgetKey: widgetKey,
+        ),
+      );
+
+      check(
+        find
+            .descendant(of: find.byType(PlatformMenuPicker<int>), matching: find.byKey(widgetKey))
+            .evaluate(),
+      ).length.equals(1);
+    });
+
     // Below the 3 items iOS menus are meant for.
     scenarioWidgets('picks from a list of one', (tester) async {
       final picked = <int>[];

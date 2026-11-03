@@ -54,6 +54,29 @@ Future<Set<_Fruit>> _newSetAfterTapping(
 
 void main() {
   feature('PlatformMultiSelectList', () {
+    scenarioWidgets('puts widgetKey on the list it builds', (tester) async {
+      const widgetKey = Key('inner');
+      await pumpInPlatformScaffold(
+        tester,
+        PlatformMultiSelectList<_Fruit>(
+          options: _Fruit.values.toSet(),
+          selected: const {},
+          label: (fruit) => fruit.name,
+          onChanged: (_) => noop(),
+          widgetKey: widgetKey,
+        ),
+      );
+
+      check(
+        find
+            .descendant(
+              of: find.byType(PlatformMultiSelectList<_Fruit>),
+              matching: find.byKey(widgetKey),
+            )
+            .evaluate(),
+      ).length.equals(1);
+    });
+
     scenarioOutlineWidgets<({_Fruit tapped, Set<_Fruit> after})>(
       'adds or drops the tapped option',
       examples: {
