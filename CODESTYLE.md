@@ -755,60 +755,47 @@ per case drops the other look early ([why](./APPENDIX.md#aot-pruning-rules)).
 <a id="test-style"></a>
 ## Test style
 
-Tests split by kind under `test/` (`unit_tests/`, `widget_tests/`), each kind mirroring
-`lib/src/`, and the guards at its root.
+Tests split by kind under `test/`, each kind mirroring `lib/src/`. The guards sit at `test/`'s root.
 
-- **One test file per library,** its `part`s included. A file with no behaviour of its own (a
-  typedef, an enum, a plain value) gets none.
-- **A scenario goes with the file that owns the rule it pins,** so a suite spanning files splits
-  along them.
+- **One test file per library,** `part`s included. A file with no behaviour (a typedef, an enum, a
+  plain value) gets none.
+- **A scenario lives with the library that owns its rule.**
 - **A library too big for one file gets a folder of its name,** one file per behaviour.
-- **A rule all widgets share gets one file of its own,** at its kind's root, like
-  `widget_tests/disabled_state_test.dart`, which finds the widgets it covers by reading `lib/src`.
+- **A rule every widget shares gets its own file** at its kind's root, like
+  `widget_tests/disabled_state_test.dart`, which finds its widgets by reading `lib/src`.
 
 The 3 kinds:
 
-- **`test/unit_tests/`**: pure logic in `bdd_framework`, a `BddFeature` with
-  `Bdd(...).scenario().given().when().then()`. The parameter matrix sits in one place, as
-  `.example(val(...))` rows read via `context.example.val('name')`.
-- **`test/widget_tests/`**: widget behaviour through the local Gherkin helper in
-  `test/support/bdd.dart` (`feature`, `scenarioWidgets`, `scenarioOutlineWidgets`), since
-  `bdd_framework` wraps `test()` and can't hand out a `WidgetTester`. A scenario runs as Android and
-  as iOS (`bothPlatforms`), since each look builds its own subtree. `androidOnly` and `iosOnly` are
-  for what only one look's code does.
-- **The guards at `test/`'s root**: rules over the package's own source, read through the analyzer.
-  `test/support/lib_src.dart` parses `lib/src` once for them.
+- **`unit_tests/`**: pure logic in `bdd_framework`, its parameter matrix as `.example(val(...))`
+  rows.
+- **`widget_tests/`**: the Gherkin helper in `test/support/bdd.dart`, since `bdd_framework` can't
+  hand out a `WidgetTester`. Scenarios run as Android and iOS (`bothPlatforms`). `androidOnly` and
+  `iosOnly` are for what only one look's code does.
+- **Guards**: rules over `lib/src`, parsed once by `test/support/lib_src.dart`.
 
-Assert with `checks`. It has no finder API, so evaluate the finder:
-`check(find.text(...).evaluate()).length.equals(1)`. Drive fixed `pump()`s, never
-`pumpAndSettle`, which hides how many frames ran and skips in-between states like a sheet halfway
-up. Cover the failure paths too.
+Assert with `checks`, evaluating finders: `check(find.text(...).evaluate()).length.equals(1)`.
+Pump a fixed number of frames, never `pumpAndSettle`, which hides in-between states like a sheet
+halfway up. Cover the failure paths too.
 
-**Widget tests share one harness** in `test/support/`, behind the `support.dart` barrel. Check it
-before writing a helper, and keep a per-suite `_pump*` wrapper a thin delegation to
-`pumpPlatformWidget` or `pumpInPlatformScaffold`, carrying only that suite's setup.
+**Widget tests share one harness,** the `test/support/support.dart` barrel. Check it before writing
+a helper. A suite's `_pump*` wrapper only adds that suite's setup.
 
 <a id="test-conventions"></a>
 ### Conventions
 
-- **Test the library, not its dependencies.** What Flutter, material_ui or cupertino_ui does by
-  itself (a sheet's drag, a picker wheel's physics) is its authors' to test. Test what the package
-  adds, like the look a platform gets or what a left-out field sends.
-- **A test pins a behaviour a user would agree with, said as a sentence.** A value that only carries
-  it (a default, a log line, an enum's name) isn't one: compare against its source or the state
-  before.
-- **A guarantee the design rests on is a behaviour too,** with no screen to show it breaking: a
-  release build drops the look its platform doesn't draw.
-- **One behaviour, one scenario.** A check another scenario already makes goes, one 2 scenarios
-  share moves into its own, and each example row takes a branch no other row does.
+- **Test the package, not its dependencies.** What Flutter, material_ui or cupertino_ui does by
+  itself (a sheet's drag, a wheel's physics) is theirs to test. Test what the package adds.
+- **A test pins a behaviour a user would agree with.** A value that only carries it (a default, a
+  log line) isn't one: compare with its source or the state before.
+- **A guarantee the design rests on counts too,** like a release build dropping the unused look.
+- **One check, one scenario.** A check another scenario makes goes, one 2 scenarios share gets its
+  own, and each example row takes a branch no other row does.
 - **Assert what the user gets, not the string,** unless 2 messages on one screen mean different
   things.
-- **Prove a regression test fails:** break what it guards, watch it go red, put it back.
-- **A scenario asserting that nothing happened needs the same in reverse:** break the mechanism
-  itself, or it passes just as happily when the feature never worked.
-- **`// coverage:ignore-*` marks only code no test can usefully reach:** unreachable today, guarded
-  another way, or with no effect to see. Its reason goes on a `//` line above, since anything but
-  plain words after the marker switches it off.
+- **Prove a regression test fails:** break what it guards, watch it go red, put it back. For a
+  "nothing happened" check, break the mechanism itself.
+- **`// coverage:ignore-*` only marks code no test can usefully reach.** Its reason goes on a `//`
+  line above, since text after the marker switches it off.
 
 ---
 

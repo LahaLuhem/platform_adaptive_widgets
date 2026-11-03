@@ -11,7 +11,7 @@ import '../../support/support.dart';
 
 const _listKey = Key('list');
 
-// Inside the row on both looks, past the margin iOS leaves around its section.
+// Past iOS's section margin, still inside the row.
 const _farEndInset = 40.0;
 
 enum _Fruit() {
@@ -92,7 +92,7 @@ void main() {
       final other = tester.getSemantics(find.text(_Fruit.plum.name)).getSemanticsData();
       semantics.dispose();
 
-      // The row's own title, so the reader says it with the state, not a run of rows.
+      // The row's own title, not a run of rows.
       check(picked.label).equals(_picked.name);
       check(readsAsPicked(picked)).isTrue();
       check(readsAsPicked(other)).isFalse();

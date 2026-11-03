@@ -122,7 +122,7 @@ void main() {
 
     scenarioOutlineWidgets<PlatformActionKind>(
       'keeps the confirming button as plain as Cancel on Material',
-      // One row per flag the confirming button can set. A delete sets none, same as Cancel.
+      // A delete sets no flag, same as Cancel.
       examples: {"when it's harmless": .normal, 'when it discards': .discard},
       outline: (tester, actionKind) async {
         final context = await _pumpPage(tester);

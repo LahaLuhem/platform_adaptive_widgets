@@ -9,7 +9,7 @@ void main() {
   const platformKey = 'platform';
   const lookKey = 'look';
 
-  // Spelled out here rather than read off the package, so a wrong mapping can't pass.
+  // Spelled out, not read off the package, so a wrong mapping can't pass.
   Bdd(designLanguageFeature)
       .scenario('Apple platforms get Cupertino, the rest Material')
       .given('the app runs on <$platformKey>')

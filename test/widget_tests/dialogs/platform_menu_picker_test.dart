@@ -142,7 +142,7 @@ int _iconsInMenuRow(String label) => find
 
 void main() {
   feature('PlatformMenuPicker', () {
-    // Fewer than the 3 items iOS's menus are meant for.
+    // Below the 3 items iOS menus are meant for.
     scenarioWidgets('picks from a list of one', (tester) async {
       final picked = <int>[];
       await _pump(tester, _Picker(count: 1, onSelected: picked.add));
@@ -189,7 +189,7 @@ void main() {
       check(_items(4).map(_label).where(_fieldShows)).isEmpty();
     });
 
-    // A value that leaves the list finds no row either, the same as null.
+    // A value off the list takes the same path.
     scenarioWidgets('clears the field when the value goes null', (tester) async {
       await _pump(tester, const _Picker(count: 4, current: 2));
       check(_fieldShows(_label(2))).isTrue();
@@ -273,7 +273,7 @@ void main() {
     scenarioWidgets("marks a short list's picked row at an accessibility text size", (
       tester,
     ) async {
-      // iOS's smallest accessibility size, 28 pt body text instead of 17, drops a row's trailing slot.
+      // 28 pt body text, iOS's smallest accessibility size, which hides a row's trailing slot.
       tester.platformDispatcher.textScaleFactorTestValue = 28 / 17;
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
       await _pump(tester, const _Picker(count: 3, current: 1, withIcons: true));

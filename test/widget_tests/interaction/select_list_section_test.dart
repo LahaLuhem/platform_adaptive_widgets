@@ -1,4 +1,4 @@
-// Named after the library it tests, which it reaches through a list that uses it.
+// Named after the library it tests, reached through a list.
 // ignore_for_file: prefer-match-file-name
 
 import 'package:checks/checks.dart';
@@ -30,7 +30,7 @@ void main() {
       final header = tester.getSemantics(find.text('Fruit')).getSemanticsData();
       semantics.dispose();
 
-      // Its own node, so the rows aren't read out as part of the heading.
+      // Its own node, so the rows aren't read as part of it.
       check(header.label).equals('Fruit');
       check(header.headingLevel).isGreaterThan(0);
     });

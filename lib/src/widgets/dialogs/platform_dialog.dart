@@ -12,6 +12,7 @@ import '/src/models/layout/platform_app_bar_data.dart';
 import '/src/models/layout/platform_scaffold_data.dart';
 import '/src/utils/design_language.dart';
 import '/src/widgets/layout/platform_scaffold.dart';
+import 'builder_invariant.dart';
 import 'dialog_routes.dart';
 
 /// Shows a full-screen modal dialog: [Dialog.fullscreen] on Material, a full-screen [CupertinoPageRoute]
@@ -106,7 +107,7 @@ Future<T?> showPlatformRawDialog<T>({
   bool useRootNavigator = kDefaultUseRootNavigator,
   bool? requestFocus,
 }) {
-  _assertBuilderInvariant(
+  assertBuilderInvariant(
     hasBuilder: builder != null,
     hasMaterialBuilder: materialBuilder != null,
     hasCupertinoBuilder: cupertinoBuilder != null,
@@ -142,26 +143,6 @@ Future<T?> showPlatformRawDialog<T>({
       requestFocus: requestFocus,
     ),
   };
-}
-
-/// Takes booleans rather than the builders themselves. 2 function-typed `material*`/`cupertino*` params
-/// would trip the AOT-pruning guard in `test/aot_pruning_regression_test.dart`, even though a null check
-/// alone can't keep either branch reachable.
-void _assertBuilderInvariant({
-  required bool hasBuilder,
-  required bool hasMaterialBuilder,
-  required bool hasCupertinoBuilder,
-}) {
-  assert(
-    hasBuilder || (hasMaterialBuilder && hasCupertinoBuilder),
-    'Provide either `builder` (for both platforms) or both `materialBuilder` '
-    'and `cupertinoBuilder`.',
-  );
-  assert(
-    !hasBuilder || (!hasMaterialBuilder && !hasCupertinoBuilder),
-    'If `builder` is provided, do not also provide `materialBuilder` or '
-    '`cupertinoBuilder`.',
-  );
 }
 
 /// A page route rather than a dialog one, since that's what a Cupertino full-screen modal is. See [showMaterialDialogRoute].

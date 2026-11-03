@@ -191,7 +191,7 @@ void main() {
       variant: iosOnly,
     );
 
-    // Android never reads the kind, so one button stands in for every emphasis and shape.
+    // Material never reads the kind, so one button covers all.
     scenarioWidgets('keeps a destructive action plain on Android', (tester) async {
       await _pump(tester, const _Button(.high));
       final harmless = _drawn(tester);

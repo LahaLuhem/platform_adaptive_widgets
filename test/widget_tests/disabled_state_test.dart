@@ -203,7 +203,7 @@ final _segment = _Path(
 // Each has its own row under 'until upstream' below.
 const _noLookOnIos = {'slider', 'row', 'search bar'};
 
-// iOS draws every shape through the same button, so its look only needs the plain one.
+// iOS draws every shape through one button.
 final _buttonIconShapes = {
   for (final emphasis in PlatformButtonEmphasis.values) ...{
     'button, ${emphasis.name}, icon and label',
@@ -278,7 +278,7 @@ void main() {
       variant: iosOnly,
     );
 
-    // Material's widgets say it by themselves once disabled, and 'looks disabled' shows they are.
+    // Material says it by itself. 'looks disabled' covers the wiring.
     scenarioOutlineWidgets<_Path>(
       'tells screen readers it is disabled',
       examples: _paths,
