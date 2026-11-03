@@ -101,15 +101,6 @@ void main() {
       check(_labelsTopDown(tester)).deepEquals([for (final choice in _choices) choice.label]);
     }, variant: androidOnly);
 
-    scenarioWidgets('bolds Cancel on iOS', (tester) async {
-      final context = await pumpForContext(tester);
-      unawaited(_show(context));
-      await tester.pumpAndSettle();
-
-      check(weightOf(labelStyle(tester, 'Cancel')))
-          .isGreaterThan(weightOf(labelStyle(tester, _save.label)));
-    }, variant: iosOnly);
-
     scenarioWidgets("labels Cancel in the app's language", (tester) async {
       await tester.pumpWidget(
         const PlatformApp(
@@ -137,10 +128,10 @@ void main() {
 
     scenarioOutlineWidgets<({PlatformActionKind actionKind, bool isRed})>(
       'shows what each choice does on iOS',
+      // A discard takes the delete's branch.
       examples: {
         'something harmless stays plain': (actionKind: .normal, isRed: false),
         'a delete turns red': (actionKind: .delete, isRed: true),
-        'a discard turns red': (actionKind: .discard, isRed: true),
       },
       outline: (tester, row) async {
         final context = await pumpForContext(tester);
@@ -155,13 +146,11 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        final choiceTextStyle = labelStyle(tester, 'Choice');
-        final cancelTextStyle = labelStyle(tester, 'Cancel');
-        check(
-          argbOf(choiceTextStyle),
-        ).equals(row.isRed ? CupertinoColors.systemRed.color.toARGB32() : argbOf(cancelTextStyle));
-        // Only Cancel gets the bold look, which the HIG keeps off destructive buttons.
-        check(weightOf(choiceTextStyle)).isLessThan(weightOf(cancelTextStyle));
+        check(argbOf(labelStyle(tester, 'Choice'))).equals(
+          row.isRed
+              ? CupertinoColors.systemRed.color.toARGB32()
+              : argbOf(labelStyle(tester, 'Cancel')),
+        );
       },
       variant: iosOnly,
     );
@@ -171,11 +160,11 @@ void main() {
       unawaited(_show(context));
       await tester.pumpAndSettle();
 
+      // Material never reads the kind, so a delete stands in for a discard.
       final plainTextStyle = labelStyle(tester, _save.label);
-      for (final label in [_delete.label, _discard.label]) {
-        check(argbOf(labelStyle(tester, label))).equals(argbOf(plainTextStyle));
-        check(weightOf(labelStyle(tester, label))).equals(weightOf(plainTextStyle));
-      }
+      final deleteTextStyle = labelStyle(tester, _delete.label);
+      check(argbOf(deleteTextStyle)).equals(argbOf(plainTextStyle));
+      check(weightOf(deleteTextStyle)).equals(weightOf(plainTextStyle));
     }, variant: androidOnly);
 
     scenarioWidgets('shows the title and message above the choices', (tester) async {

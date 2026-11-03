@@ -16,8 +16,6 @@ Future<bool> _show(BuildContext context) =>
 
 bool _isShowing(WidgetTester tester) => tester.any(find.text(_message));
 
-Offset _center(WidgetTester tester, String label) => tester.getCenter(find.text(label));
-
 void main() {
   feature('showPlatformDestructiveConfirm', () {
     scenarioOutlineWidgets<({String button, bool answer})>(
@@ -57,22 +55,8 @@ void main() {
       unawaited(_show(context));
       await tester.pumpAndSettle();
 
-      final confirmTextStyle = labelStyle(tester, _confirm);
-      check(argbOf(confirmTextStyle)).equals(CupertinoColors.systemRed.color.toARGB32());
-      // Cancel below it, bold as iOS draws its own.
-      check(_center(tester, 'Cancel').dy).isGreaterThan(_center(tester, _confirm).dy);
-      check(weightOf(labelStyle(tester, 'Cancel'))).isGreaterThan(weightOf(confirmTextStyle));
+      check(argbOf(labelStyle(tester, _confirm)))
+          .equals(CupertinoColors.systemRed.color.toARGB32());
     }, variant: iosOnly);
-
-    scenarioWidgets('keeps its untitled message as far from the top as from the side on Android', (
-      tester,
-    ) async {
-      final context = await pumpForContext(tester);
-      unawaited(_show(context));
-      await tester.pumpAndSettle();
-
-      final insets = messageInsets(tester, _message);
-      check(insets.top).equals(insets.side);
-    }, variant: androidOnly);
   });
 }

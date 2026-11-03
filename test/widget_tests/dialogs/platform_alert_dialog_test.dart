@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
+import 'package:platform_adaptive_widgets/src/widgets/dialogs/platform_destructive_confirm.dart';
 
 import '../../support/support.dart';
 
@@ -43,7 +44,7 @@ Future<_Look> _loneTitleLook(WidgetTester tester, BuildContext context) async {
 }
 
 void main() {
-  feature('showPlatformAcknowledge', () {
+  feature('Platform alert dialog', () {
     scenarioWidgets('draws a lone title as the message on Android, which M3 requires', (
       tester,
     ) async {
@@ -64,16 +65,27 @@ void main() {
       check(await _loneTitleLook(tester, context)).equals(looks.title);
     }, variant: iosOnly);
 
-    scenarioWidgets('keeps a lone title as far from the top as from the side on Android', (
-      tester,
-    ) async {
-      final context = await pumpForContext(tester);
-      unawaited(showPlatformAcknowledge(context: context, title: _title));
-      await tester.pumpAndSettle();
+    // Upstream leaves 16 on top, M3 asks for 24.
+    scenarioOutlineWidgets<Future<void> Function(BuildContext context)>(
+      'keeps an untitled message as far from the top as from the side on Android',
+      examples: {
+        'in an acknowledgement': (context) =>
+            showPlatformAcknowledge(context: context, title: _message),
+        'in a destructive confirm': (context) => showPlatformDestructiveConfirm(
+          context: context,
+          message: _message,
+          confirmLabel: 'Delete',
+        ),
+      },
+      outline: (tester, show) async {
+        unawaited(show(await pumpForContext(tester)));
+        await tester.pumpAndSettle();
 
-      final insets = messageInsets(tester, _title);
-      check(insets.top).equals(insets.side);
-    }, variant: androidOnly);
+        final insets = messageInsets(tester, _message);
+        check(insets.top).equals(insets.side);
+      },
+      variant: androidOnly,
+    );
 
     // M3 tucks the text closer under a headline or an icon than the dialog's own padding.
     scenarioOutlineWidgets<

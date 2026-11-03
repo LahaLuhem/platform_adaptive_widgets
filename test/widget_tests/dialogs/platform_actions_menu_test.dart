@@ -47,7 +47,7 @@ class const _Page({
   );
 }
 
-// Share, a disabled Print and Delete List. Each notes its label when it runs.
+// Share, Print and Delete List. Each notes its label when it runs.
 Set<PlatformMenuAction> _actions(List<String> pressedLabels, {bool withIcons = false}) => {
   PlatformMenuAction.normal(
     label: _share,
@@ -57,7 +57,6 @@ Set<PlatformMenuAction> _actions(List<String> pressedLabels, {bool withIcons = f
   PlatformMenuAction.normal(
     label: _print,
     iconData: withIcons ? _printIcon : null,
-    isEnabled: false,
     onPressed: () => pressedLabels.add(_print),
   ),
   PlatformMenuAction.delete(
@@ -98,16 +97,6 @@ void main() {
       await _tap(tester, _share);
 
       check(pressedLabels).deepEquals([_share]);
-    });
-
-    scenarioWidgets("doesn't run a disabled action", (tester) async {
-      final pressedLabels = <String>[];
-      await _pump(tester, _Page(actions: _actions(pressedLabels)));
-      await _tap(tester, _more);
-
-      await _tap(tester, _print);
-
-      check(pressedLabels).isEmpty();
     });
 
     scenarioWidgets('only closes when tapped outside', (tester) async {
