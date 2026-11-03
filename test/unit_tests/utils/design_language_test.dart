@@ -3,6 +3,8 @@ import 'package:checks/checks.dart';
 import 'package:flutter/foundation.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
+import '../../support/on_platform.dart';
+
 void main() {
   final designLanguageFeature = BddFeature('Design language');
 
@@ -21,12 +23,10 @@ void main() {
       .example(val(platformKey, TargetPlatform.fuchsia), val(lookKey, DesignLanguage.material))
       .example(val(platformKey, TargetPlatform.linux), val(lookKey, DesignLanguage.material))
       .example(val(platformKey, TargetPlatform.windows), val(lookKey, DesignLanguage.material))
-      .run((context) {
-        debugDefaultTargetPlatformOverride = context.example.val(platformKey) as TargetPlatform;
-        try {
-          check(designLanguage).equals(context.example.val(lookKey) as DesignLanguage);
-        } finally {
-          debugDefaultTargetPlatformOverride = null;
-        }
-      });
+      .run(
+        (context) => onPlatform(
+          context.example.val(platformKey) as TargetPlatform,
+          () => check(designLanguage).equals(context.example.val(lookKey) as DesignLanguage),
+        ),
+      );
 }

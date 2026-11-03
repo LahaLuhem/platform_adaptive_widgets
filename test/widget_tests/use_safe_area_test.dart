@@ -1,5 +1,9 @@
+@TestOn('vm')
+library;
+
 import 'dart:async';
 
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoNavigationBar;
 import 'package:flutter/widgets.dart';
@@ -7,6 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart' show AppBar;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
+import '../support/lib_src.dart';
 import '../support/support.dart';
 
 const _bodyKey = Key('body');
@@ -40,87 +45,159 @@ Future<void> _openOver(WidgetTester tester, void Function(BuildContext context) 
   open(tester.element(find.byKey(_homeKey)));
 }
 
-final _byDefault = <String, _Open>{
-  'a page': (tester) =>
-      _pumpPhone(tester, const PlatformScaffold(appBarData: _pageBar, body: _body)),
-  'a sheet': (tester) => _openOver(
-    tester,
-    (context) => unawaited(
-      showPlatformSheet<void>(context: context, appBarBuilder: _bar, builder: (_) => _body),
+// Each entry point taking useSafeArea, opened without it and with it.
+final _entryPoints = <String, ({_Open byDefault, _Open withSafeArea})>{
+  'PlatformScaffold': (
+    byDefault: (tester) =>
+        _pumpPhone(tester, const PlatformScaffold(appBarData: _pageBar, body: _body)),
+    withSafeArea: (tester) => _pumpPhone(
+      tester,
+      const PlatformScaffold(appBarData: _pageBar, useSafeArea: true, body: _body),
     ),
   ),
-  'a full-screen dialog': (tester) => _openOver(
-    tester,
-    (context) => unawaited(
-      showPlatformFullscreenDialog<void>(
-        context: context,
-        appBarBuilder: _bar,
-        builder: (_) => _body,
+  'showPlatformSheet': (
+    byDefault: (tester) => _openOver(
+      tester,
+      (context) => unawaited(
+        showPlatformSheet<void>(context: context, appBarBuilder: _bar, builder: (_) => _body),
+      ),
+    ),
+    withSafeArea: (tester) => _openOver(
+      tester,
+      (context) => unawaited(
+        showPlatformSheet<void>(
+          context: context,
+          appBarBuilder: _bar,
+          useSafeArea: true,
+          builder: (_) => _body,
+        ),
+      ),
+    ),
+  ),
+  'showPlatformFullscreenDialog': (
+    byDefault: (tester) => _openOver(
+      tester,
+      (context) => unawaited(
+        showPlatformFullscreenDialog<void>(
+          context: context,
+          appBarBuilder: _bar,
+          builder: (_) => _body,
+        ),
+      ),
+    ),
+    withSafeArea: (tester) => _openOver(
+      tester,
+      (context) => unawaited(
+        showPlatformFullscreenDialog<void>(
+          context: context,
+          appBarBuilder: _bar,
+          useSafeArea: true,
+          builder: (_) => _body,
+        ),
       ),
     ),
   ),
 };
 
-final _withSafeArea = <String, _Open>{
-  'a page': (tester) => _pumpPhone(
-    tester,
-    const PlatformScaffold(appBarData: _pageBar, useSafeArea: true, body: _body),
-  ),
-  'a sheet': (tester) => _openOver(
-    tester,
-    (context) => unawaited(
-      showPlatformSheet<void>(
-        context: context,
-        appBarBuilder: _bar,
-        useSafeArea: true,
-        builder: (_) => _body,
-      ),
-    ),
-  ),
-  'a full-screen dialog': (tester) => _openOver(
-    tester,
-    (context) => unawaited(
-      showPlatformFullscreenDialog<void>(
-        context: context,
-        appBarBuilder: _bar,
-        useSafeArea: true,
-        builder: (_) => _body,
-      ),
-    ),
-  ),
+final _byDefault = {
+  for (final MapEntry(:key, :value) in _entryPoints.entries) key: value.byDefault,
 };
 
-Rect _barRect(WidgetTester tester) => tester.getRect(
-  find.byType(switch (designLanguage) {
-    .material => AppBar,
-    .cupertino => CupertinoNavigationBar,
-  }).last,
-);
+final _withSafeArea = {
+  for (final MapEntry(:key, :value) in _entryPoints.entries) key: value.withSafeArea,
+};
+
+Future<({Rect body, Rect bar})> _rectsAfter(WidgetTester tester, _Open open) async {
+  await open(tester);
+  await pumpTransition(tester);
+
+  return (
+    body: tester.getRect(find.byKey(_bodyKey)),
+    bar: tester.getRect(
+      find.byType(switch (designLanguage) {
+        .material => AppBar,
+        .cupertino => CupertinoNavigationBar,
+      }).last,
+    ),
+  );
+}
+
+// A useSafeArea that defaults to kDefaultUseSafeArea, the body's own flag, not a route's.
+bool _takesSafeArea(CompilationUnitMember declaration) =>
+    switch (declaration) {
+      FunctionDeclaration(:final functionExpression) => functionExpression.parameters?.parameters,
+      ClassDeclaration(namePart: PrimaryConstructorDeclaration(:final formalParameters)) =>
+        formalParameters.parameters,
+      _ => null,
+    }?.any(
+      (parameter) =>
+          parameter.name?.lexeme == 'useSafeArea' &&
+          parameter.defaultClause?.value.toSource() == 'kDefaultUseSafeArea',
+    ) ??
+    false;
+
+String _nameOf(CompilationUnitMember declaration) => switch (declaration) {
+  ClassDeclaration(:final namePart) => namePart.typeName.lexeme,
+  FunctionDeclaration(:final name) => name.lexeme,
+  _ => declaration.toSource(),
+};
 
 void main() {
   feature('useSafeArea', () {
     scenarioOutlineWidgets<_Open>(
-      'keeps a body that does not scroll clear of the bar and the home indicator',
+      'keeps the body clear of the home indicator',
       examples: _withSafeArea,
       outline: (tester, open) async {
-        await open(tester);
-        await tester.pumpAndSettle();
-        final body = tester.getRect(find.byKey(_bodyKey));
+        final rects = await _rectsAfter(tester, open);
 
-        check(body.top).isGreaterOrEqual(_barRect(tester).bottom);
-        check(body.bottom).isLessOrEqual(_phone.height - _homeIndicatorHeight);
+        check(rects.body.bottom).isLessOrEqual(_phone.height - _homeIndicatorHeight);
+      },
+    );
+
+    // Material's scaffold lays the body out below its bar by itself.
+    scenarioOutlineWidgets<_Open>(
+      'keeps the body clear of the bar on iOS',
+      examples: _withSafeArea,
+      outline: (tester, open) async {
+        final rects = await _rectsAfter(tester, open);
+
+        check(rects.body.top).isGreaterOrEqual(rects.bar.bottom);
+      },
+      variant: iosOnly,
+    );
+
+    scenarioOutlineWidgets<_Open>(
+      'leaves the body down to the bottom edge without it, so a list can scroll under it',
+      examples: _byDefault,
+      outline: (tester, open) async {
+        final rects = await _rectsAfter(tester, open);
+
+        check(rects.body.bottom).equals(_phone.height);
       },
     );
 
     scenarioOutlineWidgets<_Open>(
-      'leaves the body edge to edge without it, so a list can scroll under the bars',
+      'leaves the body under the bar without it on iOS',
       examples: _byDefault,
       outline: (tester, open) async {
-        await open(tester);
-        await tester.pumpAndSettle();
+        final rects = await _rectsAfter(tester, open);
 
-        check(tester.getRect(find.byKey(_bodyKey)).bottom).equals(_phone.height);
+        check(rects.body.top).isLessThan(rects.bar.bottom);
       },
+      variant: iosOnly,
     );
+
+    test('covers every entry point that takes useSafeArea', () {
+      final entryPoints = libSrcUnits
+          .where((unit) => exportedPaths.contains(unit.path))
+          .expand((unit) => unit.parsed.unit.declarations)
+          .where(_takesSafeArea)
+          .map(_nameOf);
+
+      check(
+        because: 'An entry point taking useSafeArea needs a row here.',
+        entryPoints,
+      ).unorderedEquals(_entryPoints.keys);
+    });
   });
 }
