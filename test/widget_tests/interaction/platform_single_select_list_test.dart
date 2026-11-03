@@ -39,6 +39,29 @@ class const _Fruits({final Set<_Fruit>? options, final List<_Fruit>? picks})
 
 void main() {
   feature('PlatformSingleSelectList', () {
+    scenarioWidgets('puts widgetKey on the list it builds', (tester) async {
+      const widgetKey = Key('inner');
+      await pumpInPlatformScaffold(
+        tester,
+        PlatformSingleSelectList<_Fruit>(
+          options: _Fruit.values.toSet(),
+          selected: _picked,
+          label: (fruit) => fruit.name,
+          onChanged: (_) => noop(),
+          widgetKey: widgetKey,
+        ),
+      );
+
+      check(
+        find
+            .descendant(
+              of: find.byType(PlatformSingleSelectList<_Fruit>),
+              matching: find.byKey(widgetKey),
+            )
+            .evaluate(),
+      ).length.equals(1);
+    });
+
     scenarioWidgets('picks the tapped option', (tester) async {
       final picks = <_Fruit>[];
       await pumpInPlatformScaffold(tester, _Fruits(picks: picks));

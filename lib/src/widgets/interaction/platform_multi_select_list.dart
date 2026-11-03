@@ -37,8 +37,9 @@ class const PlatformMultiSelectList<T extends Object>({
 
   /// Names the group. Screen readers hear it as a heading.
   final String? header,
+  super.widgetKey,
   super.key,
-}) extends PlatformWidgetBase {
+}) extends PlatformWidgetKeyedBase {
   /// Creates a list that picks any of its options.
   this;
 
@@ -49,6 +50,7 @@ class const PlatformMultiSelectList<T extends Object>({
     assert(options.containsAll(selected), _kSelectedOutsideMessage);
 
     return MaterialSelectListSection(
+      key: widgetKey,
       header: header,
       rows: [
         for (final option in options)
@@ -72,6 +74,7 @@ class const PlatformMultiSelectList<T extends Object>({
     final header = this.header;
 
     return CupertinoListSection.insetGrouped(
+      key: widgetKey,
       header: header == null ? null : SelectListHeader(text: header),
       hasLeading: false,
       children: [

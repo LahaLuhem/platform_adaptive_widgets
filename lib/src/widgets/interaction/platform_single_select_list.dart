@@ -39,8 +39,9 @@ class const PlatformSingleSelectList<T extends Object>({
 
   /// Names the group. Screen readers hear it as a heading.
   final String? header,
+  super.widgetKey,
   super.key,
-}) extends PlatformWidgetBase {
+}) extends PlatformWidgetKeyedBase {
   /// Creates a list that picks one of its options.
   this;
 
@@ -51,6 +52,7 @@ class const PlatformSingleSelectList<T extends Object>({
     assert(options.contains(selected), _kSelectedMissingMessage);
 
     return RadioGroup<T>(
+      key: widgetKey,
       groupValue: selected,
       // No row is toggleable, so a pick is never cleared to null.
       onChanged: (option) => onChanged(option!),
@@ -76,6 +78,7 @@ class const PlatformSingleSelectList<T extends Object>({
     final header = this.header;
 
     return CupertinoListSection.insetGrouped(
+      key: widgetKey,
       header: header == null ? null : SelectListHeader(text: header),
       hasLeading: false,
       children: [

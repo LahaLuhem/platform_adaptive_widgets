@@ -100,6 +100,7 @@ class const PlatformMenuPicker<T extends Object>({
     final pickerSnapshot = _pickerSnapshot();
 
     return _MaterialMenuPicker(
+      key: widgetKey,
       menuPickerItems: pickerSnapshot.menuPickerItems,
       selectedIndex: pickerSnapshot.selectedIndex,
       isEnabled: _canOpen,
@@ -114,6 +115,7 @@ class const PlatformMenuPicker<T extends Object>({
   @protected
   @visibleForOverriding
   Widget buildCupertino(BuildContext context) => _CupertinoMenuPicker(
+    key: widgetKey,
     pickerSnapshot: _pickerSnapshot(),
     isEnabled: _canOpen,
     useIconButton: cupertinoMenuPickerData.useIconButtonVariant,
@@ -151,6 +153,7 @@ final class const _MaterialMenuPicker({
   required final String? labelText,
   required final ValueChanged<int> onPicked,
   required final MaterialMenuPickerData data,
+  super.key,
 }) extends StatefulWidget {
   @override
   State<_MaterialMenuPicker> createState() => _MaterialMenuPickerState();
@@ -235,6 +238,7 @@ final class const _CupertinoMenuPicker({
   required final Widget? leadingIcon,
   required final String? labelText,
   required final Color? backgroundColor,
+  super.key,
 }) extends StatefulWidget {
   @override
   State<_CupertinoMenuPicker> createState() => _CupertinoMenuPickerState();
