@@ -26,13 +26,16 @@ class const SelectionDemoView({required final bool shouldEnable, super.key})
       children: [
         DemoCard(
           title: 'PlatformMultiSelectList',
-          description: 'Material CheckboxListTiles · checkmark rows in a Cupertino section.',
+          description:
+              'Material CheckboxListTiles · checkmark rows in a Cupertino section. No disabled look on '
+              'iOS yet.',
           child: PropertyEditor(
             preview: PlatformMultiSelectList(
               options: Weekday.values.toSet(),
               selected: viewModel.repeatDays,
               label: (day) => day.name,
               onChanged: viewModel.onRepeatDaysChanged,
+              isEnabled: shouldEnable,
               header: viewModel.repeatHeader,
             ),
             knobs: [
@@ -80,7 +83,7 @@ class const SelectionDemoView({required final bool shouldEnable, super.key})
         ),
         DemoCard(
           title: 'PlatformSlider',
-          description: 'Material Slider · CupertinoSlider.',
+          description: 'Material Slider · CupertinoSlider. No disabled look on iOS yet.',
           child: PropertyEditor(
             preview: PlatformSlider(
               value: viewModel.sliderValue,
@@ -118,7 +121,7 @@ class const SelectionDemoView({required final bool shouldEnable, super.key})
           title: 'Shared selection',
           description:
               'Segmented button, single-select list and menu picker bound to one value, '
-              'change any one and the others follow.',
+              'change any one and the others follow. The list has no disabled look on iOS yet.',
           child: Column(
             crossAxisAlignment: .stretch,
             spacing: 16,
@@ -135,6 +138,7 @@ class const SelectionDemoView({required final bool shouldEnable, super.key})
                 selected: viewModel.selectedDirection,
                 label: (direction) => direction.name,
                 onChanged: viewModel.onDirectionChanged,
+                isEnabled: shouldEnable,
               ),
               PlatformMenuPicker(
                 items: AxisDirection.values.toSet(),

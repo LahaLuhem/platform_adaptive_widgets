@@ -79,7 +79,7 @@ final class DialogsDemoViewModel() extends ViewModel {
     notifyListeners();
   }
 
-  Future<void> onShowSheetPressed({required bool shouldEnable}) async {
+  Future<void> onShowSheetPressed() async {
     _listNameController.clear();
     final saved = await showPlatformSheet<String>(
       context: context,
@@ -88,7 +88,6 @@ final class DialogsDemoViewModel() extends ViewModel {
         primaryAction: PlatformBarAction(
           label: 'Save',
           onPressed: () => Navigator.maybeOf(context)?.pop(_listNameController.text),
-          isEnabled: shouldEnable,
         ),
       ),
       unsavedChanges: PlatformUnsavedChanges(
@@ -101,7 +100,6 @@ final class DialogsDemoViewModel() extends ViewModel {
         padding: const .all(16),
         child: PlatformTextField(
           controller: _listNameController,
-          isEnabled: shouldEnable,
           hintText: 'Name',
           autofocus: true,
         ),
@@ -133,7 +131,7 @@ final class DialogsDemoViewModel() extends ViewModel {
     ),
   );
 
-  Future<void> onShowFullscreenDialogPressed({required bool shouldEnable}) async {
+  Future<void> onShowFullscreenDialogPressed() async {
     final saved = await showPlatformFullscreenDialog<String>(
       context: context,
       appBarBuilder: (context) => PlatformAppBar(
@@ -141,7 +139,6 @@ final class DialogsDemoViewModel() extends ViewModel {
         primaryAction: PlatformBarAction(
           label: 'Save',
           onPressed: () => Navigator.maybeOf(context)?.pop('Team lunch'),
-          isEnabled: shouldEnable,
         ),
       ),
       builder: (_) => const Center(child: Text('Team lunch')),

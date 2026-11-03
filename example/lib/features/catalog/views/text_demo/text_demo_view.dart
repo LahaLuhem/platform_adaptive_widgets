@@ -94,7 +94,8 @@ class const TextDemoView({required final bool shouldEnable, super.key}) extends 
         ),
         DemoCard(
           title: 'PlatformSearchBar',
-          description: 'Material SearchBar · CupertinoSearchTextField.',
+          description:
+              'Material SearchBar · CupertinoSearchTextField. No disabled look on iOS yet.',
           child: Column(
             crossAxisAlignment: .start,
             spacing: 8,
