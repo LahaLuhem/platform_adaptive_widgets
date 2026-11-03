@@ -33,6 +33,10 @@ class const PlatformMultiSelectList<T extends Object>({
   /// Gets the new set, in the options' order.
   required final ValueChanged<Set<T>> onChanged,
 
+  /// Material greys the rows out. Cupertino can't yet ([flutter/flutter#195327](https://github.com/flutter/flutter/issues/195327)),
+  /// but VoiceOver reads them as dimmed.
+  final bool isEnabled = true,
+
   /// Names the group. Screen readers hear it as a heading.
   final String? header,
   super.key,
@@ -53,6 +57,7 @@ class const PlatformMultiSelectList<T extends Object>({
           CheckboxListTile(
             value: selected.contains(option),
             onChanged: (_) => onChanged(_toggled(option)),
+            enabled: isEnabled ? null : false,
             title: Text(label(option)),
             // Where the single list's radios sit, which the header lines up with.
             controlAffinity: .leading,
@@ -75,6 +80,7 @@ class const PlatformMultiSelectList<T extends Object>({
             label: label(option),
             isPicked: selected.contains(option),
             onTap: () => onChanged(_toggled(option)),
+            isEnabled: isEnabled,
           ),
       ],
     );

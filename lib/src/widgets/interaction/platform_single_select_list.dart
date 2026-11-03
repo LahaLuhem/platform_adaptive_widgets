@@ -33,6 +33,10 @@ class const PlatformSingleSelectList<T extends Object>({
 
   required final ValueChanged<T> onChanged,
 
+  /// Material greys the rows out. Cupertino can't yet ([flutter/flutter#195327](https://github.com/flutter/flutter/issues/195327)),
+  /// but VoiceOver reads them as dimmed.
+  final bool isEnabled = true,
+
   /// Names the group. Screen readers hear it as a heading.
   final String? header,
   super.key,
@@ -53,7 +57,12 @@ class const PlatformSingleSelectList<T extends Object>({
       child: MaterialSelectListSection(
         header: header,
         rows: [
-          for (final option in options) RadioListTile<T>(value: option, title: Text(label(option))),
+          for (final option in options)
+            RadioListTile<T>(
+              value: option,
+              title: Text(label(option)),
+              enabled: isEnabled ? null : false,
+            ),
         ],
       ),
     );
@@ -75,6 +84,7 @@ class const PlatformSingleSelectList<T extends Object>({
             onTap: () {
               if (option != selected) onChanged(option);
             },
+            isEnabled: isEnabled,
           ),
       ],
     );

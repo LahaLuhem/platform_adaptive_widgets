@@ -13,6 +13,7 @@ final class const CupertinoCheckmarkRow({
   required final bool isPicked,
   required final VoidCallback onTap,
   final IconData? iconData,
+  final bool isEnabled = true,
   super.key,
 }) extends StatelessWidget {
   /// Creates a row for one option.
@@ -23,11 +24,13 @@ final class const CupertinoCheckmarkRow({
     // CupertinoListTile has no selected state of its own
     // (https://github.com/flutter/flutter/issues/124425), so VoiceOver wouldn't hear which row is picked.
     selected: isPicked,
+    // Nor a disabled one (https://github.com/flutter/flutter/issues/195327).
+    enabled: isEnabled ? null : false,
     child: CupertinoListTile(
       leading: iconData == null ? null : Icon(iconData),
       title: Text(label),
       trailing: isPicked ? const Icon(CupertinoIcons.check_mark) : null,
-      onTap: onTap,
+      onTap: isEnabled ? onTap : null,
     ),
   );
 }
