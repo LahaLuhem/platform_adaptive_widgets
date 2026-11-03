@@ -1,20 +1,4 @@
-// Parity guard for the field-classification contract in APPENDIX.md#field-classification. For every
-// canonical widget whose shared-visual fields live on a private `_PlatformXxxData` base
-// (inherited by `MaterialXxxData` / `CupertinoXxxData` via `super`-forwarding), 2 static checks over
-// `lib/src/` keep the 2 edges the Dart compiler does NOT check honest:
-//
-//   1. Field-set parity, every field on the `_PlatformXxxData` base also exists as a flat field on
-//      the matching `PlatformXxx` widget. Dart compiler-checks `super.x` forwarding (base -> records)
-//      and ctor-params -> field-decls, but nothing forces the widget to mirror the base. A base field
-//      added without a flat widget twin compiles, yet can never be set at the call site.
-//
-//   2. Build-method wiring, every base field is merged via `materialXxxData.field ?? field` in
-//      `buildMaterial` AND `cupertinoXxxData.field ?? field` in `buildCupertino`. A forgotten fallback
-//      (or one pointing at the wrong flat field) compiles, type-checks, and silently drops the per-platform
-//      override. This is the more dangerous edge and the one the compiler is blindest to.
-//
-// Bases listed in `_basesWithoutFlatMirror` exist only to DRY a single field across the 2 records and
-// have no flat widget twin by design. See that set's comment.
+// Parity guard, its checks listed in APPENDIX.md#parity-guard.
 
 // This guard declares several private visitor / record classes in one file.
 // ignore_for_file: prefer-match-file-name
@@ -29,18 +13,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'support/lib_src.dart';
 
-/// Bases with deliberately no flat mirror on their widget. They exist only to share one `backgroundColor`
-/// declaration between the 2 records, which the widget then reads directly. See APPENDIX.md#field-classification.
-const _basesWithoutFlatMirror = {'_PlatformAppBarData', '_PlatformScaffoldData'};
-
-/// A floor, not a ceiling. New widgets enrol themselves, and this only catches discovery quietly finding
-/// nothing, which would let every check below pass on an empty set.
-const _knownCanonicalWidgets = {
-  'PlatformScrollbar',
-  'PlatformSlider',
-  'PlatformSwitch',
-  'PlatformListTile',
-  'PlatformProgressIndicator',
+/// The method each look builds in, a `PlatformWidgetBase` half or a `PlatformAppBarData` builder.
+final _halfNames = {
+  'material': {lookHalves.material, 'materialBuilder'},
+  'cupertino': {lookHalves.cupertino, 'cupertinoBuilder'},
 };
 
 void main() {
@@ -48,18 +24,13 @@ void main() {
   final widgetsByName = _collectWidgetClasses();
 
   group('Data/widget parity guard', () {
-    test('discovers the known canonical widgets (guards against a no-op guard)', () {
-      final discovered = bases.map((base) => base.widgetName).toSet();
+    test('finds the bases at all (guards against a vacuous pass)', () {
       check(
         because:
-            'The parity guard discovered fewer `_PlatformXxxData` bases than the '
-            'known canonical set. If the analyzer AST API or the lib/src/models '
-            'layout changed, base discovery may be silently broken, which would '
-            'let the parity checks below pass vacuously. Fix discovery in '
-            '`_collectBases`, or update `_knownCanonicalWidgets` if a widget was '
-            'intentionally removed.',
-        _knownCanonicalWidgets.difference(discovered),
-      ).isEmpty();
+            'Found no `_PlatformXxxData` base, so `_collectBases` is looking in the wrong place and '
+            'every check below passes on nothing.',
+        bases,
+      ).isNotEmpty();
     });
 
     test('finds fields on every base (guards against checks passing on none)', () {
@@ -87,7 +58,7 @@ void main() {
             .difference(widget.fieldNames)
             .map(
               (field) =>
-                  '${widget.filePath}: `${base.widgetName}` is missing flat '
+                  '${widget.location}: `${base.widgetName}` is missing flat '
                   'field `$field` (declared on `${base.name}`)',
             );
       });
@@ -110,29 +81,21 @@ void main() {
         final widget = widgetsByName[base.widgetName];
         if (widget == null) return const <String>[]; // reported by the test above
 
-        final branches = {
-          'buildMaterial': (merged: widget.materialMerged, accessor: 'materialXxxData'),
-          'buildCupertino': (merged: widget.cupertinoMerged, accessor: 'cupertinoXxxData'),
-        };
-
-        return branches.entries.expand(
-          (branch) => base.fields
-              .difference(branch.value.merged)
+        return widget.halves.expand(
+          (half) => base.fields
+              .difference(half.merged)
               .map(
                 (field) =>
-                    '${widget.filePath}: ${branch.key} does not merge `$field` '
-                    'via `${branch.value.accessor}.$field ?? $field`',
+                    '${widget.location}: ${half.name} does not merge `$field` '
+                    'via `${half.look}XxxData.$field ?? $field`',
               ),
         );
       });
       check(
         because:
-            'A shared-visual base field is not merged with the documented '
-            '`materialXxxData.field ?? field` / `cupertinoXxxData.field ?? '
-            'field` idiom in one or both build methods. A missing fallback '
-            'compiles but silently drops the per-platform override (or the flat '
-            'default). Wire the field in both `buildMaterial` and '
-            '`buildCupertino`. See APPENDIX.md#field-classification.',
+            'A missing `materialXxxData.field ?? field` / `cupertinoXxxData.field ?? field` merge '
+            'compiles, but silently drops the per-platform override (or the flat default). Wire the '
+            'field in both halves. See APPENDIX.md#field-classification.',
         offenders,
       ).isEmpty();
     });
@@ -147,18 +110,14 @@ Iterable<_Base> _collectBases() => _unitsIn('lib/src/models/').expand(
       .whereType<ClassDeclaration>()
       .map((declaration) => (declaration: declaration, name: declaration.namePart.typeName.lexeme))
       .where(
-        (candidate) =>
-            candidate.name.startsWith('_Platform') &&
-            candidate.name.endsWith('Data') &&
-            !_basesWithoutFlatMirror.contains(candidate.name),
+        (candidate) => candidate.name.startsWith('_Platform') && candidate.name.endsWith('Data'),
       )
       .map(
         (candidate) => _Base(
           name: candidate.name,
           widgetName: candidate.name.replaceFirst('_', '').replaceFirst(RegExp(r'Data$'), ''),
           fields: instanceFieldNames(candidate.declaration),
-          location:
-              '${unit.path}:${unit.parsed.lineInfo.getLocation(candidate.declaration.offset).lineNumber}',
+          location: unit.locate(candidate.declaration),
         ),
       ),
 );
@@ -169,27 +128,28 @@ Map<String, _Widget> _collectWidgetClasses() => Map.fromEntries(
       (declaration) => MapEntry(
         declaration.namePart.typeName.lexeme,
         _Widget(
-          filePath: unit.path,
+          location: unit.locate(declaration),
           fieldNames: instanceFieldNames(declaration),
-          materialMerged: _mergedFields(declaration, 'buildMaterial', 'material'),
-          cupertinoMerged: _mergedFields(declaration, 'buildCupertino', 'cupertino'),
+          halves: [
+            for (final MapEntry(key: look, value: names) in _halfNames.entries)
+              _half(declaration, look, names),
+          ],
         ),
       ),
     ),
   ),
 );
 
-/// Fields merged as `<accessorPrefix>….field ?? field` inside [node]'s [methodName].
-Set<String> _mergedFields(ClassDeclaration node, String methodName, String accessorPrefix) {
-  final visitor = _MergeVisitor(accessorPrefix);
-  final methods = node.body.members.whereType<MethodDeclaration>().where(
-    (member) => member.name.lexeme == methodName,
-  );
-  for (final method in methods) {
-    method.body.accept(visitor);
-  }
+/// [node]'s half for [look], the first of [names] it declares, and what that merges.
+_Half _half(ClassDeclaration node, String look, Set<String> names) {
+  final method = node.body.members
+      .whereType<MethodDeclaration>()
+      .where((member) => names.contains(member.name.lexeme))
+      .firstOrNull;
+  final visitor = _MergeVisitor(look);
+  method?.body.accept(visitor);
 
-  return visitor.merged;
+  return _Half(name: method?.name.lexeme ?? names.first, look: look, merged: visitor.merged);
 }
 
 class _MergeVisitor(final String _accessorPrefix) extends RecursiveAstVisitor<void> {
@@ -218,8 +178,14 @@ class _Base({
 });
 
 class _Widget({
-  required final String filePath,
+  required final String location,
   required final Set<String> fieldNames,
-  required final Set<String> materialMerged,
-  required final Set<String> cupertinoMerged,
+  required final List<_Half> halves,
+});
+
+/// The method a look is built in, and the fields it merges as `<look>….field ?? field`.
+class _Half({
+  required final String name,
+  required final String look,
+  required final Set<String> merged,
 });

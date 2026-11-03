@@ -20,7 +20,10 @@ void main() {
                 .map((member) => (unit: unit, member: member)),
           )
           .toList(growable: false);
-      check(declarations).isNotEmpty();
+      check(
+        because: 'Found no unexported declaration at all, so the check below passes on nothing.',
+        declarations,
+      ).isNotEmpty();
       check(
         because:
             'Another package can import anything in lib/src, and `@internal` makes that a warning.',
@@ -30,30 +33,15 @@ void main() {
                 (annotation) => annotation.name.name == 'internal',
               ),
             )
-            .map((declaration) {
-              final loc = declaration.unit.parsed.lineInfo.getLocation(
-                declaration.member.firstTokenAfterCommentAndMetadata.offset,
-              );
-
-              return '${declaration.unit.path}:${loc.lineNumber}: '
-                  '${_publicNames(declaration.member).join(', ')}';
-            }),
+            .map(
+              (declaration) =>
+                  '${declaration.unit.locate(declaration.member)}: '
+                  '${_publicNames(declaration.member).join(', ')}',
+            ),
       ).isEmpty();
     });
   });
 }
 
-Iterable<String> _publicNames(CompilationUnitMember member) => switch (member) {
-  ClassDeclaration(:final namePart) ||
-  EnumDeclaration(:final namePart) ||
-  ExtensionTypeDeclaration(:final namePart) => [namePart.typeName.lexeme],
-  MixinDeclaration(:final name) ||
-  FunctionDeclaration(:final name) ||
-  TypeAlias(:final name) => [name.lexeme],
-  ExtensionDeclaration(:final name) => [?name?.lexeme],
-  TopLevelVariableDeclaration(:final variables) => [
-    for (final variable in variables.variables) variable.name.lexeme,
-  ],
-  // Loud, so a new kind of declaration can't slip past unchecked.
-  _ => throw UnsupportedError('No public names known for ${member.runtimeType}'),
-}.where((name) => !name.startsWith('_'));
+Iterable<String> _publicNames(CompilationUnitMember member) =>
+    declaredNames(member).where((name) => !name.startsWith('_'));

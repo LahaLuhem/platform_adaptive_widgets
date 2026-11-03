@@ -9,7 +9,6 @@ library;
 
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
-import 'package:analyzer/source/line_info.dart';
 import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -17,17 +16,19 @@ import 'support/lib_src.dart';
 
 const _designLanguageHomeBasename = 'design_language.dart';
 
-const _halfNames = {'buildMaterial', 'buildCupertino'};
+const _platformNames = {'defaultTargetPlatform', 'TargetPlatform'};
+
+final _halfNames = {lookHalves.material, lookHalves.cupertino};
 
 // The analyzer doesn't carry the base's annotations over to overrides.
 const _halfLocks = {'protected', 'visibleForOverriding'};
 
 void main() {
   group('Look-picking guard', () {
-    test('nothing in lib/src but $_designLanguageHomeBasename reads defaultTargetPlatform', () {
+    test('nothing in lib/src but $_designLanguageHomeBasename reads the platform', () {
       final offenders = offendersIn(
         libSrcUnitsExcept({_designLanguageHomeBasename}),
-        (unit) => _PlatformReadVisitor(unit.path, unit.parsed.lineInfo),
+        _PlatformReadVisitor.new,
       );
       check(
         because: 'Switch on `designLanguage` instead, so every site agrees on the look.',
@@ -36,15 +37,11 @@ void main() {
     });
 
     test('every ${_halfNames.join(' / ')} is $_halfLocks', () {
-      final visitors = libSrcUnits
-          .map((unit) {
-            final visitor = _HalfLockVisitor(unit.path, unit.parsed.lineInfo);
-            unit.parsed.unit.accept(visitor);
-
-            return visitor;
-          })
-          .toList(growable: false);
-      check(visitors.fold(0, (sum, visitor) => sum + visitor.halfCount)).isGreaterThan(0);
+      final visitors = visitAll(libSrcUnits, _HalfLockVisitor.new);
+      check(
+        because: 'Found no look half at all, so the check below passes on nothing.',
+        visitors.fold(0, (sum, visitor) => sum + visitor.halfCount),
+      ).isGreaterThan(0);
       check(
         because: 'A half callable from outside skips `designLanguage`.',
         visitors.expand((visitor) => visitor.offenders),
@@ -53,7 +50,7 @@ void main() {
   });
 }
 
-class _PlatformReadVisitor(final String _filePath, final LineInfo _lineInfo)
+class _PlatformReadVisitor(final LibSrcUnit _unit)
     extends RecursiveAstVisitor<void>
     implements OffenderVisitor {
   @override
@@ -61,17 +58,29 @@ class _PlatformReadVisitor(final String _filePath, final LineInfo _lineInfo)
 
   @override
   void visitSimpleIdentifier(SimpleIdentifier node) {
-    // Doc comments may still name it.
-    if (node.name == 'defaultTargetPlatform' && node.thisOrAncestorOfType<Comment>() == null) {
-      final loc = _lineInfo.getLocation(node.offset);
-      offenders.add('$_filePath:${loc.lineNumber}: reads defaultTargetPlatform');
+    // `Theme.of(context).platform` and the like.
+    final isPropertyRead = switch (node.parent) {
+      PropertyAccess(:final propertyName) => propertyName == node,
+      PrefixedIdentifier(:final identifier) => identifier == node,
+      _ => false,
+    };
+    if ((isPropertyRead && readsInCode(node, 'platform')) ||
+        _platformNames.any((name) => readsInCode(node, name))) {
+      offenders.add('${_unit.locate(node)}: reads ${node.name}');
     }
     super.visitSimpleIdentifier(node);
   }
+
+  @override
+  void visitNamedType(NamedType node) {
+    if (_platformNames.contains(node.name.lexeme)) {
+      offenders.add('${_unit.locate(node)}: names ${node.name.lexeme}');
+    }
+    super.visitNamedType(node);
+  }
 }
 
-class _HalfLockVisitor(final String _filePath, final LineInfo _lineInfo)
-    extends RecursiveAstVisitor<void> {
+class _HalfLockVisitor(final LibSrcUnit _unit) extends RecursiveAstVisitor<void> {
   final List<String> offenders = [];
   var halfCount = 0;
 
@@ -84,8 +93,7 @@ class _HalfLockVisitor(final String _filePath, final LineInfo _lineInfo)
         node.metadata.map((annotation) => annotation.name.name).toSet(),
       );
       if (missing.isNotEmpty) {
-        final loc = _lineInfo.getLocation(node.offset);
-        offenders.add('$_filePath:${loc.lineNumber}: $name misses $missing');
+        offenders.add('${_unit.locate(node)}: $name misses $missing');
       }
     }
     super.visitMethodDeclaration(node);
