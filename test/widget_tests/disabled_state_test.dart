@@ -243,18 +243,16 @@ final _paths = <String, _Path>{
   ),
 };
 
-// Only Cupertino can disable a single segment.
+// Kept out of _paths, since iOS still offers screen readers a tap on it. See 'until upstream' below.
 final _segment = _Path(
-  owner: 'CupertinoSegmentButtonData',
+  owner: 'PlatformSegmentButton',
   screen: ({required isEnabled, onUse = noop}) => _InBody(
     PlatformSegmentButton<String>(
       choices: const {_other, _label},
       segmentBuilder: Text.new,
       selectedChoice: _other,
       onSelectionChanged: (_) => onUse(),
-      cupertinoSegmentButtonData: CupertinoSegmentButtonData(
-        disabledChildren: {if (!isEnabled) _label},
-      ),
+      disabledChildren: {if (!isEnabled) _label},
     ),
   ),
 );
@@ -337,7 +335,7 @@ void main() {
   feature('Disabled state', () {
     scenarioOutlineWidgets<_Path>(
       'looks disabled',
-      examples: _paths,
+      examples: {..._paths, 'segment': _segment},
       outline: _looksDisabled,
       variant: androidOnly,
     );

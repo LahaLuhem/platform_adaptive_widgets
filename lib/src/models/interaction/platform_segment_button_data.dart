@@ -20,8 +20,8 @@ const kDefaultSegmentButtonShowSelectedIcon = true;
 /// Default value for [MaterialSegmentButtonData.direction].
 const kDefaultSegmentButtonDirection = Axis.horizontal;
 
-/// Default value for [CupertinoSegmentButtonData.disabledChildren].
-const kDefaultCupertinoSegmentButtonDisabledChildren = <Never>{};
+/// Default value for [PlatformSegmentButton.disabledChildren].
+const kDefaultPlatformSegmentButtonDisabledChildren = <Never>{};
 
 /// Thumb colour for the Cupertino branch of [PlatformSegmentButton].
 ///
@@ -77,14 +77,7 @@ final class const MaterialSegmentButtonData({
 
 /// Cupertino-side settings for [PlatformSegmentButton], passed as `cupertinoSegmentButtonData`. Everything
 /// declared here has no Material counterpart at all.
-///
-/// Generic only because [disabledChildren] is a `Set<T>`. Most call sites infer `T` from the surrounding
-/// `PlatformSegmentButton<T>` and never spell it.
-final class const CupertinoSegmentButtonData<T extends Object>({
-  /// Which segments can't be tapped. Material has no per-segment switch, since upstream puts `enabled`
-  /// on [ButtonSegment] and this package doesn't surface that yet.
-  final Set<T> disabledChildren = kDefaultCupertinoSegmentButtonDisabledChildren,
-
+final class const CupertinoSegmentButtonData({
   /// The sliding thumb behind the selected segment.
   final Color thumbColor = kDefaultCupertinoSegmentButtonThumbColor,
 

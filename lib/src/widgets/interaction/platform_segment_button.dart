@@ -24,9 +24,6 @@ const _kSelectedMissingMessage = 'Pass one of the choices as selectedChoice, or 
 /// what this package is for. Hence [onSelectionChanged] taking a single `T?`, with Material's `Set<T>`
 /// collapsed on the way through. For multi-select everywhere, use [PlatformMultiSelectList].
 ///
-/// No `isEnabled` either, since neither underlying widget has a disabled state. Wrap it in an [IgnorePointer],
-/// with an [Opacity] if you want it to look the part too.
-///
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_segment_button.dart#platform_segment_button}
 class const PlatformSegmentButton<T extends Object>({
@@ -44,12 +41,14 @@ class const PlatformSegmentButton<T extends Object>({
   /// `null` when a Material tap clears the selection. See `APPENDIX.md#callback-nullability`.
   required final ValueChanged<T?> onSelectionChanged,
 
+  /// Which segments can't be tapped. Pass every choice to disable the whole control.
+  final Set<T> disabledChildren = kDefaultPlatformSegmentButtonDisabledChildren,
+
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
   final MaterialSegmentButtonData materialSegmentButtonData = const MaterialSegmentButtonData(),
 
   /// Cupertino-branch overrides, plus the knobs Material has no answer for.
-  final CupertinoSegmentButtonData<T> cupertinoSegmentButtonData =
-      const CupertinoSegmentButtonData<Never>(),
+  final CupertinoSegmentButtonData cupertinoSegmentButtonData = const CupertinoSegmentButtonData(),
   super.widgetKey,
   super.key,
 }) extends PlatformWidgetKeyedBase {
@@ -65,7 +64,12 @@ class const PlatformSegmentButton<T extends Object>({
     return SegmentedButton<T>(
       key: widgetKey,
       segments: [
-        for (final choice in choices) ButtonSegment(value: choice, label: segmentBuilder(choice)),
+        for (final choice in choices)
+          ButtonSegment(
+            value: choice,
+            label: segmentBuilder(choice),
+            enabled: !disabledChildren.contains(choice),
+          ),
       ],
       selected: {?selectedChoice},
       onSelectionChanged: (set) => onSelectionChanged(set.firstOrNull),
@@ -83,7 +87,6 @@ class const PlatformSegmentButton<T extends Object>({
   @visibleForOverriding
   Widget buildCupertino(BuildContext context) {
     _assertChoices();
-    final disabledChildren = cupertinoSegmentButtonData.disabledChildren;
 
     return CupertinoSlidingSegmentedControl<T>(
       key: widgetKey,
