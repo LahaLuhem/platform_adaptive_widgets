@@ -37,10 +37,10 @@ or grep-and-update every caller.
   `lib/` is importable. The single-entry + `lib/src/` convention is how the ecosystem signals
   private intent. It also gives one place to audit the public surface when planning a release, and
   one place to control re-exports.
-- **Locked with `@internal`.** Anything public in a `src/` file the entry file doesn't export, like
+- **Locked with `@internal`.** Anything public in `src/` that the entry file doesn't export, like
   a route helper or a row 2 widgets share, carries `@internal`. Another package that imports it
   anyway gets a warning, and so does an `export` of it here.
-  [`test/internal_lock_guard_test.dart`](./test/internal_lock_guard_test.dart) fails on one that
+  [`test/guards/internal_lock.dart`](./test/guards/internal_lock.dart) fails on one that
   misses it.
 - **Implication for refactors:** moving code *within* `lib/src/` is free (private), as long as the
   matching `export 'src/…';` line in `lib/platform_adaptive_widgets.dart` is updated to the new
@@ -66,7 +66,7 @@ or grep-and-update every caller.
 - **Locked from outside.** The bases are `@internal`, and every half repeats the base's
   `@protected @visibleForOverriding`, since the analyzer doesn't carry them to overrides. Otherwise
   a caller could build one half directly and skip `designLanguage`.
-  [`test/look_picking_guard_test.dart`](./test/look_picking_guard_test.dart) catches a half that
+  [`test/guards/look_picking.dart`](./test/guards/look_picking.dart) catches a half that
   drops them.
 - **Not a function:** it'd lose the widget's own type, so it can't be const or keyed, and DevTools
   shows `Builder` instead of `PlatformButton`.
@@ -266,7 +266,7 @@ not to make the callback nullable.
 The 2 halves of this contract the Dart compiler does **not** check are guarded by a static AST test
 that runs on every PR (in CI's Tests job, `ci / Tests`, from
 [dartender's `ci.yml`](https://github.com/LahaLuhem/dartender/blob/main/.github/workflows/ci.yml)):
-[`test/data_widget_parity_test.dart`](./test/data_widget_parity_test.dart). For every canonical
+[`test/guards/data_widget_parity.dart`](./test/guards/data_widget_parity.dart). For every canonical
 widget, those whose shared-visual fields live on a private `_PlatformXxxData` base, it checks:
 
 1. **Field-set parity**: every field on the `_PlatformXxxData` base also exists as a flat field on
@@ -374,7 +374,7 @@ upstream's default skips, is a change of its own, with its reason next to its ro
 list.
 
 **Enforcement:** the
-[upstream-default guard](./test/upstream_defaults_guard_test.dart) follows each value the package
+[upstream-default guard](./test/guards/upstream_defaults.dart) follows each value the package
 sends to an optional material_ui or cupertino_ui parameter back to the field's default, and fails
 where that isn't upstream's own. A hand-over counts as the builder it calls, each arm only for its
 own look. The package's own picks sit on its list, each with its reason. CI resolves the newest
@@ -410,8 +410,8 @@ parameter that can be null.
 ## Cupertino on iOS and macOS, Material everywhere else
 
 - **Chosen:** [`designLanguage`](./lib/src/utils/design_language.dart) makes the call, and a guard
-  fails any other read of `defaultTargetPlatform` in `lib/src/`. On the web it goes by the browser's
-  OS.
+  fails anything else in `lib/src/` typed `TargetPlatform`, whatever reads it. On the web it goes by
+  the browser's OS.
 - **Why?** It's the split Flutter's own `.adaptive` widgets use. Cupertino is opt-in, so a platform
   Flutter adds later gets Material until someone moves it.
 - **No runtime override.** One the app could set keeps both looks in every release build
@@ -471,11 +471,11 @@ wrong one on macOS.
 
 ### Enforcement: regression guards on every PR
 
-1. **AST lint**, [`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart),
-   in `ci / Tests`. Fails if `lib/src/` calls a value selector, or an internal helper (a `_` name,
-   anything inside a `_` declaration, or anything in a file the barrel doesn't export) takes both a
-   `material*` and a `cupertino*` builder, or reads `designLanguage` anywhere but a switch with one
-   look per case, the usual ways dispatch slips.
+1. **AST lint**, [`test/guards/aot_pruning.dart`](./test/guards/aot_pruning.dart),
+   in `ci / Tests`. Fails if a call in `lib/src/` hands arguments to both a `material*` and a
+   `cupertino*` parameter, the package's `*Data` records aside (a value selector, or a helper taking
+   both builders), or reads `designLanguage` anywhere but a switch with one look per case, the usual
+   ways dispatch slips.
 2. **Size benchmark**, [`tool/check_size_regression.dart`](./tool/check_size_regression.dart) over
    [`tool/size_harness/`](./tool/size_harness/), in `size-regression.yml`. Builds the harness for
    Android and iOS, and fails once either keeps more of the look it doesn't draw than its budget at

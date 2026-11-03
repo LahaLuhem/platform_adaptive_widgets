@@ -6,7 +6,7 @@ import 'dart:io';
 import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'support/lib_src.dart';
+import '../support/lib_src.dart';
 
 /// A doc comment's ``` fence, with its language as the group.
 final _docFence = RegExp(r'^\s*///\s*```(\w*)\s*$');

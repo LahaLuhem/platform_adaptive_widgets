@@ -263,7 +263,7 @@ The `dynamic`-escape-hatch ban and the `print()`-in-library ban are listed under
 
   A copy of upstream's own default keeps its name even with one reader. It pegs a value that an
   upstream release can move, so the name marks it as upstream's and is the one place to update. The
-  [upstream-default guard](./test/upstream_defaults_guard_test.dart) checks every `kDefault…` the
+  [upstream-default guard](./test/guards/upstream_defaults.dart) checks every `kDefault…` the
   package sends against that default.
 
   Counts as a real second use:
@@ -671,7 +671,7 @@ Set<String> fieldNames(ClassDeclaration node) => node.body.members
 When a symmetric check repeats per case (e.g. the Material vs Cupertino build branches), key the
 variants in a `Map` and `.entries.expand(…)` over it rather than duplicating the loop body,
 data-as-a-map beats copy-pasted control flow. The worked example is
-[`test/data_widget_parity_test.dart`](test/data_widget_parity_test.dart).
+[`test/guards/data_widget_parity.dart`](test/guards/data_widget_parity.dart).
 
 **Boundary:** building a widget `children:` list or any data literal → collection-for (the rule
 above). Running a filter / flatten / reduce / set-op pipeline → these methods. A tell: if you seed
@@ -755,7 +755,7 @@ per case drops the other look early ([why](./APPENDIX.md#aot-pruning-rules)).
 <a id="test-style"></a>
 ## Test style
 
-Tests split by kind under `test/`, each kind mirroring `lib/src/`. The guards sit at `test/`'s root.
+Tests split by kind, a folder each under `test/`. The unit and widget tests mirror `lib/src/`.
 
 - **One test file per library,** `part`s included. A file with no behaviour (a typedef, an enum, a
   plain value) gets none.
@@ -771,7 +771,9 @@ The 3 kinds:
 - **`widget_tests/`**: the Gherkin helper in `test/support/bdd.dart`, since `bdd_framework` can't
   hand out a `WidgetTester`. Scenarios run as Android and iOS (`bothPlatforms`). `androidOnly` and
   `iosOnly` are for what only one look's code does.
-- **Guards**: rules over `lib/src`, parsed once by `test/support/lib_src.dart`.
+- **`guards/`**: rules over `lib/src`, a file each. The AST guards run from `guards_test.dart`, so
+  they share one analysis of `lib/` from `test/support/lib_src.dart`. A guard that reads only
+  lines, like `doc_example_guard_test.dart`, runs on its own.
 
 Assert with `checks`, evaluating finders: `check(find.text(...).evaluate()).length.equals(1)`.
 Pump a fixed number of frames, never `pumpAndSettle`, which hides in-between states like a sheet

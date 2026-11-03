@@ -4,40 +4,43 @@
 // Named for the guard, not for its visitor classes.
 // ignore_for_file: prefer-match-file-name
 
-@TestOn('vm')
-library;
-
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'support/lib_src.dart';
+import '../support/lib_src.dart';
 
 const _designLanguageHomeBasename = 'design_language.dart';
-
-const _platformNames = {'defaultTargetPlatform', 'TargetPlatform'};
 
 final _halfNames = {lookHalves.material, lookHalves.cupertino};
 
 // The analyzer doesn't carry the base's annotations over to overrides.
 const _halfLocks = {'protected', 'visibleForOverriding'};
 
-void main() {
+void lookPickingGuard() {
+  late final List<LibSrcUnit> units;
+
   group('Look-picking guard', () {
+    setUpAll(() async => units = await analyzedLibSrc);
+
     test('nothing in lib/src but $_designLanguageHomeBasename reads the platform', () {
-      final offenders = offendersIn(
-        libSrcUnitsExcept({_designLanguageHomeBasename}),
-        _PlatformReadVisitor.new,
-      );
+      final home = units.singleWhere((unit) => unit.basename == _designLanguageHomeBasename);
+      check(
+        because:
+            'Found no TargetPlatform even in $_designLanguageHomeBasename, so the check below '
+            "can't see types.",
+        offendersIn([home], _PlatformVisitor.new),
+      ).isNotEmpty();
       check(
         because: 'Switch on `designLanguage` instead, so every site agrees on the look.',
-        offenders,
+        offendersIn(units.except({_designLanguageHomeBasename}), _PlatformVisitor.new),
       ).isEmpty();
     });
 
     test('every ${_halfNames.join(' / ')} is $_halfLocks', () {
-      final visitors = visitAll(libSrcUnits, _HalfLockVisitor.new);
+      final visitors = visitAll(units, _HalfLockVisitor.new);
       check(
         because: 'Found no look half at all, so the check below passes on nothing.',
         visitors.fold(0, (sum, visitor) => sum + visitor.halfCount),
@@ -50,33 +53,23 @@ void main() {
   });
 }
 
-class _PlatformReadVisitor(final LibSrcUnit _unit)
-    extends RecursiveAstVisitor<void>
+/// Anything typed `TargetPlatform`, so the platform read under whatever name.
+class _PlatformVisitor(final LibSrcUnit _unit)
+    extends GeneralizingAstVisitor<void>
     implements OffenderVisitor {
   @override
   final List<String> offenders = [];
 
   @override
-  void visitSimpleIdentifier(SimpleIdentifier node) {
-    // `Theme.of(context).platform` and the like.
-    final isPropertyRead = switch (node.parent) {
-      PropertyAccess(:final propertyName) => propertyName == node,
-      PrefixedIdentifier(:final identifier) => identifier == node,
-      _ => false,
-    };
-    if ((isPropertyRead && readsInCode(node, 'platform')) ||
-        _platformNames.any((name) => readsInCode(node, name))) {
-      offenders.add('${_unit.locate(node)}: reads ${node.name}');
+  void visitExpression(Expression node) {
+    if (node.staticType case InterfaceType(:final element)
+        when element.name == 'TargetPlatform' &&
+            element.library.uri.pathSegments.firstOrNull == 'flutter') {
+      // Its own parts are the same read, so one line for the whole.
+      offenders.add('${_unit.locate(node)}: `${node.toSource()}` is a TargetPlatform');
+    } else {
+      super.visitExpression(node);
     }
-    super.visitSimpleIdentifier(node);
-  }
-
-  @override
-  void visitNamedType(NamedType node) {
-    if (_platformNames.contains(node.name.lexeme)) {
-      offenders.add('${_unit.locate(node)}: names ${node.name.lexeme}');
-    }
-    super.visitNamedType(node);
   }
 }
 

@@ -8,7 +8,7 @@ import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 
 /// Feeds [showModalBottomSheet] from [materialModalBottomSheetData] and the flat settings. One builder,
-/// not 2, so the AOT compiler can drop the unused arm. See `test/aot_pruning_regression_test.dart`.
+/// not 2, so the AOT compiler can drop the unused arm. See `test/guards/aot_pruning.dart`.
 @internal
 Future<T?> showMaterialSheetRoute<T>({
   required BuildContext context,

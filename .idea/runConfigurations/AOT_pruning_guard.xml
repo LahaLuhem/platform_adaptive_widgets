@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="AOT pruning guard" type="FlutterTestConfigType" factoryName="Flutter Test">
-    <option name="testFile" value="$PROJECT_DIR$/test/aot_pruning_regression_test.dart" />
+    <option name="testFile" value="$PROJECT_DIR$/test/guards/guards_test.dart" />
     <option name="useRegexp" value="false" />
-    <option name="additionalArgs" value="" />
+    <option name="additionalArgs" value="--plain-name &quot;AOT pruning regression guard&quot;" />
     <method v="2" />
   </configuration>
 </component>

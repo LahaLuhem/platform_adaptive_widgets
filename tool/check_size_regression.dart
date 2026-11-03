@@ -89,7 +89,7 @@ Future<void> main(List<String> args) async {
     ..writeln(
       'Likely a public `showPlatformXxx` helper takes both looks again, or `designLanguage` lost its '
       'pragma, so the ${build.otherLook} arm no longer drops out. '
-      'See APPENDIX.md#aot-pruning-rules and test/aot_pruning_regression_test.dart.',
+      'See APPENDIX.md#aot-pruning-rules and test/guards/aot_pruning.dart.',
     )
     ..writeln('\nTop $_maxOffendersShown by size:');
   countedSymbols

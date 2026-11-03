@@ -363,9 +363,10 @@ void main() {
     }, variant: iosOnly);
 
     test('covers every public class with a field that disables something', () {
-      final owners = libSrcUnits
-          .where((unit) => exportedPaths.contains(unit.path))
-          .expand((unit) => unit.parsed.unit.declarations.whereType<ClassDeclaration>())
+      final owners = parsedLibSrc
+          .expand(
+            (unit) => unit.ast.declarations.whereType<ClassDeclaration>().where(unit.barrelExports),
+          )
           .where(
             (declaration) =>
                 instanceFieldNames(declaration)

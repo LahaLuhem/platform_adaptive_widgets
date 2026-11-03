@@ -1,11 +1,3 @@
-// Resolving lib/ with material_ui and cupertino_ui takes seconds, more on a CI runner.
-@Timeout(Duration(minutes: 1))
-library;
-
-import 'dart:async';
-import 'dart:io';
-
-import 'package:analyzer/dart/analysis/analysis_context_collection.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/token.dart';
@@ -17,7 +9,7 @@ import 'package:checks/checks.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter_test/flutter_test.dart';
 
-import 'support/lib_src.dart';
+import '../support/lib_src.dart';
 
 const _ownBool = "The package's own non-null bool, which upstream reads the same as its null.";
 const _grayButton = "iOS's gray button for `.mediumNeutral`, cupertino_ui's own recipe.";
@@ -42,69 +34,51 @@ const _ownPicks = {
 /// Each `DesignLanguage` look's upstream package.
 const _upstreamPackages = {'material': 'material_ui', 'cupertino': 'cupertino_ui'};
 
-void main() {
+void upstreamDefaultsGuard() {
   final listed = _ownPicks.keys.toSet();
   late final List<_Offender> offenders;
   late final List<_RecordParameter> recordParameters;
 
-  setUpAll(() async {
-    final units = await _resolveLib();
-    offenders = _Tracer.of(units).offenders();
-    recordParameters = _recordParameters(units);
+  group('Upstream defaults guard', () {
+    setUpAll(() async {
+      final units = await analyzedLib;
+      offenders = _Tracer.of(units).offenders();
+      recordParameters = _recordParameters(units);
+    });
+
+    test('a field left out sends what the plain upstream widget defaults to, or is listed', () {
+      check(
+        because:
+            "Send upstream's own default (APPENDIX.md#left-out-fields), or list the row here with "
+            'its reason.',
+        offenders
+            .where((offender) => !listed.contains(offender.row))
+            .map((offender) => offender.description),
+      ).isEmpty();
+    });
+
+    test('every listed row still differs from upstream', () {
+      check(
+        because: 'Take a fixed row off the list, or it hides the next drift there.',
+        listed.difference(offenders.map((offender) => offender.row).toSet()),
+      ).isEmpty();
+    });
+
+    test('a record left out is its empty record, never null', () {
+      check(
+        because: 'Found no parameter that takes a record, so the check below passes on nothing.',
+        recordParameters,
+      ).isNotEmpty();
+      check(
+        because:
+            'Default the record to its `const` empty one, or a left-out record and a left-out '
+            'field send different things (APPENDIX.md#left-out-fields).',
+        recordParameters
+            .where((parameter) => !_isEmptyWhenLeftOut(parameter))
+            .map((parameter) => '${parameter.location}: ${parameter.node.name?.lexeme}'),
+      ).isEmpty();
+    });
   });
-
-  test('a field left out sends what the plain upstream widget defaults to, or is listed', () {
-    check(
-      because:
-          "Send upstream's own default (APPENDIX.md#left-out-fields), or list the row here with its "
-          'reason.',
-      offenders
-          .where((offender) => !listed.contains(offender.row))
-          .map((offender) => offender.description),
-    ).isEmpty();
-  });
-
-  test('every listed row still differs from upstream', () {
-    check(
-      because: 'Take a fixed row off the list, or it hides the next drift there.',
-      listed.difference(offenders.map((offender) => offender.row).toSet()),
-    ).isEmpty();
-  });
-
-  test('a record left out is its empty record, never null', () {
-    check(
-      because: 'Found no parameter that takes a record, so the check below passes on nothing.',
-      recordParameters,
-    ).isNotEmpty();
-    check(
-      because:
-          'Default the record to its `const` empty one, or a left-out record and a left-out field '
-          'send different things (APPENDIX.md#left-out-fields).',
-      recordParameters
-          .where((parameter) => !_isEmptyWhenLeftOut(parameter))
-          .map((parameter) => '${parameter.location}: ${parameter.node.name?.lexeme}'),
-    ).isEmpty();
-  });
-}
-
-/// lib/, resolved.
-Future<List<ResolvedUnitResult>> _resolveLib() async {
-  final collection = AnalysisContextCollection(
-    includedPaths: [Directory('lib').absolute.path],
-    // `flutter test` runs on flutter_tester, which the analyzer can't take for a Dart SDK.
-    sdkPath: '${Platform.environment['FLUTTER_ROOT']}/bin/cache/dart-sdk',
-  );
-
-  return (await collection.contexts
-          .expand(
-            (context) => context.contextRoot
-                .analyzedFiles()
-                .where((path) => path.endsWith('.dart'))
-                .map(context.currentSession.getResolvedUnit),
-          )
-          .wait)
-      .whereType<ResolvedUnitResult>()
-      .toList(growable: false);
 }
 
 typedef _RecordParameter = ({String location, FormalParameter node, InterfaceType type});
@@ -114,19 +88,15 @@ List<_RecordParameter> _recordParameters(List<ResolvedUnitResult> units) => unit
     .expand(
       (unit) => _nodesUnder(unit.unit).whereType<FormalParameter>().map(
         (node) => switch (node.declaredFragment?.element.type) {
-          final InterfaceType type
-              when _isOurs(type.element) &&
-                  (type.element.name ?? '').startsWith(RegExp('Material|Cupertino')) &&
-                  (type.element.name ?? '').endsWith('Data') =>
-            (
-              location: pathLine(
-                unit.path,
-                unit.lineInfo,
-                node.firstTokenAfterCommentAndMetadata.offset,
-              ),
-              node: node,
-              type: type,
+          final InterfaceType type when isLookRecord(type) => (
+            location: pathLine(
+              unit.path,
+              unit.lineInfo,
+              node.firstTokenAfterCommentAndMetadata.offset,
             ),
+            node: node,
+            type: type,
+          ),
           _ => null,
         },
       ),
@@ -156,7 +126,6 @@ typedef _Call = ({ResolvedUnitResult unit, ArgumentList node, ExecutableElement 
 // A test file is named for what it checks, not for its helpers.
 // ignore: prefer-match-file-name
 final class _Tracer(
-  final Set<Element> _exported,
   final List<_Call> _calls,
   final Map<ExecutableElement, List<_Call>> _sites,
   final Map<LocalVariableElement, Expression> _locals,
@@ -164,9 +133,6 @@ final class _Tracer(
   final Map<ExecutableElement, Expression> _bodies,
 ) {
   factory of(List<ResolvedUnitResult> units) {
-    final barrel = units.singleWhere(
-      (unit) => unit.uri.path == 'platform_adaptive_widgets/platform_adaptive_widgets.dart',
-    );
     final calls = units
         .expand(
           (unit) => _nodesUnder(unit.unit).whereType<ArgumentList>().map((node) {
@@ -184,7 +150,6 @@ final class _Tracer(
     final nodes = units.expand((unit) => _nodesUnder(unit.unit)).toList(growable: false);
 
     return _Tracer(
-      barrel.libraryElement.exportNamespace.definedNames2.values.toSet(),
       calls,
       calls.groupListsBy((call) => call.callee),
       Map.fromEntries(
@@ -356,7 +321,7 @@ final class _Tracer(
   /// A field gets what its constructors set it to, read off the record's type for `record.field`.
   Iterable<_Value> _ofField(FieldElement field, DartType? ownerType) {
     final owner = ownerType is InterfaceType ? ownerType.element : field.enclosingElement;
-    if (owner is! InterfaceElement || !_isOurs(owner)) return const [];
+    if (owner is! InterfaceElement || !isOurs(owner)) return const [];
 
     return owner.constructors.expand((constructor) {
       final formal = constructor.formalParameters
@@ -376,7 +341,7 @@ final class _Tracer(
   Iterable<_Value> _ofParameter(FormalParameterElement parameter) {
     final formal = parameter.baseElement;
     final executable = formal.enclosingElement;
-    if (executable is! ExecutableElement || !_isOurs(executable) || !_tracing.add(formal)) {
+    if (executable is! ExecutableElement || !isOurs(executable) || !_tracing.add(formal)) {
       return const [];
     }
     // Built in full before [_tracing] lets go, or a parameter that reaches itself recurses forever.
@@ -409,11 +374,7 @@ final class _Tracer(
   Iterable<_Value> _handOver(Expression body, DartObject handOver) => switch (body) {
     FunctionExpressionInvocation(:final function) => _trace(function),
     SwitchExpression(:final cases) => cases.expand((arm) {
-      final package = switch (arm.guardedPattern.pattern) {
-        ConstantPattern(expression: DotShorthandPropertyAccess(:final propertyName)) =>
-          _upstreamPackages[propertyName.name],
-        _ => null,
-      };
+      final package = _upstreamPackages[lookOf(arm.guardedPattern)];
 
       return package == null
           ? [_Value.of(handOver)]
@@ -422,12 +383,18 @@ final class _Tracer(
     _ => [_Value.of(handOver)],
   };
 
+  /// Callable from outside: exported itself, or a member of what's exported.
   bool _isPublic(ExecutableElement executable) {
-    final owner = executable.enclosingElement;
+    final Element? holder = switch (executable.enclosingElement) {
+      LibraryElement() => executable,
+      final InstanceElement owner => owner,
+      // A local function, which nothing outside can call.
+      _ => null,
+    };
+    final path = holder?.firstFragment.libraryFragment?.source.fullName;
+    final name = holder?.name;
 
-    return owner is InterfaceElement
-        ? _exported.contains(owner) && !executable.isPrivate
-        : _exported.contains(executable);
+    return !executable.isPrivate && path != null && name != null && isExported(path, name);
   }
 }
 
@@ -516,8 +483,6 @@ bool _sameInsets(DartObject ours, DartObject upstream) {
 }
 
 String? _packageOf(Element element) => element.library?.uri.pathSegments.firstOrNull;
-
-bool _isOurs(Element element) => _packageOf(element) == 'platform_adaptive_widgets';
 
 bool _isUpstream(Element element) => _upstreamPackages.containsValue(_packageOf(element));
 
