@@ -27,7 +27,7 @@ class const ContainersDemoView({required final bool shouldEnable, super.key})
       children: [
         DemoCard(
           title: 'PlatformListTile',
-          description: 'Material ListTile · CupertinoListTile.',
+          description: 'Material ListTile · CupertinoListTile. No disabled look on iOS yet.',
           child: PropertyEditor(
             preview: PlatformListTile(
               leading: Icon(
@@ -92,13 +92,14 @@ class const ContainersDemoView({required final bool shouldEnable, super.key})
         ),
         DemoCard(
           title: 'PlatformExpansionTile',
-          description: 'Expands to reveal content.',
+          description: "Expands to reveal content. Can't be disabled on iOS.",
           child: PropertyEditor(
             preview: PlatformExpansionTile(
               title: const Text('Tap to expand'),
               controller: viewModel.expansibleController,
               cupertinoExpansionTileData: const CupertinoExpansionTileData(transitionMode: .scroll),
               materialExpansionTileData: MaterialExpansionTileData(
+                enabled: shouldEnable,
                 showTrailingIcon: viewModel.shouldShowExpansionTrailingIcon,
                 textColor: viewModel.expansionTextColor,
                 iconColor: viewModel.expansionIconColor,

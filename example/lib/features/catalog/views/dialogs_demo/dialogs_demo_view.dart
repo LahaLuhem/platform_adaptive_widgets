@@ -15,7 +15,6 @@ import 'dialogs_demo_view_model.dart';
 /// The Dialogs & pickers section of the Catalog accordion. Dialogs open from a function call, not as a
 /// widget, so each playground is configure-then-trigger: knobs set the args, the button opens the dialog.
 class const DialogsDemoView({required final bool shouldEnable, super.key}) extends StatelessWidget {
-  // Reaches what the dialogs hold, not the buttons that open them, so they still open.
   @override
   Widget build(BuildContext context) => MVVM.builder(
     viewModel: DialogsDemoViewModel(),
@@ -29,7 +28,8 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
               "M3's bottom sheet on Material, a sheet on Cupertino. Type a name, then close it without "
               'saving, and it asks first.',
           child: PlatformButton(
-            onPressed: () => viewModel.onShowSheetPressed(shouldEnable: shouldEnable),
+            onPressed: viewModel.onShowSheetPressed,
+            isEnabled: shouldEnable,
             emphasis: .medium,
             child: const Text('New list'),
           ),
@@ -42,6 +42,7 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
           child: PropertyEditor(
             preview: PlatformButton(
               onPressed: viewModel.onShowRawDialogPressed,
+              isEnabled: shouldEnable,
               emphasis: .medium,
               child: const Text('Show dialog'),
             ),
@@ -58,7 +59,8 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
           title: 'Full-screen dialog',
           description: 'A full-screen dialog on Material, a page that slides up on Cupertino. Its bar closes it.',
           child: PlatformButton(
-            onPressed: () => viewModel.onShowFullscreenDialogPressed(shouldEnable: shouldEnable),
+            onPressed: viewModel.onShowFullscreenDialogPressed,
+            isEnabled: shouldEnable,
             emphasis: .medium,
             child: const Text('New event'),
           ),
@@ -70,6 +72,7 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
           child: PropertyEditor(
             preview: PlatformButton(
               onPressed: viewModel.onShowAlertDialogPressed,
+              isEnabled: shouldEnable,
               emphasis: .medium,
               child: const Text('Show alert'),
             ),
@@ -114,6 +117,7 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
           child: PropertyEditor(
             preview: PlatformButton(
               onPressed: viewModel.onShowToastPressed,
+              isEnabled: shouldEnable,
               emphasis: .medium,
               child: Text(viewModel.isUndone ? 'Undone' : 'Show toast'),
             ),
@@ -133,6 +137,7 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
               'gets no surface around the content.',
           child: PlatformButton(
             onPressed: viewModel.onShowRawBottomSheetPressed,
+            isEnabled: shouldEnable,
             emphasis: .medium,
             child: const Text('Show bottom sheet'),
           ),
@@ -144,6 +149,7 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
               'top, in red.',
           child: PlatformButton(
             onPressed: viewModel.onShowChoicesPressed,
+            isEnabled: shouldEnable,
             emphasis: .medium,
             child: Text(
               viewModel.draftOutcome == null ? 'Unsent draft' : 'Draft ${viewModel.draftOutcome}',
@@ -158,6 +164,7 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
           child: PlatformActionsMenu(
             builder: (_, onPressed) => PlatformButton(
               onPressed: onPressed,
+              isEnabled: shouldEnable,
               emphasis: .medium,
               child: const Text('Grocery list'),
             ),
@@ -169,7 +176,6 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
                   cupertino: CupertinoIcons.square_arrow_up,
                 ),
                 onPressed: viewModel.onShareListPressed,
-                isEnabled: shouldEnable,
               ),
               PlatformMenuAction.normal(
                 label: 'Print',
@@ -178,7 +184,6 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
                   cupertino: CupertinoIcons.printer,
                 ),
                 onPressed: viewModel.onPrintPressed,
-                isEnabled: shouldEnable,
               ),
               PlatformMenuAction.delete(
                 label: 'Delete List',
@@ -188,7 +193,6 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
                   cupertino: CupertinoIcons.trash,
                 ),
                 onPressed: viewModel.onDeleteListPressed,
-                isEnabled: shouldEnable,
               ),
             },
           ),
@@ -202,6 +206,7 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
               Expanded(
                 child: PlatformButton(
                   onPressed: viewModel.onShowDatePickerPressed,
+                  isEnabled: shouldEnable,
                   emphasis: .medium,
                   child: Text(viewModel.selectedDate?.toString() ?? 'Pick a date'),
                 ),
@@ -209,6 +214,7 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
               Expanded(
                 child: PlatformButton(
                   onPressed: viewModel.onShowTimePickerPressed,
+                  isEnabled: shouldEnable,
                   emphasis: .medium,
                   child: Text(viewModel.selectedTime?.toString() ?? 'Pick a time'),
                 ),
