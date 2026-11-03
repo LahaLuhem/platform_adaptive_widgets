@@ -9,6 +9,7 @@ import 'package:flutter/widgets.dart';
 import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 import '/src/utils/design_language.dart';
+import 'builder_invariant.dart';
 import 'sheet_routes.dart';
 
 /// Shows a modal that slides up from the bottom, [showModalBottomSheet] on Material and
@@ -39,7 +40,7 @@ Future<T?> showPlatformRawModalBottomSheet<T>({
   MaterialModalBottomSheetData materialModalBottomSheetData = const MaterialModalBottomSheetData(),
   CupertinoModalPopupData cupertinoModalPopupData = const CupertinoModalPopupData(),
 }) {
-  _assertBuilderInvariant(
+  assertBuilderInvariant(
     hasBuilder: builder != null,
     hasMaterialBuilder: materialBuilder != null,
     hasCupertinoBuilder: cupertinoBuilder != null,
@@ -70,23 +71,4 @@ Future<T?> showPlatformRawModalBottomSheet<T>({
       requestFocus: requestFocus,
     ),
   };
-}
-
-/// Takes booleans rather than the builders themselves. 2 function-typed `material*`/`cupertino*` params
-/// would trip the AOT-pruning guard in `test/aot_pruning_regression_test.dart`.
-void _assertBuilderInvariant({
-  required bool hasBuilder,
-  required bool hasMaterialBuilder,
-  required bool hasCupertinoBuilder,
-}) {
-  assert(
-    hasBuilder || (hasMaterialBuilder && hasCupertinoBuilder),
-    'Provide either `builder` (for both platforms) or both `materialBuilder` '
-    'and `cupertinoBuilder`.',
-  );
-  assert(
-    !hasBuilder || (!hasMaterialBuilder && !hasCupertinoBuilder),
-    'If `builder` is provided, do not also provide `materialBuilder` or '
-    '`cupertinoBuilder`.',
-  );
 }

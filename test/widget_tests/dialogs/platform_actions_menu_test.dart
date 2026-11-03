@@ -181,7 +181,7 @@ void main() {
 
     scenarioOutlineWidgets<Set<PlatformMenuAction>>(
       'refuses a menu the guidelines rule out',
-      // An empty menu fails the icon rule too, so it needs no row of its own.
+      // The icon rule refuses an empty menu too.
       examples: {
         'with icons on only some actions': {
           _actions([], withIcons: true).first,

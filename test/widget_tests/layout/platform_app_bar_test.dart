@@ -199,7 +199,7 @@ void main() {
       },
     );
 
-    // Its own side's leading is checked below, where it swaps a sheet's way out.
+    // The own side's leading shows where it swaps a sheet's way out, below.
     scenarioWidgets('leaves out a leading widget given for the other platform', (tester) async {
       const custom = Text(_custom);
       await _pump(

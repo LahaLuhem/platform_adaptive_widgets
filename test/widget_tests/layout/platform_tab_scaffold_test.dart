@@ -9,7 +9,7 @@ const _viewlessTab = TabDestination(inactiveIcon: SizedBox());
 
 void main() {
   feature('PlatformTabScaffold tab-count guard', () {
-    // Material's NavigationBar refuses a single tab by itself, and Cupertino's would draw it.
+    // Material's NavigationBar refuses it by itself.
     scenarioWidgets('refuses fewer than 2 destinations', (tester) async {
       await pumpPlatformWidget(tester, const PlatformTabScaffold(tabDestinations: [_tab]));
 
