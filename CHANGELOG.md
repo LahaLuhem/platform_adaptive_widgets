@@ -14,6 +14,7 @@
 - \[#47\] `useSafeArea` keeps a body that doesn't scroll clear of the bars: `PlatformScaffold`, `showPlatformSheet`, `showPlatformFullscreenDialog`
 - \[#53\] `PlatformMultiSelectList`: checkmark rows on iOS, checkboxes on Android
 - \[#54\] `PlatformSingleSelectList`: checkmark rows on iOS, radios on Android
+- \[#45\] Date picker: Material day and weekday builders
 
 ### Changed
 - \[#46\] Full-screen dialog: slide-up page on iOS, edge to edge on Android
@@ -38,6 +39,7 @@
 - \[#73\] Left-out `clipBehavior` no longer clips a style's builder, left-out `enableFeedback` ignores `ListTileTheme` (Material)
 - **BREAKING** \[#73\] `*Data` records can't be `null`: each defaults to its empty record
 - **BREAKING** \[#73\] Pickers' `barrierDismissible` is a `bool`, sheets' and choices' `useRootNavigator` a `bool?`
+- **BREAKING** \[#45\] Pickers' `requestFocus` moved to `CupertinoDatePickerData`
 
 ### Fixed
 - \[#56\] Menu picker: same behaviour on both looks
