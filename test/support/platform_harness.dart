@@ -24,6 +24,17 @@ Future<void> pumpPlatformWidget(WidgetTester tester, Widget child) =>
 Future<void> pumpInPlatformScaffold(WidgetTester tester, Widget child) =>
     pumpPlatformWidget(tester, PlatformScaffold(body: child));
 
+/// Pumps frame by frame through [duration], so timers fire and animations run on the way.
+Future<void> pumpThrough(WidgetTester tester, Duration duration) async {
+  const frame = Duration(milliseconds: 16);
+  for (var elapsed = Duration.zero; elapsed < duration; elapsed += frame) {
+    await tester.pump(frame);
+  }
+}
+
+/// Pumps through a second, which every transition here finishes in.
+Future<void> pumpTransition(WidgetTester tester) => pumpThrough(tester, const Duration(seconds: 1));
+
 /// Pumps a bare [PlatformApp] and hands back a context beneath it, for guards that sit on a
 /// `showPlatformXxx` function rather than on a widget.
 Future<BuildContext> pumpForContext(WidgetTester tester) async {

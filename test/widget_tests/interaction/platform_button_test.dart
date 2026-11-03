@@ -84,7 +84,7 @@ Future<void> _pump(
     ),
   );
   // Material eases a label into its new color.
-  await tester.pumpAndSettle();
+  await pumpTransition(tester);
 }
 
 // A plain copy: a Cupertino color never equals a plain one, and can't print once its button is gone.

@@ -39,7 +39,7 @@ Future<void> _tapIcon(WidgetTester tester) =>
 // Opens the picker, then picks the other item if it opened.
 Future<void> _pickOtherWith(WidgetTester tester, Finder opener) async {
   await tester.tap(opener, warnIfMissed: false);
-  await tester.pumpAndSettle();
+  await pumpTransition(tester);
   final other = find.text(_other);
   if (other.evaluate().isNotEmpty) await tester.tap(other.last);
 }
@@ -73,7 +73,7 @@ class const _InBar(final PlatformAppBar bar) extends StatelessWidget {
 
 Future<void> _openMenu(WidgetTester tester) async {
   await tester.tap(find.text(_open));
-  await tester.pumpAndSettle();
+  await pumpTransition(tester);
 }
 
 final _paths = <String, _Path>{
@@ -257,7 +257,7 @@ Future<void> _pump(
   // A fresh tree, so nothing carries over from the other state, like an open menu.
   await tester.pumpWidget(const SizedBox());
   await pumpPlatformWidget(tester, path.screen(isEnabled: isEnabled, onUse: onUse));
-  await tester.pumpAndSettle();
+  await pumpTransition(tester);
   await path.open?.call(tester);
 }
 
@@ -266,7 +266,7 @@ Future<int> _usesOf(WidgetTester tester, _Path path, {required bool isEnabled}) 
   var uses = 0;
   await _pump(tester, path, isEnabled: isEnabled, onUse: () => uses++);
   await path.use(tester);
-  await tester.pumpAndSettle();
+  await pumpTransition(tester);
 
   return uses;
 }

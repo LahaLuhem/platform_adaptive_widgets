@@ -775,7 +775,8 @@ The 3 kinds:
 
 Assert with `checks`, evaluating finders: `check(find.text(...).evaluate()).length.equals(1)`.
 Pump a fixed number of frames, never `pumpAndSettle`, which hides in-between states like a sheet
-halfway up. Cover the failure paths too.
+halfway up: `pumpTransition` for a route or menu, `pumpThrough` for anything longer. Cover the
+failure paths too.
 
 **Widget tests share one harness,** the `test/support/support.dart` barrel. Check it before writing
 a helper. A suite's `_pump*` wrapper only adds that suite's setup.

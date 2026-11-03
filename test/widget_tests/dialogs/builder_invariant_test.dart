@@ -48,10 +48,19 @@ void main() {
         final context = await pumpForContext(tester);
 
         check(
+          because: 'Material',
           () => show(
             context,
             builder: (_) => const SizedBox(),
             materialBuilder: (_) => const SizedBox(),
+          ),
+        ).throws<AssertionError>();
+        check(
+          because: 'Cupertino',
+          () => show(
+            context,
+            builder: (_) => const SizedBox(),
+            cupertinoBuilder: (_) => const SizedBox(),
           ),
         ).throws<AssertionError>();
       },

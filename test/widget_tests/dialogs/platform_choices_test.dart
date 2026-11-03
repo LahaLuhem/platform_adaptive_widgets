@@ -33,7 +33,7 @@ Future<int?> _show(
   scrollController: scrollController,
 );
 
-bool _isShowing(WidgetTester tester) => tester.any(find.text(_save.label));
+bool _isShowing() => find.text(_save.label).evaluate().isNotEmpty;
 
 double _top(WidgetTester tester, String label) => tester.getCenter(find.text(label)).dy;
 
@@ -49,12 +49,12 @@ void main() {
       outline: (tester, choice) async {
         final context = await pumpForContext(tester);
         final answerFuture = _show(context);
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
 
         await tester.tap(find.text(choice.label));
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
 
-        check(_isShowing(tester)).isFalse();
+        check(_isShowing()).isFalse();
         check(await answerFuture).equals(choice.value);
       },
     );
@@ -62,32 +62,32 @@ void main() {
     scenarioWidgets('answers null when closed from outside', (tester) async {
       final context = await pumpForContext(tester);
       final answerFuture = _show(context);
-      await tester.pumpAndSettle();
-      check(_isShowing(tester)).isTrue();
+      await pumpTransition(tester);
+      check(_isShowing()).isTrue();
 
       await tester.tapAt(const Offset(4, 4));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(_isShowing(tester)).isFalse();
+      check(_isShowing()).isFalse();
       check(await answerFuture).isNull();
     });
 
     scenarioWidgets('answers null on Cancel', (tester) async {
       final context = await pumpForContext(tester);
       final answerFuture = _show(context);
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       await tester.tap(find.text('Cancel'));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(_isShowing(tester)).isFalse();
+      check(_isShowing()).isFalse();
       check(await answerFuture).isNull();
     }, variant: iosOnly);
 
     scenarioWidgets('puts delete and discard choices on top on iOS', (tester) async {
       final context = await pumpForContext(tester);
       unawaited(_show(context));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(_labelsTopDown(tester))
           .deepEquals([_delete.label, _discard.label, _save.label, _keep.label]);
@@ -96,11 +96,12 @@ void main() {
     scenarioWidgets("keeps the caller's order on Android", (tester) async {
       final context = await pumpForContext(tester);
       unawaited(_show(context));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(_labelsTopDown(tester)).deepEquals([for (final choice in _choices) choice.label]);
     }, variant: androidOnly);
 
+    // German, so a hard-coded English Cancel can't pass.
     scenarioWidgets("labels Cancel in the app's language", (tester) async {
       await tester.pumpWidget(
         const PlatformApp(
@@ -111,19 +112,20 @@ void main() {
         ),
       );
 
-      unawaited(_show(tester.element(find.byType(SizedBox))));
-      await tester.pumpAndSettle();
+      final context = tester.element(find.byType(SizedBox));
+      unawaited(_show(context));
+      await pumpTransition(tester);
 
-      check(tester.any(find.text('Abbrechen'))).isTrue();
+      check(find.text(cancelLabel(context)).evaluate()).isNotEmpty();
     }, variant: iosOnly);
 
     scenarioWidgets('shows no Cancel row on Android', (tester) async {
       final context = await pumpForContext(tester);
       unawaited(_show(context));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(_isShowing(tester)).isTrue();
-      check(tester.any(find.text('Cancel'))).isFalse();
+      check(_isShowing()).isTrue();
+      check(find.text('Cancel').evaluate()).isEmpty();
     }, variant: androidOnly);
 
     scenarioOutlineWidgets<({PlatformActionKind actionKind, bool isRed})>(
@@ -144,7 +146,7 @@ void main() {
             },
           ),
         );
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
 
         check(argbOf(labelStyle(tester, 'Choice'))).equals(
           row.isRed
@@ -158,7 +160,7 @@ void main() {
     scenarioWidgets('keeps every choice plain on Material', (tester) async {
       final context = await pumpForContext(tester);
       unawaited(_show(context));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       // Material never reads the kind, so a delete stands in for a discard.
       final plainTextStyle = labelStyle(tester, _save.label);
@@ -172,7 +174,7 @@ void main() {
       const message = 'Your edits will be lost.';
       final context = await pumpForContext(tester);
       unawaited(_show(context, title: title, message: message));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(_top(tester, title)).isLessThan(_top(tester, message));
       for (final choice in _choices) {
@@ -209,19 +211,19 @@ void main() {
       addTearDown(scrollController.dispose);
       final context = await pumpForContext(tester);
       unawaited(_show(context, choices: choices, scrollController: scrollController));
-      await tester.pumpAndSettle();
-      check(tester.any(find.text('Choice 30').hitTestable())).isFalse();
+      await pumpTransition(tester);
+      check(find.text('Choice 30').hitTestable().evaluate()).isEmpty();
 
       scrollController.jumpTo(scrollController.position.maxScrollExtent);
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(tester.any(find.text('Choice 30').hitTestable())).isTrue();
+      check(find.text('Choice 30').hitTestable().evaluate()).isNotEmpty();
     });
 
     scenarioWidgets('tints the barrier with barrierColor', (tester) async {
       final context = await pumpForContext(tester);
       unawaited(_show(context, barrierColor: _tint));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(tester.widget<ModalBarrier>(find.byType(ModalBarrier).last).color).equals(_tint);
     });

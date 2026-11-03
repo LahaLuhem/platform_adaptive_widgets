@@ -27,7 +27,7 @@ void _show(BuildContext context, {VoidCallback? onUndo}) => unawaited(
   ),
 );
 
-bool _isShowing(WidgetTester tester) => tester.any(find.text(_message));
+bool _isShowing() => find.text(_message).evaluate().isNotEmpty;
 
 void main() {
   feature('showPlatformToast', () {
@@ -36,12 +36,12 @@ void main() {
       final context = await _pumpPage(tester);
 
       _show(context, onUndo: () => isUndone = true);
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
       await tester.tap(find.text('Undo'));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(isUndone).isTrue();
-      check(_isShowing(tester)).isFalse();
+      check(_isShowing()).isFalse();
     });
 
     // Material's SnackBarAction takes only the first tap by itself.
@@ -50,11 +50,11 @@ void main() {
       final context = await _pumpPage(tester);
 
       _show(context, onUndo: () => undoCount++);
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
       await tester.tap(find.text('Undo'));
       await tester.pump();
       await tester.tap(find.text('Undo'));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(undoCount).equals(1);
     }, variant: iosOnly);
@@ -64,23 +64,23 @@ void main() {
       final context = await _pumpPage(tester);
 
       _show(context, onUndo: noop);
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
       await tester.pump(_duration * 3);
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(_isShowing(tester)).isTrue();
+      check(_isShowing()).isTrue();
     }, variant: iosOnly);
 
+    // Up just before its duration, gone soon after, so a wrong duration fails either way.
     scenarioWidgets('leaves after its duration without an action', (tester) async {
       final context = await _pumpPage(tester);
 
       _show(context);
-      await tester.pumpAndSettle();
-      check(_isShowing(tester)).isTrue();
-      await tester.pump(_duration * 3);
-      await tester.pumpAndSettle();
+      await pumpThrough(tester, _duration - const Duration(milliseconds: 100));
+      check(_isShowing()).isTrue();
 
-      check(_isShowing(tester)).isFalse();
+      await pumpThrough(tester, const Duration(seconds: 1));
+      check(_isShowing()).isFalse();
     });
 
     // Material's SnackBar marks itself a live region.
@@ -89,7 +89,7 @@ void main() {
       final context = await _pumpPage(tester);
 
       _show(context);
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
       // The read-out happens in the engine, so the flag that triggers it is all a test can see.
       SemanticsNode? node = tester.getSemantics(find.text(_message));
       while (node != null && !node.getSemanticsData().flagsCollection.isLiveRegion) {

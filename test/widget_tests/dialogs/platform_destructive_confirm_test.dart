@@ -14,7 +14,7 @@ const _confirm = 'Delete List';
 Future<bool> _show(BuildContext context) =>
     showPlatformDestructiveConfirm(context: context, message: _message, confirmLabel: _confirm);
 
-bool _isShowing(WidgetTester tester) => tester.any(find.text(_message));
+bool _isShowing() => find.text(_message).evaluate().isNotEmpty;
 
 void main() {
   feature('showPlatformDestructiveConfirm', () {
@@ -27,12 +27,12 @@ void main() {
       outline: (tester, row) async {
         final context = await pumpForContext(tester);
         final answerFuture = _show(context);
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
 
         await tester.tap(find.text(row.button));
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
 
-        check(_isShowing(tester)).isFalse();
+        check(_isShowing()).isFalse();
         check(await answerFuture).equals(row.answer);
       },
     );
@@ -40,20 +40,20 @@ void main() {
     scenarioWidgets('answers no when closed from outside', (tester) async {
       final context = await pumpForContext(tester);
       final answerFuture = _show(context);
-      await tester.pumpAndSettle();
-      check(_isShowing(tester)).isTrue();
+      await pumpTransition(tester);
+      check(_isShowing()).isTrue();
 
       await tester.tapAt(const Offset(4, 4));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(_isShowing(tester)).isFalse();
+      check(_isShowing()).isFalse();
       check(await answerFuture).isFalse();
     });
 
     scenarioWidgets('marks the confirming button as destructive on iOS', (tester) async {
       final context = await pumpForContext(tester);
       unawaited(_show(context));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(argbOf(labelStyle(tester, _confirm)))
           .equals(CupertinoColors.systemRed.color.toARGB32());

@@ -15,7 +15,7 @@ void main() {
     // The HIG keeps the bold look off destructive choices too.
     scenarioWidgets('bolds only Cancel', (tester) async {
       unawaited(showPlatformChoices(context: await pumpForContext(tester), choices: _choices));
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       final cancelWeight = weightOf(labelStyle(tester, 'Cancel'));
       for (final choice in _choices) {

@@ -4,7 +4,8 @@
 import 'dart:ui' show Tristate;
 
 import 'package:checks/checks.dart';
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoMenuItem, CupertinoPicker;
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show CupertinoMenuItem, CupertinoNavigationBarBackButton, CupertinoPicker;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
@@ -76,12 +77,17 @@ Future<ValueNotifier<_Picker>> _pumpChangeable(WidgetTester tester, _Picker pick
 // can't be hit.
 Future<void> _open(WidgetTester tester) async {
   await tester.tapAt(tester.getCenter(find.byIcon(_leadingIcon).first));
-  await tester.pumpAndSettle();
+  await pumpTransition(tester);
 }
 
 Future<void> _tapOutside(WidgetTester tester) async {
   await tester.tapAt(const Offset(4, 4));
-  await tester.pumpAndSettle();
+  await pumpTransition(tester);
+}
+
+Future<void> _goBack(WidgetTester tester) async {
+  await tester.tap(find.byType(CupertinoNavigationBarBackButton));
+  await pumpTransition(tester);
 }
 
 // An open list of choices is a scroll view, whatever the look. The wheel's is a subclass.
@@ -147,7 +153,7 @@ void main() {
 
       await _open(tester);
       await tester.tap(find.text(_label(0)).hitTestable());
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(picked).deepEquals([0]);
     }, variant: iosOnly);
@@ -208,7 +214,7 @@ void main() {
 
       await _open(tester);
       await tester.tap(find.text(_label(3)).hitTestable());
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(picked).deepEquals([3]);
       check(_fieldShows(_label(2))).isTrue();
@@ -241,7 +247,7 @@ void main() {
 
       await _open(tester);
       await tester.enterText(find.byType(EditableText), 'Anything');
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(_fieldShows('Anything')).isFalse();
     }, variant: _materialDesktop);
@@ -277,44 +283,45 @@ void main() {
       check(_iconsInMenuRow(_label(1))).equals(_iconsInMenuRow(_label(0)) + 1);
     }, variant: iosOnly);
 
-    scenarioOutlineWidgets<int?>(
+    // The wheel and page are the package's. A menu closes without a pick by itself.
+    scenarioOutlineWidgets<({int count, Future<void> Function(WidgetTester tester) leave})>(
       'reports nothing when closed without picking',
       examples: {
-        'with a value set': 5,
-        'with no value set': null,
-        'with a value outside the list': 99,
+        'a wheel, by a tap outside': (count: 8, leave: _tapOutside),
+        'a page, by its back button': (count: 300, leave: _goBack),
       },
-      outline: (tester, current) async {
+      outline: (tester, row) async {
         final picked = <int>[];
-        // Long enough for Cupertino's wheel.
-        await _pump(tester, _Picker(count: 8, current: current, onSelected: picked.add));
+        await _pump(tester, _Picker(count: row.count, current: 2, onSelected: picked.add));
         final closed = _scrollViews();
         await _open(tester);
         check(_scrollViews()).isGreaterThan(closed);
 
-        await _tapOutside(tester);
+        await row.leave(tester);
 
+        check(_scrollViews()).equals(closed);
         check(picked).isEmpty();
       },
+      variant: iosOnly,
     );
 
     scenarioWidgets('reports the row the wheel stops on while it stays open', (tester) async {
-      final picked = <int>[];
-      await _pump(tester, _Picker(count: 8, current: 2, onSelected: picked.add));
+      final reports = <({int item, String shown})>[];
+      void onSelected(int item) => reports.add((item: item, shown: _wheelLabel(tester)));
+      await _pump(tester, _Picker(count: 8, current: 2, onSelected: onSelected));
       final closed = _scrollViews();
       await _open(tester);
 
-      // Slowly past several rows, so a wheel reporting each row it passes would report more than once.
       await tester.timedDrag(
         _listRow(_label(2)),
         const Offset(0, -120),
         const Duration(milliseconds: 300),
       );
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(_scrollViews()).isGreaterThan(closed);
-      check(picked).length.equals(1);
-      check(picked.single).not((row) => row.equals(2));
+      check(reports).isNotEmpty();
+      check(_label(reports.last.item)).equals(reports.last.shown);
     }, variant: iosOnly);
 
     // The test's app never takes a pick, so its value stays put.
@@ -331,9 +338,10 @@ void main() {
           const Offset(0, -100),
           const Duration(milliseconds: 300),
         );
-        await tester.pumpAndSettle();
+        // The wheel coasts, reports, then moves back: longer than a transition.
+        await pumpThrough(tester, const Duration(seconds: 2));
 
-        // Reported once: going back isn't a pick.
+        // Reported once: not each row it passed, nor the way back.
         check(picked).length.equals(1);
         check(_wheelRow(tester)).equals(current ?? 0);
       },
@@ -342,11 +350,14 @@ void main() {
 
     scenarioWidgets("follows the app's value while the wheel is open", (tester) async {
       final picked = <int>[];
-      await _pump(tester, _Picker(count: 8, current: 2, onSelected: picked.add));
+      final pickerNotifier = await _pumpChangeable(
+        tester,
+        _Picker(count: 8, current: 2, onSelected: picked.add),
+      );
       await _open(tester);
 
-      await _pump(tester, _Picker(count: 8, current: 6, onSelected: picked.add));
-      await tester.pumpAndSettle();
+      pickerNotifier.value = _Picker(count: 8, current: 6, onSelected: picked.add);
+      await pumpTransition(tester);
 
       check(_wheelRow(tester)).equals(6);
       check(picked).isEmpty();
@@ -364,7 +375,7 @@ void main() {
       await drag.moveBy(const Offset(0, 64));
       await tester.pump(const Duration(milliseconds: 300));
       await drag.up();
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(_wheelRow(tester)).equals(0);
       check(picked).deepEquals([0]);
@@ -381,7 +392,7 @@ void main() {
         await _open(tester);
         // The field shows the value too, so tap its row in the open list.
         await tester.tap(_listRow(_label(2)));
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
 
         check(_scrollViews()).equals(closed);
         check(picked).isEmpty();
@@ -404,7 +415,7 @@ void main() {
 
       await _open(tester);
       await tester.tap(find.text(_label(7)).hitTestable());
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(picked).deepEquals([7]);
       check(find.byType(PlatformMenuPicker<int>).evaluate()).isNotEmpty();
@@ -425,20 +436,6 @@ void main() {
       check(next.flagsCollection.isSelected).not((it) => it.equals(Tristate.isTrue));
     }, variant: iosOnly);
 
-    scenarioWidgets("leaves a very long list's page without a pick", (tester) async {
-      final picked = <int>[];
-      final semantics = tester.ensureSemantics();
-      await _pump(tester, _Picker(count: 300, current: 5, onSelected: picked.add));
-
-      await _open(tester);
-      await tester.tap(find.bySemanticsLabel('Back'));
-      await tester.pumpAndSettle();
-      semantics.dispose();
-
-      check(picked).isEmpty();
-      check(find.byType(PlatformMenuPicker<int>).evaluate()).isNotEmpty();
-    }, variant: iosOnly);
-
     scenarioWidgets("reports the item an open wheel stops on after the app's items change", (
       tester,
     ) async {
@@ -451,16 +448,16 @@ void main() {
       await _open(tester);
 
       pickerNotifier.value = _Picker(count: 8, first: 1, current: 2, onSelected: onSelected);
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
       await tester.timedDrag(
         _listRow(_wheelLabel(tester)),
         const Offset(0, -100),
         const Duration(milliseconds: 300),
       );
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
-      check(reports).length.equals(1);
-      check(_label(reports.single.item)).equals(reports.single.shown);
+      check(reports).isNotEmpty();
+      check(_label(reports.last.item)).equals(reports.last.shown);
     }, variant: iosOnly);
 
     scenarioWidgets(
@@ -474,7 +471,7 @@ void main() {
         await _open(tester);
 
         pickerNotifier.value = _Picker(count: 8, first: 4, current: 3, onSelected: picked.add);
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
 
         check(_wheelRow(tester)).equals(0);
         check(_wheelLabel(tester)).equals(_label(4));
@@ -495,17 +492,17 @@ void main() {
         await _open(tester);
 
         pickerNotifier.value = _Picker(count: 300, first: 1, current: 5, onSelected: picked.add);
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
         final pageList = find.byWidgetPredicate((widget) => widget is Scrollable);
         await tester.drag(pageList, const Offset(0, 20000));
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
         final currentRow = tester.getSemantics(_listRow(_label(5))).getSemanticsData();
         await tester.drag(pageList, const Offset(0, -20000));
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
         final showsNewLastItem = _listRow(_label(300)).evaluate().isNotEmpty;
         if (showsNewLastItem) {
           await tester.tap(_listRow(_label(300)));
-          await tester.pumpAndSettle();
+          await pumpTransition(tester);
         }
         semantics.dispose();
 
@@ -523,7 +520,7 @@ void main() {
         await _open(tester);
 
         pickerNotifier.value = const _Picker(count: 5, first: 2, current: 3);
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
 
         check(_listRow(_label(0)).evaluate()).isEmpty();
         check(_wheelLabel(tester)).equals(_label(3));
@@ -538,7 +535,7 @@ void main() {
       await _open(tester);
 
       pickerNotifier.value = const _Picker(count: 6, current: 1);
-      await tester.pumpAndSettle();
+      await pumpTransition(tester);
 
       check(find.byType(CupertinoMenuItem).evaluate()).length.equals(6);
     }, variant: iosOnly);

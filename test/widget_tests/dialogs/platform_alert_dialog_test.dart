@@ -28,17 +28,17 @@ Future<({_Look title, _Look message})> _fullAlertLooks(
   BuildContext context,
 ) async {
   unawaited(showPlatformAcknowledge(context: context, title: _title, message: _message));
-  await tester.pumpAndSettle();
+  await pumpTransition(tester);
   final looks = (title: _lookOf(tester, _title), message: _lookOf(tester, _message));
   await tester.tap(find.text(kDefaultPlatformAcknowledgeOkLabel));
-  await tester.pumpAndSettle();
+  await pumpTransition(tester);
 
   return looks;
 }
 
 Future<_Look> _loneTitleLook(WidgetTester tester, BuildContext context) async {
   unawaited(showPlatformAcknowledge(context: context, title: _title));
-  await tester.pumpAndSettle();
+  await pumpTransition(tester);
 
   return _lookOf(tester, _title);
 }
@@ -79,7 +79,7 @@ void main() {
       },
       outline: (tester, show) async {
         unawaited(show(await pumpForContext(tester)));
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
 
         final insets = messageInsets(tester, _message);
         check(insets.top).equals(insets.side);
@@ -116,7 +116,7 @@ void main() {
             materialAlertDialogData: row.data,
           ),
         );
-        await tester.pumpAndSettle();
+        await pumpTransition(tester);
 
         final gapAbove = tester.getRect(find.text(row.text)).top - tester.getRect(row.above).bottom;
         check(gapAbove).isLessThan(messageInsets(tester, row.text).side);
