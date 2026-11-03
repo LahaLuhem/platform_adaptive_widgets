@@ -42,6 +42,23 @@ void main() {
     );
 
     scenarioOutlineWidgets<_Show>(
+      'refuses one platform builder alone',
+      examples: _entryPoints,
+      outline: (tester, show) async {
+        final context = await pumpForContext(tester);
+
+        check(
+          because: 'Material',
+          () => show(context, materialBuilder: (_) => const SizedBox()),
+        ).throws<AssertionError>();
+        check(
+          because: 'Cupertino',
+          () => show(context, cupertinoBuilder: (_) => const SizedBox()),
+        ).throws<AssertionError>();
+      },
+    );
+
+    scenarioOutlineWidgets<_Show>(
       'refuses a shared builder next to a platform one',
       examples: _entryPoints,
       outline: (tester, show) async {
@@ -63,6 +80,28 @@ void main() {
             cupertinoBuilder: (_) => const SizedBox(),
           ),
         ).throws<AssertionError>();
+      },
+    );
+
+    // The refusals above all pass on an assert that refuses every call.
+    scenarioOutlineWidgets<_Show>(
+      'takes a shared builder alone, or both platform builders',
+      examples: _entryPoints,
+      outline: (tester, show) async {
+        final context = await pumpForContext(tester);
+
+        check(
+          because: 'shared builder',
+          () => show(context, builder: (_) => const SizedBox()),
+        ).returnsNormally();
+        check(
+          because: 'both platform builders',
+          () => show(
+            context,
+            materialBuilder: (_) => const SizedBox(),
+            cupertinoBuilder: (_) => const SizedBox(),
+          ),
+        ).returnsNormally();
       },
     );
   });
