@@ -1,13 +1,8 @@
 import 'package:flutter/widgets.dart';
 
 /// A heading above its [child]. Used by the Showcase and About screens to break a page into sections.
-class LabeledSection extends StatelessWidget {
-  final String title;
-
-  final Widget child;
-
-  const LabeledSection({required this.title, required this.child, super.key});
-
+class const LabeledSection({required final String title, required final Widget child, super.key})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: .start,

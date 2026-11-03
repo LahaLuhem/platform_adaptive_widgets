@@ -4,9 +4,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformScaffoldSnippet extends StatelessWidget {
-  const PlatformScaffoldSnippet({super.key});
-
+class const PlatformScaffoldSnippet({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       // #region platform_scaffold

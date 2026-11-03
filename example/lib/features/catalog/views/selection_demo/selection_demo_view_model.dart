@@ -6,7 +6,7 @@ import '/features/catalog/data/enums/menu_picker_length.dart';
 
 /// State for the Selection controls demo. Its segmented button, single-select list and first menu
 /// picker share [selectedDirection], so moving one moves the others.
-final class SelectionDemoViewModel extends ViewModel {
+final class SelectionDemoViewModel() extends ViewModel {
   var _repeatDays = {Weekday.saturday, Weekday.sunday};
   String? _repeatHeader = 'Repeat';
 

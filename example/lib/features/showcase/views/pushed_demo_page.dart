@@ -5,12 +5,11 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 /// Somewhere to push to, for the page-transition and large-title proofs in the Under-the-hood tab.
 ///
 /// Arrives on a `CupertinoPageRoute` on Cupertino, so it swipes back, and a `MaterialPageRoute` on Material.
-class PushedDemoPage extends StatelessWidget {
+class const PushedDemoPage({
   /// Opts into Cupertino's large, collapse-on-scroll title. Material has no such bar and ignores it.
-  final bool large;
-
-  const PushedDemoPage({required this.large, super.key});
-
+  required final bool large,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => PlatformScaffold(
     appBarData: PlatformAppBar(

@@ -5,7 +5,7 @@ import 'package:pmvvm/pmvvm.dart';
 
 /// State for the Lists & containers demos: the expansion tile's and scrollbar's controllers, plus every
 /// playground's editable properties.
-final class ContainersDemoViewModel extends ViewModel {
+final class ContainersDemoViewModel() extends ViewModel {
   final expansibleController = ExpansibleController()..expand();
   final scrollController = ScrollController();
   final horizontalScrollController = ScrollController();

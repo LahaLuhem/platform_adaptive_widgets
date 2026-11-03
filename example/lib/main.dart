@@ -14,14 +14,12 @@ void main() => runApp(const _ExampleApp());
 /// Navigator entry point: `PlatformApp` + a scaffold-managed [RootTabsView]. Owns the app-wide theme
 /// mode and platform override, publishing them via [ThemeScope] / [PlatformScope] so the About tab can
 /// flip the appearance and the rendered platform.
-class _ExampleApp extends StatefulWidget {
-  const _ExampleApp();
-
+class const _ExampleApp() extends StatefulWidget {
   @override
   State<_ExampleApp> createState() => _ExampleAppState();
 }
 
-class _ExampleAppState extends State<_ExampleApp> {
+class _ExampleAppState() extends State<_ExampleApp> {
   final _themeModeNotifier = ValueNotifier(ThemeMode.system);
   final _platformNotifier = ValueNotifier<TargetPlatform?>(null);
 

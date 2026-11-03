@@ -8,7 +8,7 @@ import '/features/catalog/data/enums/alert_actions.dart';
 
 /// Triggers for the dialog, sheet and picker showcase, plus the args their knobs set. The toast, choices,
 /// date and time buttons keep the last result they got, so it can be shown on them.
-final class DialogsDemoViewModel extends ViewModel {
+final class DialogsDemoViewModel() extends ViewModel {
   var _alertTitle = 'Discard changes?';
   var _alertMessage = 'Your edits will be lost.';
   var _alertActions = AlertActions.confirm;

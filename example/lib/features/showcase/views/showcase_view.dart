@@ -8,9 +8,7 @@ import 'showcase_view_model.dart';
 /// A tour of the easy-to-get-wrong details the library handles, rather than a sample screen. Each card
 /// names a decision, says what a naive `Platform.isIOS ? … : …` gets wrong, and proves it live where
 /// it can.
-class ShowcaseView extends StatelessWidget {
-  const ShowcaseView({super.key});
-
+class const ShowcaseView({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MVVM.builder(
     viewModel: ShowcaseViewModel(),

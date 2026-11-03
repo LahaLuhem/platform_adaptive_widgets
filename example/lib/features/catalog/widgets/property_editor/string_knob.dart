@@ -3,20 +3,17 @@ import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 /// A [PlatformTextField] knob. Seeds from [value] once then owns the controller, so later changes to
 /// [value] don't reach it. Nothing else edits this string.
-class StringKnob extends StatefulWidget {
-  final String label;
-
-  final String value;
-
-  final ValueChanged<String> onChanged;
-
-  const StringKnob({required this.label, required this.value, required this.onChanged, super.key});
-
+class const StringKnob({
+  required final String label,
+  required final String value,
+  required final ValueChanged<String> onChanged,
+  super.key,
+}) extends StatefulWidget {
   @override
   State<StringKnob> createState() => _StringKnobState();
 }
 
-class _StringKnobState extends State<StringKnob> {
+class _StringKnobState() extends State<StringKnob> {
   late final TextEditingController _controller;
 
   @override

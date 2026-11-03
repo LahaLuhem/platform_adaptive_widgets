@@ -9,9 +9,7 @@ import '/features/showcase/views/showcase_view.dart';
 
 /// Managed-mode tab shell (the `main.dart` entry point): [PlatformTabScaffold] owns the selected-tab
 /// state and caches each tab's `view`.
-class RootTabsView extends StatelessWidget {
-  const RootTabsView({super.key});
-
+class const RootTabsView({super.key}) extends StatelessWidget {
   static const _args = AppArgs();
 
   @override

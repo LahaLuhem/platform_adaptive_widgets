@@ -15,11 +15,7 @@ import 'buttons_demo_view_model.dart';
 
 /// A live `PlatformButton` playground. Only Cupertino gets a platform panel here, since Material puts
 /// its whole surface behind `ButtonStyle` and there are no individual fields to knob.
-class ButtonsDemoView extends StatelessWidget {
-  final bool shouldEnable;
-
-  const ButtonsDemoView({required this.shouldEnable, super.key});
-
+class const ButtonsDemoView({required final bool shouldEnable, super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MVVM.builder(
     viewModel: ButtonsDemoViewModel(),

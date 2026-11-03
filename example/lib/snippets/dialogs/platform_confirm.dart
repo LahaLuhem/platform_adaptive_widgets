@@ -4,9 +4,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformConfirmSnippet extends StatelessWidget {
-  const PlatformConfirmSnippet({super.key});
-
+class const PlatformConfirmSnippet({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => PlatformButton(
     onPressed: () => _closePressed(context),

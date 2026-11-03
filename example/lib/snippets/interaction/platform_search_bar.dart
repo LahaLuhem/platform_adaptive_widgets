@@ -4,14 +4,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformSearchBarSnippet extends StatefulWidget {
-  const PlatformSearchBarSnippet({super.key});
-
+class const PlatformSearchBarSnippet({super.key}) extends StatefulWidget {
   @override
   State<PlatformSearchBarSnippet> createState() => _PlatformSearchBarSnippetState();
 }
 
-class _PlatformSearchBarSnippetState extends State<PlatformSearchBarSnippet> {
+class _PlatformSearchBarSnippetState() extends State<PlatformSearchBarSnippet> {
   final _controller = TextEditingController();
 
   @override

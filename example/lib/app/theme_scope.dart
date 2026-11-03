@@ -5,9 +5,8 @@ import 'package:material_ui/material_ui.dart' show ThemeMode;
 ///
 /// The root widget owns the notifier and rebuilds on every tick. The About tab writes to it to flip
 /// the whole app light or dark, and it behaves the same under either entry point.
-class ThemeScope extends InheritedNotifier<ValueNotifier<ThemeMode>> {
-  const ThemeScope({required super.notifier, required super.child, super.key});
-
+class const ThemeScope({required super.notifier, required super.child, super.key})
+    extends InheritedNotifier<ValueNotifier<ThemeMode>> {
   /// Asserts a [ThemeScope] is above you.
   static ValueNotifier<ThemeMode> of(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<ThemeScope>();

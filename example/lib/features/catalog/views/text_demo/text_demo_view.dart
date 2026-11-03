@@ -15,11 +15,7 @@ import 'text_demo_view_model.dart';
 
 /// The Text & search section of the Catalog accordion, a live `PlatformTextField` playground plus a
 /// `PlatformSearchBar` demo.
-class TextDemoView extends StatelessWidget {
-  final bool shouldEnable;
-
-  const TextDemoView({required this.shouldEnable, super.key});
-
+class const TextDemoView({required final bool shouldEnable, super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MVVM.builder(
     viewModel: TextDemoViewModel(),

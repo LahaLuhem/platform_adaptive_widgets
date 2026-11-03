@@ -6,7 +6,7 @@ import 'package:pmvvm/pmvvm.dart';
 import '/features/catalog/data/enums/button_shape.dart';
 
 /// The Buttons playground's editable state. The `cupertino…` fields feed `cupertinoButtonData`.
-final class ButtonsDemoViewModel extends ViewModel {
+final class ButtonsDemoViewModel() extends ViewModel {
   var _shape = ButtonShape.child;
   var _emphasis = PlatformButtonEmphasis.high;
   var _actionKind = PlatformActionKind.normal;

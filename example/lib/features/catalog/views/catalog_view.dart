@@ -14,9 +14,7 @@ import 'catalog_view_model.dart';
 
 /// Every widget the library offers, in expandable sections you can poke in place. Expand all for one
 /// long hands-on scroll, collapse all for a list you can scan. Nothing is more than a scroll away.
-class CatalogView extends StatelessWidget {
-  const CatalogView({super.key});
-
+class const CatalogView({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MVVM.builder(
     viewModel: CatalogViewModel(),

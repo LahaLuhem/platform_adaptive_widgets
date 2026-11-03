@@ -4,9 +4,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformExpansionTileSnippet extends StatelessWidget {
-  const PlatformExpansionTileSnippet({super.key});
-
+class const PlatformExpansionTileSnippet({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       // #region platform_expansion_tile

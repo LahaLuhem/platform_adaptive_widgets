@@ -4,7 +4,10 @@ import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 /// The demo's top-level tabs. Both shells read this, so labels and icons are written once.
-enum RootTab {
+enum RootTab({
+  /// Shown under the icon.
+  required final String label,
+}) {
   /// Browse the widget catalog by category.
   catalog(label: 'Catalog'),
 
@@ -13,11 +16,6 @@ enum RootTab {
 
   /// Library info and the appearance (theme-mode) control.
   about(label: 'About');
-
-  /// Shown under the icon.
-  final String label;
-
-  const RootTab({required this.label});
 
   /// While selected.
   Icon activeIcon(BuildContext context) => Icon(_iconData(context, isActive: true));

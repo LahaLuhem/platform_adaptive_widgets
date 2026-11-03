@@ -6,9 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformButtonSnippet extends StatelessWidget {
-  const PlatformButtonSnippet({super.key});
-
+class const PlatformButtonSnippet({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       // #region platform_button
@@ -20,11 +18,8 @@ class PlatformButtonSnippet extends StatelessWidget {
   // #endregion
 }
 
-class PlatformButtonIconSnippet extends StatelessWidget {
-  const PlatformButtonIconSnippet({required this.onAddPressed, super.key});
-
-  final VoidCallback onAddPressed;
-
+class const PlatformButtonIconSnippet({required final VoidCallback onAddPressed, super.key})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       // #region platform_button_icon
@@ -37,11 +32,8 @@ class PlatformButtonIconSnippet extends StatelessWidget {
   // #endregion
 }
 
-class PlatformButtonIconOnlySnippet extends StatelessWidget {
-  const PlatformButtonIconOnlySnippet({required this.onSharePressed, super.key});
-
-  final VoidCallback onSharePressed;
-
+class const PlatformButtonIconOnlySnippet({required final VoidCallback onSharePressed, super.key})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       // #region platform_button_icon_only

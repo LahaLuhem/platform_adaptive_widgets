@@ -4,14 +4,12 @@
 import 'package:flutter/widgets.dart';
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
-class PlatformScrollbarSnippet extends StatefulWidget {
-  const PlatformScrollbarSnippet({super.key});
-
+class const PlatformScrollbarSnippet({super.key}) extends StatefulWidget {
   @override
   State<PlatformScrollbarSnippet> createState() => _PlatformScrollbarSnippetState();
 }
 
-class _PlatformScrollbarSnippetState extends State<PlatformScrollbarSnippet> {
+class _PlatformScrollbarSnippetState() extends State<PlatformScrollbarSnippet> {
   final _scrollController = ScrollController();
 
   @override

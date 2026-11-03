@@ -15,14 +15,12 @@ void main() => runApp(const _ExampleGoRouterApp());
 
 /// go_router entry point: `PlatformApp.router` driven by [AppRouter]. Same theming, [ThemeScope] and
 /// [PlatformScope] wiring as the Navigator entry point, only the navigation backend differs.
-class _ExampleGoRouterApp extends StatefulWidget {
-  const _ExampleGoRouterApp();
-
+class const _ExampleGoRouterApp() extends StatefulWidget {
   @override
   State<_ExampleGoRouterApp> createState() => _ExampleGoRouterAppState();
 }
 
-class _ExampleGoRouterAppState extends State<_ExampleGoRouterApp> {
+class _ExampleGoRouterAppState() extends State<_ExampleGoRouterApp> {
   final _themeModeNotifier = ValueNotifier(ThemeMode.system);
   final _platformNotifier = ValueNotifier<TargetPlatform?>(null);
 

@@ -15,12 +15,11 @@ import '/features/core/data/models/app_args.dart';
 /// a readout of how this build is wired.
 ///
 /// No view model, since the only state it watches is the theme mode over in [ThemeScope].
-class AboutView extends StatelessWidget {
+class const AboutView({
   /// Only read to report the navigation mode.
-  final AppArgs args;
-
-  const AboutView({required this.args, super.key});
-
+  required final AppArgs args,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeModeNotifier = ThemeScope.of(context);
