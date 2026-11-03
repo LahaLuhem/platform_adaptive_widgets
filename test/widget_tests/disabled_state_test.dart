@@ -90,6 +90,31 @@ final _paths = <String, _Path>{
     screen: ({required isEnabled, onUse = noop}) =>
         _InBody(PlatformListTile(title: const Text(_label), onTap: onUse, isEnabled: isEnabled)),
   ),
+  'multi-select list': _Path(
+    owner: 'PlatformMultiSelectList',
+    screen: ({required isEnabled, onUse = noop}) => _InBody(
+      PlatformMultiSelectList(
+        options: const {_label},
+        selected: const <String>{},
+        label: (option) => option,
+        onChanged: (_) => onUse(),
+        isEnabled: isEnabled,
+      ),
+    ),
+  ),
+  // Picks the row that isn't picked yet, since picking the picked one changes nothing.
+  'single-select list': _Path(
+    owner: 'PlatformSingleSelectList',
+    screen: ({required isEnabled, onUse = noop}) => _InBody(
+      PlatformSingleSelectList(
+        options: const {_other, _label},
+        selected: _other,
+        label: (option) => option,
+        onChanged: (_) => onUse(),
+        isEnabled: isEnabled,
+      ),
+    ),
+  ),
   'switch': _Path(
     owner: 'PlatformSwitch',
     screen: ({required isEnabled, onUse = noop}) =>
@@ -235,7 +260,7 @@ final _segment = _Path(
 );
 
 // Each has its own row under 'until upstream' below.
-const _noLookOnIos = {'slider', 'row', 'search bar'};
+const _noLookOnIos = {'slider', 'row', 'multi-select list', 'single-select list', 'search bar'};
 
 // iOS draws every shape through one button.
 final _buttonIconShapes = {
@@ -409,7 +434,7 @@ void main() {
       check(
         because:
             'It takes `enabled` now (https://github.com/flutter/flutter/issues/195327). Pass it, move '
-            'the row to "looks disabled", and drop the note on `PlatformListTile.isEnabled`.',
+            'the row and the select lists to "looks disabled", and drop the notes on their `isEnabled`.',
         // Throws on a named argument it doesn't take.
         () => Function.apply(CupertinoListTile.new, const [], {
           #title: const Text(_label),
