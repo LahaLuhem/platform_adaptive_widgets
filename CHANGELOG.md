@@ -15,6 +15,9 @@
 - \[#53\] `PlatformMultiSelectList`: checkmark rows on iOS, checkboxes on Android
 - \[#54\] `PlatformSingleSelectList`: checkmark rows on iOS, radios on Android
 - \[#45\] Date picker: Material day and weekday builders
+- \[#82\] Select lists: `isEnabled`, and `widgetKey` on the list
+- \[#82\] `PlatformProgressBar.height`, both looks
+- \[#82\] `PlatformTextField.enableInlinePrediction`
 
 ### Changed
 - \[#46\] Full-screen dialog: slide-up page on iOS, edge to edge on Android
@@ -40,6 +43,7 @@
 - **BREAKING** \[#73\] `*Data` records can't be `null`: each defaults to its empty record
 - **BREAKING** \[#73\] Pickers' `barrierDismissible` is a `bool`, sheets' and choices' `useRootNavigator` a `bool?`
 - **BREAKING** \[#45\] Pickers' `requestFocus` moved to `CupertinoDatePickerData`
+- **BREAKING** \[#82\] `disabledChildren` flat on `PlatformSegmentButton`, disables on Android too. `CupertinoSegmentButtonData` loses it and its `<T>`, `kDefaultCupertinoSegmentButtonDisabledChildren` is `kDefaultPlatformSegmentButtonDisabledChildren`
 
 ### Fixed
 - \[#56\] Menu picker: same behaviour on both looks
@@ -52,6 +56,7 @@
 - \[#73\] Text field and search bar: copy and paste menu and autofill
 - \[#73\] Bar hairline, gray placeholder, date and time pickers close on a tap outside (Cupertino)
 - \[#73\] Expansion tile chevron, button role on low buttons and tappable tiles, full-screen dialog clears the keyboard at once (Material)
+- \[#82\] Menu picker puts `widgetKey` on the picker it builds
 
 ### Removed
 - **BREAKING** \[#51\] `MaterialToastData.action`, `.persist`, `PlatformToastClosedReason`: use flat `action`
