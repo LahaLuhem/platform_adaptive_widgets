@@ -260,13 +260,14 @@ not to make the callback nullable.
 - Direct passthrough to `Switch` / `CupertinoSwitch` constructor signatures. The widget still owns
   its public API. Per-platform records do not leak the underlying widget's full surface.
 
+<a id="parity-guard"></a>
 ### Enforcement: the data ↔ widget parity guard
 
 The 2 halves of this contract the Dart compiler does **not** check are guarded by a static AST test
 that runs on every PR (in CI's Tests job, `ci / Tests`, from
 [dartender's `ci.yml`](https://github.com/LahaLuhem/dartender/blob/main/.github/workflows/ci.yml)):
 [`test/data_widget_parity_test.dart`](./test/data_widget_parity_test.dart). For every canonical
-widget, those whose shared-visual fields live on a private `_PlatformXxxData` base, it asserts:
+widget, those whose shared-visual fields live on a private `_PlatformXxxData` base, it checks:
 
 1. **Field-set parity**: every field on the `_PlatformXxxData` base also exists as a flat field on
    the matching `PlatformXxx` widget. Dart already checks `super.x` forwarding (base → records) and
@@ -277,18 +278,14 @@ widget, those whose shared-visual fields live on a private `_PlatformXxxData` ba
    idiom from [*Where each bucket lives*](#field-classification)). A forgotten or misdirected
    fallback compiles, type-checks, and silently drops the per-platform override, the more dangerous
    edge, and the one the compiler is blindest to.
+3. **Finds a base**, so a future analyzer-AST change or a `lib/src/models/` move can't quietly
+   reduce 1 and 2 to a vacuous pass.
+4. **Finds fields on every base**, since a new way of declaring them hides them all: the move to
+   primary constructors did, and 1 and 2 passed on nothing until this one.
 
-A third check asserts the guard actually discovered the known canonical widgets, so a future
-analyzer-AST change or a `lib/src/models/` move can't quietly reduce it to a vacuous pass. A
-fourth asserts it finds fields on every base, since a new way of declaring them hides them all: the
-move to primary constructors did, and both checks passed on nothing until this one. Bases
-that exist only to DRY a single field across their 2 records with no flat widget twin by design,
-`_PlatformScaffoldData` and `_PlatformAppBarData`, whose lone `backgroundColor` is read straight off
-the record, are listed in the test's `_basesWithoutFlatMirror` and skipped.
-
-The guard catches the 2 *mechanical* drift modes (a new shared field left unmirrored, or wired in
-only one builder). It does not adjudicate whether a field *belongs* on the shared base vs a
-per-platform record. That's the human judgement the buckets above describe.
+1 and 2 catch the 2 *mechanical* drift modes (a new shared field left unmirrored, or wired in only
+one builder). They don't adjudicate whether a field *belongs* on the shared base vs a per-platform
+record. That's the human judgement the buckets above describe.
 
 ---
 
@@ -476,9 +473,9 @@ wrong one on macOS.
 
 1. **AST lint**, [`test/aot_pruning_regression_test.dart`](./test/aot_pruning_regression_test.dart),
    in `ci / Tests`. Fails if `lib/src/` calls a value selector, or an internal helper (a `_` name,
-   or anything in a file the barrel doesn't export) takes both a `material*` and a `cupertino*`
-   builder, or reads `designLanguage` anywhere but a switch with one look per case, the usual ways
-   dispatch slips.
+   anything inside a `_` declaration, or anything in a file the barrel doesn't export) takes both a
+   `material*` and a `cupertino*` builder, or reads `designLanguage` anywhere but a switch with one
+   look per case, the usual ways dispatch slips.
 2. **Size benchmark**, [`tool/check_size_regression.dart`](./tool/check_size_regression.dart) over
    [`tool/size_harness/`](./tool/size_harness/), in `size-regression.yml`. Builds the harness for
    Android and iOS, and fails once either keeps more of the look it doesn't draw than its budget at

@@ -17,6 +17,8 @@ import 'package:checks/checks.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/lib_src.dart';
+
 const _ownBool = "The package's own non-null bool, which upstream reads the same as its null.";
 const _grayButton = "iOS's gray button for `.mediumNeutral`, cupertino_ui's own recipe.";
 
@@ -43,12 +45,12 @@ const _upstreamPackages = {'material': 'material_ui', 'cupertino': 'cupertino_ui
 void main() {
   final listed = _ownPicks.keys.toSet();
   late final List<_Offender> offenders;
-  late final Iterable<String> nullableRecords;
+  late final List<_RecordParameter> recordParameters;
 
   setUpAll(() async {
     final units = await _resolveLib();
     offenders = _Tracer.of(units).offenders();
-    nullableRecords = _nullableRecords(units);
+    recordParameters = _recordParameters(units);
   });
 
   test('a field left out sends what the plain upstream widget defaults to, or is listed', () {
@@ -71,10 +73,16 @@ void main() {
 
   test('a record left out is its empty record, never null', () {
     check(
+      because: 'Found no parameter that takes a record, so the check below passes on nothing.',
+      recordParameters,
+    ).isNotEmpty();
+    check(
       because:
           'Default the record to its `const` empty one, or a left-out record and a left-out field '
           'send different things (APPENDIX.md#left-out-fields).',
-      nullableRecords,
+      recordParameters
+          .where((parameter) => !_isEmptyWhenLeftOut(parameter))
+          .map((parameter) => '${parameter.location}: ${parameter.node.name?.lexeme}'),
     ).isEmpty();
   });
 }
@@ -99,24 +107,44 @@ Future<List<ResolvedUnitResult>> _resolveLib() async {
       .toList(growable: false);
 }
 
-/// Every parameter that takes one of the package's records but lets it be null.
-Iterable<String> _nullableRecords(List<ResolvedUnitResult> units) => units.expand(
-  (unit) => _nodesUnder(unit.unit)
-      .whereType<FormalParameter>()
-      .where(
+typedef _RecordParameter = ({String location, FormalParameter node, InterfaceType type});
+
+/// Every parameter that takes one of the package's records.
+List<_RecordParameter> _recordParameters(List<ResolvedUnitResult> units) => units
+    .expand(
+      (unit) => _nodesUnder(unit.unit).whereType<FormalParameter>().map(
         (node) => switch (node.declaredFragment?.element.type) {
-          InterfaceType(:final element, nullabilitySuffix: NullabilitySuffix.question) =>
-            _isOurs(element) &&
-                (element.name ?? '').startsWith(RegExp('Material|Cupertino')) &&
-                (element.name ?? '').endsWith('Data'),
-          _ => false,
+          final InterfaceType type
+              when _isOurs(type.element) &&
+                  (type.element.name ?? '').startsWith(RegExp('Material|Cupertino')) &&
+                  (type.element.name ?? '').endsWith('Data') =>
+            (
+              location: pathLine(
+                unit.path,
+                unit.lineInfo,
+                node.firstTokenAfterCommentAndMetadata.offset,
+              ),
+              node: node,
+              type: type,
+            ),
+          _ => null,
         },
-      )
-      .map(
-        (node) =>
-            '${unit.uri}:${unit.lineInfo.getLocation(node.offset).lineNumber}: ${node.name?.lexeme}',
       ),
-);
+    )
+    .nonNulls
+    .toList(growable: false);
+
+/// Whether [parameter] is never null, and is its record's empty one when left out.
+bool _isEmptyWhenLeftOut(_RecordParameter parameter) =>
+    parameter.type.nullabilitySuffix == NullabilitySuffix.none &&
+    switch (parameter.node.defaultClause?.value) {
+      null => parameter.node.isRequired,
+      InstanceCreationExpression(:final constructorName, :final argumentList) =>
+        constructorName.type.element == parameter.type.element &&
+            constructorName.name == null &&
+            argumentList.arguments.isEmpty,
+      _ => false,
+    };
 
 /// A value that isn't upstream's default: its `'<file>: <call>.<parameter>'` row, and what and where.
 typedef _Offender = ({String row, String description});
@@ -222,7 +250,7 @@ final class _Tracer(
           final upstream = parameter.computeConstantValue();
           final expression = argument.argumentExpression;
           final target = '${_nameOf(call.callee)}.${parameter.name}';
-          final line = call.unit.lineInfo.getLocation(argument.offset).lineNumber;
+          final location = pathLine(call.unit.path, call.unit.lineInfo, argument.offset);
 
           return _trace(expression)
               // A `designLanguage` arm only runs where its look draws.
@@ -239,7 +267,7 @@ final class _Tracer(
                 (value) => (
                   row: '${call.unit.uri.pathSegments.last}: $target',
                   description:
-                      '${call.unit.uri}:$line: $target sends $value, upstream defaults to '
+                      '$location: $target sends $value, upstream defaults to '
                       '${_Value.of(upstream)}',
                 ),
               );
