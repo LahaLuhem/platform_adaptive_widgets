@@ -9,8 +9,8 @@ import 'package:flutter/widgets.dart';
 import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 import '/src/utils/design_language.dart';
-import 'builder_invariant.dart';
-import 'sheet_routes.dart';
+import 'internal/builder_invariant.dart';
+import 'internal/sheet_routes.dart';
 
 /// Shows a modal that slides up from the bottom, [showModalBottomSheet] on Material and
 /// [showCupertinoModalPopup] on Cupertino, with nothing added around your content. Content or a short task

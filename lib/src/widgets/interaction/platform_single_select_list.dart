@@ -1,14 +1,14 @@
-/// @docImport 'package:cupertino_ui/cupertino_ui.dart';
 /// @docImport '/src/widgets/dialogs/platform_menu_picker.dart';
 library;
 
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoListSection;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show RadioListTile;
 
 import '/src/models/platform_widget_base.dart';
-import '/src/widgets/interaction/cupertino_checkmark_row.dart';
-import '/src/widgets/interaction/select_list_section.dart';
+import '/src/widgets/interaction/internal/cupertino_checkmark_row.dart';
+import '/src/widgets/interaction/internal/select_list_section.dart';
 
 const _kSelectedMissingMessage = 'Pass one of the options as selected, or nothing shows picked.';
 
@@ -73,10 +73,12 @@ class const PlatformSingleSelectList<T extends Object>({
   @visibleForOverriding
   Widget buildCupertino(BuildContext context) {
     assert(options.contains(selected), _kSelectedMissingMessage);
+    final header = this.header;
 
-    return CupertinoSelectListSection(
-      header: header,
-      rows: [
+    return CupertinoListSection.insetGrouped(
+      header: header == null ? null : SelectListHeader(text: header),
+      hasLeading: false,
+      children: [
         for (final option in options)
           CupertinoCheckmarkRow(
             label: label(option),

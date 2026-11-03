@@ -20,8 +20,8 @@ import 'package:material_ui/material_ui.dart' show DropdownMenu, DropdownMenuEnt
 
 import '/src/models/dialogs/platform_menu_picker_data.dart';
 import '/src/models/platform_widget_base.dart';
-import '/src/widgets/interaction/cupertino_checkmark_row.dart';
-import '/src/widgets/interaction/disabled_semantics.dart';
+import '/src/widgets/interaction/internal/cupertino_checkmark_row.dart';
+import '/src/widgets/interaction/internal/disabled_semantics.dart';
 
 /// Cupertino shows a menu up to this many items, and a wheel past it. The number is ours, not Apple's.
 /// A wheel shows about 5 rows

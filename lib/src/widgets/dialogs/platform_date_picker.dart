@@ -10,7 +10,7 @@ import 'package:minted_chronology/minted_chronology.dart' show Date;
 import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_date_picker_data.dart';
 import '/src/utils/design_language.dart';
-import 'cupertino_picker_popup.dart';
+import 'internal/cupertino_picker_popup.dart';
 
 /// Shows a date picker. [showDatePicker] on Material, a [CupertinoDatePicker] in a bottom
 /// popup on Cupertino.

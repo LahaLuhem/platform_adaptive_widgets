@@ -8,7 +8,7 @@ import 'package:material_ui/material_ui.dart' show ButtonSegment, SegmentedButto
 
 import '/src/models/interaction/platform_segment_button_data.dart';
 import '/src/models/platform_widget_base.dart';
-import '/src/widgets/interaction/disabled_semantics.dart';
+import '/src/widgets/interaction/internal/disabled_semantics.dart';
 
 const _kTooFewChoicesMessage =
     'Pass at least 2 choices. With 1 there is nothing to switch between.';

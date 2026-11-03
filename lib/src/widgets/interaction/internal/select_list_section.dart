@@ -1,7 +1,6 @@
-// Both looks' sections in one file, like sheet_routes.dart's routes.
+// The Material section and the header both looks share, in one file.
 // ignore_for_file: prefer-match-file-name
 
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoListSection;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show Theme;
@@ -34,7 +33,7 @@ final class const MaterialSelectListSection({
         if (header != null)
           Padding(
             padding: _kMaterialHeaderPadding,
-            child: _SelectListHeader(
+            child: SelectListHeader(
               text: header,
               style: themeData.textTheme.titleSmall?.copyWith(color: themeData.colorScheme.primary),
             ),
@@ -45,30 +44,13 @@ final class const MaterialSelectListSection({
   }
 }
 
-/// A select list's rows on Cupertino, in an inset-grouped section under its header.
+/// A select list's header, which screen readers read as a heading.
 @internal
-final class const CupertinoSelectListSection({
-  required final List<Widget> rows,
-  final String? header,
-  super.key,
-}) extends StatelessWidget {
-  /// Creates the Cupertino frame around a list's rows.
+final class const SelectListHeader({required final String text, final TextStyle? style, super.key})
+    extends StatelessWidget {
+  /// Creates a select list's header.
   this;
 
-  @override
-  Widget build(BuildContext context) {
-    final header = this.header;
-
-    return CupertinoListSection.insetGrouped(
-      header: header == null ? null : _SelectListHeader(text: header),
-      hasLeading: false,
-      children: rows,
-    );
-  }
-}
-
-final class const _SelectListHeader({required final String text, final TextStyle? style})
-    extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
     header: true,

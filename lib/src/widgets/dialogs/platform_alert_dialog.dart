@@ -11,7 +11,7 @@ import '/src/models/dialogs/platform_alert_dialog_data.dart';
 import '/src/models/dialogs/platform_dialog_data.dart';
 import '/src/models/platform_widget_base.dart';
 import '/src/utils/design_language.dart';
-import 'dialog_routes.dart';
+import 'internal/dialog_routes.dart';
 
 /// M3 pads a dialog 24 on every side, where Flutter leaves only its under-title gap of 16 above an
 /// untitled message ([flutter/flutter#195096](https://github.com/flutter/flutter/issues/195096)).
@@ -26,7 +26,6 @@ Future<T?> showPlatformAlertDialog<T>({
   required Widget title,
   Widget? content,
   List<Widget> actions = const <Widget>[],
-  Key? widgetKey,
   Offset? anchorPoint,
   Color? barrierColor,
   bool? barrierDismissible,
@@ -41,7 +40,6 @@ Future<T?> showPlatformAlertDialog<T>({
     context: context,
     // AlertDialog is itself a Dialog under the hood, no wrapping needed.
     builder: (_) => AlertDialog(
-      key: widgetKey,
       // M3 needs text but not a headline, so a lone title becomes the text.
       title: content == null ? null : title,
       content: content ?? title,
@@ -91,7 +89,6 @@ Future<T?> showPlatformAlertDialog<T>({
   .cupertino => showCupertinoDialogRoute(
     context: context,
     builder: (_) => CupertinoAlertDialog(
-      key: widgetKey,
       title: title,
       content: content,
       actions: actions,
@@ -125,9 +122,8 @@ class const PlatformDialogAction({
 
   /// Bolds the label on Cupertino. Material has no notion of a default action, so nothing happens there.
   final bool isDefaultAction = false,
-  super.widgetKey,
   super.key,
-}) extends PlatformWidgetKeyedBuilderBase {
+}) extends PlatformWidgetBuilderBase {
   /// Creates a platform-adaptive dialog action.
   this;
 
