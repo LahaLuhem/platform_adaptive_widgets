@@ -121,18 +121,24 @@ void main() {
       check(find.text(cancelLabel(context)).evaluate()).isNotEmpty();
     });
 
-    scenarioOutlineWidgets<PlatformActionKind>(
-      'keeps the confirming button as plain as Cancel on Material',
-      // A delete sets no flag, same as Cancel.
-      examples: {"when it's harmless": .normal, 'when it discards': .discard},
-      outline: (tester, actionKind) async {
+    scenarioOutlineWidgets<({PlatformActionKind actionKind, bool isRed})>(
+      'shows what confirming does on Material',
+      // Unlike Cupertino's alert, a delete the person asked for turns red too.
+      examples: {
+        'something harmless stays as plain as Cancel': (actionKind: .normal, isRed: false),
+        'a delete turns red': (actionKind: .delete, isRed: true),
+        'a discard turns red': (actionKind: .discard, isRed: true),
+      },
+      outline: (tester, row) async {
         final context = await _pumpPage(tester);
-        unawaited(_show(context, actionKind: actionKind));
+        unawaited(_show(context, actionKind: row.actionKind));
         await pumpTransition(tester);
 
         final confirmTextStyle = labelStyle(tester, _confirm);
         final cancelTextStyle = labelStyle(tester, 'Cancel');
-        check(argbOf(confirmTextStyle)).equals(argbOf(cancelTextStyle));
+        check(argbOf(confirmTextStyle))
+            .equals(row.isRed ? destructiveArgbOf(context) : argbOf(cancelTextStyle));
+        // M3 has no default action to bold.
         check(weightOf(confirmTextStyle)).equals(weightOf(cancelTextStyle));
       },
       variant: androidOnly,
