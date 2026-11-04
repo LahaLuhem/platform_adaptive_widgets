@@ -42,8 +42,7 @@ class const PlatformActionsMenu({
   @visibleForOverriding
   Widget buildMaterial(BuildContext context) {
     _debugAssertUsage();
-    // M3 starts focus on the first item. It also lets Escape close a menu opened by a tap
-    // (https://github.com/flutter/flutter/issues/195059).
+    // M3 starts focus on the first item.
     final firstEnabledAction = actions.where((action) => action.isEnabled).firstOrNull;
 
     return MenuAnchor(

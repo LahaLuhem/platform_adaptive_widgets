@@ -36,8 +36,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  material_ui: ^1.9.0
-  cupertino_ui: ^1.1.5
+  material_ui: ^1.10.0
+  cupertino_ui: ^1.1.6
   minted_chronology: ^1.1.0
 
 

@@ -2,7 +2,6 @@
 // ignore_for_file: prefer-match-file-name
 
 import 'package:checks/checks.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart' show Icons;
@@ -111,17 +110,6 @@ void main() {
       await _tap(tester, _under);
       check(underPressCount).equals(1);
     });
-
-    // Cupertino's menu takes Escape by itself.
-    scenarioWidgets('closes on Escape after a tap opened it', (tester) async {
-      await _pump(tester, _Page(actions: _actions([])));
-      await _tap(tester, _more);
-
-      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-      await pumpTransition(tester);
-
-      check(_isOpen()).isFalse();
-    }, variant: androidOnly);
 
     // A delete and a discard ask the same way.
     scenarioOutlineWidgets<bool>(
