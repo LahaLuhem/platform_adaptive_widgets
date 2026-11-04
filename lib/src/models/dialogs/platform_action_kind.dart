@@ -1,4 +1,5 @@
-/// What an action does, so the package can pick its look. Material's guidelines keep every kind plain.
+/// What an action does, so the package can pick its look. A delete or discard turns red where the HIG
+/// asks on Cupertino, and takes M3's error colours on Material. See `APPENDIX.md#destructive-look`.
 enum PlatformActionKind() {
   /// Harmless, like Send.
   normal,
