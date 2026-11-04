@@ -38,7 +38,7 @@ class const ButtonsDemoView({required final bool shouldEnable, super.key}) exten
           DemoCard(
             title: 'PlatformButton',
             description:
-                'Ranks the same on both platforms. A delete or a discard turns red on Cupertino.',
+                'Ranks the same on both platforms. A delete or a discard turns red on both.',
             child: PropertyEditor(
               preview: switch (viewModel.shape) {
                 .child => PlatformButton(
@@ -81,8 +81,6 @@ class const ButtonsDemoView({required final bool shouldEnable, super.key}) exten
                   values: ButtonShape.values.toSet(),
                   onChanged: viewModel.onShapeChanged,
                 ),
-              ],
-              cupertinoKnobs: [
                 SegmentKnob<PlatformActionKind>(
                   label: 'actionKind',
                   value: viewModel.actionKind,
@@ -90,6 +88,8 @@ class const ButtonsDemoView({required final bool shouldEnable, super.key}) exten
                   values: const {.normal, .delete},
                   onChanged: viewModel.onActionKindChanged,
                 ),
+              ],
+              cupertinoKnobs: [
                 ColorKnob(
                   label: 'color',
                   value: viewModel.cupertinoColor,
