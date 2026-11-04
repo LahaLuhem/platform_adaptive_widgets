@@ -12,14 +12,14 @@ topics:
   - cupertino
 screenshots:
   - description: >-
-      The example catalog rendered with Material widgets on Android.
+      The live property editor on the same button, Material and Cupertino side by side.
+    path: doc/screenshots/property_editor.webp
+  - description: >-
+      The actions menu on Material: an M3 menu, Delete in the error colour.
     path: doc/screenshots/material.png
   - description: >-
-      The same catalog rendered with Cupertino widgets on iOS.
+      The same menu on Cupertino: a pull-down, Delete in red.
     path: doc/screenshots/cupertino.png
-  - description: >-
-      The runtime property editor updating a widget's properties live.
-    path: doc/screenshots/property_editor.webp
 
 
 
