@@ -26,20 +26,25 @@ dart tool/diff_size_reports.dart <before.json> <after.json> [filter]
 ```
 
 Each platform's base, what the harness keeps of the other look, is what the
-[size check](../.github/workflows/size-regression.yml) prints on every run.
+[size check](../.github/workflows/size-regression.yml) prints on every run. Android's is all
+material_ui's own Cupertino, none of it this package's: mostly the adaptive text selection toolbar
+behind `TextField` and `SearchBar`, the `CupertinoTheme` that `Theme` wraps around its child,
+`Checkbox` and `Radio`'s `.adaptive` arms, and the page transitions `ThemeData` defaults to on iOS
+and macOS. `Theme` adds its `CupertinoTheme` on every platform, and the rest pick their arm from
+`Theme.of(context).platform` at runtime, so none of it folds.
 
 ## What each widget keeps of the other look
 
-Bytes of the look a platform doesn't draw, Cupertino on Android and Material on iOS, that adding the
-widget to the harness brings in.
+Bytes of the look a platform doesn't draw that adding the widget to the harness brings in, on top of
+the base.
 
-| Widget                     | Android | iOS | What stays                                                                                                                                         |
-|----------------------------|---------|-----|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `PlatformSlider`           | 10.8 KB | 0 B | Android: cupertino_ui's slider, which material_ui's `Slider` keeps for its `.adaptive` arm                                                         |
-| `PlatformTextField`        | 137 B   | 0 B | Android: 72 B of cupertino_ui's text selection toolbar shape, which material_ui's adaptive toolbar keeps. The rest is code shifting in other files |
-| `PlatformSearchBar`        | 185 B   | 0 B | Android: nothing of its own, only code shifting in the radio and checkbox files                                                                    |
-| `PlatformSingleSelectList` | 8.9 KB  | 0 B | cupertino_ui's radio, which material_ui's `Radio` keeps whole. The size check leaves it out                                                        |
-| `PlatformMultiSelectList`  | 10.2 KB | 0 B | cupertino_ui's checkbox, which material_ui's `Checkbox` keeps whole. The size check leaves it out                                                  |
+| Widget                     | Cupertino on Android | Material on iOS | What stays                                                                                                                                         |
+|----------------------------|----------------------|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `PlatformSlider`           | 10.8 KB              | 0 B             | Android: cupertino_ui's slider, which material_ui's `Slider` keeps for its `.adaptive` arm                                                         |
+| `PlatformTextField`        | 137 B                | 0 B             | Android: 72 B of cupertino_ui's text selection toolbar shape, which material_ui's adaptive toolbar keeps. The rest is code shifting in other files |
+| `PlatformSearchBar`        | 185 B                | 0 B             | Android: nothing of its own, only code shifting in the radio and checkbox files                                                                    |
+| `PlatformSingleSelectList` | 8.9 KB               | 0 B             | cupertino_ui's radio, which material_ui's `Radio` keeps whole. The size check leaves it out                                                        |
+| `PlatformMultiSelectList`  | 10.2 KB              | 0 B             | cupertino_ui's checkbox, which material_ui's `Checkbox` keeps whole. The size check leaves it out                                                  |
 
 The iOS base keeps 7.6 KB of Material: material_ui's bundled shaders and icon font, and the
 `TimeOfDay` the time picker takes.
