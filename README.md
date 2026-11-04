@@ -56,6 +56,11 @@ This package makes that call for you, one widget at a time. Each `PlatformXxx` c
 and builds the right native widget underneath, so your tree stays readable and the branching lives
 in one tested place instead of sprinkled across the codebase.
 
+It also picks by the job, not just the look. Asking before a delete, offering a few choices or
+picking from a list each get the component that platform's guidelines name for it, and the package
+handles the details they ask for: where Cancel goes, a destructive action turning red, a confirm
+before it runs.
+
 2 things it goes out of its way to avoid:
 
 - **Lock-in.** The shared parts (your callbacks, values, controllers) sit right on the widget.
@@ -325,11 +330,13 @@ Want the full mechanism and the actual byte counts? They're in
 
 You'll feel right at home. This package is a spiritual continuation of
 [flutter_platform_widgets](https://pub.dev/packages/flutter_platform_widgets), and the `PlatformXxx`
-naming carries straight over. What's changed is mostly under the hood: per-platform tweaks now go
-through typed `MaterialXxxData` / `CupertinoXxxData` records (see
-[Customizing per platform](#customizing-per-platform)), the scope is intentionally Material and
-Cupertino only, and the AOT-pruning promise is checked by CI rather than taken on faith. Skim the
-[widget catalog](#widget-catalog) to find the equivalent of whatever you're using today.
+naming carries straight over. The biggest change is that some jobs have their own entry point
+instead of a generic dialog or sheet: `showPlatformConfirm`, `showPlatformChoices`,
+`PlatformActionsMenu`. Per-platform tweaks go through typed `MaterialXxxData` / `CupertinoXxxData`
+records (see [Customizing per platform](#customizing-per-platform)), the scope is intentionally
+Material and Cupertino only, and the AOT-pruning promise is checked by CI rather than taken on
+faith. Skim the [widget catalog](#widget-catalog) to find the equivalent of whatever you're using
+today.
 
 ---
 
