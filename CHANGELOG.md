@@ -1,4 +1,7 @@
 ## [Unreleased]
+Widgets now pair by the job they do, not the nearest look-alike, so each platform gets what the HIG
+or M3 asks for. Many old APIs are gone. Removed mentions the ones to now use
+
 ### Added
 - \[#52\] `PlatformProgressBar(value:)`: determinate bar, both looks
 - \[#61\] `designLanguage`, to match your own code to the widgets
@@ -6,7 +9,7 @@
 - \[#58\] `showPlatformConfirm`, Cancel included, styled by `PlatformActionKind`
 - \[#48\] `showPlatformChoices`: action sheet on iOS, sheet of rows on Android
 - \[#49\] `PlatformActionsMenu`: pull-down on iOS, M3 menu on Android, confirms destructive items
-- \[#55\] `PlatformButton.actionKind`: delete and discard in red (Cupertino)
+- \[#55\] `PlatformButton.actionKind`: delete and discard in red
 - \[#55\] `PlatformButton.iconOnly`, its label the tooltip and screen-reader name
 - \[#55\] `PlatformBarAction`: `PlatformAppBar.actions` and `primaryAction`, each look's own bar buttons
 - \[#47\] `showPlatformSheet`: content or a short task in a sheet, iOS's sheet or M3's bottom sheet
@@ -44,6 +47,7 @@
 - **BREAKING** \[#73\] Pickers' `barrierDismissible` is a `bool`, sheets' and choices' `useRootNavigator` a `bool?`
 - **BREAKING** \[#45\] Pickers' `requestFocus` moved to `CupertinoDatePickerData`
 - **BREAKING** \[#82\] `disabledChildren` flat on `PlatformSegmentButton`, disables on Android too. `CupertinoSegmentButtonData` loses it and its `<T>`, `kDefaultCupertinoSegmentButtonDisabledChildren` is `kDefaultPlatformSegmentButtonDisabledChildren`
+- \[#84\] Delete and discard in M3's error colours: buttons, confirm, choices, actions menu (Material)
 
 ### Fixed
 - \[#56\] Menu picker: same behaviour on both looks
