@@ -45,7 +45,7 @@ Future<void> showPlatformAcknowledge({
   content: message == null ? null : Text(message),
   actions: [
     PlatformDialogAction(
-      isDefaultAction: true,
+      actionKind: .normal,
       onPressed: (context) => Navigator.maybeOf(context)?.pop(),
       child: Text(okLabel),
     ),

@@ -7,6 +7,7 @@ import 'package:material_ui/material_ui.dart' show ListTile, Theme;
 import '/src/models/dialogs/platform_choice.dart';
 import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
 import '/src/utils/design_language.dart';
+import '/src/widgets/interaction/internal/material_destructive_theme.dart';
 import 'internal/cupertino_choices_sheet.dart';
 import 'internal/sheet_routes.dart';
 
@@ -133,9 +134,13 @@ Future<T?> _showMaterialChoices<T extends Object>({
             shrinkWrap: true,
             children: [
               for (final choice in choices)
-                ListTile(
-                  title: Text(choice.label),
-                  onTap: () => Navigator.maybeOf(context)?.pop(choice.value),
+                MaterialDestructiveTheme(
+                  actionKind: choice.actionKind,
+                  isEnabled: true,
+                  child: ListTile(
+                    title: Text(choice.label),
+                    onTap: () => Navigator.maybeOf(context)?.pop(choice.value),
+                  ),
                 ),
             ],
           ),

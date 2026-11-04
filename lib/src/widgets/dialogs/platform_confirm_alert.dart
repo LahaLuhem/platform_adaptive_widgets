@@ -46,9 +46,7 @@ Future<bool> showPlatformConfirmAlert({
         child: Text(cancelLabel),
       ),
       PlatformDialogAction(
-        isDefaultAction: actionKind == .normal,
-        // The person asked for the delete, so only a discard warns.
-        isDestructiveAction: actionKind == .discard,
+        actionKind: actionKind,
         onPressed: (context) => Navigator.maybeOf(context)?.pop(true),
         child: Text(confirmLabel),
       ),

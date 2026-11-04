@@ -7,10 +7,12 @@ import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show AlertDialog, TextButton;
 
 import '/src/models/dialogs/const_values.dart';
+import '/src/models/dialogs/platform_action_kind.dart';
 import '/src/models/dialogs/platform_alert_dialog_data.dart';
 import '/src/models/dialogs/platform_dialog_data.dart';
 import '/src/models/platform_widget_base.dart';
 import '/src/utils/design_language.dart';
+import '/src/widgets/interaction/internal/material_destructive_theme.dart';
 import 'internal/dialog_routes.dart';
 
 /// M3 pads a dialog 24 on every side, where Flutter leaves only its under-title gap of 16 above an
@@ -117,11 +119,8 @@ class const PlatformDialogAction({
   /// it dismisses the dialog and hands back a result.
   final ValueChanged<BuildContext>? onPressed,
 
-  /// Turns the label red on Cupertino. Material has no destructive style.
-  final bool isDestructiveAction = false,
-
-  /// Bolds the label on Cupertino. Material has no notion of a default action, so nothing happens there.
-  final bool isDefaultAction = false,
+  /// What pressing it does, which picks its look on each platform. Null for Cancel.
+  final PlatformActionKind? actionKind,
   super.key,
 }) extends PlatformWidgetBuilderBase {
   /// Creates a platform-adaptive dialog action.
@@ -130,16 +129,23 @@ class const PlatformDialogAction({
   @override
   @protected
   @visibleForOverriding
-  Widget buildMaterial(BuildContext context) =>
-      TextButton(onPressed: onPressed == null ? null : () => onPressed!(context), child: child);
+  Widget buildMaterial(BuildContext context) => MaterialDestructiveTheme(
+    actionKind: actionKind ?? .normal,
+    isEnabled: onPressed != null,
+    child: TextButton(
+      onPressed: onPressed == null ? null : () => onPressed!(context),
+      child: child,
+    ),
+  );
 
   @override
   @protected
   @visibleForOverriding
   Widget buildCupertino(BuildContext context) => CupertinoDialogAction(
     onPressed: onPressed == null ? null : () => onPressed!(context),
-    isDestructiveAction: isDestructiveAction,
-    isDefaultAction: isDefaultAction,
+    // The HIG's alert table: the person asked for a delete, so only a discard warns.
+    isDestructiveAction: actionKind == .discard,
+    isDefaultAction: actionKind == .normal,
     child: child,
   );
 }
