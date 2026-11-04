@@ -103,12 +103,24 @@ all 6 before it ships.
 3. **Shared data stays shared.** Reach for a per-platform record only when the idea really differs
    between the 2, not because the widgets underneath spell it differently.
 4. **The package owns compliance.** Callers hand over the data, and the package picks what the
-   guidelines want for it. Where a guideline is vague ("medium-to-long"), the package picks a number
-   and says it's its own, like the menu picker's 250.
+   guidelines want for it, or what common practice does where they're silent. Where a guideline is
+   vague ("medium-to-long"), the package picks a number and says it's its own, like the menu
+   picker's 250.
 5. **The guidelines are the authority, first-party apps are evidence.** A pattern the HIG or M3
    allows stays valid even when Apple's or Google's own apps happen to skip it.
 6. **SwiftUI is the native reference, not UIKit.** When the 2 behave differently, match SwiftUI.
    It's the modern one, and UIKit is there for older apps. Native probes still try both.
+
+---
+
+<a id="destructive-look"></a>
+## A delete or discard is red on both looks
+
+Cupertino follows the HIG, which keeps an alert's Delete plain since the person asked for it. M3 has
+no destructive style and keeps its error roles for error states, so Material follows common practice
+([principle 4](#pairing-principles)): every delete and discard takes the error roles, through
+`MaterialDestructiveTheme`. A per-theme cache measured within noise of a fresh theme per build. A
+red brand's `primary` lands on `error`'s hue, as it does for M3's own error states.
 
 ---
 
