@@ -29,14 +29,6 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
-      - if: matrix.platform == 'android'
-        uses: actions/setup-java@v6
-        with:
-          distribution: temurin
-          java-version: "17"
-          java-package: jdk
-          set-default: true
-          cache: gradle
       # `flutter create` below gets the harness's packages, and the check uses none.
       - uses: LahaLuhem/dartender/actions/setup-flutter@main
         with:
@@ -44,6 +36,9 @@ jobs:
       # The harness keeps no platform folders in git, so this makes the one it builds.
       - working-directory: tool/size_harness
         run: flutter create --platforms=${{ matrix.platform }} .
+      # After `flutter create`, so the Gradle cache key includes the harness it builds.
+      - if: matrix.platform == 'android'
+        uses: LahaLuhem/dartender/actions/setup-java@main
       - working-directory: tool/size_harness
         run: flutter build ${{ matrix.build }} --release --analyze-size
       - run: dart tool/check_size_regression.dart
