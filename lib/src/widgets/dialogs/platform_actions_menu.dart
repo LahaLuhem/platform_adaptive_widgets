@@ -7,6 +7,7 @@ import 'package:material_ui/material_ui.dart' show MenuAnchor, MenuItemButton;
 
 import '/src/models/dialogs/platform_menu_action.dart';
 import '/src/models/platform_widget_base.dart';
+import '/src/widgets/interaction/internal/material_destructive_theme.dart';
 import 'platform_destructive_confirm.dart';
 
 /// A short list of actions behind a button: a pull-down menu on Cupertino, an M3 menu on Material.
@@ -51,11 +52,15 @@ class const PlatformActionsMenu({
       consumeOutsideTap: true,
       menuChildren: [
         for (final action in actions)
-          MenuItemButton(
-            autofocus: action == firstEnabledAction,
-            leadingIcon: action.iconData == null ? null : Icon(action.iconData),
-            onPressed: !action.isEnabled ? null : () => unawaited(_run(context, action)),
-            child: Text(action.label),
+          MaterialDestructiveTheme(
+            actionKind: action.actionKind,
+            isEnabled: action.isEnabled,
+            child: MenuItemButton(
+              autofocus: action == firstEnabledAction,
+              leadingIcon: action.iconData == null ? null : Icon(action.iconData),
+              onPressed: !action.isEnabled ? null : () => unawaited(_run(context, action)),
+              child: Text(action.label),
+            ),
           ),
       ],
       builder: (context, controller, _) => builder(context, () => _toggle(controller)),
