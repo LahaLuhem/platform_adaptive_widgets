@@ -143,16 +143,42 @@ void main() {
       },
     );
 
-    scenarioWidgets('sets a destructive action apart on iOS', (tester) async {
-      await _pump(tester, _Page(actions: _actions([])));
+    scenarioWidgets("draws a destructive action in its platform's red", (tester) async {
+      await _pump(tester, _Page(actions: _actions([], withIcons: true)));
       await _tap(tester, _more);
+      final redArgb = destructiveArgbOf(tester.element(find.byType(PlatformActionsMenu)));
 
-      check(argbOf(labelStyle(tester, _delete)))
-          .not((it) => it.equals(argbOf(labelStyle(tester, _share))));
-    }, variant: iosOnly);
+      check(argbOf(labelStyle(tester, _delete))).equals(redArgb);
+      check(
+        tester
+            .widget<RichText>(
+              find.descendant(of: find.byIcon(_deleteIcon), matching: find.byType(RichText)),
+            )
+            .text
+            .style!
+            .color!
+            .toARGB32(),
+      ).equals(redArgb);
+      check(argbOf(labelStyle(tester, _share))).not((it) => it.equals(redArgb));
+    });
 
-    scenarioWidgets('keeps every action plain on Android', (tester) async {
-      await _pump(tester, _Page(actions: _actions([])));
+    scenarioWidgets('draws a disabled destructive action like any disabled one on Android', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        const _Page(
+          actions: {
+            PlatformMenuAction.normal(label: _share, isEnabled: false, onPressed: noop),
+            PlatformMenuAction.delete(
+              label: _delete,
+              confirmMessage: _confirmMessage,
+              isEnabled: false,
+              onPressed: noop,
+            ),
+          },
+        ),
+      );
       await _tap(tester, _more);
 
       check(argbOf(labelStyle(tester, _delete))).equals(argbOf(labelStyle(tester, _share)));

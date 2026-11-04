@@ -3,6 +3,7 @@ library;
 
 export 'bdd.dart';
 export 'cancel_label.dart';
+export 'destructive_color.dart';
 export 'dialog_insets.dart';
 export 'label_style.dart';
 export 'noop.dart';

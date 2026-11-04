@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:checks/checks.dart';
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoColors;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart' show GlobalMaterialLocalizations;
@@ -129,7 +128,7 @@ void main() {
     }, variant: androidOnly);
 
     scenarioOutlineWidgets<({PlatformActionKind actionKind, bool isRed})>(
-      'shows what each choice does on iOS',
+      'shows what each choice does',
       // A discard takes the delete's branch.
       examples: {
         'something harmless stays plain': (actionKind: .normal, isRed: false),
@@ -148,26 +147,11 @@ void main() {
         );
         await pumpTransition(tester);
 
-        check(argbOf(labelStyle(tester, 'Choice'))).equals(
-          row.isRed
-              ? CupertinoColors.systemRed.color.toARGB32()
-              : argbOf(labelStyle(tester, 'Cancel')),
-        );
+        check(
+          argbOf(labelStyle(tester, 'Choice')),
+        ).equals(row.isRed ? destructiveArgbOf(context) : argbOf(labelStyle(tester, _keep.label)));
       },
-      variant: iosOnly,
     );
-
-    scenarioWidgets('keeps every choice plain on Material', (tester) async {
-      final context = await pumpForContext(tester);
-      unawaited(_show(context));
-      await pumpTransition(tester);
-
-      // Material never reads the kind, so a delete stands in for a discard.
-      final plainTextStyle = labelStyle(tester, _save.label);
-      final deleteTextStyle = labelStyle(tester, _delete.label);
-      check(argbOf(deleteTextStyle)).equals(argbOf(plainTextStyle));
-      check(weightOf(deleteTextStyle)).equals(weightOf(plainTextStyle));
-    }, variant: androidOnly);
 
     scenarioWidgets('shows the title and message above the choices', (tester) async {
       const title = 'Draft';

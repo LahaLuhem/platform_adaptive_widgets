@@ -8,7 +8,7 @@ import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoButton, CupertinoColors, CupertinoThemeData;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:material_ui/material_ui.dart' show Icons, Material;
+import 'package:material_ui/material_ui.dart' show ColorScheme, Icons, Material, ThemeData;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 import '../../support/support.dart';
@@ -24,6 +24,14 @@ const _grayChromaLimit = 0.07;
 const _destructive = PlatformActionKind.delete;
 
 final _emphases = {for (final emphasis in PlatformButtonEmphasis.values) emphasis.name: emphasis};
+
+// The default onError is onPrimary's white, which would hide a label left on onPrimary.
+final _distinctOnErrorTheme = ThemeData(
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: const Color(0xFF6750A4),
+    onError: const Color(0xFFFFE082),
+  ),
+);
 
 // What sits behind the label, which is how M3 and the HIG both rank buttons.
 enum _Backdrop() {
@@ -46,6 +54,7 @@ class const _Button(
   final PlatformButtonEmphasis emphasis, {
   final _Shape shape = .child,
   final PlatformActionKind actionKind = .normal,
+  final bool isEnabled = true,
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => switch (shape) {
@@ -53,12 +62,14 @@ class const _Button(
       onPressed: noop,
       emphasis: emphasis,
       actionKind: actionKind,
+      isEnabled: isEnabled,
       child: const Text(_label),
     ),
     .iconAndLabel => PlatformButton.icon(
       onPressed: noop,
       emphasis: emphasis,
       actionKind: actionKind,
+      isEnabled: isEnabled,
       icon: const Icon(_icon),
       label: const Text(_label),
     ),
@@ -66,6 +77,7 @@ class const _Button(
       onPressed: noop,
       emphasis: emphasis,
       actionKind: actionKind,
+      isEnabled: isEnabled,
       icon: const Icon(_icon),
       label: _label,
     ),
@@ -75,10 +87,12 @@ class const _Button(
 Future<void> _pump(
   WidgetTester tester,
   _Button button, {
+  ThemeData? materialTheme,
   CupertinoThemeData? cupertinoTheme,
 }) async {
   await tester.pumpWidget(
     PlatformApp(
+      materialAppData: MaterialAppData(theme: materialTheme),
       cupertinoAppData: CupertinoAppData(theme: cupertinoTheme),
       home: PlatformScaffold(body: Center(child: button)),
     ),
@@ -191,11 +205,64 @@ void main() {
       variant: iosOnly,
     );
 
-    // Material never reads the kind, so one button covers all.
-    scenarioWidgets('keeps a destructive action plain on Android', (tester) async {
-      await _pump(tester, const _Button(.high));
+    scenarioOutlineWidgets<
+      ({
+        PlatformButtonEmphasis emphasis,
+        Color? Function(ColorScheme) fill,
+        Color Function(ColorScheme) content,
+      })
+    >(
+      'draws a destructive action in the error colours on Android',
+      examples: {
+        'high: on an error fill': (
+          emphasis: .high,
+          fill: (scheme) => scheme.error,
+          content: (scheme) => scheme.onError,
+        ),
+        'medium: on an error container': (
+          emphasis: .medium,
+          fill: (scheme) => scheme.errorContainer,
+          content: (scheme) => scheme.onErrorContainer,
+        ),
+        'mediumNeutral: in error': (
+          emphasis: .mediumNeutral,
+          fill: (_) => null,
+          content: (scheme) => scheme.error,
+        ),
+        'low: in error': (emphasis: .low, fill: (_) => null, content: (scheme) => scheme.error),
+      },
+      outline: (tester, row) async {
+        final scheme = _distinctOnErrorTheme.colorScheme;
+        for (final shape in _Shape.values) {
+          await _pump(
+            tester,
+            _Button(row.emphasis, shape: shape),
+            materialTheme: _distinctOnErrorTheme,
+          );
+          final harmless = _drawn(tester);
+          await _pump(
+            tester,
+            _Button(row.emphasis, shape: shape, actionKind: _destructive),
+            materialTheme: _distinctOnErrorTheme,
+          );
+
+          check(because: shape.name, _drawn(tester)).equals((
+            fill: _shown(row.fill(scheme)),
+            outline: harmless.outline,
+            content: _plain(row.content(scheme)),
+          ));
+        }
+      },
+      variant: androidOnly,
+    );
+
+    // Every rank greys out from the same role, so one button covers all.
+    scenarioWidgets('draws a disabled destructive action like any disabled one on Android', (
+      tester,
+    ) async {
+      await _pump(tester, const _Button(.high, isEnabled: false));
       final harmless = _drawn(tester);
-      await _pump(tester, const _Button(.high, actionKind: _destructive));
+      await _pump(tester, const _Button(.high, actionKind: _destructive, isEnabled: false));
 
       check(_drawn(tester)).equals(harmless);
     }, variant: androidOnly);
