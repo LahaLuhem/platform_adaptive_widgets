@@ -25,7 +25,7 @@ class _ExampleAppState() extends State<_ExampleApp> {
 
   @override
   void dispose() {
-    debugDefaultTargetPlatformOverride = null;
+    if (kDebugMode) debugDefaultTargetPlatformOverride = null;
     _themeModeNotifier.dispose();
     _platformNotifier.dispose();
 
@@ -37,9 +37,9 @@ class _ExampleAppState() extends State<_ExampleApp> {
     firstListenable: _themeModeNotifier,
     secondListenable: _platformNotifier,
     builder: (_, themeMode, platformOverride, _) {
-      // Flip the whole app's rendered platform above PlatformApp. Debug/JIT
-      // only, const-folded (ignored) in AOT release builds.
-      debugDefaultTargetPlatformOverride = platformOverride;
+      // Flip the whole app's rendered platform above PlatformApp. The setter throws outside debug,
+      // where a build only holds the device's own look anyway.
+      if (kDebugMode) debugDefaultTargetPlatformOverride = platformOverride;
 
       return PlatformApp(
         title: 'Platform Adaptive Widgets',

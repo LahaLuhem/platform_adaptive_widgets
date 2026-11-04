@@ -26,7 +26,7 @@ class _ExampleGoRouterAppState() extends State<_ExampleGoRouterApp> {
 
   @override
   void dispose() {
-    debugDefaultTargetPlatformOverride = null;
+    if (kDebugMode) debugDefaultTargetPlatformOverride = null;
     _themeModeNotifier.dispose();
     _platformNotifier.dispose();
 
@@ -38,9 +38,9 @@ class _ExampleGoRouterAppState() extends State<_ExampleGoRouterApp> {
     firstListenable: _themeModeNotifier,
     secondListenable: _platformNotifier,
     builder: (_, themeMode, platformOverride, _) {
-      // Flip the whole app's rendered platform above PlatformApp.
-      // Debug/JIT, const-folded (ignored) in AOT release builds.
-      debugDefaultTargetPlatformOverride = platformOverride;
+      // Flip the whole app's rendered platform above PlatformApp. The setter throws outside debug,
+      // where a build only holds the device's own look anyway.
+      if (kDebugMode) debugDefaultTargetPlatformOverride = platformOverride;
 
       return PlatformApp.router(
         title: 'Platform Adaptive Widgets (go_router)',
