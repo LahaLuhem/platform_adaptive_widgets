@@ -1,4 +1,4 @@
-## [Unreleased]
+## [3.0.0] - 2026-11-04
 Widgets now pair by the job they do, not the nearest look-alike, so each platform gets what the HIG
 or M3 asks for. Many old APIs are gone. Removed mentions the ones to now use
 
@@ -241,7 +241,7 @@ or M3 asks for. Many old APIs are gone. Removed mentions the ones to now use
 - Platform scrollbar
 - Platform text-field
 
-[Unreleased]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.2.0...HEAD
+[3.0.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.2.0...3.0.0
 [2.2.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.1.2...2.2.0
 [2.1.2]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.1.0...2.1.1
