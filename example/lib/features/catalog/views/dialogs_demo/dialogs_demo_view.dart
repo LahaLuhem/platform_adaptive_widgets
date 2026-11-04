@@ -67,8 +67,7 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
         ),
         DemoCard(
           title: 'Alert dialog',
-          description:
-              'OK alone, or Cancel and a named action whose kind sets its look on Cupertino.',
+          description: 'OK alone, or Cancel and a named action whose kind sets its look.',
           child: PropertyEditor(
             preview: PlatformButton(
               onPressed: viewModel.onShowAlertDialogPressed,
@@ -93,21 +92,19 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
                 values: AlertActions.values.toSet(),
                 onChanged: viewModel.onAlertActionsChanged,
               ),
-              if (viewModel.alertActions == .confirm)
+              if (viewModel.alertActions == .confirm) ...[
                 StringKnob(
                   label: 'confirmLabel',
                   value: viewModel.confirmLabel,
                   onChanged: viewModel.onConfirmLabelChanged,
                 ),
-            ],
-            cupertinoKnobs: [
-              if (viewModel.alertActions == .confirm)
                 SegmentKnob<PlatformActionKind>(
                   label: 'actionKind',
                   value: viewModel.confirmActionKind,
                   values: PlatformActionKind.values.toSet(),
                   onChanged: viewModel.onConfirmActionKindChanged,
                 ),
+              ],
             ],
           ),
         ),
@@ -145,8 +142,8 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
         DemoCard(
           title: 'Choices',
           description:
-              'An action sheet on Cupertino, a sheet of rows on Material. Cupertino puts the delete on '
-              'top, in red.',
+              'An action sheet on Cupertino, a sheet of rows on Material. The delete is red, and '
+              'Cupertino puts it on top.',
           child: PlatformButton(
             onPressed: viewModel.onShowChoicesPressed,
             isEnabled: shouldEnable,
@@ -158,9 +155,7 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
         ),
         DemoCard(
           title: 'Actions menu',
-          description:
-              'A pull-down menu on Cupertino, an M3 menu on Material. Delete asks first, and is red on '
-              'Cupertino.',
+          description: 'A pull-down menu on Cupertino, an M3 menu on Material. Delete is red, and asks first.',
           child: PlatformActionsMenu(
             builder: (_, onPressed) => PlatformButton(
               onPressed: onPressed,
