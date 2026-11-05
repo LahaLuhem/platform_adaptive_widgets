@@ -72,7 +72,7 @@ final class const CupertinoToastData({
     darkColor: Color(0xCCFAFAFA),
   ),
 
-  /// Colours the message text. The background inverted, so the text reads.
+  /// Colours the message and action. The background inverted, so the text reads.
   final Color foregroundColor = const CupertinoDynamicColor.withBrightness(
     color: CupertinoColors.white,
     darkColor: CupertinoColors.black,
@@ -90,7 +90,7 @@ final class const CupertinoToastData({
   /// Stops the toast spanning a tablet or desktop screen.
   final double maxWidth = 480,
 
-  /// Left out, you get 15pt in [foregroundColor].
+  /// Merged over the message's and action's own styles, which follow the theme at 15pt in [foregroundColor].
   final TextStyle? textStyle,
 
   /// Covers the slide and fade in.

@@ -4,7 +4,8 @@
 import 'dart:async' show Completer, Timer, unawaited;
 import 'dart:ui' show ImageFilter;
 
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoButton, CupertinoDynamicColor;
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show CupertinoButton, CupertinoDynamicColor, CupertinoTheme;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show ScaffoldMessenger, SnackBar, SnackBarAction;
 
@@ -163,8 +164,7 @@ class _CupertinoToastOverlayState()
     // resolve() hands a plain Color straight back, so no need to check first.
     final resolvedBackground = CupertinoDynamicColor.resolve(widget.data.backgroundColor, context);
     final resolvedForeground = CupertinoDynamicColor.resolve(widget.data.foregroundColor, context);
-    final resolvedTextStyle =
-        widget.data.textStyle ?? TextStyle(color: resolvedForeground, fontSize: 15);
+    final textTheme = CupertinoTheme.of(context).textTheme;
 
     return SafeArea(
       child: Align(
@@ -196,7 +196,14 @@ class _CupertinoToastOverlayState()
                           child: Padding(
                             padding: widget.data.padding,
                             child: DefaultTextStyle(
-                              style: resolvedTextStyle,
+                              style: textTheme.textStyle
+                                  // iOS's 15pt Subhead, with SF's tracking at that size, which Flutter doesn't apply itself.
+                                  .copyWith(
+                                    color: resolvedForeground,
+                                    fontSize: 15,
+                                    letterSpacing: -0.23,
+                                  )
+                                  .merge(widget.data.textStyle),
                               textAlign: widget.action == null ? TextAlign.center : TextAlign.start,
                               child: widget.action == null
                                   ? Text(widget.message)
@@ -214,9 +221,12 @@ class _CupertinoToastOverlayState()
                                           // The banner's own colour, since iOS blue is too dark to read on it.
                                           child: Text(
                                             widget.action!.label,
-                                            style: resolvedTextStyle.copyWith(
-                                              fontWeight: FontWeight.w600,
-                                            ),
+                                            style: textTheme.actionSmallTextStyle
+                                                .copyWith(
+                                                  color: resolvedForeground,
+                                                  fontWeight: FontWeight.w600,
+                                                )
+                                                .merge(widget.data.textStyle),
                                           ),
                                         ),
                                       ],
