@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:checks/checks.dart';
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show CupertinoDynamicColor, CupertinoTextThemeData, CupertinoThemeData;
 import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,19 +13,30 @@ import '../../support/support.dart';
 const _page = SizedBox.expand(key: Key('page'));
 const _message = 'Deleted';
 const _duration = Duration(seconds: 2);
+const _family = 'AppFont';
 
-Future<BuildContext> _pumpPage(WidgetTester tester) async {
-  await pumpInPlatformScaffold(tester, _page);
+Future<BuildContext> _pumpPage(WidgetTester tester, {CupertinoThemeData? cupertinoTheme}) async {
+  await tester.pumpWidget(
+    PlatformApp(
+      cupertinoAppData: CupertinoAppData(theme: cupertinoTheme),
+      home: const PlatformScaffold(body: _page),
+    ),
+  );
 
   return tester.element(find.byWidget(_page));
 }
 
-void _show(BuildContext context, {VoidCallback? onUndo}) => unawaited(
+void _show(
+  BuildContext context, {
+  VoidCallback? onUndo,
+  CupertinoToastData cupertinoToastData = const CupertinoToastData(),
+}) => unawaited(
   showPlatformToast(
     context: context,
     message: _message,
     duration: _duration,
     action: onUndo == null ? null : PlatformToastAction(label: 'Undo', onPressed: onUndo),
+    cupertinoToastData: cupertinoToastData,
   ),
 );
 
@@ -99,6 +112,39 @@ void main() {
       semantics.dispose();
 
       check(isReadOut).isTrue();
+    }, variant: iosOnly);
+
+    // M3's SnackBar takes the theme's font by itself.
+    scenarioWidgets("writes its message in the theme's font", (tester) async {
+      final context = await _pumpPage(
+        tester,
+        cupertinoTheme: const CupertinoThemeData(
+          textTheme: CupertinoTextThemeData(textStyle: TextStyle(fontFamily: _family)),
+        ),
+      );
+
+      _show(context);
+      await pumpTransition(tester);
+
+      check(labelStyle(tester, _message).fontFamily).equals(_family);
+    }, variant: iosOnly);
+
+    scenarioWidgets('keeps its colour when its text style only sets a font', (tester) async {
+      final context = await _pumpPage(tester);
+
+      _show(
+        context,
+        cupertinoToastData: const CupertinoToastData(textStyle: TextStyle(fontFamily: _family)),
+      );
+      await pumpTransition(tester);
+
+      final style = labelStyle(tester, _message);
+      final bannerColor = CupertinoDynamicColor.resolve(
+        const CupertinoToastData().foregroundColor,
+        tester.element(find.text(_message)),
+      );
+      check(style.fontFamily).equals(_family);
+      check(style.color?.toARGB32()).equals(bannerColor.toARGB32());
     }, variant: iosOnly);
   });
 }
