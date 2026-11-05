@@ -17,6 +17,12 @@ You write `PlatformButton` once. Android users get a real Material button, iOS u
 platform genuinely needs special treatment, there's a typed knob for it, used only when you reach
 for one.
 
+<img src="https://raw.githubusercontent.com/LahaLuhem/platform_adaptive_widgets/master/doc/screenshots/property_editor.webp" width="480" alt="The live property editor on the same button, Material and Cupertino side by side">
+
+|                                                                                         Material (Android)                                                                                         |                                                                                           Cupertino                                                                                            |
+|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| <img src="https://raw.githubusercontent.com/LahaLuhem/platform_adaptive_widgets/master/doc/screenshots/material.png" width="240" alt="The actions menu as an M3 menu, Delete in the error colour"> | <img src="https://raw.githubusercontent.com/LahaLuhem/platform_adaptive_widgets/master/doc/screenshots/cupertino.png" width="240" alt="The same menu as a Cupertino pull-down, Delete in red"> |
+
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 
 - [Why you'd want it](#why-youd-want-it)
@@ -155,12 +161,6 @@ is a little interactive catalog: every widget gets its own card, and most come w
 react right there on the device. There's also an **About** tab that swaps the rendered platform and
 theme on the fly, which makes it easy to hold Material and Cupertino up next to each other without
 ever rebuilding.
-
-|                                                                                         Material (Android)                                                                                         |                                                                                           Cupertino                                                                                            |
-|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| <img src="https://raw.githubusercontent.com/LahaLuhem/platform_adaptive_widgets/master/doc/screenshots/material.png" width="240" alt="The actions menu as an M3 menu, Delete in the error colour"> | <img src="https://raw.githubusercontent.com/LahaLuhem/platform_adaptive_widgets/master/doc/screenshots/cupertino.png" width="240" alt="The same menu as a Cupertino pull-down, Delete in red"> |
-
-<img src="https://raw.githubusercontent.com/LahaLuhem/platform_adaptive_widgets/master/doc/screenshots/property_editor.webp" width="480" alt="The live property editor on the same button, Material and Cupertino side by side">
 
 ```sh
 cd example
