@@ -1,7 +1,7 @@
 // Named after what it tests, not after its helper widget.
 // ignore_for_file: prefer-match-file-name
 
-import 'dart:ui' show Tristate;
+import 'dart:ui' show SemanticsAction, Tristate;
 
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart'
@@ -83,6 +83,17 @@ Future<void> _open(WidgetTester tester) async {
 Future<void> _tapOutside(WidgetTester tester) async {
   await tester.tapAt(const Offset(4, 4));
   await pumpTransition(tester);
+}
+
+Future<void> _closeByScreenReader(WidgetTester tester) async {
+  final semantics = tester.ensureSemantics();
+  await tester.pump();
+  tester.semantics.performAction(
+    find.semantics.byAction(SemanticsAction.dismiss),
+    SemanticsAction.dismiss,
+  );
+  await pumpTransition(tester);
+  semantics.dispose();
 }
 
 Future<void> _goBack(WidgetTester tester) async {
@@ -306,6 +317,7 @@ void main() {
       'reports nothing when closed without picking',
       examples: {
         'a wheel, by a tap outside': (count: 8, leave: _tapOutside),
+        'a wheel, by a screen reader': (count: 8, leave: _closeByScreenReader),
         'a page, by its back button': (count: 300, leave: _goBack),
       },
       outline: (tester, row) async {

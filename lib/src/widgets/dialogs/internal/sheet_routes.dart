@@ -65,7 +65,7 @@ Future<T?> showCupertinoPopupRoute<T>({
   barrierColor: barrierColor ?? kCupertinoModalBarrierColor,
   barrierDismissible: barrierDismissible,
   useRootNavigator: useRootNavigator ?? kDefaultUseRootNavigator,
-  semanticsDismissible: cupertinoModalPopupData.semanticsDismissible,
+  semanticsDismissible: barrierDismissible,
   routeSettings: routeSettings,
   anchorPoint: anchorPoint,
   requestFocus: requestFocus,

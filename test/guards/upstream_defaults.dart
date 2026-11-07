@@ -13,9 +13,12 @@ import '../support/lib_src.dart';
 
 const _ownBool = "The package's own non-null bool, which upstream reads the same as its null.";
 const _grayButton = "iOS's gray button for `.mediumNeutral`, cupertino_ui's own recipe.";
+const _screenReaderDismiss =
+    "Follows the barrier. Upstream's false leaves screen readers no way out.";
 
 /// The package's own picks, which stay.
 const _ownPicks = {
+  'cupertino_picker_popup.dart: showCupertinoModalPopup.semanticsDismissible': _screenReaderDismiss,
   'platform_alert_dialog.dart: AlertDialog.actionsOverflowDirection':
       'Up, so a stack puts the confirming action on top as M3 asks.',
   'platform_alert_dialog.dart: AlertDialog.contentPadding':
@@ -29,6 +32,7 @@ const _ownPicks = {
   'platform_tab_scaffold.dart: Scaffold.resizeToAvoidBottomInset': _ownBool,
   'platform_text_field.dart: TextField.autocorrect': _ownBool,
   'platform_text_field.dart: TextField.enabled': _ownBool,
+  'sheet_routes.dart: showCupertinoModalPopup.semanticsDismissible': _screenReaderDismiss,
 };
 
 /// Each `DesignLanguage` look's upstream package.

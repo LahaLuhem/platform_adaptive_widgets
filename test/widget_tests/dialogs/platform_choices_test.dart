@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' show SemanticsAction;
 
 import 'package:checks/checks.dart';
 import 'package:flutter/widgets.dart';
@@ -69,6 +70,23 @@ void main() {
 
       check(_isShowing()).isFalse();
       check(await answerFuture).isNull();
+    });
+
+    scenarioWidgets('answers null when a screen reader closes it', (tester) async {
+      final semantics = tester.ensureSemantics();
+      final context = await pumpForContext(tester);
+      final answerFuture = _show(context);
+      await pumpTransition(tester);
+
+      tester.semantics.performAction(
+        find.semantics.byAction(SemanticsAction.dismiss),
+        SemanticsAction.dismiss,
+      );
+      await pumpTransition(tester);
+
+      check(_isShowing()).isFalse();
+      check(await answerFuture).isNull();
+      semantics.dispose();
     });
 
     scenarioWidgets('answers null on Cancel', (tester) async {

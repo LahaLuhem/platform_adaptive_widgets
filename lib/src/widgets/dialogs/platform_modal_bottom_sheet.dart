@@ -22,7 +22,7 @@ import 'internal/sheet_routes.dart';
 /// upstream's doing. What you still get over calling the 2 directly is the dispatch and each platform's own
 /// transition.
 ///
-/// Cupertino's popup closes only on a tap above it, so add a [PlatformCloseButton] top-leading.
+/// Cupertino's popup has no swipe, only a tap above it, so add a [PlatformCloseButton] top-leading.
 ///
 /// Either pass [builder] for content shared across both, or pass [materialBuilder] and [cupertinoBuilder]
 /// together. Mixing the 2 trips an assert.
