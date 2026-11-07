@@ -47,6 +47,7 @@ export 'src/widgets/dialogs/platform_sheet.dart';
 export 'src/widgets/dialogs/platform_time_picker.dart';
 export 'src/widgets/dialogs/platform_toast.dart';
 export 'src/widgets/interaction/platform_button.dart';
+export 'src/widgets/interaction/platform_close_button.dart';
 export 'src/widgets/interaction/platform_expansion_tile.dart';
 export 'src/widgets/interaction/platform_multi_select_list.dart';
 export 'src/widgets/interaction/platform_scrollbar.dart';

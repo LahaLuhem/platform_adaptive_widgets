@@ -78,7 +78,7 @@ Future<T?> showPlatformSheet<T>({
       unsavedChanges,
       child: Padding(
         // material_ui's sheet stays put when the keyboard opens.
-        padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+        padding: .only(bottom: MediaQuery.viewInsetsOf(context).bottom),
         child: Column(
           mainAxisSize: .min,
           children: [
