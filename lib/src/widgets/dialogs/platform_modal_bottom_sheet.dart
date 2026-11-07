@@ -25,7 +25,7 @@ import 'internal/sheet_routes.dart';
 /// together. Mixing the 2 trips an assert.
 ///
 /// Guidelines: [M3 bottom sheets](https://m3.material.io/components/bottom-sheets/guidelines),
-/// [HIG sheets](https://developer.apple.com/design/human-interface-guidelines/sheets#Best-practices).
+/// [HIG modality](https://developer.apple.com/design/human-interface-guidelines/modality#Best-practices).
 Future<T?> showPlatformRawModalBottomSheet<T>({
   required BuildContext context,
   WidgetBuilder? builder,
