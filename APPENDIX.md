@@ -93,7 +93,7 @@ or grep-and-update every caller.
 ## Pairing principles
 
 How a `PlatformXxx` or `showPlatformXxx` pairing gets designed or fixed. Check a proposal against
-all 6 before it ships.
+all 8 before it ships.
 
 1. **Native beats custom.** Some sides were home-made because a platform had nothing at the time.
    Once a native answer exists, it replaces the home-made one.
@@ -110,6 +110,13 @@ all 6 before it ships.
    allows stays valid even when Apple's or Google's own apps happen to skip it.
 6. **SwiftUI is the native reference, not UIKit.** When the 2 behave differently, match SwiftUI.
    It's the modern one, and UIKit is there for older apps. Native probes still try both.
+7. **Each platform's own behaviour, not parity.** Match what the platform does natively, even where
+   the other one does it differently. cupertino_ui and material_ui are young and can get it wrong or
+   leave it out, so they count as evidence, not the authority.
+8. **Upstream's gaps get filed, not patched.** When an SDK package or a dependency gets something
+   wrong or leaves it out, file it and link it from the dartdoc's known gaps. A patch here hides the
+   bug from whoever can fix it, and it's one more thing to delete later. Leaning on a maintained
+   package that already does the job isn't a patch.
 
 ---
 

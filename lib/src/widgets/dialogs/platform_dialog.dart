@@ -1,5 +1,6 @@
 /// @docImport 'package:cupertino_ui/cupertino_ui.dart';
 /// @docImport '/src/widgets/dialogs/platform_sheet.dart';
+/// @docImport '/src/widgets/interaction/platform_close_button.dart';
 library;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoPageRoute;
@@ -90,10 +91,14 @@ Future<T?> showPlatformFullscreenDialog<T>({
 ///
 /// **On Cupertino, tapping outside does nothing by default.** That matches the HIG, where an alert closes
 /// from a button rather than a tap outside, and there's no system back button to fall back on. So your
-/// content needs its own way out, or the dialog is a dead end. `barrierDismissible: true` opts out.
+/// content needs its own way out, like a [PlatformCloseButton], or the dialog is a dead end. `barrierDismissible: true`
+/// opts out.
 ///
 /// Either pass [builder] for content shared across both, or pass [materialBuilder] and [cupertinoBuilder]
 /// together. Mixing the 2 trips an assert.
+///
+/// Guidelines: [M3 dialogs](https://m3.material.io/components/dialogs/guidelines),
+/// [HIG modality](https://developer.apple.com/design/human-interface-guidelines/modality#Best-practices).
 Future<T?> showPlatformRawDialog<T>({
   required BuildContext context,
   WidgetBuilder? builder,

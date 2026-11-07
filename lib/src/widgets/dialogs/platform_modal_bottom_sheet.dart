@@ -2,6 +2,7 @@
 /// @docImport 'package:material_ui/material_ui.dart';
 /// @docImport '/src/widgets/dialogs/platform_choices.dart';
 /// @docImport '/src/widgets/dialogs/platform_sheet.dart';
+/// @docImport '/src/widgets/interaction/platform_close_button.dart';
 library;
 
 import 'package:flutter/widgets.dart';
@@ -21,11 +22,13 @@ import 'internal/sheet_routes.dart';
 /// upstream's doing. What you still get over calling the 2 directly is the dispatch and each platform's own
 /// transition.
 ///
+/// Cupertino's popup closes only on a tap above it, so add a [PlatformCloseButton] top-leading.
+///
 /// Either pass [builder] for content shared across both, or pass [materialBuilder] and [cupertinoBuilder]
 /// together. Mixing the 2 trips an assert.
 ///
 /// Guidelines: [M3 bottom sheets](https://m3.material.io/components/bottom-sheets/guidelines),
-/// [HIG sheets](https://developer.apple.com/design/human-interface-guidelines/sheets#Best-practices).
+/// [HIG modality](https://developer.apple.com/design/human-interface-guidelines/modality#Best-practices).
 Future<T?> showPlatformRawModalBottomSheet<T>({
   required BuildContext context,
   WidgetBuilder? builder,
