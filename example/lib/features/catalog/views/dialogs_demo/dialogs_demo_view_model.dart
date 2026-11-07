@@ -113,19 +113,15 @@ final class DialogsDemoViewModel() extends ViewModel {
   Future<void> onShowRawDialogPressed() => showPlatformRawDialog(
     context: context,
     barrierDismissible: _shouldDismissDialogOnBarrierTap,
-    builder: (context) => Center(
+    builder: (_) => const Center(
       child: Column(
         mainAxisSize: .min,
+        crossAxisAlignment: .start,
         spacing: 16,
         children: [
-          const Text('A raw dialog. The package adds no card here.'),
-          // Cupertino has no back button, so with barrierDismissible off this is the only way out.
-          if (designLanguage == .cupertino)
-            PlatformButton(
-              onPressed: () => Navigator.maybeOf(context)?.pop(),
-              emphasis: .low,
-              child: const Text('Done'),
-            ),
+          // iOS's only way out once barrierDismissible is off.
+          PlatformCloseButton(label: 'Close'),
+          Text('A raw dialog. The package adds no card here.'),
         ],
       ),
     ),
@@ -185,9 +181,20 @@ final class DialogsDemoViewModel() extends ViewModel {
   Future<void> onShowRawBottomSheetPressed() => showPlatformRawModalBottomSheet(
     context: context,
     builder: (_) => const SafeArea(
-      child: Padding(
-        padding: .all(24),
-        child: Text('A raw bottom sheet. The package adds no surface on Cupertino.'),
+      child: Column(
+        mainAxisSize: .min,
+        crossAxisAlignment: .start,
+        children: [
+          // iOS's popup otherwise closes only on a tap above it.
+          Padding(
+            padding: .all(8),
+            child: PlatformCloseButton(label: 'Close'),
+          ),
+          Padding(
+            padding: .all(24),
+            child: Text('A raw bottom sheet. The package adds no surface on Cupertino.'),
+          ),
+        ],
       ),
     ),
   );
