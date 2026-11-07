@@ -31,6 +31,7 @@ const kDefaultMaterialModalBottomSheetUseSafeArea = false;
 
 /// Default value for [CupertinoModalPopupData.semanticsDismissible]. Matches upstream `showCupertinoModalPopup`'s
 /// default.
+@Deprecated('Goes with CupertinoModalPopupData.semanticsDismissible in the next major.')
 const kDefaultCupertinoModalPopupSemanticsDismissible = false;
 
 /// Material-side settings for `showPlatformRawModalBottomSheet`, passed as `materialModalBottomSheetData`.
@@ -79,8 +80,9 @@ final class const CupertinoModalPopupData({
   /// Usually a Gaussian blur, for the frosted glass look iOS goes in for.
   final ImageFilter? filter,
 
-  /// Lets a screen reader close the popup from outside it too.
-  final bool semanticsDismissible = kDefaultCupertinoModalPopupSemanticsDismissible,
+  /// Does nothing now. Screen readers follow `barrierDismissible`.
+  @Deprecated('Screen readers follow barrierDismissible now. Goes in the next major.')
+  final bool semanticsDismissible = false,
 }) {
   /// Creates Cupertino-side settings for `showPlatformRawModalBottomSheet`.
   this;

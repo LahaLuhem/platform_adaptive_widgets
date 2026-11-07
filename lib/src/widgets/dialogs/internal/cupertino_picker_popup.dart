@@ -56,7 +56,7 @@ Future<DateTime?> showCupertinoPickerPopup({
     useRootNavigator: useRootNavigator,
     filter: cupertinoDatePickerData.filter,
     requestFocus: cupertinoDatePickerData.requestFocus,
-    semanticsDismissible: cupertinoDatePickerData.semanticsDismissible,
+    semanticsDismissible: barrierDismissible,
     builder: (context) =>
         builder?.call(context, pickerWidget) ??
         _CupertinoPickerContainer(pickerWidget: pickerWidget),

@@ -106,7 +106,8 @@ void dataWidgetParityGuard() {
     });
 
     test('every per-look record field is read somewhere in lib/src', () {
-      final fields = _recordFields(units);
+      // A deprecated field can do nothing until it goes.
+      final fields = _recordFields(units).where((field) => !field.metadata.hasDeprecated).toSet();
       check(
         because: 'Found no record field at all, so the check below passes on nothing.',
         fields,

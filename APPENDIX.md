@@ -299,7 +299,7 @@ widget, those whose shared-visual fields live on a private `_PlatformXxxData` ba
    edge, and the one the compiler is blindest to.
 3. **Every record field is read**: every field of every `MaterialXxxData` and `CupertinoXxxData`,
    canonical widget or not, is read somewhere in `lib/src/`. A field nothing reads compiles, yet
-   drops what the caller set.
+   drops what the caller set. Deprecated fields are skipped, since they may do nothing.
 4. **Finds a base**, so a future analyzer-AST change or a `lib/src/models/` move can't quietly
    reduce 1 and 2 to a vacuous pass.
 5. **Finds fields on every base**, since a new way of declaring them hides them all: the move to

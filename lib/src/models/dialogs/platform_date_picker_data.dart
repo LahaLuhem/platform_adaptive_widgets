@@ -43,6 +43,7 @@ const kDefaultCupertinoDatePickerBarrierColor = CupertinoDynamicColor.withBright
 );
 
 /// Default value for [CupertinoDatePickerData.semanticsDismissible].
+@Deprecated('Goes with CupertinoDatePickerData.semanticsDismissible in the next major.')
 const kDefaultCupertinoDatePickerSemanticsDismissible = false;
 
 /// Default value for [CupertinoDatePickerData.changeReportingBehavior]. Matches upstream `CupertinoDatePicker`'s
@@ -144,8 +145,9 @@ final class const CupertinoDatePickerData({
   /// Whether the popup takes focus as it opens. Left out, the navigator decides.
   final bool? requestFocus,
 
-  /// Offers the dismiss action to screen readers.
-  final bool semanticsDismissible = kDefaultCupertinoDatePickerSemanticsDismissible,
+  /// Does nothing now. Screen readers follow `barrierDismissible`.
+  @Deprecated('Screen readers follow barrierDismissible now. Goes in the next major.')
+  final bool semanticsDismissible = false,
 
   /// Date mode only.
   final SelectableDayPredicate? selectableDayPredicate,

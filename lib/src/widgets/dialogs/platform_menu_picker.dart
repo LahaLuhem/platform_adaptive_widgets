@@ -321,6 +321,8 @@ final class _CupertinoMenuPickerState() extends State<_CupertinoMenuPicker> {
 
   Future<void> _openWheel() => showCupertinoModalPopup<void>(
     context: context,
+    // A tap outside closes the wheel, so a screen reader can too.
+    semanticsDismissible: true,
     builder: (_) => _PickerSnapshotBuilder(
       pickerSnapshotListenable: _pickerSnapshotNotifier,
       builder: (snapshot, catchUp) => _CupertinoWheelPopup(snapshot: snapshot, catchUp: catchUp),
