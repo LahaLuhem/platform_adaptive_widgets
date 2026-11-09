@@ -12,8 +12,8 @@ class const PlatformCloseButtonSnippet({super.key}) extends StatelessWidget {
         mainAxisSize: .min,
         crossAxisAlignment: .start,
         children: [
-          // Top-leading, as the HIG asks. Localize the label.
-          PlatformCloseButton(label: 'Close'),
+          // Top-leading, as the HIG asks.
+          PlatformCloseButton(),
           Text('The sheet or dialog content goes here.'),
         ],
       );

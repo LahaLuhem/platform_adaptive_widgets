@@ -120,7 +120,7 @@ final class DialogsDemoViewModel() extends ViewModel {
         spacing: 16,
         children: [
           // iOS's only way out once barrierDismissible is off.
-          PlatformCloseButton(label: 'Close'),
+          PlatformCloseButton(),
           Text('A raw dialog. The package adds no card here.'),
         ],
       ),
@@ -186,10 +186,7 @@ final class DialogsDemoViewModel() extends ViewModel {
         crossAxisAlignment: .start,
         children: [
           // iOS's popup has no swipe, only a tap above it.
-          Padding(
-            padding: .all(8),
-            child: PlatformCloseButton(label: 'Close'),
-          ),
+          Padding(padding: .all(8), child: PlatformCloseButton()),
           Padding(
             padding: .all(24),
             child: Text('A raw bottom sheet. The package adds no surface on Cupertino.'),
