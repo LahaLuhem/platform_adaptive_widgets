@@ -15,6 +15,9 @@ enum _Build({
 
   /// Whole files a widget of the drawn look holds, left out of the count.
   final Set<String> excludedFiles = const {},
+
+  /// Packages only the other look uses, counted whole though their paths don't name it.
+  final Set<String> otherLookPackages = const {},
 }) {
   /// Keeps the Cupertino the SDK's own Material widgets hold.
   android(
@@ -25,6 +28,8 @@ enum _Build({
       'package:cupertino_ui/src/radio.dart', // material_ui's Radio keeps its `.adaptive` arm: https://github.com/flutter/flutter/issues/195489
       'package:cupertino_ui/src/checkbox.dart', // material_ui's Checkbox, keeps its `.adaptive` arm: https://github.com/flutter/flutter/issues/195489
     },
+    // The raw sheet's iOS side.
+    otherLookPackages: {'package:smooth_sheets', 'package:navigator_resizable'},
   ),
 
   /// Keeps material_ui's bundled assets and the `TimeOfDay` the time picker takes. Matching by name
@@ -66,7 +71,7 @@ Future<void> main(List<String> args) async {
   }
 
   final lookName = build.otherLook.toLowerCase();
-  final symbols = _symbolsMentioning(lookName, rootNode, rootNode.name);
+  final symbols = _symbolsMentioning(lookName, build.otherLookPackages, rootNode, rootNode.name);
   final countedSymbols = symbols.where((symbol) => !build.excludes(symbol)).toList(growable: false)
     ..sort((a, b) => b.bytes.compareTo(a.bytes));
   final countedBytes = countedSymbols.fold<int>(0, (sum, symbol) => sum + symbol.bytes);
@@ -78,14 +83,14 @@ Future<void> main(List<String> args) async {
   stdout
     ..writeln('AOT-pruning size-regression check, ${build.name}')
     ..writeln('${reportIndent}source: ${file.path}')
-    ..writeln('$reportIndent$lookName-pathed symbols: ${countedSymbols.length}')
-    ..writeln('$reportIndent$lookName-pathed bytes:   $countedBytes (budget: ${build.budget})')
+    ..writeln('$reportIndent${build.otherLook} symbols: ${countedSymbols.length}')
+    ..writeln('$reportIndent${build.otherLook} bytes:   $countedBytes (budget: ${build.budget})')
     ..writeln('${reportIndent}left out, held whole by the drawn look: $excludedBytes');
 
   if (countedBytes <= build.budget) return stdout.writeln('  PASS');
 
   stderr
-    ..writeln('\nFAIL: $lookName-pathed bytes ($countedBytes) exceed budget (${build.budget}).')
+    ..writeln('\nFAIL: ${build.otherLook} bytes ($countedBytes) exceed budget (${build.budget}).')
     ..writeln(
       'Likely a public `showPlatformXxx` helper takes both looks again, or `designLanguage` lost its '
       'pragma, so the ${build.otherLook} arm no longer drops out. '
@@ -119,15 +124,15 @@ File? _newestReport() {
   return reportFiles.lastOrNull;
 }
 
-/// The leaves under [node], at [path], whose path mentions [lookName]. A look's name holds no `/`, so
-/// a path mentions it exactly when one of its names does.
-List<_Symbol> _symbolsMentioning(String lookName, _Node node, String path) =>
-    node.name.toLowerCase().contains(lookName)
+/// The leaves under [node], at [path], whose path mentions [lookName] or sits in one of [packages]. A
+/// look's name holds no `/`, so a path mentions it exactly when one of its names does.
+List<_Symbol> _symbolsMentioning(String lookName, Set<String> packages, _Node node, String path) =>
+    node.name.toLowerCase().contains(lookName) || packages.contains(node.name)
     ? _leaves(node, path)
     : [
         // Spreads here and in `_leaves`, not `expand`: AOT walks a big report a little faster.
         for (final child in node.children)
-          ..._symbolsMentioning(lookName, child, '$path/${child.name}'),
+          ..._symbolsMentioning(lookName, packages, child, '$path/${child.name}'),
       ];
 
 /// Every leaf under [node], at [path].

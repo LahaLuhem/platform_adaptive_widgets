@@ -38,18 +38,20 @@ and macOS. `Theme` adds its `CupertinoTheme` on every platform, and the rest pic
 Bytes of the look a platform doesn't draw that adding the widget to the harness brings in, on top of
 the base.
 
-| Widget                     | Cupertino on Android | Material on iOS | What stays                                                                                                                                         |
-|----------------------------|----------------------|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `PlatformSlider`           | 10.8 KB              | 0 B             | Android: cupertino_ui's slider, which material_ui's `Slider` keeps for its `.adaptive` arm                                                         |
-| `PlatformTextField`        | 137 B                | 0 B             | Android: 72 B of cupertino_ui's text selection toolbar shape, which material_ui's adaptive toolbar keeps. The rest is code shifting in other files |
-| `PlatformSearchBar`        | 185 B                | 0 B             | Android: nothing of its own, only code shifting in the radio and checkbox files                                                                    |
-| `PlatformSingleSelectList` | 8.9 KB               | 0 B             | cupertino_ui's radio, which material_ui's `Radio` keeps whole. The size check leaves it out                                                        |
-| `PlatformMultiSelectList`  | 10.2 KB              | 0 B             | cupertino_ui's checkbox, which material_ui's `Checkbox` keeps whole. The size check leaves it out                                                  |
+| Widget                            | Cupertino on Android | Material on iOS | What stays                                                                                                                                         |
+|-----------------------------------|----------------------|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `PlatformSlider`                  | 10.8 KB              | 0 B             | Android: cupertino_ui's slider, which material_ui's `Slider` keeps for its `.adaptive` arm                                                         |
+| `PlatformTextField`               | 137 B                | 0 B             | Android: 72 B of cupertino_ui's text selection toolbar shape, which material_ui's adaptive toolbar keeps. The rest is code shifting in other files |
+| `PlatformSearchBar`               | 185 B                | 0 B             | Android: nothing of its own, only code shifting in the radio and checkbox files                                                                    |
+| `PlatformSingleSelectList`        | 8.9 KB               | 0 B             | cupertino_ui's radio, which material_ui's `Radio` keeps whole. The size check leaves it out                                                        |
+| `PlatformMultiSelectList`         | 10.2 KB              | 0 B             | cupertino_ui's checkbox, which material_ui's `Checkbox` keeps whole. The size check leaves it out                                                  |
+| `showPlatformRawModalBottomSheet` | 0 B                  | 0 B             | Nothing. smooth_sheets, the iOS side, drops out of Android. iOS grows 132 KB, 84.5 KB of it smooth_sheets itself                                   |
 
 The iOS base keeps 7.6 KB of Material: material_ui's bundled shaders and icon font, and the
 `TimeOfDay` the time picker takes.
 
-*2026-10-31, Flutter 3.47.8, material_ui 1.9.0, cupertino_ui 1.1.5.*
+*2026-10-31, Flutter 3.47.8, material_ui 1.9.0, cupertino_ui 1.1.5. The raw sheet's row 2026-11-09,
+Flutter 3.47.9, material_ui 1.10.0, cupertino_ui 1.1.6, smooth_sheets 1.3.0.*
 
 ## Patterns
 
