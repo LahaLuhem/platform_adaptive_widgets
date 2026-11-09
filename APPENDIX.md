@@ -144,7 +144,8 @@ down or a tap above it. cupertino_ui has no route that does all of that yet:
 
 smooth_sheets' `showModalSheet` with a `Sheet` does all of it, so the raw sheet leans on that
 ([principle 8](#pairing-principles)). Not its `showCupertinoModalSheet`, which pushes the page back
-even under a short sheet, where iOS only does that at full height.
+even under a short sheet, where iOS only does that at full height. Android's release build drops
+smooth_sheets, and the size check counts it there.
 
 **Exit:** back to `showCupertinoSheet` once those 3 issues are fixed.
 

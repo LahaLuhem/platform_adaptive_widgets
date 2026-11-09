@@ -95,6 +95,16 @@ class _Surfaces extends StatelessWidget {
         child: const Text('raw dialog'),
       ),
 
+      // showPlatformRawModalBottomSheet, top-level switch dispatch, smooth_sheets on Cupertino.
+      PlatformButton(
+        onPressed: () => showPlatformRawModalBottomSheet<void>(
+          context: context,
+          builder: (_) => const Text('r'),
+        ),
+        emphasis: .low,
+        child: const Text('raw sheet'),
+      ),
+
       // showPlatformFullscreenDialog, top-level switch dispatch. Its bar builds both kinds of action.
       PlatformButton(
         onPressed: () => showPlatformFullscreenDialog<void>(
