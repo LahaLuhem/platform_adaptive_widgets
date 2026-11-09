@@ -1,3 +1,7 @@
+## [Unreleased]
+### Added
+- PlatformCloseButton, a close button for content with no bar
+
 ## [3.1.0] - 2026-11-05
 ### Fixed
 - Cupertino toast text follows the theme
@@ -245,6 +249,7 @@ or M3 asks for. Many old APIs are gone. Removed mentions the ones to now use
 - Platform scrollbar
 - Platform text-field
 
+[Unreleased]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/3.1.0...HEAD
 [3.1.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/3.0.0...3.1.0
 [3.0.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.2.0...3.0.0
 [2.2.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.1.2...2.2.0
