@@ -32,7 +32,6 @@ const _ownPicks = {
   'platform_tab_scaffold.dart: Scaffold.resizeToAvoidBottomInset': _ownBool,
   'platform_text_field.dart: TextField.autocorrect': _ownBool,
   'platform_text_field.dart: TextField.enabled': _ownBool,
-  'sheet_routes.dart: showCupertinoModalPopup.semanticsDismissible': _screenReaderDismiss,
 };
 
 /// Each `DesignLanguage` look's upstream package.

@@ -185,7 +185,6 @@ final class DialogsDemoViewModel() extends ViewModel {
         mainAxisSize: .min,
         crossAxisAlignment: .start,
         children: [
-          // iOS's popup has no swipe, only a tap above it.
           Padding(padding: .all(8), child: PlatformCloseButton()),
           Padding(
             padding: .all(24),

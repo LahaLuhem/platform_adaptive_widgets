@@ -131,6 +131,25 @@ red brand's `primary` lands on `error`'s hue, as it does for M3's own error stat
 
 ---
 
+<a id="raw-sheet-on-smooth-sheets"></a>
+## The raw sheet's iOS side runs on smooth_sheets
+
+An iOS sheet as short as its content dims the page without pushing it back, and closes on a swipe
+down or a tap above it. cupertino_ui has no route that does all of that yet:
+
+| cupertino_ui              | Misses                                                                                                                                                                                                                                                                                                                      |
+|---------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `showCupertinoModalPopup` | the swipe                                                                                                                                                                                                                                                                                                                   |
+| `showCupertinoSheet`      | the dim and the tap above ([flutter/flutter#196168](https://github.com/flutter/flutter/issues/196168)), any height but a screen fraction ([flutter/flutter#169832](https://github.com/flutter/flutter/issues/169832)), a `PopScope` on a swipe ([flutter/flutter#171878](https://github.com/flutter/flutter/issues/171878)) |
+
+smooth_sheets' `showModalSheet` with a `Sheet` does all of it, so the raw sheet leans on that
+([principle 8](#pairing-principles)). Not its `showCupertinoModalSheet`, which pushes the page back
+even under a short sheet, where iOS only does that at full height.
+
+**Exit:** back to `showCupertinoSheet` once those 3 issues are fixed.
+
+---
+
 <a id="field-classification"></a>
 ## Field classification: functional vs visual
 
