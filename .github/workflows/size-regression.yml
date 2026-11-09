@@ -38,7 +38,7 @@ jobs:
         run: flutter create --platforms=${{ matrix.platform }} .
       # After `flutter create`, so the Gradle cache key includes the harness it builds.
       - if: matrix.platform == 'android'
-        uses: LahaLuhem/dartender/actions/setup-java@main
+        uses: LahaLuhem/dartender/actions/setup-android@main
       - working-directory: tool/size_harness
         run: flutter build ${{ matrix.build }} --release --analyze-size
       - run: dart tool/check_size_regression.dart
