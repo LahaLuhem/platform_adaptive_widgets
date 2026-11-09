@@ -1,7 +1,6 @@
-// Per-platform records for showPlatformRawModalBottomSheet (no shared private
-// base. Material's showModalBottomSheet and Cupertino's showCupertinoModalPopup
-// have only a small set of overlapping show-function args that live as flat
-// parameters. Everything else is platform-only).
+// Per-platform records for showPlatformRawModalBottomSheet and showPlatformChoices (no shared private
+// base. Material's showModalBottomSheet and Cupertino's showCupertinoModalPopup have only a small set
+// of overlapping show-function args that live as flat parameters. Everything else is platform-only).
 // ignore_for_file: prefer-match-file-name
 
 /// @docImport 'package:cupertino_ui/cupertino_ui.dart';
@@ -34,9 +33,8 @@ const kDefaultMaterialModalBottomSheetUseSafeArea = false;
 @Deprecated('Goes with CupertinoModalPopupData.semanticsDismissible in the next major.')
 const kDefaultCupertinoModalPopupSemanticsDismissible = false;
 
-/// Material-side settings for `showPlatformRawModalBottomSheet`, passed as `materialModalBottomSheetData`.
-/// None of it reaches Cupertino, where `showCupertinoModalPopup` is a far plainer thing with its own
-/// fields on [CupertinoModalPopupData].
+/// Material-side settings for `showPlatformRawModalBottomSheet` and `showPlatformChoices`, passed as
+/// `materialModalBottomSheetData`. None of it reaches Cupertino.
 final class const MaterialModalBottomSheetData({
   final Color? backgroundColor,
 
@@ -71,11 +69,11 @@ final class const MaterialModalBottomSheetData({
 
   final AnimationStyle? sheetAnimationStyle,
 }) {
-  /// Creates Material-side settings for `showPlatformRawModalBottomSheet`.
+  /// Creates Material-side settings for the raw sheet and the choices.
   this;
 }
 
-/// Cupertino-side settings for `showPlatformRawModalBottomSheet`, passed as `cupertinoModalPopupData`.
+/// Cupertino-side settings for `showPlatformChoices`, passed as `cupertinoModalPopupData`.
 final class const CupertinoModalPopupData({
   /// Usually a Gaussian blur, for the frosted glass look iOS goes in for.
   final ImageFilter? filter,
@@ -84,6 +82,6 @@ final class const CupertinoModalPopupData({
   @Deprecated('Screen readers follow barrierDismissible now. Goes in the next major.')
   final bool semanticsDismissible = false,
 }) {
-  /// Creates Cupertino-side settings for `showPlatformRawModalBottomSheet`.
+  /// Creates Cupertino-side settings for `showPlatformChoices`.
   this;
 }

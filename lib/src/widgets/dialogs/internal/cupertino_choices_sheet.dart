@@ -2,13 +2,18 @@
 library;
 
 import 'package:cupertino_ui/cupertino_ui.dart'
-    show CupertinoActionSheet, CupertinoActionSheetAction, CupertinoLocalizations;
+    show
+        CupertinoActionSheet,
+        CupertinoActionSheetAction,
+        CupertinoLocalizations,
+        kCupertinoModalBarrierColor,
+        showCupertinoModalPopup;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
+import '/src/models/dialogs/const_values.dart';
 import '/src/models/dialogs/platform_choice.dart';
 import '/src/models/dialogs/platform_modal_bottom_sheet_data.dart';
-import 'sheet_routes.dart';
 
 /// [showPlatformChoices]'s action sheet, in a file of its own so the destructive confirm can share it.
 @internal
@@ -24,7 +29,7 @@ Future<T?> showCupertinoChoicesSheet<T extends Object>({
   required RouteSettings? routeSettings,
   required bool? useRootNavigator,
   required bool? requestFocus,
-}) => showCupertinoPopupRoute(
+}) => showCupertinoModalPopup(
   context: context,
   builder: (context) => CupertinoActionSheet(
     title: title == null ? null : Text(title),
@@ -49,11 +54,12 @@ Future<T?> showCupertinoChoicesSheet<T extends Object>({
       child: Text(CupertinoLocalizations.of(context).cancelButtonLabel),
     ),
   ),
-  cupertinoModalPopupData: cupertinoModalPopupData,
-  anchorPoint: anchorPoint,
-  barrierColor: barrierColor,
-  barrierDismissible: true,
+  filter: cupertinoModalPopupData.filter,
+  barrierColor: barrierColor ?? kCupertinoModalBarrierColor,
+  useRootNavigator: useRootNavigator ?? kDefaultUseRootNavigator,
+  // A tap outside closes it, so a screen reader can too.
+  semanticsDismissible: true,
   routeSettings: routeSettings,
-  useRootNavigator: useRootNavigator,
+  anchorPoint: anchorPoint,
   requestFocus: requestFocus,
 );
