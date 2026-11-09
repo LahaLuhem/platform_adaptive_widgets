@@ -73,5 +73,26 @@ void main() {
       check(buttonsNamed(name).evaluate()).isNotEmpty();
       semantics.dispose();
     });
+
+    // Material's CloseButton names itself either way.
+    scenarioWidgets('names itself for screen readers without a label', (tester) async {
+      final semantics = tester.ensureSemantics();
+      unawaited(
+        _open(
+          await pumpForContext(tester),
+          page: const Center(key: _pageKey, child: PlatformCloseButton()),
+        ),
+      );
+      await pumpTransition(tester);
+
+      check(
+        find.semantics.byPredicate((node) {
+          final data = node.getSemanticsData();
+
+          return data.flagsCollection.isButton && data.label.isNotEmpty;
+        }).evaluate(),
+      ).isNotEmpty();
+      semantics.dispose();
+    }, variant: iosOnly);
   });
 }
