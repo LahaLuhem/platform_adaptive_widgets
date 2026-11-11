@@ -10,10 +10,9 @@ import 'package:flutter/widgets.dart';
 @internal
 const kBarActionBusyDelay = Duration(milliseconds: 200);
 
-/// One action in a bar, like Share or Save. The bar draws it as each platform's own bar button, so it
-/// sits the way a native one does.
+/// One action in a bar, like Share or Save, drawn as each platform's own bar button.
 sealed class const PlatformBarAction._({
-  /// Names the action. It's the text without an [icon], and the tooltip and screen-reader label with one.
+  /// Names the action: its text without an [icon], its tooltip and screen-reader label with one.
   required final String label,
 
   /// Drawn in place of the [label]. Both platforms prefer a symbol in a bar, except for an action like
@@ -32,16 +31,16 @@ sealed class const PlatformBarAction._({
   }) = PlainBarAction;
 
   /// Creates an action whose work takes a moment, like a save. Taps are ignored until the work is done.
-  /// Past a moment, the platform's spinner takes the action's place, and screen readers read it as disabled.
+  /// If it lasts, the platform's spinner takes the action's place, and screen readers read it as disabled.
   ///
   /// For short work, not for opening a screen or a sheet, whose future lasts until it closes
   /// ([M3 loading indicator](https://m3.material.io/components/loading-indicator/guidelines)). If the
   /// work throws, the action works again and the error goes uncaught. Each debounced action in a bar
   /// needs its own [label].
   ///
-  /// The spinner swaps in at once. Pass a [transitionBuilder], like [AnimatedSwitcher.defaultTransitionBuilder],
-  /// to move between the 2 in each look's own timing, and switch on [designLanguage] in it for a motion
-  /// per look. The swap stays instant when the device asks for less motion.
+  /// The swap is instant, unless a [transitionBuilder] like [AnimatedSwitcher.defaultTransitionBuilder]
+  /// animates it in each look's own timing, and the device doesn't ask for less motion. Switch on
+  /// [designLanguage] in it for a motion per look.
   ///
   /// Known gap: Material shows a circular progress indicator until material_ui has M3's loading indicator
   /// ([flutter/flutter#184941](https://github.com/flutter/flutter/issues/184941)).

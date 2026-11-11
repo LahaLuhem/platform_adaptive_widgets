@@ -96,8 +96,8 @@ Finder _buttonOf(Finder content) => find
 ({Rect content, Rect button}) _placed(WidgetTester tester, Finder content) =>
     (content: tester.getRect(content), button: tester.getRect(_buttonOf(content)));
 
-// An action's work, which a scenario ends by hand. The next pump runs every pending microtask first,
-// so the bar has seen the end by the time it draws.
+// An action's work, which a scenario ends by hand. The next pump runs pending microtasks first, so the
+// bar sees the end before it draws.
 final class _Work() {
   final _runs = <Completer<void>>[];
 
@@ -147,7 +147,7 @@ Future<void> _pumpPublish(
   PlatformAppBar(primaryAction: _debounced(work, _textKind, transition: transition)),
 );
 
-// The test's own fade, so a scenario can read the animation the bar hands each side of the swap.
+// A fade the test can find, to read the animation the bar hands each side of the swap.
 class const _Fade(final Widget child, final Animation<double> animation) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => FadeTransition(opacity: animation, child: child);
@@ -429,7 +429,7 @@ void main() {
         await tester.tap(publishButton);
         check(because: 'while it runs', work.starts).equals(1);
 
-        // So the spinner has a way back to fade along when the work ends.
+        // Lets the fade in finish, so there's one to come back from.
         if (transition != null) await _settle(tester, _textKind.content);
         work.end();
         await tester.pump();
@@ -577,6 +577,21 @@ void main() {
         check(_colourOf(tester, kind.content).toARGB32()).equals(contentColour.toARGB32());
       },
     );
+
+    // Only Material fades a label's colour between states, and only a text label's.
+    scenarioWidgets('brings its label back in its own colour, not a disabled grey', (tester) async {
+      final work = _Work();
+      await _pumpPublish(tester, work);
+      final labelColour = _colourOf(tester, _textKind.content);
+      await _startSlowWork(tester, _textKind.content);
+      // Lets the busy button settle into whatever colour it keeps while disabled.
+      await pumpTransition(tester);
+
+      work.end();
+      await tester.pump();
+
+      check(_colourOf(tester, _textKind.content).toARGB32()).equals(labelColour.toARGB32());
+    }, variant: androidOnly);
 
     scenarioOutlineWidgets<AnimatedSwitcherTransitionBuilder?>(
       'tells screen readers it is disabled while its work runs, under its own name',

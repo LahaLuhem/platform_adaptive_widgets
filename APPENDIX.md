@@ -161,8 +161,8 @@ smooth_sheets, and the size check counts it there.
   ([M3 progress indicators](https://m3.material.io/components/progress-indicators/guidelines)), and
   M3's loading indicator replaces it once material_ui ships one
   ([flutter/flutter#184941](https://github.com/flutter/flutter/issues/184941)). Anything else goes
-  in the per-platform raw slots. The caller can still pick how it comes and goes, through
-  `.debounced`'s `transitionBuilder`, since that only moves the bar's own content.
+  in the per-platform raw slots. Callers can still animate it, through `.debounced`'s
+  `transitionBuilder`, which only moves the bar's own content.
 
 ---
 
