@@ -34,6 +34,7 @@ renames don't break callers.
   * [`List.unmodifiable(…)` over `UnmodifiableListView(…)`](#listunmodifiable-over-unmodifiablelistview)
   * [`part` / `part of` only when structurally needed](#part--part-of-only-when-structurally-needed)
   * [A switch over an if/else chain, never over a single if/else](#a-switch-over-an-ifelse-chain-never-over-a-single-ifelse)
+  * [`ValueNotifier` and `ValueListenableBuilder` over `setState`](#valuenotifier-and-valuelistenablebuilder-over-setstate)
 - [Test style](#test-style)
   * [Conventions](#conventions)
 - [Prose & voice](#prose--voice)
@@ -749,6 +750,14 @@ ceremony.
 
 **Except** a `designLanguage` branch that builds a look's own widget. Only a switch with one look
 per case drops the other look early ([why](./APPENDIX.md#aot-pruning-rules)).
+
+<a id="valuenotifier-over-setstate"></a>
+### `ValueNotifier` and `ValueListenableBuilder` over `setState`
+
+Keep a widget's changing state in a `ValueNotifier`, named `_xxxNotifier`, read it through a
+`ValueListenableBuilder`, and dispose it with the state.
+
+**Why.** The builder shows what depends on the value, and only that part rebuilds.
 
 ---
 

@@ -37,7 +37,7 @@ sealed class const PlatformBarAction._({
     required AsyncCallback onPressed,
     Widget? icon,
     bool isEnabled,
-  }) = PlainBarAction;
+  }) = DebouncedBarAction;
 
   /// What a tap runs.
   VoidCallback get onPressed;
@@ -48,6 +48,17 @@ sealed class const PlatformBarAction._({
 final class const PlainBarAction({
   required super.label,
   @override required final VoidCallback onPressed,
+  super.icon,
+  super.isEnabled,
+}) extends PlatformBarAction {
+  this : super._();
+}
+
+/// What [PlatformBarAction.debounced] builds.
+@internal
+final class const DebouncedBarAction({
+  required super.label,
+  @override required final AsyncCallback onPressed,
   super.icon,
   super.isEnabled,
 }) extends PlatformBarAction {
