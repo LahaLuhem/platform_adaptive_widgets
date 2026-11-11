@@ -1,16 +1,30 @@
 /// @docImport '/src/widgets/layout/platform_scaffold.dart';
 library;
 
+import 'dart:async';
+
 import 'package:cupertino_ui/cupertino_ui.dart'
     show
+        CupertinoActivityIndicator,
         CupertinoButton,
         CupertinoLocalizations,
         CupertinoNavigationBar,
         CupertinoSheetRoute,
+        CupertinoTheme,
         ObstructingPreferredSizeWidget;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart'
-    show AppBar, CloseButton, IconButton, ModalBottomSheetRoute, TextButton;
+    show
+        AppBar,
+        CircularProgressIndicator,
+        CloseButton,
+        Colors,
+        IconButton,
+        IconButtonTheme,
+        ModalBottomSheetRoute,
+        TextButton,
+        TextButtonTheme,
+        Theme;
 
 import '/src/models/layout/platform_app_bar_data.dart';
 import '/src/models/layout/platform_bar_action.dart';
@@ -81,8 +95,8 @@ class const PlatformAppBar({
     actions:
         materialAppBarData.actions ??
         [
-          for (final action in actions) _MaterialBarAction(action),
-          if (primaryAction case final primary?) _MaterialBarAction(primary),
+          for (final action in actions) _MaterialBarAction(action, key: _keyOf(action)),
+          if (primaryAction case final primary?) _MaterialBarAction(primary, key: _keyOf(primary)),
         ],
     automaticallyImplyActions: materialAppBarData.automaticallyImplyActions,
     flexibleSpace: materialAppBarData.flexibleSpace,
@@ -143,9 +157,9 @@ class const PlatformAppBar({
                 // UIKit's gap between bar items.
                 spacing: 8,
                 children: [
-                  for (final action in actions) _CupertinoBarAction(action),
+                  for (final action in actions) _CupertinoBarAction(action, key: _keyOf(action)),
                   if (primaryAction case final primary?)
-                    _CupertinoBarAction(primary, isPrimary: true),
+                    _CupertinoBarAction(primary, isPrimary: true, key: _keyOf(primary)),
                 ],
               ));
 
@@ -227,36 +241,188 @@ class const PlatformAppBar({
   }
 }
 
+class const _MaterialBarAction(final PlatformBarAction action, {super.key})
+    extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => switch (action) {
+    PlainBarAction(:final isEnabled, :final onPressed) => _MaterialBarButton(
+      action,
+      onPressed: isEnabled ? onPressed : null,
+    ),
+    final DebouncedBarAction debouncedAction => _DebouncedBarAction(
+      debouncedAction,
+      buttonBuilder: (onPressed, {required isBusy}) => _MaterialBarButton(
+        action,
+        onPressed: onPressed,
+        // Built only here, so an app with no debounced action ships no spinner.
+        spinner: isBusy ? _MaterialSpinner(isInTextButton: action.icon == null) : null,
+      ),
+    ),
+  };
+}
+
 // Each platform's own bar button, not a PlatformButton, which is sized to stand alone.
-class const _MaterialBarAction(final PlatformBarAction action) extends StatelessWidget {
+class const _MaterialBarButton(
+  final PlatformBarAction action, {
+  required final VoidCallback? onPressed,
+  final Widget? spinner,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final onPressed = action.isEnabled ? action.onPressed : null;
     final icon = action.icon;
+    final busySpinner = spinner;
+    final content = icon ?? Text(action.label);
+    final shownContent = busySpinner == null
+        ? content
+        : _BusyContent(content: content, spinner: busySpinner);
 
     return icon == null
-        ? TextButton(onPressed: onPressed, child: Text(action.label))
-        : IconButton(onPressed: onPressed, tooltip: action.label, icon: icon);
+        ? TextButton(onPressed: onPressed, child: shownContent)
+        : IconButton(onPressed: onPressed, tooltip: action.label, icon: shownContent);
   }
 }
 
-class const _CupertinoBarAction(final PlatformBarAction action, {final bool isPrimary = false})
-    extends StatelessWidget {
+class const _MaterialSpinner({required final bool isInTextButton}) extends StatelessWidget {
+  // M3's smallest circular indicator, the size of the icon it stands in for.
+  static const _size = 24.0;
+
+  @override
+  Widget build(BuildContext context) => CircularProgressIndicator(
+    // M3 wants the content's own colour here, with no track. A busy button is disabled, so its own
+    // colour has already gone grey.
+    color: isInTextButton
+        ? TextButtonTheme.of(context).style?.foregroundColor?.resolve(const {}) ??
+              Theme.of(context).colorScheme.primary
+        : IconButtonTheme.of(context).style?.foregroundColor?.resolve(const {}) ??
+              IconTheme.of(context).color,
+    backgroundColor: Colors.transparent,
+    constraints: .tight(const .square(_size)),
+  );
+}
+
+class const _CupertinoBarAction(
+  final PlatformBarAction action, {
+  final bool isPrimary = false,
+  super.key,
+}) extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => switch (action) {
+    PlainBarAction(:final isEnabled, :final onPressed) => _CupertinoBarButton(
+      action,
+      isPrimary: isPrimary,
+      onPressed: !isEnabled ? null : onPressed,
+    ),
+    final DebouncedBarAction debouncedAction => _DebouncedBarAction(
+      debouncedAction,
+      buttonBuilder: (onPressed, {required isBusy}) => _CupertinoBarButton(
+        action,
+        isPrimary: isPrimary,
+        onPressed: onPressed,
+        // Built only here, so an app with no debounced action ships no spinner.
+        spinner: !isBusy ? null : const _CupertinoSpinner(),
+      ),
+    ),
+  };
+}
+
+class const _CupertinoBarButton(
+  final PlatformBarAction action, {
+  required final VoidCallback? onPressed,
+  final bool isPrimary = false,
+  final Widget? spinner,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final icon = action.icon;
+    final busySpinner = spinner;
+    final content = icon == null
+        ? Text(action.label, style: isPrimary ? const TextStyle(fontWeight: .w600) : null)
+        // The label names it, in place of anything the icon says about itself.
+        : Semantics(label: action.label, excludeSemantics: true, child: icon);
 
     return DisabledSemantics(
-      isEnabled: action.isEnabled,
+      isEnabled: onPressed != null,
       child: CupertinoButton(
         // Flush, like cupertino_ui's own bar buttons. Any padding squeezes the content in a 44pt bar.
         padding: EdgeInsets.zero,
-        onPressed: action.isEnabled ? action.onPressed : null,
-        child: icon == null
-            ? Text(action.label, style: isPrimary ? const TextStyle(fontWeight: .w600) : null)
-            // The label names it, in place of anything the icon says about itself.
-            : Semantics(label: action.label, excludeSemantics: true, child: icon),
+        onPressed: onPressed,
+        child: busySpinner == null ? content : _BusyContent(content: content, spinner: busySpinner),
       ),
     );
   }
 }
+
+class const _CupertinoSpinner() extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) =>
+      // A plain CupertinoButton's normal colour. A busy one is disabled, so its own has gone grey.
+      CupertinoActivityIndicator(color: CupertinoTheme.of(context).primaryColor);
+}
+
+// The content stays, hidden, so the action keeps its size and screen readers its name.
+class const _BusyContent({required final Widget content, required final Widget spinner})
+    extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => Stack(
+    alignment: .center,
+    clipBehavior: .none,
+    children: [
+      Visibility.maintain(visible: false, child: content),
+      Positioned(child: ExcludeSemantics(child: spinner)),
+    ],
+  );
+}
+
+class const _DebouncedBarAction(
+  final DebouncedBarAction action, {
+  required final Widget Function(VoidCallback? onPressed, {required bool isBusy}) buttonBuilder,
+}) extends StatefulWidget {
+  @override
+  State<_DebouncedBarAction> createState() => _DebouncedBarActionState();
+}
+
+class _DebouncedBarActionState() extends State<_DebouncedBarAction> {
+  final _isBusyNotifier = ValueNotifier(false);
+  // Set from the first tap, before anything shows, so a quick 2nd tap is dropped too.
+  var _isRunning = false;
+  Timer? _busyTimer;
+
+  @override
+  void dispose() {
+    _busyTimer?.cancel();
+    _isBusyNotifier.dispose();
+    super.dispose();
+  }
+
+  void _onPressed() {
+    if (!_isRunning) unawaited(_run());
+  }
+
+  // Left uncaught, so a failure lands where an unawaited future's would.
+  Future<void> _run() async {
+    _isRunning = true;
+    _busyTimer = Timer(kBarActionBusyDelay, () => _isBusyNotifier.value = true);
+    try {
+      await widget.action.onPressed();
+    } finally {
+      _busyTimer?.cancel();
+      _isRunning = false;
+      // The work may have closed the screen, and the notifier with it.
+      if (mounted) _isBusyNotifier.value = false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => ValueListenableBuilder(
+    valueListenable: _isBusyNotifier,
+    builder: (_, isBusy, _) => widget.buttonBuilder(
+      !widget.action.isEnabled || isBusy ? null : _onPressed,
+      isBusy: isBusy,
+    ),
+  );
+}
+
+// Keeps a running action's state with it when the actions before it change. Plain ones stay
+// unkeyed, so 2 sharing a label still build.
+Key? _keyOf(PlatformBarAction action) =>
+    action is! DebouncedBarAction ? null : ValueKey(action.label);
