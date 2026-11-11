@@ -45,6 +45,7 @@ sealed class const PlatformBarAction._({
     required AsyncCallback onPressed,
     Widget? icon,
     bool isEnabled,
+    AnimatedSwitcherTransitionBuilder? transitionBuilder,
   }) = DebouncedBarAction;
 
   /// What a tap runs.
@@ -69,6 +70,7 @@ final class const DebouncedBarAction({
   @override required final AsyncCallback onPressed,
   super.icon,
   super.isEnabled,
+  final AnimatedSwitcherTransitionBuilder? transitionBuilder,
 }) extends PlatformBarAction {
   this : super._();
 }
