@@ -151,6 +151,20 @@ smooth_sheets, and the size check counts it there.
 
 ---
 
+<a id="debounced-bar-action"></a>
+## A bar action waits only when asked, and draws its own spinner
+
+- **Only `.debounced` waits.** Waiting on any `onPressed` future would also catch navigation, share
+  and menu actions, which would spin until their screen closes. Even a `void` arrow method returns
+  its push's future, so the plain constructor gets a dartdoc pointer, not an assert.
+- **No caller spinner.** The bar's own meets M3's rules for its kind and colour
+  ([M3 progress indicators](https://m3.material.io/components/progress-indicators/guidelines)), and
+  M3's loading indicator replaces it once material_ui ships one
+  ([flutter/flutter#184941](https://github.com/flutter/flutter/issues/184941)). Anything else goes
+  in the per-platform raw slots.
+
+---
+
 <a id="field-classification"></a>
 ## Field classification: functional vs visual
 

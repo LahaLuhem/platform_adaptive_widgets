@@ -22,7 +22,7 @@ sealed class const PlatformBarAction._({
   /// The way to disable it, like a Done that waits for the last step.
   final bool isEnabled = true,
 }) {
-  /// Creates an action for a bar like [PlatformAppBar].
+  /// Creates an action for a bar like [PlatformAppBar]. Slow work wants [PlatformBarAction.debounced].
   const factory({
     required String label,
     required VoidCallback onPressed,
@@ -30,8 +30,16 @@ sealed class const PlatformBarAction._({
     bool isEnabled,
   }) = PlainBarAction;
 
-  /// Creates an action whose work takes a moment, like Save. The bar ignores taps until that work is
-  /// done.
+  /// Creates an action whose work takes a moment, like a save. Taps are ignored until the work is done.
+  /// Past a moment, the platform's spinner takes the action's place, and screen readers read it as disabled.
+  ///
+  /// For short work, not for opening a screen or a sheet, whose future lasts until it closes
+  /// ([M3 loading indicator](https://m3.material.io/components/loading-indicator/guidelines)). If the
+  /// work throws, the action works again and the error goes uncaught. Each debounced action in a bar
+  /// needs its own [label].
+  ///
+  /// Known gap: Material shows a circular progress indicator until material_ui has M3's loading indicator
+  /// ([flutter/flutter#184941](https://github.com/flutter/flutter/issues/184941)).
   const factory debounced({
     required String label,
     required AsyncCallback onPressed,
