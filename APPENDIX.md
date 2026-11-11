@@ -161,7 +161,8 @@ smooth_sheets, and the size check counts it there.
   ([M3 progress indicators](https://m3.material.io/components/progress-indicators/guidelines)), and
   M3's loading indicator replaces it once material_ui ships one
   ([flutter/flutter#184941](https://github.com/flutter/flutter/issues/184941)). Anything else goes
-  in the per-platform raw slots.
+  in the per-platform raw slots. The caller can still pick how it comes and goes, through
+  `.debounced`'s `transitionBuilder`, since that only moves the bar's own content.
 
 ---
 
@@ -290,7 +291,7 @@ not to make the callback nullable.
   (`MaterialAppBarData.leading` and `.actions`, `CupertinoNavigationBarData.leading` and
   `.trailing`), which replaces that side's own. The leading has no shared slot, since both bars fill
   it themselves: back, a full-screen dialog's or a sheet's close or Cancel, Material's drawer
-  button.
+  button. The rule is about what the bar draws, not how that moves.
 - **`showPlatformXxx` helpers** apply the same rule: functional params flat on the function
   signature. Visual via per-platform records.
 - **Platform-only *capabilities*, not just fields.** A whole feature can exist on one platform and

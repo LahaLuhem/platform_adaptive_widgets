@@ -12,6 +12,7 @@ import 'package:cupertino_ui/cupertino_ui.dart'
         CupertinoSheetRoute,
         CupertinoTheme,
         ObstructingPreferredSizeWidget;
+import 'package:flutter/semantics.dart' show SemanticsBinding;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart'
     show
@@ -24,7 +25,8 @@ import 'package:material_ui/material_ui.dart'
         ModalBottomSheetRoute,
         TextButton,
         TextButtonTheme,
-        Theme;
+        Theme,
+        kThemeChangeDuration;
 
 import '/src/models/layout/platform_app_bar_data.dart';
 import '/src/models/layout/platform_bar_action.dart';
@@ -247,15 +249,17 @@ class const _MaterialBarAction(final PlatformBarAction action, {super.key})
   Widget build(BuildContext context) => switch (action) {
     PlainBarAction(:final isEnabled, :final onPressed) => _MaterialBarButton(
       action,
-      onPressed: isEnabled ? onPressed : null,
+      onPressed: !isEnabled ? null : onPressed,
     ),
     final DebouncedBarAction debouncedAction => _DebouncedBarAction(
       debouncedAction,
-      buttonBuilder: (onPressed, {required isBusy}) => _MaterialBarButton(
+      swapStyle: _materialSwapStyle,
+      buttonBuilder: (onPressed, swap) => _MaterialBarButton(
         action,
         onPressed: onPressed,
+        swap: swap,
         // Built only here, so an app with no debounced action ships no spinner.
-        spinner: isBusy ? _MaterialSpinner(isInTextButton: action.icon == null) : null,
+        spinner: !swap.hasSpinner ? null : _MaterialSpinner(isInTextButton: action.icon == null),
       ),
     ),
   };
@@ -265,16 +269,23 @@ class const _MaterialBarAction(final PlatformBarAction action, {super.key})
 class const _MaterialBarButton(
   final PlatformBarAction action, {
   required final VoidCallback? onPressed,
+  final _Swap? swap,
   final Widget? spinner,
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final icon = action.icon;
-    final busySpinner = spinner;
+    final busySwap = swap;
     final content = icon ?? Text(action.label);
-    final shownContent = busySpinner == null
+    final shownContent = busySwap == null
         ? content
-        : _BusyContent(content: content, spinner: busySpinner);
+        : _SwapContent(
+            content,
+            spinner: spinner,
+            swap: busySwap,
+            // An icon button names itself through its tooltip.
+            semanticLabel: icon != null ? null : action.label,
+          );
 
     return icon == null
         ? TextButton(onPressed: onPressed, child: shownContent)
@@ -314,12 +325,14 @@ class const _CupertinoBarAction(
     ),
     final DebouncedBarAction debouncedAction => _DebouncedBarAction(
       debouncedAction,
-      buttonBuilder: (onPressed, {required isBusy}) => _CupertinoBarButton(
+      swapStyle: _cupertinoSwapStyle,
+      buttonBuilder: (onPressed, swap) => _CupertinoBarButton(
         action,
         isPrimary: isPrimary,
         onPressed: onPressed,
+        swap: swap,
         // Built only here, so an app with no debounced action ships no spinner.
-        spinner: !isBusy ? null : const _CupertinoSpinner(),
+        spinner: !swap.hasSpinner ? null : const _CupertinoSpinner(),
       ),
     ),
   };
@@ -329,12 +342,13 @@ class const _CupertinoBarButton(
   final PlatformBarAction action, {
   required final VoidCallback? onPressed,
   final bool isPrimary = false,
+  final _Swap? swap,
   final Widget? spinner,
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final icon = action.icon;
-    final busySpinner = spinner;
+    final busySwap = swap;
     final content = icon == null
         ? Text(action.label, style: isPrimary ? const TextStyle(fontWeight: .w600) : null)
         // The label names it, in place of anything the icon says about itself.
@@ -346,7 +360,9 @@ class const _CupertinoBarButton(
         // Flush, like cupertino_ui's own bar buttons. Any padding squeezes the content in a 44pt bar.
         padding: EdgeInsets.zero,
         onPressed: onPressed,
-        child: busySpinner == null ? content : _BusyContent(content: content, spinner: busySpinner),
+        child: busySwap == null
+            ? content
+            : _SwapContent(content, spinner: spinner, swap: busySwap, semanticLabel: action.label),
       ),
     );
   }
@@ -359,38 +375,101 @@ class const _CupertinoSpinner() extends StatelessWidget {
       CupertinoActivityIndicator(color: CupertinoTheme.of(context).primaryColor);
 }
 
-// The content stays, hidden, so the action keeps its size and screen readers its name.
-class const _BusyContent({required final Widget content, required final Widget spinner})
-    extends StatelessWidget {
+typedef _Swap = ({
+  AnimatedSwitcherTransitionBuilder transitionBuilder,
+  Animation<double> content,
+  Animation<double> spinner,
+  bool hasSpinner,
+});
+
+typedef _SwapStyle = ({
+  Duration duration,
+  Curve curve,
+  Duration reverseDuration,
+  Curve reverseCurve,
+});
+
+// Material's own buttons change state over this.
+const _SwapStyle _materialSwapStyle = (
+  duration: kThemeChangeDuration,
+  curve: Curves.fastOutSlowIn,
+  reverseDuration: kThemeChangeDuration,
+  reverseCurve: Curves.fastOutSlowIn,
+);
+
+// CupertinoButton's own fade on a press, then on the release, which it keeps private.
+const _SwapStyle _cupertinoSwapStyle = (
+  duration: Duration(milliseconds: 120),
+  curve: Curves.easeInOutCubicEmphasized,
+  reverseDuration: Duration(milliseconds: 180),
+  reverseCurve: Curves.easeOutCubic,
+);
+
+// The content keeps sizing the action, and screen readers keep its label, whatever the transition does.
+class const _SwapContent(
+  final Widget content, {
+  required final Widget? spinner,
+  required final _Swap swap,
+  required final String? semanticLabel,
+}) extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Stack(
-    alignment: .center,
-    clipBehavior: .none,
-    children: [
-      Visibility.maintain(visible: false, child: content),
-      Positioned(child: ExcludeSemantics(child: spinner)),
-    ],
+  Widget build(BuildContext context) => Semantics(
+    label: semanticLabel,
+    child: ExcludeSemantics(
+      child: Stack(
+        alignment: .center,
+        clipBehavior: .none,
+        children: [
+          swap.transitionBuilder(content, swap.content),
+          if (spinner case final busySpinner?)
+            Positioned(child: swap.transitionBuilder(busySpinner, swap.spinner)),
+        ],
+      ),
+    ),
   );
 }
 
 class const _DebouncedBarAction(
   final DebouncedBarAction action, {
-  required final Widget Function(VoidCallback? onPressed, {required bool isBusy}) buttonBuilder,
+  required final _SwapStyle swapStyle,
+  required final Widget Function(VoidCallback? onPressed, _Swap swap) buttonBuilder,
 }) extends StatefulWidget {
   @override
   State<_DebouncedBarAction> createState() => _DebouncedBarActionState();
 }
 
-class _DebouncedBarActionState() extends State<_DebouncedBarAction> {
-  final _isBusyNotifier = ValueNotifier(false);
+class _DebouncedBarActionState()
+    extends State<_DebouncedBarAction>
+    with SingleTickerProviderStateMixin {
+  // 0 shows the content, 1 the spinner. Without a transition it jumps between the 2.
+  late final _swap = AnimationController(vsync: this);
+  late final _contentSwap = ReverseAnimation(_swap);
+  // Equal records don't notify, so the button rebuilds as a swap starts and settles, not every frame.
+  final _swapStageNotifier = ValueNotifier((isBusy: false, hasSpinner: false));
   // Set from the first tap, before anything shows, so a quick 2nd tap is dropped too.
   var _isRunning = false;
   Timer? _busyTimer;
 
+  // Read as each swap starts, so a setting switched on while the app runs counts too.
+  bool get _asksForLessMotion =>
+      SemanticsBinding.instance.disableAnimations ||
+      SemanticsBinding.instance.accessibilityFeatures.reduceMotion;
+
+  @override
+  void initState() {
+    super.initState();
+    _swap.addStatusListener(
+      // Busy once the spinner has taken over, so the content fades out in its own colour.
+      (status) =>
+          _swapStageNotifier.value = (isBusy: status.isCompleted, hasSpinner: !status.isDismissed),
+    );
+  }
+
   @override
   void dispose() {
     _busyTimer?.cancel();
-    _isBusyNotifier.dispose();
+    _swap.dispose();
+    _swapStageNotifier.dispose();
     super.dispose();
   }
 
@@ -401,24 +480,41 @@ class _DebouncedBarActionState() extends State<_DebouncedBarAction> {
   // Left uncaught, so a failure lands where an unawaited future's would.
   Future<void> _run() async {
     _isRunning = true;
-    _busyTimer = Timer(kBarActionBusyDelay, () => _isBusyNotifier.value = true);
+    _busyTimer = Timer(kBarActionBusyDelay, () => _swapTo(isBusy: true));
     try {
       await widget.action.onPressed();
     } finally {
       _busyTimer?.cancel();
       _isRunning = false;
-      // The work may have closed the screen, and the notifier with it.
-      if (mounted) _isBusyNotifier.value = false;
+      // The work may have closed the screen, and the swap with it.
+      if (mounted) _swapTo(isBusy: false);
+    }
+  }
+
+  void _swapTo({required bool isBusy}) {
+    final style = widget.swapStyle;
+    if (widget.action.transitionBuilder == null || _asksForLessMotion) {
+      _swap.value = isBusy ? 1 : 0;
+    } else {
+      unawaited(
+        isBusy
+            ? _swap.animateTo(1, duration: style.duration, curve: style.curve)
+            : _swap.animateBack(0, duration: style.reverseDuration, curve: style.reverseCurve),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) => ValueListenableBuilder(
-    valueListenable: _isBusyNotifier,
-    builder: (_, isBusy, _) => widget.buttonBuilder(
-      !widget.action.isEnabled || isBusy ? null : _onPressed,
-      isBusy: isBusy,
-    ),
+    valueListenable: _swapStageNotifier,
+    builder: (_, stage, _) =>
+        widget.buttonBuilder(!widget.action.isEnabled || stage.isBusy ? null : _onPressed, (
+          transitionBuilder:
+              widget.action.transitionBuilder ?? AnimatedSwitcher.defaultTransitionBuilder,
+          content: _contentSwap,
+          spinner: _swap,
+          hasSpinner: stage.hasSpinner,
+        )),
   );
 }
 

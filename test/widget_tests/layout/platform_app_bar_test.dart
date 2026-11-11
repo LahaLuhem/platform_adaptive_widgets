@@ -429,6 +429,8 @@ void main() {
         await tester.tap(publishButton);
         check(because: 'while it runs', work.starts).equals(1);
 
+        // So the spinner has a way back to fade along when the work ends.
+        if (transition != null) await _settle(tester, _textKind.content);
         work.end();
         await tester.pump();
         await tester.tap(publishButton);
@@ -496,6 +498,7 @@ void main() {
           directions(),
         ).equals((content: .reverse, spinner: .forward));
 
+        await _settle(tester, kind.content);
         work.end();
         await tester.pump();
 
@@ -552,6 +555,26 @@ void main() {
         await _startSlowWork(tester, kind.content);
 
         check(_spinnerColour(tester)?.toARGB32()).equals(contentColour.toARGB32());
+      },
+    );
+
+    scenarioOutlineWidgets<_Kind>(
+      'fades its content out in its own colour, not a disabled grey',
+      examples: _kinds,
+      outline: (tester, kind) async {
+        await _pump(
+          tester,
+          PlatformAppBar(actions: [_debounced(_Work(), kind, transition: _Fade.new)]),
+        );
+        final contentColour = _colourOf(tester, kind.content);
+
+        await _startSlowWork(tester, kind.content);
+        final fadeOut = _fadeOf(tester, kind.content);
+        while (fadeOut.value > 0.5) {
+          await tester.pump(const Duration(milliseconds: 16));
+        }
+
+        check(_colourOf(tester, kind.content).toARGB32()).equals(contentColour.toARGB32());
       },
     );
 
