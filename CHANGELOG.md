@@ -2,6 +2,9 @@
 ### Added
 - PlatformCloseButton, a close button for content with no bar
 
+### Fixed
+- Raw bottom sheet closes like an iOS sheet, and screen readers can close Cupertino popups
+
 ## [3.1.0] - 2026-11-05
 ### Fixed
 - Cupertino toast text follows the theme
