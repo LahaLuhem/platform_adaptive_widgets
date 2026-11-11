@@ -127,11 +127,51 @@ final _Kind _iconKind = (
 final _Kind _textKind = (label: _publish, icon: null, content: find.text(_publish));
 final _kinds = {'an icon': _iconKind, 'text': _textKind};
 
-PlatformBarAction _debounced(_Work work, _Kind kind) =>
-    .debounced(label: kind.label, icon: kind.icon, onPressed: work.run);
+PlatformBarAction _debounced(
+  _Work work,
+  _Kind kind, {
+  AnimatedSwitcherTransitionBuilder? transition,
+}) => .debounced(
+  label: kind.label,
+  icon: kind.icon,
+  onPressed: work.run,
+  transitionBuilder: transition,
+);
 
-Future<void> _pumpPublish(WidgetTester tester, _Work work) =>
-    _pump(tester, PlatformAppBar(primaryAction: _debounced(work, _textKind)));
+Future<void> _pumpPublish(
+  WidgetTester tester,
+  _Work work, {
+  AnimatedSwitcherTransitionBuilder? transition,
+}) => _pump(
+  tester,
+  PlatformAppBar(primaryAction: _debounced(work, _textKind, transition: transition)),
+);
+
+// The test's own fade, so a scenario can read the animation the bar hands each side of the swap.
+class const _Fade(final Widget child, final Animation<double> animation) extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => FadeTransition(opacity: animation, child: child);
+}
+
+final _transitions = <String, AnimatedSwitcherTransitionBuilder?>{
+  'without a transition': null,
+  'with a fade': _Fade.new,
+};
+
+Animation<double> _fadeOf(WidgetTester tester, Finder side) {
+  final fade = find.ancestor(of: side, matching: find.byType(_Fade));
+  check(because: 'the bar runs the transition it was given', fade.evaluate()).isNotEmpty();
+
+  return tester.widget<_Fade>(fade.first).animation;
+}
+
+// Waits on the swap's own animation, so a scenario holds however long the bar makes it.
+Future<void> _settle(WidgetTester tester, Finder content) async {
+  final animation = _fadeOf(tester, content);
+  while (animation.isAnimating) {
+    await tester.pump(const Duration(milliseconds: 16));
+  }
+}
 
 Finder get _spinner => switch (designLanguage) {
   .material => find.bySubtype<ProgressIndicator>(),
@@ -161,12 +201,17 @@ bool _paintsText(WidgetTester tester, Finder finder) {
 }
 
 // The tap runs in a zone of its own, as an app's error handler would, so the work's errors land there.
-Future<List<Object>> _startSlowWork(WidgetTester tester, Finder content) async {
+Future<List<Object>> _startSlowWork(
+  WidgetTester tester,
+  Finder content, {
+  AnimatedSwitcherTransitionBuilder? transition,
+}) async {
   final errors = <Object>[];
   await runZonedGuarded(() => tester.tap(_buttonOf(content)), (error, _) => errors.add(error));
   await pumpThrough(tester, kBarActionBusyDelay);
 
   check(because: 'the bar shows the work running', _spinner.evaluate()).length.equals(1);
+  if (transition != null) await _settle(tester, content);
 
   return errors;
 }
@@ -369,43 +414,51 @@ void main() {
   });
 
   feature('PlatformBarAction.debounced', () {
-    scenarioWidgets('ignores taps while its work runs, then takes the next one', (tester) async {
-      final work = _Work();
-      await _pumpPublish(tester, work);
-      final publishButton = _buttonOf(_textKind.content);
+    scenarioOutlineWidgets<AnimatedSwitcherTransitionBuilder?>(
+      'ignores taps while its work runs, then takes the next one',
+      examples: _transitions,
+      outline: (tester, transition) async {
+        final work = _Work();
+        await _pumpPublish(tester, work, transition: transition);
+        final publishButton = _buttonOf(_textKind.content);
 
-      await tester.tap(publishButton);
-      await tester.pump();
-      await tester.tap(publishButton);
-      await pumpThrough(tester, kBarActionBusyDelay);
-      await tester.tap(publishButton);
-      check(because: 'while it runs', work.starts).equals(1);
+        await tester.tap(publishButton);
+        await tester.pump();
+        await tester.tap(publishButton);
+        await pumpThrough(tester, kBarActionBusyDelay);
+        await tester.tap(publishButton);
+        check(because: 'while it runs', work.starts).equals(1);
 
-      work.end();
-      await tester.pump();
-      await tester.tap(publishButton);
+        work.end();
+        await tester.pump();
+        await tester.tap(publishButton);
 
-      check(because: 'once it is done', work.starts).equals(2);
-    });
+        check(because: 'once it is done', work.starts).equals(2);
+      },
+    );
 
-    scenarioWidgets('shows nothing for work that ends before the delay', (tester) async {
-      final work = _Work();
-      await _pumpPublish(tester, work);
-      final publishButton = _buttonOf(_textKind.content);
-      void drawsAsUsual(String moment) {
-        check(because: moment, _spinner.evaluate()).isEmpty();
-        check(because: moment, _paintsText(tester, publishButton)).isTrue();
-      }
+    scenarioOutlineWidgets<AnimatedSwitcherTransitionBuilder?>(
+      'shows nothing for work that ends before the delay',
+      examples: _transitions,
+      outline: (tester, transition) async {
+        final work = _Work();
+        await _pumpPublish(tester, work, transition: transition);
+        final publishButton = _buttonOf(_textKind.content);
+        void drawsAsUsual(String moment) {
+          check(because: moment, _spinner.evaluate()).isEmpty();
+          check(because: moment, _paintsText(tester, publishButton)).isTrue();
+        }
 
-      await tester.tap(publishButton);
-      await tester.pump(kBarActionBusyDelay - const Duration(milliseconds: 1));
-      drawsAsUsual('just before the delay');
+        await tester.tap(publishButton);
+        await tester.pump(kBarActionBusyDelay - const Duration(milliseconds: 1));
+        drawsAsUsual('just before the delay');
 
-      work.end();
-      await pumpThrough(tester, kBarActionBusyDelay);
+        work.end();
+        await pumpThrough(tester, kBarActionBusyDelay);
 
-      drawsAsUsual('after it');
-    });
+        drawsAsUsual('after it');
+      },
+    );
 
     scenarioOutlineWidgets<_Kind>(
       "shows the spinner in the action's place once its work outlasts the delay",
@@ -423,20 +476,71 @@ void main() {
       },
     );
 
-    scenarioWidgets("keeps the action's width, so its neighbours stay put", (tester) async {
-      await _pump(
-        tester,
-        PlatformAppBar(
-          actions: const [_shareAction],
-          primaryAction: _debounced(_Work(), _textKind),
-        ),
-      );
-      final shareRect = tester.getRect(_buttonOf(find.byIcon(Icons.share)));
+    scenarioOutlineWidgets<_Kind>(
+      'runs the transition it is given between its content and the spinner, both ways',
+      examples: _kinds,
+      outline: (tester, kind) async {
+        final work = _Work();
+        await _pump(
+          tester,
+          PlatformAppBar(actions: [_debounced(work, kind, transition: _Fade.new)]),
+        );
+        ({AnimationStatus content, AnimationStatus spinner}) directions() => (
+          content: _fadeOf(tester, kind.content).status,
+          spinner: _fadeOf(tester, _spinner).status,
+        );
 
-      await _startSlowWork(tester, _textKind.content);
+        await _startSlowWork(tester, kind.content);
+        check(
+          because: 'on the way in',
+          directions(),
+        ).equals((content: .reverse, spinner: .forward));
 
-      check(tester.getRect(_buttonOf(find.byIcon(Icons.share)))).equals(shareRect);
-    });
+        work.end();
+        await tester.pump();
+
+        check(
+          because: 'on the way out',
+          directions(),
+        ).equals((content: .forward, spinner: .reverse));
+      },
+    );
+
+    scenarioOutlineWidgets<FakeAccessibilityFeatures>(
+      'swaps at once when the device asks for less motion, even after the bar is built',
+      examples: const {
+        "Android's Remove animations": FakeAccessibilityFeatures(disableAnimations: true),
+        "iOS's Reduce Motion": FakeAccessibilityFeatures(reduceMotion: true),
+      },
+      outline: (tester, lessMotion) async {
+        await _pumpPublish(tester, _Work(), transition: _Fade.new);
+
+        tester.platformDispatcher.accessibilityFeaturesTestValue = lessMotion;
+        addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+        await _startSlowWork(tester, _textKind.content);
+
+        check(_paintsText(tester, _buttonOf(_textKind.content))).isFalse();
+      },
+    );
+
+    scenarioOutlineWidgets<AnimatedSwitcherTransitionBuilder?>(
+      "keeps the action's width, so its neighbours stay put",
+      examples: _transitions,
+      outline: (tester, transition) async {
+        await _pump(
+          tester,
+          PlatformAppBar(
+            actions: const [_shareAction],
+            primaryAction: _debounced(_Work(), _textKind, transition: transition),
+          ),
+        );
+        final shareRect = tester.getRect(_buttonOf(find.byIcon(Icons.share)));
+
+        await _startSlowWork(tester, _textKind.content, transition: transition);
+
+        check(tester.getRect(_buttonOf(find.byIcon(Icons.share)))).equals(shareRect);
+      },
+    );
 
     scenarioOutlineWidgets<_Kind>(
       "draws the spinner in the action's own colour, not a disabled grey",
@@ -451,25 +555,29 @@ void main() {
       },
     );
 
-    scenarioWidgets('tells screen readers it is disabled while its work runs', (tester) async {
-      final semantics = tester.ensureSemantics();
-      await _pumpPublish(tester, _Work());
-      SemanticsData publishSemantics() =>
-          buttonsNamed(_publish).evaluate().single.getSemanticsData();
-      // An enabled Cupertino button reports no enabled state at all, so only "disabled" means anything.
-      check(
-        because: 'before the tap',
-        publishSemantics().flagsCollection.isEnabled,
-      ).not((isEnabled) => isEnabled.equals(.isFalse));
+    scenarioOutlineWidgets<AnimatedSwitcherTransitionBuilder?>(
+      'tells screen readers it is disabled while its work runs, under its own name',
+      examples: _transitions,
+      outline: (tester, transition) async {
+        final semantics = tester.ensureSemantics();
+        await _pumpPublish(tester, _Work(), transition: transition);
+        SemanticsData publishSemantics() =>
+            buttonsNamed(_publish).evaluate().single.getSemanticsData();
+        // An enabled Cupertino button reports no enabled state at all, so only "disabled" means anything.
+        check(
+          because: 'before the tap',
+          publishSemantics().flagsCollection.isEnabled,
+        ).not((isEnabled) => isEnabled.equals(.isFalse));
 
-      await tester.tap(_buttonOf(_textKind.content));
-      await pumpThrough(tester, kBarActionBusyDelay);
+        await _startSlowWork(tester, _textKind.content, transition: transition);
 
-      check(publishSemantics())
-        ..has((data) => data.flagsCollection.isEnabled, 'enabled').equals(.isFalse)
-        ..has((data) => data.hasAction(.tap), 'tap').isFalse();
-      semantics.dispose();
-    });
+        check(because: 'it keeps its name', buttonsNamed(_publish).evaluate()).length.equals(1);
+        check(publishSemantics())
+          ..has((data) => data.flagsCollection.isEnabled, 'enabled').equals(.isFalse)
+          ..has((data) => data.hasAction(.tap), 'tap').isFalse();
+        semantics.dispose();
+      },
+    );
 
     scenarioWidgets('keeps the busy look on its own action when one lands before it', (
       tester,
