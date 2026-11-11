@@ -1,3 +1,4 @@
+/// @docImport '/src/utils/design_language.dart';
 /// @docImport '/src/widgets/layout/platform_app_bar.dart';
 library;
 
@@ -37,6 +38,10 @@ sealed class const PlatformBarAction._({
   /// ([M3 loading indicator](https://m3.material.io/components/loading-indicator/guidelines)). If the
   /// work throws, the action works again and the error goes uncaught. Each debounced action in a bar
   /// needs its own [label].
+  ///
+  /// The spinner swaps in at once. Pass a [transitionBuilder], like [AnimatedSwitcher.defaultTransitionBuilder],
+  /// to move between the 2 in each look's own timing, and switch on [designLanguage] in it for a motion
+  /// per look. The swap stays instant when the device asks for less motion.
   ///
   /// Known gap: Material shows a circular progress indicator until material_ui has M3's loading indicator
   /// ([flutter/flutter#184941](https://github.com/flutter/flutter/issues/184941)).

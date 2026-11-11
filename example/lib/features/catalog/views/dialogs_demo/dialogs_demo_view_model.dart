@@ -134,6 +134,7 @@ final class DialogsDemoViewModel() extends ViewModel {
         title: const Text('New event'),
         primaryAction: PlatformBarAction.debounced(
           label: 'Save',
+          transitionBuilder: AnimatedSwitcher.defaultTransitionBuilder,
           onPressed: () async {
             // A fake slow save, so the spinner shows.
             await Future<void>.delayed(const Duration(seconds: 2));
