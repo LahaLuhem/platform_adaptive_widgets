@@ -16,9 +16,10 @@ the full widget catalogue. APPENDIX for design rationale.
 ## Stack
 
 - **Flutter and Dart floors live in `pubspec.yaml`'s `environment:` block.** Read them there, they
-  are not repeated here. Raise them only when a new language feature is actually consumed. `.fvmrc`
-  pins the Flutter channel to `stable` for local use, whatever toolchain manager serves it (FVM,
-  asdf, plain `flutter`) is a local implementation detail.
+  are not repeated here. They follow the Flutter version `.fvmrc` pins, which CI and local runs
+  share: an SDK bump raises `flutter:` to that version and `sdk:` to the Dart it ships, in every
+  pubspec. Whatever toolchain manager serves `.fvmrc` (FVM, asdf, plain `flutter`) is a local
+  implementation detail.
 - **`dart analyze --fatal-infos --fatal-warnings .`**, as CI runs it, for pedantic static analysis.
   The lint posture is deliberately strict. See
   [dartender's shared lints](https://github.com/LahaLuhem/dartender/blob/main/lints/lib/analysis_options.yaml),
@@ -80,7 +81,7 @@ platform_adaptive_widgets/
 ├── analysis_options.yaml                       Includes dartender's shared lints
 ├── pubspec.yaml                                Deps + topics
 ├── .pubignore                                  What `flutter pub publish` ships
-├── .fvmrc                                      FVM channel pin (`stable`)
+├── .fvmrc                                      Flutter version pin
 ├── .github/workflows/                          CI: dartender's ci, conventions, changelog,
 │                                                release, publish (tag-triggered), and the
 │                                                local size-regression
@@ -217,8 +218,9 @@ to keep in working memory:
 - Nullability is explicit (no `as T` on `T?`).
 - 100-column line width (`formatter.page_width: 100` in the shared lints).
 - No magic numbers in `lib/` code, pull to named `static const`s.
-- Public symbols carry `///` dartdoc explaining *why*, not *what*. Aim for 1 or 2 lines, and leave a
-  field bare where the name and type already say it.
+- Public symbols carry `///` dartdoc explaining *why*, not *what*. Aim for 1 or 2 lines. A field
+  takes upstream's doc, a `{@macro}` or a link, per
+  [CODESTYLE](../CODESTYLE.md#every-field-gets-a-doc-from-upstream-first).
 - Prose of any kind follows [Prose & voice](../CODESTYLE.md#prose), which opens with
   <https://noslopgrenade.com/>. Read that page before writing any.
 - Prefer static dot shorthands (`.android`, `.iOS`, `.all(16)`, `.symmetric(...)`, `.start`,
