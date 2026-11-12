@@ -34,7 +34,7 @@ enum _Build({
 
   /// Keeps material_ui's bundled assets and the `TimeOfDay` the time picker takes. Matching by name
   /// also catches Flutter's `FrameAwaitingMaterialization`, a few stray bytes.
-  ios(reportType: 'ios', otherLook: 'Material', budget: 16 * 1024);
+  ios(reportType: 'ios', otherLook: 'Material', budget: 13 * 1024);
 
   bool excludes(_Symbol symbol) => excludedFiles.any((file) => symbol.path.contains('$file/'));
 }
