@@ -1,6 +1,7 @@
 // Named after what it tests, not after its helper page.
 // ignore_for_file: prefer-match-file-name
 
+import 'package:bdd_framework/flutter_widget_test.dart' show Bdd, BddFeature;
 import 'package:checks/checks.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -76,128 +77,136 @@ Future<void> _tap(WidgetTester tester, String label) async {
 bool _isOpen() => find.text(_share).evaluate().isNotEmpty;
 
 void main() {
-  feature('PlatformActionsMenu', () {
-    scenarioWidgets('opens from its button and closes on a second press', (tester) async {
-      await _pump(tester, _Page(actions: _actions([])));
+  final feature = BddFeature('PlatformActionsMenu');
 
-      await _tap(tester, _more);
-      check(_isOpen()).isTrue();
+  Bdd(feature)
+      .scenario('opens from its button and closes on a second press')
+      .runWidgets((tester) async {
+        await _pump(tester, _Page(actions: _actions([])));
 
-      await _tap(tester, _more);
-      check(_isOpen()).isFalse();
-    });
+        await _tap(tester, _more);
+        check(_isOpen()).isTrue();
 
-    scenarioWidgets('runs a picked action', (tester) async {
-      final pressedLabels = <String>[];
-      await _pump(tester, _Page(actions: _actions(pressedLabels)));
-      await _tap(tester, _more);
+        await _tap(tester, _more);
+        check(_isOpen()).isFalse();
+      });
 
-      await _tap(tester, _share);
+  Bdd(feature).scenario('runs a picked action').runWidgets((tester) async {
+    final pressedLabels = <String>[];
+    await _pump(tester, _Page(actions: _actions(pressedLabels)));
+    await _tap(tester, _more);
 
-      check(pressedLabels).deepEquals([_share]);
-    });
+    await _tap(tester, _share);
 
-    scenarioWidgets('only closes when tapped outside', (tester) async {
-      var underPressCount = 0;
-      await _pump(tester, _Page(actions: _actions([]), onUnderPressed: () => underPressCount++));
-      await _tap(tester, _more);
+    check(pressedLabels).deepEquals([_share]);
+  });
 
-      await _tap(tester, _under);
+  Bdd(feature).scenario('only closes when tapped outside').runWidgets((tester) async {
+    var underPressCount = 0;
+    await _pump(tester, _Page(actions: _actions([]), onUnderPressed: () => underPressCount++));
+    await _tap(tester, _more);
 
-      check(_isOpen()).isFalse();
-      check(underPressCount).equals(0);
-      // With the menu closed, the same tap reaches the button.
-      await _tap(tester, _under);
-      check(underPressCount).equals(1);
-    });
+    await _tap(tester, _under);
 
-    // A delete and a discard ask the same way.
-    scenarioOutlineWidgets<bool>(
-      'asks before a destructive action runs',
-      examples: {'confirmed': true, 'cancelled': false},
-      outline: (tester, runs) async {
-        final pressedLabels = <String>[];
-        await _pump(tester, _Page(actions: _actions(pressedLabels)));
+    check(_isOpen()).isFalse();
+    check(underPressCount).equals(0);
+    // With the menu closed, the same tap reaches the button.
+    await _tap(tester, _under);
+    check(underPressCount).equals(1);
+  });
+
+  // A delete and a discard ask the same way.
+  Bdd(feature)
+      .scenario('asks before a destructive action runs')
+      .runOutlineWidgets<bool>(
+        examples: {'confirmed': true, 'cancelled': false},
+        outline: (tester, runs) async {
+          final pressedLabels = <String>[];
+          await _pump(tester, _Page(actions: _actions(pressedLabels)));
+          await _tap(tester, _more);
+
+          await _tap(tester, _delete);
+
+          check(find.text(_confirmMessage).evaluate()).isNotEmpty();
+          check(pressedLabels).isEmpty();
+
+          await _tap(tester, runs ? _delete : 'Cancel');
+
+          check(pressedLabels).deepEquals([if (runs) _delete]);
+        },
+      );
+
+  Bdd(feature)
+      .scenario("draws a destructive action in its platform's red")
+      .runWidgets((tester) async {
+        await _pump(tester, _Page(actions: _actions([], withIcons: true)));
+        await _tap(tester, _more);
+        final redArgb = destructiveArgbOf(tester.element(find.byType(PlatformActionsMenu)));
+
+        check(argbOf(labelStyle(tester, _delete))).equals(redArgb);
+        check(
+          tester
+              .widget<RichText>(
+                find.descendant(of: find.byIcon(_deleteIcon), matching: find.byType(RichText)),
+              )
+              .text
+              .style!
+              .color!
+              .toARGB32(),
+        ).equals(redArgb);
+        check(argbOf(labelStyle(tester, _share))).not((it) => it.equals(redArgb));
+      });
+
+  Bdd(feature)
+      .scenario('draws a disabled destructive action like any disabled one on Android')
+      .runWidgets((tester) async {
+        await _pump(
+          tester,
+          const _Page(
+            actions: {
+              PlatformMenuAction.normal(label: _share, isEnabled: false, onPressed: noop),
+              PlatformMenuAction.delete(
+                label: _delete,
+                confirmMessage: _confirmMessage,
+                isEnabled: false,
+                onPressed: noop,
+              ),
+            },
+          ),
+        );
         await _tap(tester, _more);
 
-        await _tap(tester, _delete);
+        check(argbOf(labelStyle(tester, _delete))).equals(argbOf(labelStyle(tester, _share)));
+      }, variant: androidOnly);
 
-        check(find.text(_confirmMessage).evaluate()).isNotEmpty();
-        check(pressedLabels).isEmpty();
+  Bdd(feature)
+      .scenario("puts an action's icon on its platform's side of the label")
+      .runWidgets((tester) async {
+        await _pump(tester, _Page(actions: _actions([], withIcons: true)));
+        await _tap(tester, _more);
 
-        await _tap(tester, runs ? _delete : 'Cancel');
+        final iconX = tester.getCenter(find.byIcon(_shareIcon)).dx;
+        final labelX = tester.getCenter(find.text(_share)).dx;
+        // Before it on Material, after it on iOS.
+        check(iconX < labelX).equals(designLanguage == .material);
+      });
 
-        check(pressedLabels).deepEquals([if (runs) _delete]);
-      },
-    );
-
-    scenarioWidgets("draws a destructive action in its platform's red", (tester) async {
-      await _pump(tester, _Page(actions: _actions([], withIcons: true)));
-      await _tap(tester, _more);
-      final redArgb = destructiveArgbOf(tester.element(find.byType(PlatformActionsMenu)));
-
-      check(argbOf(labelStyle(tester, _delete))).equals(redArgb);
-      check(
-        tester
-            .widget<RichText>(
-              find.descendant(of: find.byIcon(_deleteIcon), matching: find.byType(RichText)),
-            )
-            .text
-            .style!
-            .color!
-            .toARGB32(),
-      ).equals(redArgb);
-      check(argbOf(labelStyle(tester, _share))).not((it) => it.equals(redArgb));
-    });
-
-    scenarioWidgets('draws a disabled destructive action like any disabled one on Android', (
-      tester,
-    ) async {
-      await _pump(
-        tester,
-        const _Page(
-          actions: {
-            PlatformMenuAction.normal(label: _share, isEnabled: false, onPressed: noop),
-            PlatformMenuAction.delete(
-              label: _delete,
-              confirmMessage: _confirmMessage,
-              isEnabled: false,
-              onPressed: noop,
-            ),
+  Bdd(feature)
+      .scenario('refuses a menu the guidelines rule out')
+      .runOutlineWidgets<Set<PlatformMenuAction>>(
+        // The icon rule refuses an empty menu too.
+        examples: {
+          'with icons on only some actions': {
+            _actions([], withIcons: true).first,
+            ..._actions([]).skip(1),
           },
-        ),
-      );
-      await _tap(tester, _more);
-
-      check(argbOf(labelStyle(tester, _delete))).equals(argbOf(labelStyle(tester, _share)));
-    }, variant: androidOnly);
-
-    scenarioWidgets("puts an action's icon on its platform's side of the label", (tester) async {
-      await _pump(tester, _Page(actions: _actions([], withIcons: true)));
-      await _tap(tester, _more);
-
-      final iconX = tester.getCenter(find.byIcon(_shareIcon)).dx;
-      final labelX = tester.getCenter(find.text(_share)).dx;
-      // Before it on Material, after it on iOS.
-      check(iconX < labelX).equals(designLanguage == .material);
-    });
-
-    scenarioOutlineWidgets<Set<PlatformMenuAction>>(
-      'refuses a menu the guidelines rule out',
-      // The icon rule refuses an empty menu too.
-      examples: {
-        'with icons on only some actions': {
-          _actions([], withIcons: true).first,
-          ..._actions([]).skip(1),
+          // 2 separate Share actions, which a person couldn't tell apart.
+          'with 2 actions sharing a label': {_actions([]).first, _actions([]).first},
         },
-        // 2 separate Share actions, which a person couldn't tell apart.
-        'with 2 actions sharing a label': {_actions([]).first, _actions([]).first},
-      },
-      outline: (tester, actions) async {
-        await _pump(tester, _Page(actions: actions));
+        outline: (tester, actions) async {
+          await _pump(tester, _Page(actions: actions));
 
-        check(tester.takeException()).isA<AssertionError>();
-      },
-    );
-  });
+          check(tester.takeException()).isA<AssertionError>();
+        },
+      );
 }
