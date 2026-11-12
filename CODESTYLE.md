@@ -38,7 +38,7 @@ renames don't break callers.
   * [Conventions](#conventions)
 - [Prose & voice](#prose--voice)
 - [Comments & dartdoc](#comments--dartdoc)
-  * [A field doc has to earn its place](#a-field-doc-has-to-earn-its-place)
+  * [Every field gets a doc, from upstream first](#every-field-gets-a-doc-from-upstream-first)
   * [Link the M3 and HIG pages behind a widget](#link-the-m3-and-hig-pages-behind-a-widget)
   * [Wrap dartdoc past 100, not before it](#wrap-dartdoc-past-100-not-before-it)
   * [`@docImport` for dartdoc-only references](#docimport-for-dartdoc-only-references)
@@ -836,21 +836,37 @@ restating the signature, or rationale that belongs in [`APPENDIX.md`](./APPENDIX
 one-line pointer. Surplus lines are noise the next reader pays for and they bury the comment that
 mattered, so trim the neighbours whenever you edit a file.
 
-### A field doc has to earn its place
+### Every field gets a doc, from upstream first
 
-`public_member_api_docs` does **not** cover primary-constructor field parameters, so most
-`PlatformXxx` and `*Data` fields need no doc at all. Give one only when it says something the name
-and type don't: a cross-platform mapping, a default the code can't show, a gotcha. Otherwise leave
-the field bare. Classic-syntax classes (real `final` fields, e.g. `PlatformButton`, `PlatformApp`)
-*are* covered by the lint, so there the same judgement applies to the length instead: 1 short line,
-not 3.
+`public_member_api_docs` covers every public field, the ones a primary constructor declares included
+since Dart 3.14. Take a field's doc from the first of these that fits:
 
-**Why.** Restating the field name is the single biggest source of noise, and on pub.dev a bare field
-still renders with its name and type.
+1. **The upstream template.** When the parameter the field feeds has a `{@template}`, the doc is its
+   `{@macro}`, which dartdoc and IDE hovers expand.
+2. **A link to the upstream member,** when it has none. A field that feeds both looks links both. If
+   only one look's parameter has a template, its macro comes first and a link covers the other.
+3. **A line of our own,** when nothing upstream fits: a parameter of an upstream function, a concept
+   only this package has, or a default the package picks itself (`_ownPicks` in the
+   [upstream-default guard](./test/guards/upstream_defaults.dart)). The 1 or 2 line aim above holds.
 
-**Where the lint does bite:** top-level `kDefault*` consts, classes, extensions, enums, public
-getters and methods, and the primary constructor itself (which is what the `this;` body exists to
-hang a doc on). Those keep a one-liner.
+```dart
+/// {@macro material_ui.appbar.elevation}
+final double? elevation,
+
+/// Forwards to [Switch.value] on Material and [CupertinoSwitch.value] on Cupertino.
+final bool value,
+```
+
+**Why.** Upstream already says what each parameter does, and a field left out sends upstream's own
+default ([`APPENDIX.md#left-out-fields`](./APPENDIX.md#left-out-fields)), so that text stays true
+here. A macro or a link points at it instead of copying it, so nothing drifts, and a broken one
+fails CI: dartdoc warns on an unknown macro, `comment_references` on a dead link.
+
+A link into a package the file doesn't import goes through
+[`@docImport`](#docimport-for-dartdoc-only-references). An upstream template can name a member the
+class lacks, which dartdoc flags as an unresolved reference, so that field takes the link instead.
+
+The primary constructor needs its own doc too, hung on its `this;` body.
 
 ### Link the M3 and HIG pages behind a widget
 
@@ -968,6 +984,6 @@ change. What follows is only this project's policy on each.
 - **Anchor stability is load-bearing.** When renaming a heading, keep the existing anchor. If you
   must change it, grep `'#<old-anchor>'` across the repo and update every caller in the same change.
 - **Bare `flutter` / `dart` in command examples, never `fvm flutter` / `fvm dart`.** FVM is a local
-  implementation detail, `.fvmrc` pins the channel. Docs (this file, README.md, AGENTS.md,
+  implementation detail, `.fvmrc` pins the version. Docs (this file, README.md, AGENTS.md,
   CLAUDE.md, APPENDIX.md) stay tool-agnostic so external contributors aren't forced into FVM. The
   maintainer's shell aliases `flutter` / `dart` to the pinned toolchain for interactive use.
