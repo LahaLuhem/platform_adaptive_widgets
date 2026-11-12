@@ -31,6 +31,8 @@ class const PlatformScaffold({
   /// widget on each branch.
   final PlatformAppBarData? appBarData,
 
+  /// Forwards to [Scaffold.backgroundColor] on Material and [CupertinoPageScaffold.backgroundColor]
+  /// on Cupertino.
   final Color? backgroundColor,
 
   /// Shrinks the body when the keyboard comes up, rather than letting it hide the bottom.

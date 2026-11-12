@@ -47,22 +47,28 @@ final class const MaterialSliderData({
   /// Colours the unfilled part of the track.
   final Color? inactiveColor,
 
+  /// Forwards to [Slider.secondaryActiveColor].
   final Color? secondaryActiveColor,
 
+  /// Forwards to [Slider.overlayColor].
   final WidgetStateProperty<Color?>? overlayColor,
 
+  /// Forwards to [Slider.mouseCursor].
   final MouseCursor? mouseCursor,
 
   /// Rewrites the value screen readers announce.
   final SemanticFormatterCallback? semanticFormatterCallback,
 
+  /// {@macro flutter.widgets.Focus.focusNode}
   final FocusNode? focusNode,
 
+  /// {@macro flutter.widgets.Focus.autofocus}
   final bool autofocus = kDefaultSliderAutofocus,
 
   /// Whether the slider takes drags, taps, or both.
   final SliderInteraction? allowedInteraction,
 
+  /// Forwards to [Slider.padding].
   final EdgeInsetsGeometry? padding,
 
   /// When the [label] above the thumb shows up. `null` leaves it to the theme.

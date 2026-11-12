@@ -65,16 +65,22 @@ final class const MaterialSwitchData({
   /// The thumb across every state, where the inherited `activeThumbColor` only covers the on state.
   final WidgetStateProperty<Color?>? thumbColor,
 
+  /// Forwards to [Switch.trackColor].
   final WidgetStateProperty<Color?>? trackColor,
 
+  /// Forwards to [Switch.overlayColor].
   final WidgetStateProperty<Color?>? overlayColor,
 
+  /// Forwards to [Switch.materialTapTargetSize].
   final MaterialTapTargetSize? materialTapTargetSize,
 
+  /// Forwards to [Switch.hoverColor].
   final Color? hoverColor,
 
+  /// Forwards to [Switch.splashRadius].
   final double? splashRadius,
 
+  /// Forwards to [Switch.padding].
   final EdgeInsetsGeometry? padding,
 }) extends _PlatformSwitchData {
   /// Creates Material-side settings for [PlatformSwitch].
@@ -106,6 +112,7 @@ final class const CupertinoSwitchData({
   /// is on.
   final Color? onLabelColor,
 
+  /// Forwards to [CupertinoSwitch.offLabelColor].
   final Color? offLabelColor,
 }) extends _PlatformSwitchData {
   /// Creates Cupertino-side settings for [PlatformSwitch].

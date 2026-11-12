@@ -1,5 +1,9 @@
 // ignore_for_file: prefer-match-file-name
 
+/// @docImport 'package:cupertino_ui/cupertino_ui.dart';
+/// @docImport 'package:material_ui/material_ui.dart';
+library;
+
 import 'dart:math' as math;
 
 import 'package:cupertino_ui/cupertino_ui.dart' show ObstructingPreferredSizeWidget;
@@ -26,10 +30,13 @@ base class const _PlatformScaffoldData({final Color? backgroundColor});
 base class const MaterialScaffoldData({
   super.backgroundColor,
 
+  /// Forwards to [Scaffold.appBar].
   final PreferredSizeWidget? appBar,
 
+  /// Forwards to [Scaffold.floatingActionButton].
   final Widget? floatingActionButton,
 
+  /// Forwards to [Scaffold.floatingActionButtonLocation].
   final FloatingActionButtonLocation? floatingActionButtonLocation,
 
   /// How the button moves when its location changes.
@@ -38,8 +45,10 @@ base class const MaterialScaffoldData({
   /// Pinned along the bottom, above any [bottomNavigationBar].
   final List<Widget>? persistentFooterButtons,
 
+  /// Forwards to [Scaffold.persistentFooterAlignment].
   final AlignmentDirectional persistentFooterAlignment = kDefaultPersistentFooterAlignment,
 
+  /// Forwards to [Scaffold.persistentFooterDecoration].
   final BoxDecoration? persistentFooterDecoration,
 
   /// Slides in from the start edge.
@@ -51,6 +60,7 @@ base class const MaterialScaffoldData({
   /// Slides in from the end edge.
   final Widget? endDrawer,
 
+  /// Forwards to [Scaffold.onEndDrawerChanged].
   final void Function(bool)? onEndDrawerChanged,
 
   /// A sheet that stays put, unlike the one `showPlatformSheet` puts up.
@@ -63,27 +73,34 @@ base class const MaterialScaffoldData({
   /// Leaves room for the status bar.
   final bool primary = kPrimary,
 
+  /// {@macro material_ui.DrawerController.dragStartBehavior}
   final DragStartBehavior drawerDragStartBehavior = kDrawerDragStartBehavior,
 
   /// Runs the body under the [bottomNavigationBar].
   final bool extendBody = kExtendBody,
 
+  /// Forwards to [Scaffold.drawerBarrierDismissible].
   final bool drawerBarrierDismissible = kDrawerBarrierDismissible,
 
   /// Runs the body under the [appBar].
   final bool extendBodyBehindAppBar = kExtendBodyBehindAppBar,
 
+  /// Forwards to [Scaffold.drawerScrimColor].
   final Color? drawerScrimColor,
 
+  /// Forwards to [Scaffold.bottomSheetScrimBuilder].
   final Widget? Function(BuildContext, Animation<double>)? bottomSheetScrimBuilder,
 
   /// How wide a strip along the edge starts a drawer drag.
   final double? drawerEdgeDragWidth,
 
+  /// Forwards to [Scaffold.drawerEnableOpenDragGesture].
   final bool drawerEnableOpenDragGesture = kDrawerEnableOpenDragGesture,
 
+  /// Forwards to [Scaffold.endDrawerEnableOpenDragGesture].
   final bool endDrawerEnableOpenDragGesture = kEndDrawerEnableOpenDragGesture,
 
+  /// Forwards to [Scaffold.restorationId].
   final String? restorationId,
 }) extends _PlatformScaffoldData {
   /// Default value for [persistentFooterAlignment].
@@ -141,6 +158,7 @@ base class const MaterialScaffoldData({
 base class const CupertinoScaffoldData({
   super.backgroundColor,
 
+  /// Forwards to [CupertinoPageScaffold.navigationBar].
   final ObstructingPreferredSizeWidget? navigationBar,
 }) extends _PlatformScaffoldData {
   /// Creates Cupertino-side scaffold settings.

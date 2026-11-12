@@ -26,6 +26,7 @@ class const PlatformMultiSelectList<T extends Object>({
   /// Any of [options], or none.
   required final Set<T> selected,
 
+  /// Turns an option into its row's text.
   required final String Function(T option) label,
 
   /// Gets the new set, in the options' order.

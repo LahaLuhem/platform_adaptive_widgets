@@ -15,6 +15,7 @@ import '/src/models/platform_widget_base.dart';
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_switch.dart#platform_switch}
 class const PlatformSwitch({
+  /// Forwards to [Switch.value] on Material and [CupertinoSwitch.value] on Cupertino.
   required final bool value,
 
   /// Stays required and non-null even for a disabled switch. That's [isEnabled]'s job, not a null callback's.
@@ -25,38 +26,57 @@ class const PlatformSwitch({
   /// look.
   final bool isEnabled = true,
 
+  /// {@macro cupertino_ui.CupertinoSwitch.dragStartBehavior}
   final DragStartBehavior dragStartBehavior = .start,
 
+  /// {@macro flutter.widgets.Focus.focusNode}
   final FocusNode? focusNode,
 
+  /// {@macro cupertino_ui.inkwell.onFocusChange}
+  ///
+  /// On Cupertino, forwards to [CupertinoSwitch.onFocusChange].
   final ValueChanged<bool>? onFocusChange,
 
+  /// {@macro flutter.widgets.Focus.autofocus}
   final bool autofocus = false,
 
   /// Cupertino calls this [CupertinoSwitch.thumbColor], which despite the plain name only covers the
   /// switched-on thumb. See `APPENDIX.md#cross-platform-field-mappings`.
   final Color? activeThumbColor,
 
+  /// Forwards to [Switch.activeTrackColor] on Material and [CupertinoSwitch.activeTrackColor] on Cupertino.
   final Color? activeTrackColor,
 
+  /// Forwards to [Switch.inactiveThumbColor] on Material and [CupertinoSwitch.inactiveThumbColor] on
+  /// Cupertino.
   final Color? inactiveThumbColor,
 
+  /// Forwards to [Switch.inactiveTrackColor] on Material and [CupertinoSwitch.inactiveTrackColor] on
+  /// Cupertino.
   final Color? inactiveTrackColor,
 
+  /// Forwards to [Switch.focusColor] on Material and [CupertinoSwitch.focusColor] on Cupertino.
   final Color? focusColor,
 
+  /// {@macro cupertino_ui.switch.activeThumbImage}
   final ImageProvider? activeThumbImage,
 
+  /// {@macro cupertino_ui.switch.onActiveThumbImageError}
   final ImageErrorListener? onActiveThumbImageError,
 
+  /// {@macro cupertino_ui.switch.inactiveThumbImage}
   final ImageProvider? inactiveThumbImage,
 
+  /// {@macro cupertino_ui.switch.onInactiveThumbImageError}
   final ImageErrorListener? onInactiveThumbImageError,
 
+  /// Forwards to [Switch.trackOutlineColor] on Material and [CupertinoSwitch.trackOutlineColor] on Cupertino.
   final WidgetStateProperty<Color?>? trackOutlineColor,
 
+  /// Forwards to [Switch.trackOutlineWidth] on Material and [CupertinoSwitch.trackOutlineWidth] on Cupertino.
   final WidgetStateProperty<double?>? trackOutlineWidth,
 
+  /// Forwards to [Switch.thumbIcon] on Material and [CupertinoSwitch.thumbIcon] on Cupertino.
   final WidgetStateProperty<Icon?>? thumbIcon,
 
   /// Cupertino takes the property as-is. Material wants one [MouseCursor] and gets a resolved copy.

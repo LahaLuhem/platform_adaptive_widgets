@@ -25,13 +25,16 @@ const kDefaultMaterialTimePickerEmptyInitialInput = false;
 /// There's no Cupertino twin of this class. That side draws its time picker with the same widget as
 /// its date picker, so it shares `CupertinoDatePickerData` next door.
 final class const MaterialTimePickerData({
+  /// What screen readers call the barrier, passed to [showTimePicker].
   final String? barrierLabel,
 
   /// Dial or typed input.
   final TimePickerEntryMode initialEntryMode = kDefaultMaterialTimePickerInitialEntryMode,
 
+  /// Label on the cancel button, passed to [showTimePicker].
   final String? cancelText,
 
+  /// Label on the OK button, passed to [showTimePicker].
   final String? confirmText,
 
   /// Sits along the top of the picker.
@@ -40,17 +43,22 @@ final class const MaterialTimePickerData({
   /// Shown when the typed time won't parse.
   final String? errorInvalidText,
 
+  /// Label on the hour field, passed to [showTimePicker].
   final String? hourLabelText,
 
+  /// Label on the minute field, passed to [showTimePicker].
   final String? minuteLabelText,
 
   /// Fires when the user flips between dial and typed input.
   final ValueChanged<TimePickerEntryMode>? onEntryModeChanged,
 
+  /// Forces the portrait or landscape layout, passed to [showTimePicker].
   final Orientation? orientation,
 
+  /// {@macro material_ui.time_picker.switchToInputEntryModeIcon}
   final Icon? switchToInputEntryModeIcon,
 
+  /// {@macro material_ui.time_picker.switchToTimerEntryModeIcon}
   final Icon? switchToTimerEntryModeIcon,
 
   /// Starts the input fields blank instead of pre-filled with the initial time.
