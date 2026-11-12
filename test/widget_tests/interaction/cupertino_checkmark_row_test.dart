@@ -1,3 +1,4 @@
+import 'package:bdd_framework/flutter_widget_test.dart' show Bdd, BddFeature;
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
 import 'package:flutter/widgets.dart';
@@ -30,34 +31,36 @@ int _checkmarksIn(String label) => find
     .length;
 
 void main() {
-  feature('CupertinoCheckmarkRow', () {
-    scenarioWidgets('checks only the picked row', (tester) async {
-      await _pumpRows(tester);
+  final feature = BddFeature('CupertinoCheckmarkRow');
 
-      check(_checkmarksIn(_picked)).equals(1);
-      check(_checkmarksIn(_other)).equals(0);
-    }, variant: iosOnly);
+  Bdd(feature).scenario('checks only the picked row').runWidgets((tester) async {
+    await _pumpRows(tester);
 
-    scenarioWidgets('tells a screen reader which row is picked', (tester) async {
-      final semantics = tester.ensureSemantics();
-      await _pumpRows(tester);
+    check(_checkmarksIn(_picked)).equals(1);
+    check(_checkmarksIn(_other)).equals(0);
+  }, variant: iosOnly);
 
-      final picked = tester.getSemantics(find.text(_picked)).getSemanticsData();
-      final other = tester.getSemantics(find.text(_other)).getSemanticsData();
-      semantics.dispose();
+  Bdd(feature).scenario('tells a screen reader which row is picked').runWidgets((tester) async {
+    final semantics = tester.ensureSemantics();
+    await _pumpRows(tester);
 
-      check(readsAsPicked(picked)).isTrue();
-      check(readsAsPicked(other)).isFalse();
-    }, variant: iosOnly);
+    final picked = tester.getSemantics(find.text(_picked)).getSemanticsData();
+    final other = tester.getSemantics(find.text(_other)).getSemanticsData();
+    semantics.dispose();
 
-    scenarioWidgets("takes a tap at the row's far end, away from its label", (tester) async {
-      var taps = 0;
-      await _pumpRows(tester, onOtherTap: () => taps++);
+    check(readsAsPicked(picked)).isTrue();
+    check(readsAsPicked(other)).isFalse();
+  }, variant: iosOnly);
 
-      await tester.tapAt(tester.getRect(_row(_other)).centerRight - const Offset(8, 0));
-      await tester.pump();
+  Bdd(feature)
+      .scenario("takes a tap at the row's far end, away from its label")
+      .runWidgets((tester) async {
+        var taps = 0;
+        await _pumpRows(tester, onOtherTap: () => taps++);
 
-      check(taps).equals(1);
-    }, variant: iosOnly);
-  });
+        await tester.tapAt(tester.getRect(_row(_other)).centerRight - const Offset(8, 0));
+        await tester.pump();
+
+        check(taps).equals(1);
+      }, variant: iosOnly);
 }

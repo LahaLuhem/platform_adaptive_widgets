@@ -3,6 +3,7 @@
 
 import 'dart:async';
 
+import 'package:bdd_framework/flutter_widget_test.dart' show Bdd, BddFeature;
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoButton, CupertinoNavigationBarBackButton, CupertinoSheetRoute;
@@ -83,181 +84,196 @@ Finder _sheetWayOut(WidgetTester tester) => switch (designLanguage) {
 );
 
 void main() {
-  feature('PlatformAppBar', () {
-    scenarioOutlineWidgets<({PlatformBarAction action, Finder content})>(
-      "draws each action as the platform's own bar button",
-      examples: {
-        'an icon': (action: _shareAction, content: find.byIcon(Icons.share)),
-        'text': (action: _editAction, content: find.text(_edit)),
-      },
-      outline: (tester, row) async {
-        await _pump(
-          tester,
-          PlatformAppBar(
-            title: const Text('Title'),
-            materialAppBarData: MaterialAppBarData(actions: [_OwnBarButton(row.action)]),
-            cupertinoNavigationBarData: CupertinoNavigationBarData(
-              trailing: _OwnBarButton(row.action),
+  final feature = BddFeature('PlatformAppBar');
+
+  Bdd(feature)
+      .scenario("draws each action as the platform's own bar button")
+      .runOutlineWidgets<({PlatformBarAction action, Finder content})>(
+        examples: {
+          'an icon': (action: _shareAction, content: find.byIcon(Icons.share)),
+          'text': (action: _editAction, content: find.text(_edit)),
+        },
+        outline: (tester, row) async {
+          await _pump(
+            tester,
+            PlatformAppBar(
+              title: const Text('Title'),
+              materialAppBarData: MaterialAppBarData(actions: [_OwnBarButton(row.action)]),
+              cupertinoNavigationBarData: CupertinoNavigationBarData(
+                trailing: _OwnBarButton(row.action),
+              ),
             ),
-          ),
-        );
-        final own = _placed(tester, row.content);
+          );
+          final own = _placed(tester, row.content);
 
-        await _pump(tester, PlatformAppBar(title: const Text('Title'), actions: [row.action]));
+          await _pump(tester, PlatformAppBar(title: const Text('Title'), actions: [row.action]));
 
-        check(_placed(tester, row.content)).equals(own);
-      },
-    );
-
-    scenarioWidgets('names an icon action for screen readers', (tester) async {
-      final semantics = tester.ensureSemantics();
-      await _pump(tester, const PlatformAppBar(actions: [_shareAction]));
-
-      check(buttonsNamed(_share).evaluate()).isNotEmpty();
-      semantics.dispose();
-    });
-
-    scenarioWidgets('puts the primary action last, at the trailing edge', (tester) async {
-      await _pump(
-        tester,
-        const PlatformAppBar(actions: [_shareAction, _editAction], primaryAction: _saveAction),
+          check(_placed(tester, row.content)).equals(own);
+        },
       );
 
-      check(tester.getRect(find.text(_save)).left)
-          .isGreaterThan(tester.getRect(find.text(_edit)).right);
-    });
+  Bdd(feature).scenario('names an icon action for screen readers').runWidgets((tester) async {
+    final semantics = tester.ensureSemantics();
+    await _pump(tester, const PlatformAppBar(actions: [_shareAction]));
 
-    scenarioWidgets("sets the primary action's text semibold on iOS", (tester) async {
-      await _pump(tester, const PlatformAppBar(actions: [_editAction], primaryAction: _saveAction));
+    check(buttonsNamed(_share).evaluate()).isNotEmpty();
+    semantics.dispose();
+  });
 
-      check(weightOf(labelStyle(tester, _save))).isGreaterThan(weightOf(labelStyle(tester, _edit)));
-    }, variant: iosOnly);
+  Bdd(feature)
+      .scenario('puts the primary action last, at the trailing edge')
+      .runWidgets((tester) async {
+        await _pump(
+          tester,
+          const PlatformAppBar(actions: [_shareAction, _editAction], primaryAction: _saveAction),
+        );
 
-    scenarioWidgets('draws the primary action like any other on Android', (tester) async {
-      await _pump(tester, const PlatformAppBar(actions: [_editAction], primaryAction: _saveAction));
+        check(tester.getRect(find.text(_save)).left)
+            .isGreaterThan(tester.getRect(find.text(_edit)).right);
+      });
 
-      check(labelStyle(tester, _save)).equals(labelStyle(tester, _edit));
-    }, variant: androidOnly);
+  Bdd(feature).scenario("sets the primary action's text semibold on iOS").runWidgets((
+    tester,
+  ) async {
+    await _pump(tester, const PlatformAppBar(actions: [_editAction], primaryAction: _saveAction));
 
-    scenarioOutlineWidgets<DesignLanguage>(
-      "lets one platform's own widgets replace its side's actions",
-      examples: {'Material': .material, 'Cupertino': .cupertino},
-      outline: (tester, overridden) async {
+    check(weightOf(labelStyle(tester, _save))).isGreaterThan(weightOf(labelStyle(tester, _edit)));
+  }, variant: iosOnly);
+
+  Bdd(feature).scenario('draws the primary action like any other on Android').runWidgets((
+    tester,
+  ) async {
+    await _pump(tester, const PlatformAppBar(actions: [_editAction], primaryAction: _saveAction));
+
+    check(labelStyle(tester, _save)).equals(labelStyle(tester, _edit));
+  }, variant: androidOnly);
+
+  Bdd(feature)
+      .scenario("lets one platform's own widgets replace its side's actions")
+      .runOutlineWidgets<DesignLanguage>(
+        examples: {'Material': .material, 'Cupertino': .cupertino},
+        outline: (tester, overridden) async {
+          const custom = Text(_custom);
+          await _pump(
+            tester,
+            PlatformAppBar(
+              actions: [_shareAction],
+              primaryAction: _saveAction,
+              materialAppBarData: overridden == .material
+                  ? const MaterialAppBarData(actions: [custom])
+                  : const MaterialAppBarData(),
+              cupertinoNavigationBarData: overridden == .cupertino
+                  ? const CupertinoNavigationBarData(trailing: custom)
+                  : const CupertinoNavigationBarData(),
+            ),
+          );
+          final shown = {
+            if (find.text(_custom).evaluate().isNotEmpty) _custom,
+            if (find.byIcon(Icons.share).evaluate().isNotEmpty) _share,
+            if (find.text(_save).evaluate().isNotEmpty) _save,
+          };
+
+          check(
+            because: designLanguage.name,
+            shown,
+          ).deepEquals(designLanguage == overridden ? {_custom} : {_share, _save});
+        },
+      );
+
+  // The own side's leading shows where it swaps a sheet's way out, below.
+  Bdd(feature)
+      .scenario('leaves out a leading widget given for the other platform')
+      .runWidgets((tester) async {
         const custom = Text(_custom);
         await _pump(
           tester,
           PlatformAppBar(
-            actions: [_shareAction],
-            primaryAction: _saveAction,
-            materialAppBarData: overridden == .material
-                ? const MaterialAppBarData(actions: [custom])
+            materialAppBarData: designLanguage == .cupertino
+                ? const MaterialAppBarData(leading: custom)
                 : const MaterialAppBarData(),
-            cupertinoNavigationBarData: overridden == .cupertino
-                ? const CupertinoNavigationBarData(trailing: custom)
+            cupertinoNavigationBarData: designLanguage == .material
+                ? const CupertinoNavigationBarData(leading: custom)
                 : const CupertinoNavigationBarData(),
           ),
         );
-        final shown = {
-          if (find.text(_custom).evaluate().isNotEmpty) _custom,
-          if (find.byIcon(Icons.share).evaluate().isNotEmpty) _share,
-          if (find.text(_save).evaluate().isNotEmpty) _save,
-        };
 
-        check(
-          because: designLanguage.name,
-          shown,
-        ).deepEquals(designLanguage == overridden ? {_custom} : {_share, _save});
-      },
-    );
-
-    // The own side's leading shows where it swaps a sheet's way out, below.
-    scenarioWidgets('leaves out a leading widget given for the other platform', (tester) async {
-      const custom = Text(_custom);
-      await _pump(
-        tester,
-        PlatformAppBar(
-          materialAppBarData: designLanguage == .cupertino
-              ? const MaterialAppBarData(leading: custom)
-              : const MaterialAppBarData(),
-          cupertinoNavigationBarData: designLanguage == .material
-              ? const CupertinoNavigationBarData(leading: custom)
-              : const CupertinoNavigationBarData(),
-        ),
-      );
-
-      check(find.text(_custom).evaluate()).isEmpty();
-    });
-
-    scenarioWidgets("goes back through the platform's own back button", (tester) async {
-      await pumpInPlatformScaffold(tester, const Text(_first));
-      Navigator.of(tester.element(find.text(_first))).push(
-        PageRouteBuilder<void>(
-          pageBuilder: (_, _, _) =>
-              const PlatformScaffold(appBarData: PlatformAppBar(), body: SizedBox()),
-        ),
-      );
-      await pumpTransition(tester);
-
-      await tester.tap(switch (designLanguage) {
-        .material => find.byType(BackButton),
-        .cupertino => find.byType(CupertinoNavigationBarBackButton),
+        check(find.text(_custom).evaluate()).isEmpty();
       });
-      await pumpTransition(tester);
 
-      check(find.text(_first).evaluate()).isNotEmpty();
-    });
-
-    scenarioWidgets("closes a sheet through the platform's own way out", (tester) async {
-      await _openInSheet(tester, _sheetPage);
-
-      await tester.tap(_sheetWayOut(tester));
-      await pumpTransition(tester);
-
-      check(find.byKey(_sheetBody).evaluate()).isEmpty();
-    });
-
-    // Material's CloseButton asks it by itself.
-    scenarioWidgets("asks the sheet's PopScope before closing it", (tester) async {
-      var attempts = 0;
-      await _openInSheet(
-        tester,
-        PopScope<void>(
-          canPop: false,
-          onPopInvokedWithResult: (didPop, _) {
-            if (!didPop) attempts++;
-          },
-          child: _sheetPage,
-        ),
-      );
-
-      await tester.tap(_sheetWayOut(tester));
-      await pumpTransition(tester);
-
-      check(find.byKey(_sheetBody).evaluate()).isNotEmpty();
-      check(attempts).equals(1);
-    }, variant: iosOnly);
-
-    scenarioOutlineWidgets<PlatformAppBar>(
-      "lets a sheet's bar swap or drop its way out",
-      examples: {
-        'swapped for its own leading': const PlatformAppBar(
-          materialAppBarData: MaterialAppBarData(leading: Text(_custom)),
-          cupertinoNavigationBarData: CupertinoNavigationBarData(leading: Text(_custom)),
-        ),
-        'dropped': const PlatformAppBar(automaticallyImplyLeading: false),
-      },
-      outline: (tester, bar) async {
-        await _openInSheet(
-          tester,
-          PlatformScaffold(
-            appBarData: bar,
-            body: const SizedBox(key: _sheetBody),
+  Bdd(feature)
+      .scenario("goes back through the platform's own back button")
+      .runWidgets((tester) async {
+        await pumpInPlatformScaffold(tester, const Text(_first));
+        Navigator.of(tester.element(find.text(_first))).push(
+          PageRouteBuilder<void>(
+            pageBuilder: (_, _, _) =>
+                const PlatformScaffold(appBarData: PlatformAppBar(), body: SizedBox()),
           ),
         );
-        check(find.byKey(_sheetBody).evaluate()).isNotEmpty();
+        await pumpTransition(tester);
 
-        check(_sheetWayOut(tester).evaluate()).isEmpty();
-      },
+        await tester.tap(switch (designLanguage) {
+          .material => find.byType(BackButton),
+          .cupertino => find.byType(CupertinoNavigationBarBackButton),
+        });
+        await pumpTransition(tester);
+
+        check(find.text(_first).evaluate()).isNotEmpty();
+      });
+
+  Bdd(feature)
+      .scenario("closes a sheet through the platform's own way out")
+      .runWidgets((tester) async {
+        await _openInSheet(tester, _sheetPage);
+
+        await tester.tap(_sheetWayOut(tester));
+        await pumpTransition(tester);
+
+        check(find.byKey(_sheetBody).evaluate()).isEmpty();
+      });
+
+  // Material's CloseButton asks it by itself.
+  Bdd(feature).scenario("asks the sheet's PopScope before closing it").runWidgets((tester) async {
+    var attempts = 0;
+    await _openInSheet(
+      tester,
+      PopScope<void>(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) attempts++;
+        },
+        child: _sheetPage,
+      ),
     );
-  });
+
+    await tester.tap(_sheetWayOut(tester));
+    await pumpTransition(tester);
+
+    check(find.byKey(_sheetBody).evaluate()).isNotEmpty();
+    check(attempts).equals(1);
+  }, variant: iosOnly);
+
+  Bdd(feature)
+      .scenario("lets a sheet's bar swap or drop its way out")
+      .runOutlineWidgets<PlatformAppBar>(
+        examples: {
+          'swapped for its own leading': const PlatformAppBar(
+            materialAppBarData: MaterialAppBarData(leading: Text(_custom)),
+            cupertinoNavigationBarData: CupertinoNavigationBarData(leading: Text(_custom)),
+          ),
+          'dropped': const PlatformAppBar(automaticallyImplyLeading: false),
+        },
+        outline: (tester, bar) async {
+          await _openInSheet(
+            tester,
+            PlatformScaffold(
+              appBarData: bar,
+              body: const SizedBox(key: _sheetBody),
+            ),
+          );
+          check(find.byKey(_sheetBody).evaluate()).isNotEmpty();
+
+          check(_sheetWayOut(tester).evaluate()).isEmpty();
+        },
+      );
 }

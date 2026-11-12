@@ -768,9 +768,10 @@ The 3 kinds:
 
 - **`unit_tests/`**: pure logic in `bdd_framework`, its parameter matrix as `.example(val(...))`
   rows.
-- **`widget_tests/`**: the Gherkin helper in `test/support/bdd.dart`, since `bdd_framework` can't
-  hand out a `WidgetTester`. Scenarios run as Android and iOS (`bothPlatforms`). `androidOnly` and
-  `iosOnly` are for what only one look's code does.
+- **`widget_tests/`**: `bdd_framework`'s widget runner, `Bdd(feature).scenario(...)` ended by
+  `.runWidgets` or `.runOutlineWidgets` from `test/support/platform_scenario.dart`, which make an
+  example row per platform since the runner takes no `variant:`. Scenarios run as Android and iOS
+  (`bothPlatforms`). `androidOnly` and `iosOnly` are for what only one look's code does.
 - **`guards/`**: rules over `lib/src`, a file each. The AST guards run from `guards_test.dart`, so
   they share one analysis of `lib/` from `test/support/lib_src.dart`. A guard that reads only
   lines, like `doc_example_guard_test.dart`, runs on its own.

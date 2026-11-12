@@ -3,6 +3,7 @@
 
 import 'dart:math' as math;
 
+import 'package:bdd_framework/flutter_widget_test.dart' show Bdd, BddFeature;
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoButton, CupertinoColors, CupertinoThemeData;
@@ -168,115 +169,119 @@ _Backdrop _backdrop(WidgetTester tester) {
 }
 
 void main() {
-  feature('PlatformButton', () {
-    scenarioOutlineWidgets<({PlatformButtonEmphasis emphasis, _Backdrop backdrop})>(
-      'draws each emphasis the same way on both platforms',
-      examples: {
-        'high: the accent': (emphasis: .high, backdrop: .accent),
-        'medium: a light colored fill': (emphasis: .medium, backdrop: .tint),
-        'mediumNeutral: a gray fill or outline': (emphasis: .mediumNeutral, backdrop: .gray),
-        'low: nothing': (emphasis: .low, backdrop: .none),
-      },
-      outline: (tester, row) async {
-        for (final shape in _Shape.values) {
-          await _pump(tester, _Button(row.emphasis, shape: shape));
+  final feature = BddFeature('PlatformButton');
 
-          check(because: shape.name, _backdrop(tester)).equals(row.backdrop);
-        }
-      },
-    );
+  Bdd(feature)
+      .scenario('draws each emphasis the same way on both platforms')
+      .runOutlineWidgets<({PlatformButtonEmphasis emphasis, _Backdrop backdrop})>(
+        examples: {
+          'high: the accent': (emphasis: .high, backdrop: .accent),
+          'medium: a light colored fill': (emphasis: .medium, backdrop: .tint),
+          'mediumNeutral: a gray fill or outline': (emphasis: .mediumNeutral, backdrop: .gray),
+          'low: nothing': (emphasis: .low, backdrop: .none),
+        },
+        outline: (tester, row) async {
+          for (final shape in _Shape.values) {
+            await _pump(tester, _Button(row.emphasis, shape: shape));
 
-    scenarioOutlineWidgets<PlatformButtonEmphasis>(
-      'draws a destructive action as if the accent were red on iOS',
-      examples: _emphases,
-      outline: (tester, emphasis) async {
-        for (final shape in _Shape.values) {
-          await _pump(
-            tester,
-            _Button(emphasis, shape: shape),
-            cupertinoTheme: const CupertinoThemeData(primaryColor: CupertinoColors.systemRed),
-          );
-          final harmlessInRed = _drawn(tester);
-          await _pump(tester, _Button(emphasis, shape: shape, actionKind: _destructive));
+            check(because: shape.name, _backdrop(tester)).equals(row.backdrop);
+          }
+        },
+      );
 
-          check(because: shape.name, _drawn(tester)).equals(harmlessInRed);
-        }
-      },
-      variant: iosOnly,
-    );
+  Bdd(feature)
+      .scenario('draws a destructive action as if the accent were red on iOS')
+      .runOutlineWidgets<PlatformButtonEmphasis>(
+        examples: _emphases,
+        outline: (tester, emphasis) async {
+          for (final shape in _Shape.values) {
+            await _pump(
+              tester,
+              _Button(emphasis, shape: shape),
+              cupertinoTheme: const CupertinoThemeData(primaryColor: CupertinoColors.systemRed),
+            );
+            final harmlessInRed = _drawn(tester);
+            await _pump(tester, _Button(emphasis, shape: shape, actionKind: _destructive));
 
-    scenarioOutlineWidgets<
-      ({
-        PlatformButtonEmphasis emphasis,
-        Color? Function(ColorScheme) fill,
-        Color Function(ColorScheme) content,
-      })
-    >(
-      'draws a destructive action in the error colours on Android',
-      examples: {
-        'high: on an error fill': (
-          emphasis: .high,
-          fill: (scheme) => scheme.error,
-          content: (scheme) => scheme.onError,
-        ),
-        'medium: on an error container': (
-          emphasis: .medium,
-          fill: (scheme) => scheme.errorContainer,
-          content: (scheme) => scheme.onErrorContainer,
-        ),
-        'mediumNeutral: in error': (
-          emphasis: .mediumNeutral,
-          fill: (_) => null,
-          content: (scheme) => scheme.error,
-        ),
-        'low: in error': (emphasis: .low, fill: (_) => null, content: (scheme) => scheme.error),
-      },
-      outline: (tester, row) async {
-        final scheme = _distinctOnErrorTheme.colorScheme;
-        for (final shape in _Shape.values) {
-          await _pump(
-            tester,
-            _Button(row.emphasis, shape: shape),
-            materialTheme: _distinctOnErrorTheme,
-          );
-          final harmless = _drawn(tester);
-          await _pump(
-            tester,
-            _Button(row.emphasis, shape: shape, actionKind: _destructive),
-            materialTheme: _distinctOnErrorTheme,
-          );
+            check(because: shape.name, _drawn(tester)).equals(harmlessInRed);
+          }
+        },
+        variant: iosOnly,
+      );
 
-          check(because: shape.name, _drawn(tester)).equals((
-            fill: _shown(row.fill(scheme)),
-            outline: harmless.outline,
-            content: _plain(row.content(scheme)),
-          ));
-        }
-      },
-      variant: androidOnly,
-    );
+  Bdd(feature)
+      .scenario('draws a destructive action in the error colours on Android')
+      .runOutlineWidgets<
+        ({
+          PlatformButtonEmphasis emphasis,
+          Color? Function(ColorScheme) fill,
+          Color Function(ColorScheme) content,
+        })
+      >(
+        examples: {
+          'high: on an error fill': (
+            emphasis: .high,
+            fill: (scheme) => scheme.error,
+            content: (scheme) => scheme.onError,
+          ),
+          'medium: on an error container': (
+            emphasis: .medium,
+            fill: (scheme) => scheme.errorContainer,
+            content: (scheme) => scheme.onErrorContainer,
+          ),
+          'mediumNeutral: in error': (
+            emphasis: .mediumNeutral,
+            fill: (_) => null,
+            content: (scheme) => scheme.error,
+          ),
+          'low: in error': (emphasis: .low, fill: (_) => null, content: (scheme) => scheme.error),
+        },
+        outline: (tester, row) async {
+          final scheme = _distinctOnErrorTheme.colorScheme;
+          for (final shape in _Shape.values) {
+            await _pump(
+              tester,
+              _Button(row.emphasis, shape: shape),
+              materialTheme: _distinctOnErrorTheme,
+            );
+            final harmless = _drawn(tester);
+            await _pump(
+              tester,
+              _Button(row.emphasis, shape: shape, actionKind: _destructive),
+              materialTheme: _distinctOnErrorTheme,
+            );
 
-    // Every rank greys out from the same role, so one button covers all.
-    scenarioWidgets('draws a disabled destructive action like any disabled one on Android', (
-      tester,
-    ) async {
-      await _pump(tester, const _Button(.high, isEnabled: false));
-      final harmless = _drawn(tester);
-      await _pump(tester, const _Button(.high, actionKind: _destructive, isEnabled: false));
+            check(because: shape.name, _drawn(tester)).equals((
+              fill: _shown(row.fill(scheme)),
+              outline: harmless.outline,
+              content: _plain(row.content(scheme)),
+            ));
+          }
+        },
+        variant: androidOnly,
+      );
 
-      check(_drawn(tester)).equals(harmless);
-    }, variant: androidOnly);
+  // Every rank greys out from the same role, so one button covers all.
+  Bdd(feature)
+      .scenario('draws a disabled destructive action like any disabled one on Android')
+      .runWidgets((tester) async {
+        await _pump(tester, const _Button(.high, isEnabled: false));
+        final harmless = _drawn(tester);
+        await _pump(tester, const _Button(.high, actionKind: _destructive, isEnabled: false));
 
-    scenarioOutlineWidgets<PlatformButtonEmphasis>(
-      'names an icon-only button for screen readers on both platforms',
-      examples: _emphases,
-      outline: (tester, emphasis) async {
-        final semantics = tester.ensureSemantics();
-        await _pump(tester, _Button(emphasis, shape: .iconOnly));
+        check(_drawn(tester)).equals(harmless);
+      }, variant: androidOnly);
 
-        check(buttonsNamed(_label).evaluate()).isNotEmpty();
-        semantics.dispose();
-      },
-    );
-  });
+  Bdd(feature)
+      .scenario('names an icon-only button for screen readers on both platforms')
+      .runOutlineWidgets<PlatformButtonEmphasis>(
+        examples: _emphases,
+        outline: (tester, emphasis) async {
+          final semantics = tester.ensureSemantics();
+          await _pump(tester, _Button(emphasis, shape: .iconOnly));
+
+          check(buttonsNamed(_label).evaluate()).isNotEmpty();
+          semantics.dispose();
+        },
+      );
 }

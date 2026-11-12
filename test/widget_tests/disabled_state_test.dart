@@ -5,6 +5,7 @@
 library;
 
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:bdd_framework/flutter_widget_test.dart' show Bdd, BddFeature;
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoListTile, CupertinoSlider;
 import 'package:flutter/foundation.dart';
@@ -332,135 +333,144 @@ Future<void> _saysDisabled(WidgetTester tester, _Path path) async {
 }
 
 void main() {
-  feature('Disabled state', () {
-    scenarioOutlineWidgets<_Path>(
-      'looks disabled',
-      examples: {..._paths, 'segment': _segment},
-      outline: _looksDisabled,
-      variant: androidOnly,
-    );
+  final disabledState = BddFeature('Disabled state');
 
-    scenarioOutlineWidgets<_Path>(
-      'looks disabled',
-      examples: {
-        ..._where((name) => !_noLookOnIos.contains(name) && !_buttonIconShapes.contains(name)),
-        'segment': _segment,
-      },
-      outline: _looksDisabled,
-      variant: iosOnly,
-    );
+  Bdd(disabledState)
+      .scenario('looks disabled')
+      .runOutlineWidgets<_Path>(
+        examples: {..._paths, 'segment': _segment},
+        outline: _looksDisabled,
+        variant: androidOnly,
+      );
 
-    // Material says it by itself. 'looks disabled' covers the wiring.
-    scenarioOutlineWidgets<_Path>(
-      'tells screen readers it is disabled',
-      examples: _paths,
-      outline: _saysDisabled,
-      variant: iosOnly,
-    );
+  Bdd(disabledState)
+      .scenario('looks disabled')
+      .runOutlineWidgets<_Path>(
+        examples: {
+          ..._where((name) => !_noLookOnIos.contains(name) && !_buttonIconShapes.contains(name)),
+          'segment': _segment,
+        },
+        outline: _looksDisabled,
+        variant: iosOnly,
+      );
 
-    // Used enabled first, so a tap that misses can't pass.
-    scenarioOutlineWidgets<_Path>(
-      'ignores a tap while disabled',
-      examples: {..._paths, 'segment': _segment},
-      outline: (tester, path) async {
-        check(because: 'enabled', await _usesOf(tester, path, isEnabled: true)).isGreaterThan(0);
-        check(because: 'disabled', await _usesOf(tester, path, isEnabled: false)).equals(0);
-      },
-      variant: iosOnly,
-    );
+  // Material says it by itself. 'looks disabled' covers the wiring.
+  Bdd(disabledState)
+      .scenario('tells screen readers it is disabled')
+      .runOutlineWidgets<_Path>(examples: _paths, outline: _saysDisabled, variant: iosOnly);
 
-    scenarioWidgets('tells screen readers a disabled segment is disabled', (tester) async {
-      final [segment] = await _disabledTargets(tester, _segment);
+  // Used enabled first, so a tap that misses can't pass.
+  Bdd(disabledState)
+      .scenario('ignores a tap while disabled')
+      .runOutlineWidgets<_Path>(
+        examples: {..._paths, 'segment': _segment},
+        outline: (tester, path) async {
+          check(because: 'enabled', await _usesOf(tester, path, isEnabled: true)).isGreaterThan(0);
+          check(because: 'disabled', await _usesOf(tester, path, isEnabled: false)).equals(0);
+        },
+        variant: iosOnly,
+      );
 
-      check(segment.flagsCollection.isEnabled).equals(.isFalse);
-    }, variant: iosOnly);
+  Bdd(disabledState)
+      .scenario('tells screen readers a disabled segment is disabled')
+      .runWidgets((tester) async {
+        final [segment] = await _disabledTargets(tester, _segment);
 
-    scenarioWidgets("keeps a widget's state when it's disabled", (tester) async {
-      // The slider stands in for every path that disables through the package's own wrapper.
-      final slider = _paths['slider']!;
-      await pumpPlatformWidget(tester, slider.screen(isEnabled: true));
-      final enabled = tester.state(find.byType(CupertinoSlider));
-      await pumpPlatformWidget(tester, slider.screen(isEnabled: false));
+        check(segment.flagsCollection.isEnabled).equals(.isFalse);
+      }, variant: iosOnly);
 
-      check(tester.state(find.byType(CupertinoSlider))).identicalTo(enabled);
-    }, variant: iosOnly);
+  Bdd(disabledState)
+      .scenario("keeps a widget's state when it's disabled")
+      .runWidgets((tester) async {
+        // The slider stands in for every path that disables through the package's own wrapper.
+        final slider = _paths['slider']!;
+        await pumpPlatformWidget(tester, slider.screen(isEnabled: true));
+        final enabled = tester.state(find.byType(CupertinoSlider));
+        await pumpPlatformWidget(tester, slider.screen(isEnabled: false));
 
-    test('covers every public class with a field that disables something', () {
-      final owners = parsedLibSrc
-          .expand(
-            (unit) => unit.ast.declarations.whereType<ClassDeclaration>().where(unit.barrelExports),
-          )
-          .where(
-            (declaration) =>
-                instanceFieldNames(declaration)
-                    .intersection(const {'isEnabled', 'disabledChildren'})
-                    .isNotEmpty,
-          )
-          .map((declaration) => declaration.namePart.typeName.lexeme)
-          .where((name) => !name.startsWith('_'));
+        check(tester.state(find.byType(CupertinoSlider))).identicalTo(enabled);
+      }, variant: iosOnly);
 
-      check(
-        because: 'A class that can disable something needs a row here.',
-        owners,
-      ).unorderedEquals({..._paths.values.map((path) => path.owner), _segment.owner});
-    });
+  test('covers every public class with a field that disables something', () {
+    final owners = parsedLibSrc
+        .expand(
+          (unit) => unit.ast.declarations.whereType<ClassDeclaration>().where(unit.barrelExports),
+        )
+        .where(
+          (declaration) =>
+              instanceFieldNames(declaration)
+                  .intersection(const {'isEnabled', 'disabledChildren'})
+                  .isNotEmpty,
+        )
+        .map((declaration) => declaration.namePart.typeName.lexeme)
+        .where((name) => !name.startsWith('_'));
+
+    check(
+      because: 'A class that can disable something needs a row here.',
+      owners,
+    ).unorderedEquals({..._paths.values.map((path) => path.owner), _segment.owner});
   });
 
-  feature('Disabled state, until upstream', () {
-    scenarioOutlineWidgets<({_Path path, String issue})>(
-      'draws no disabled look on iOS',
-      examples: {
-        'slider': (
-          path: _paths['slider']!,
-          issue: 'https://github.com/flutter/flutter/issues/106691',
-        ),
-        'search bar': (
-          path: _paths['search bar']!,
-          issue: 'https://github.com/LahaLuhem/platform_adaptive_widgets/issues/71',
-        ),
-      },
-      outline: (tester, gap) async => check(
-        because:
-            'Upstream draws it now (${gap.issue}). Move it to "looks disabled", and drop any note '
-            'on its `isEnabled`.',
-        await _disablingShows(tester, gap.path),
-      ).isFalse(),
-      variant: iosOnly,
-    );
+  final untilUpstream = BddFeature('Disabled state, until upstream');
 
-    test("a CupertinoListTile can't be disabled", () {
-      check(
-        because:
-            'It takes `enabled` now (https://github.com/flutter/flutter/issues/195327). Pass it, move '
-            'the row and the select lists to "looks disabled", and drop the notes on their `isEnabled`.',
-        // Throws on a named argument it doesn't take.
-        () => Function.apply(CupertinoListTile.new, const [], {
-          #title: const Text(_label),
-          #enabled: false,
-        }),
-      ).throws<NoSuchMethodError>();
-    });
+  Bdd(untilUpstream)
+      .scenario('draws no disabled look on iOS')
+      .runOutlineWidgets<({_Path path, String issue})>(
+        examples: {
+          'slider': (
+            path: _paths['slider']!,
+            issue: 'https://github.com/flutter/flutter/issues/106691',
+          ),
+          'search bar': (
+            path: _paths['search bar']!,
+            issue: 'https://github.com/LahaLuhem/platform_adaptive_widgets/issues/71',
+          ),
+        },
+        outline: (tester, gap) async => check(
+          because:
+              'Upstream draws it now (${gap.issue}). Move it to "looks disabled", and drop any note '
+              'on its `isEnabled`.',
+          await _disablingShows(tester, gap.path),
+        ).isFalse(),
+        variant: iosOnly,
+      );
 
-    scenarioWidgets('a disabled segment still offers screen readers a tap on iOS', (tester) async {
-      final [segment] = await _disabledTargets(tester, _segment);
-
-      check(
-        because:
-            'Upstream drops it now (https://github.com/flutter/flutter/issues/195515). Move the '
-            'segment into "tells screen readers it is disabled".',
-        segment.hasAction(.tap),
-      ).isTrue();
-    }, variant: iosOnly);
-
-    scenarioWidgets('a disabled slider gives screen readers no value on iOS', (tester) async {
-      final [slider] = await _disabledTargets(tester, _paths['slider']!);
-
-      check(
-        because:
-            'Upstream keeps it now (https://github.com/flutter/packages/pull/12710). Drop this '
-            'check.',
-        slider.value,
-      ).isEmpty();
-    }, variant: iosOnly);
+  test("a CupertinoListTile can't be disabled", () {
+    check(
+      because:
+          'It takes `enabled` now (https://github.com/flutter/flutter/issues/195327). Pass it, move '
+          'the row and the select lists to "looks disabled", and drop the notes on their `isEnabled`.',
+      // Throws on a named argument it doesn't take.
+      () => Function.apply(CupertinoListTile.new, const [], {
+        #title: const Text(_label),
+        #enabled: false,
+      }),
+    ).throws<NoSuchMethodError>();
   });
+
+  Bdd(untilUpstream)
+      .scenario('a disabled segment still offers screen readers a tap on iOS')
+      .runWidgets((tester) async {
+        final [segment] = await _disabledTargets(tester, _segment);
+
+        check(
+          because:
+              'Upstream drops it now (https://github.com/flutter/flutter/issues/195515). Move the '
+              'segment into "tells screen readers it is disabled".',
+          segment.hasAction(.tap),
+        ).isTrue();
+      }, variant: iosOnly);
+
+  Bdd(untilUpstream)
+      .scenario('a disabled slider gives screen readers no value on iOS')
+      .runWidgets((tester) async {
+        final [slider] = await _disabledTargets(tester, _paths['slider']!);
+
+        check(
+          because:
+              'Upstream keeps it now (https://github.com/flutter/packages/pull/12710). Drop this '
+              'check.',
+          slider.value,
+        ).isEmpty();
+      }, variant: iosOnly);
 }

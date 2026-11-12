@@ -1,6 +1,7 @@
 // Named after what it tests, not after its helper widget.
 // ignore_for_file: prefer-match-file-name
 
+import 'package:bdd_framework/flutter_widget_test.dart' show Bdd, BddFeature;
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoCheckbox;
 import 'package:flutter/widgets.dart';
@@ -53,104 +54,113 @@ Future<Set<_Fruit>> _newSetAfterTapping(
 }
 
 void main() {
-  feature('PlatformMultiSelectList', () {
-    scenarioWidgets('puts widgetKey on the list it builds', (tester) async {
-      const widgetKey = Key('inner');
-      await pumpInPlatformScaffold(
-        tester,
-        PlatformMultiSelectList<_Fruit>(
-          options: _Fruit.values.toSet(),
-          selected: const {},
-          label: (fruit) => fruit.name,
-          onChanged: (_) => noop(),
-          widgetKey: widgetKey,
-        ),
-      );
+  final feature = BddFeature('PlatformMultiSelectList');
 
-      check(
-        find
-            .descendant(
-              of: find.byType(PlatformMultiSelectList<_Fruit>),
-              matching: find.byKey(widgetKey),
-            )
-            .evaluate(),
-      ).length.equals(1);
-    });
-
-    scenarioOutlineWidgets<({_Fruit tapped, Set<_Fruit> after})>(
-      'adds or drops the tapped option',
-      examples: {
-        'adds an unpicked one': (tapped: .plum, after: {.pear, .plum}),
-        'drops a picked one': (tapped: .pear, after: {}),
-      },
-      outline: (tester, example) async {
-        final after = await _newSetAfterTapping(tester, example.tapped, selected: const {.pear});
-
-        check(after).unorderedEquals(example.after);
-      },
+  Bdd(feature).scenario('puts widgetKey on the list it builds').runWidgets((tester) async {
+    const widgetKey = Key('inner');
+    await pumpInPlatformScaffold(
+      tester,
+      PlatformMultiSelectList<_Fruit>(
+        options: _Fruit.values.toSet(),
+        selected: const {},
+        label: (fruit) => fruit.name,
+        onChanged: (_) => noop(),
+        widgetKey: widgetKey,
+      ),
     );
 
-    scenarioWidgets("hands back the set in the options' order, not the taps'", (tester) async {
-      final after = await _newSetAfterTapping(tester, .apple, selected: const {.plum});
-
-      check(after).deepEquals([_Fruit.apple, _Fruit.plum]);
-    });
-
-    // iOS's row has its own test.
-    scenarioWidgets("takes a tap at a row's far end, away from its label", (tester) async {
-      final picks = <Set<_Fruit>>[];
-      await pumpInPlatformScaffold(tester, _Fruits(selected: const {.pear}, picks: picks));
-
-      await tester.tapAt(
-        Offset(
-          tester.getRect(find.byKey(_listKey)).right - _farEndInset,
-          tester.getCenter(find.text(_Fruit.plum.name)).dy,
-        ),
-      );
-      await tester.pump();
-
-      check(picks).length.equals(1);
-    }, variant: androidOnly);
-
-    scenarioWidgets("lists the options top to bottom, in the set's order", (tester) async {
-      // Neither the enum's order nor the alphabet's, so a sort shows.
-      const options = {_Fruit.plum, _Fruit.apple, _Fruit.pear};
-      await pumpInPlatformScaffold(tester, const _Fruits(selected: {.pear}, options: options));
-
-      final corners = [for (final fruit in options) tester.getTopLeft(find.text(fruit.name))];
-      final tops = [for (final corner in corners) corner.dy];
-
-      check(corners.map((corner) => corner.dx).toSet()).length.equals(1);
-      check(tops).deepEquals([...tops]..sort());
-    });
-
-    scenarioWidgets('tells a screen reader which rows are picked', (tester) async {
-      final semantics = tester.ensureSemantics();
-      await pumpInPlatformScaffold(tester, const _Fruits(selected: {.apple, .plum}));
-
-      final rows = [
-        for (final fruit in _Fruit.values)
-          tester.getSemantics(find.text(fruit.name)).getSemanticsData(),
-      ];
-      semantics.dispose();
-
-      check(rows.map(readsAsPicked)).deepEquals([true, false, true]);
-    });
-
-    scenarioWidgets("flags a selected value that isn't an option", (tester) async {
-      await pumpInPlatformScaffold(
-        tester,
-        _Fruits(selected: const {.pear}, options: _Fruit.values.toSet()..remove(_Fruit.pear)),
-      );
-
-      check(tester.takeException()).isA<AssertionError>();
-    });
-
-    scenarioWidgets("draws iOS's checkmark rows, not the Mac's controls", (tester) async {
-      await pumpInPlatformScaffold(tester, const _Fruits(selected: {.pear}));
-
-      check(find.byType(CupertinoCheckmarkRow).evaluate()).length.equals(_Fruit.values.length);
-      check(find.byType(CupertinoCheckbox).evaluate()).isEmpty();
-    }, variant: iosOnly);
+    check(
+      find
+          .descendant(
+            of: find.byType(PlatformMultiSelectList<_Fruit>),
+            matching: find.byKey(widgetKey),
+          )
+          .evaluate(),
+    ).length.equals(1);
   });
+
+  Bdd(feature)
+      .scenario('adds or drops the tapped option')
+      .runOutlineWidgets<({_Fruit tapped, Set<_Fruit> after})>(
+        examples: {
+          'adds an unpicked one': (tapped: .plum, after: {.pear, .plum}),
+          'drops a picked one': (tapped: .pear, after: {}),
+        },
+        outline: (tester, example) async {
+          final after = await _newSetAfterTapping(tester, example.tapped, selected: const {.pear});
+
+          check(after).unorderedEquals(example.after);
+        },
+      );
+
+  Bdd(feature)
+      .scenario("hands back the set in the options' order, not the taps'")
+      .runWidgets((tester) async {
+        final after = await _newSetAfterTapping(tester, .apple, selected: const {.plum});
+
+        check(after).deepEquals([_Fruit.apple, _Fruit.plum]);
+      });
+
+  // iOS's row has its own test.
+  Bdd(feature)
+      .scenario("takes a tap at a row's far end, away from its label")
+      .runWidgets((tester) async {
+        final picks = <Set<_Fruit>>[];
+        await pumpInPlatformScaffold(tester, _Fruits(selected: const {.pear}, picks: picks));
+
+        await tester.tapAt(
+          Offset(
+            tester.getRect(find.byKey(_listKey)).right - _farEndInset,
+            tester.getCenter(find.text(_Fruit.plum.name)).dy,
+          ),
+        );
+        await tester.pump();
+
+        check(picks).length.equals(1);
+      }, variant: androidOnly);
+
+  Bdd(feature)
+      .scenario("lists the options top to bottom, in the set's order")
+      .runWidgets((tester) async {
+        // Neither the enum's order nor the alphabet's, so a sort shows.
+        const options = {_Fruit.plum, _Fruit.apple, _Fruit.pear};
+        await pumpInPlatformScaffold(tester, const _Fruits(selected: {.pear}, options: options));
+
+        final corners = [for (final fruit in options) tester.getTopLeft(find.text(fruit.name))];
+        final tops = [for (final corner in corners) corner.dy];
+
+        check(corners.map((corner) => corner.dx).toSet()).length.equals(1);
+        check(tops).deepEquals([...tops]..sort());
+      });
+
+  Bdd(feature).scenario('tells a screen reader which rows are picked').runWidgets((tester) async {
+    final semantics = tester.ensureSemantics();
+    await pumpInPlatformScaffold(tester, const _Fruits(selected: {.apple, .plum}));
+
+    final rows = [
+      for (final fruit in _Fruit.values)
+        tester.getSemantics(find.text(fruit.name)).getSemanticsData(),
+    ];
+    semantics.dispose();
+
+    check(rows.map(readsAsPicked)).deepEquals([true, false, true]);
+  });
+
+  Bdd(feature).scenario("flags a selected value that isn't an option").runWidgets((tester) async {
+    await pumpInPlatformScaffold(
+      tester,
+      _Fruits(selected: const {.pear}, options: _Fruit.values.toSet()..remove(_Fruit.pear)),
+    );
+
+    check(tester.takeException()).isA<AssertionError>();
+  });
+
+  Bdd(feature)
+      .scenario("draws iOS's checkmark rows, not the Mac's controls")
+      .runWidgets((tester) async {
+        await pumpInPlatformScaffold(tester, const _Fruits(selected: {.pear}));
+
+        check(find.byType(CupertinoCheckmarkRow).evaluate()).length.equals(_Fruit.values.length);
+        check(find.byType(CupertinoCheckbox).evaluate()).isEmpty();
+      }, variant: iosOnly);
 }

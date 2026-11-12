@@ -3,6 +3,7 @@
 
 import 'dart:ui' show SemanticsAction, Tristate;
 
+import 'package:bdd_framework/flutter_widget_test.dart' show Bdd, BddFeature;
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoMenuItem, CupertinoNavigationBarBackButton, CupertinoPicker;
@@ -156,151 +157,160 @@ int _iconsInMenuRow(String label) => find
     .length;
 
 void main() {
-  feature('PlatformMenuPicker', () {
-    scenarioWidgets('puts widgetKey on the picker it builds', (tester) async {
-      const widgetKey = Key('inner');
-      await pumpInPlatformScaffold(
-        tester,
-        PlatformMenuPicker<int>(
-          items: _items(2),
-          menuPickerItemTransformer: (item) => MenuPickerItem(label: _label(item)),
-          widgetKey: widgetKey,
-        ),
+  final feature = BddFeature('PlatformMenuPicker');
+
+  Bdd(feature).scenario('puts widgetKey on the picker it builds').runWidgets((tester) async {
+    const widgetKey = Key('inner');
+    await pumpInPlatformScaffold(
+      tester,
+      PlatformMenuPicker<int>(
+        items: _items(2),
+        menuPickerItemTransformer: (item) => MenuPickerItem(label: _label(item)),
+        widgetKey: widgetKey,
+      ),
+    );
+
+    check(
+      find
+          .descendant(of: find.byType(PlatformMenuPicker<int>), matching: find.byKey(widgetKey))
+          .evaluate(),
+    ).length.equals(1);
+  });
+
+  // Below the 3 items iOS menus are meant for.
+  Bdd(feature).scenario('picks from a list of one').runWidgets((tester) async {
+    final picked = <int>[];
+    await _pump(tester, _Picker(count: 1, onSelected: picked.add));
+
+    await _open(tester);
+    await tester.tap(find.text(_label(0)).hitTestable());
+    await pumpTransition(tester);
+
+    check(picked).deepEquals([0]);
+  }, variant: iosOnly);
+
+  Bdd(feature)
+      .scenario('opens when tapped')
+      .runOutlineWidgets<({_Picker picker, bool opens})>(
+        examples: {
+          'if it has items': (picker: const _Picker(count: 3), opens: true),
+          "unless it's empty": (picker: const _Picker(count: 0), opens: false),
+          'as an icon button with items': (
+            picker: const _Picker(count: 3, asIconButton: true),
+            opens: true,
+          ),
+          "unless it's an empty icon button": (
+            picker: const _Picker(count: 0, asIconButton: true),
+            opens: false,
+          ),
+        },
+        outline: (tester, row) async {
+          await _pump(tester, row.picker);
+          final closed = _scrollViews();
+
+          await _open(tester);
+
+          check(_scrollViews() > closed).equals(row.opens);
+        },
       );
 
-      check(
-        find
-            .descendant(of: find.byType(PlatformMenuPicker<int>), matching: find.byKey(widgetKey))
-            .evaluate(),
-      ).length.equals(1);
-    });
+  Bdd(feature)
+      .scenario('shows nothing picked for a value outside the list')
+      .runWidgets((tester) async {
+        await _pump(tester, const _Picker(count: 4, current: 99));
 
-    // Below the 3 items iOS menus are meant for.
-    scenarioWidgets('picks from a list of one', (tester) async {
-      final picked = <int>[];
-      await _pump(tester, _Picker(count: 1, onSelected: picked.add));
+        check(_items(4).map(_label).where(_fieldShows)).isEmpty();
+      });
 
-      await _open(tester);
-      await tester.tap(find.text(_label(0)).hitTestable());
-      await pumpTransition(tester);
+  // A value off the list takes the same path.
+  Bdd(feature).scenario('clears the field when the value goes null').runWidgets((tester) async {
+    await _pump(tester, const _Picker(count: 4, current: 2));
+    check(_fieldShows(_label(2))).isTrue();
 
-      check(picked).deepEquals([0]);
-    }, variant: iosOnly);
+    await _pump(tester, const _Picker(count: 4));
 
-    scenarioOutlineWidgets<({_Picker picker, bool opens})>(
-      'opens when tapped',
-      examples: {
-        'if it has items': (picker: const _Picker(count: 3), opens: true),
-        "unless it's empty": (picker: const _Picker(count: 0), opens: false),
-        'as an icon button with items': (
-          picker: const _Picker(count: 3, asIconButton: true),
-          opens: true,
-        ),
-        "unless it's an empty icon button": (
-          picker: const _Picker(count: 0, asIconButton: true),
-          opens: false,
-        ),
-      },
-      outline: (tester, row) async {
-        await _pump(tester, row.picker);
-        final closed = _scrollViews();
+    check(_fieldShows(_label(2))).isFalse();
+  });
 
-        await _open(tester);
+  // Say the app switched language while the picker was on screen.
+  Bdd(feature)
+      .scenario("renames the field when the value's label changes")
+      .runWidgets((tester) async {
+        await _pump(tester, const _Picker(count: 4, current: 2));
+        check(_fieldShows(_label(2))).isTrue();
 
-        check(_scrollViews() > closed).equals(row.opens);
-      },
-    );
+        await _pump(tester, _Picker(count: 4, current: 2, label: (item) => 'Élément $item'));
 
-    scenarioWidgets('shows nothing picked for a value outside the list', (tester) async {
-      await _pump(tester, const _Picker(count: 4, current: 99));
+        check(_fieldShows('Élément 2')).isTrue();
+      });
 
-      check(_items(4).map(_label).where(_fieldShows)).isEmpty();
-    });
-
-    // A value off the list takes the same path.
-    scenarioWidgets('clears the field when the value goes null', (tester) async {
-      await _pump(tester, const _Picker(count: 4, current: 2));
-      check(_fieldShows(_label(2))).isTrue();
-
-      await _pump(tester, const _Picker(count: 4));
-
-      check(_fieldShows(_label(2))).isFalse();
-    });
-
-    // Say the app switched language while the picker was on screen.
-    scenarioWidgets("renames the field when the value's label changes", (tester) async {
-      await _pump(tester, const _Picker(count: 4, current: 2));
-      check(_fieldShows(_label(2))).isTrue();
-
-      await _pump(tester, _Picker(count: 4, current: 2, label: (item) => 'Élément $item'));
-
-      check(_fieldShows('Élément 2')).isTrue();
-    });
-
-    scenarioWidgets('keeps showing the value until the app takes a pick', (tester) async {
-      final picked = <int>[];
-      await _pump(tester, _Picker(count: 4, current: 2, onSelected: picked.add));
-
-      await _open(tester);
-      await tester.tap(find.text(_label(3)).hitTestable());
-      await pumpTransition(tester);
-
-      check(picked).deepEquals([3]);
-      check(_fieldShows(_label(2))).isTrue();
-      check(_fieldShows(_label(3))).isFalse();
-    });
-
-    scenarioOutlineWidgets<({int count, int current, String Function(int item) label})>(
-      'opens a long list on the current value',
-      examples: {
-        'with another row sharing its label': (
-          count: 30,
-          current: 25,
-          label: (item) => item == 0 || item == 25 ? 'Alex' : _label(item),
-        ),
-        'on a page of its own': (count: 300, current: 295, label: _label),
-      },
-      outline: (tester, row) async {
-        await _pump(tester, _Picker(count: row.count, current: row.current, label: row.label));
+  Bdd(feature)
+      .scenario('keeps showing the value until the app takes a pick')
+      .runWidgets((tester) async {
+        final picked = <int>[];
+        await _pump(tester, _Picker(count: 4, current: 2, onSelected: picked.add));
 
         await _open(tester);
+        await tester.tap(find.text(_label(3)).hitTestable());
+        await pumpTransition(tester);
 
-        // The current row can share its label with row 0, so its neighbour tells them apart.
-        check(_rowInView(_label(row.current + 1))).isTrue();
-        check(_rowInView(_label(1))).isFalse();
-      },
-    );
+        check(picked).deepEquals([3]);
+        check(_fieldShows(_label(2))).isTrue();
+        check(_fieldShows(_label(3))).isFalse();
+      });
 
-    scenarioWidgets('ignores typing in the field', (tester) async {
-      await _pump(tester, const _Picker(count: 4, current: 2));
+  Bdd(feature)
+      .scenario('opens a long list on the current value')
+      .runOutlineWidgets<({int count, int current, String Function(int item) label})>(
+        examples: {
+          'with another row sharing its label': (
+            count: 30,
+            current: 25,
+            label: (item) => item == 0 || item == 25 ? 'Alex' : _label(item),
+          ),
+          'on a page of its own': (count: 300, current: 295, label: _label),
+        },
+        outline: (tester, row) async {
+          await _pump(tester, _Picker(count: row.count, current: row.current, label: row.label));
 
-      await _open(tester);
-      await tester.enterText(find.byType(EditableText), 'Anything');
-      await pumpTransition(tester);
+          await _open(tester);
 
-      check(_fieldShows('Anything')).isFalse();
-    }, variant: _materialDesktop);
+          // The current row can share its label with row 0, so its neighbour tells them apart.
+          check(_rowInView(_label(row.current + 1))).isTrue();
+          check(_rowInView(_label(1))).isFalse();
+        },
+      );
 
-    scenarioOutlineWidgets<int>(
-      'shows row icons',
-      examples: {
-        'in a short list': 4,
-        'in a list long enough for a wheel': 8,
-        'in a list long enough for its own page': 300,
-      },
-      outline: (tester, count) async {
-        await _pump(tester, _Picker(count: count, withIcons: true));
+  Bdd(feature).scenario('ignores typing in the field').runWidgets((tester) async {
+    await _pump(tester, const _Picker(count: 4, current: 2));
 
-        await _open(tester);
+    await _open(tester);
+    await tester.enterText(find.byType(EditableText), 'Anything');
+    await pumpTransition(tester);
 
-        check(find.byIcon(_icon).evaluate().where((icon) => Scrollable.maybeOf(icon) != null))
-            .isNotEmpty();
-      },
-    );
+    check(_fieldShows('Anything')).isFalse();
+  }, variant: _materialDesktop);
 
-    scenarioWidgets("marks a short list's picked row at an accessibility text size", (
-      tester,
-    ) async {
+  Bdd(feature)
+      .scenario('shows row icons')
+      .runOutlineWidgets<int>(
+        examples: {
+          'in a short list': 4,
+          'in a list long enough for a wheel': 8,
+          'in a list long enough for its own page': 300,
+        },
+        outline: (tester, count) async {
+          await _pump(tester, _Picker(count: count, withIcons: true));
+
+          await _open(tester);
+
+          check(find.byIcon(_icon).evaluate().where((icon) => Scrollable.maybeOf(icon) != null))
+              .isNotEmpty();
+        },
+      );
+
+  Bdd(feature).scenario("marks a short list's picked row at an accessibility text size").runWidgets(
+    (tester) async {
       // 28 pt body text, iOS's smallest accessibility size, which hides a row's trailing slot.
       tester.platformDispatcher.textScaleFactorTestValue = 28 / 17;
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
@@ -310,189 +320,204 @@ void main() {
 
       // The checkmark is the one icon its neighbour lacks, whether or not the rows' own icons show.
       check(_iconsInMenuRow(_label(1))).equals(_iconsInMenuRow(_label(0)) + 1);
-    }, variant: iosOnly);
+    },
+    variant: iosOnly,
+  );
 
-    // The wheel and page are the package's. A menu closes without a pick by itself.
-    scenarioOutlineWidgets<({int count, Future<void> Function(WidgetTester tester) leave})>(
-      'reports nothing when closed without picking',
-      examples: {
-        'a wheel, by a tap outside': (count: 8, leave: _tapOutside),
-        'a wheel, by a screen reader': (count: 8, leave: _closeByScreenReader),
-        'a page, by its back button': (count: 300, leave: _goBack),
-      },
-      outline: (tester, row) async {
-        final picked = <int>[];
-        await _pump(tester, _Picker(count: row.count, current: 2, onSelected: picked.add));
-        final closed = _scrollViews();
-        await _open(tester);
-        check(_scrollViews()).isGreaterThan(closed);
+  // The wheel and page are the package's. A menu closes without a pick by itself.
+  Bdd(feature)
+      .scenario('reports nothing when closed without picking')
+      .runOutlineWidgets<({int count, Future<void> Function(WidgetTester tester) leave})>(
+        examples: {
+          'a wheel, by a tap outside': (count: 8, leave: _tapOutside),
+          'a wheel, by a screen reader': (count: 8, leave: _closeByScreenReader),
+          'a page, by its back button': (count: 300, leave: _goBack),
+        },
+        outline: (tester, row) async {
+          final picked = <int>[];
+          await _pump(tester, _Picker(count: row.count, current: 2, onSelected: picked.add));
+          final closed = _scrollViews();
+          await _open(tester);
+          check(_scrollViews()).isGreaterThan(closed);
 
-        await row.leave(tester);
+          await row.leave(tester);
 
-        check(_scrollViews()).equals(closed);
-        check(picked).isEmpty();
-      },
-      variant: iosOnly,
-    );
-
-    scenarioWidgets('reports the row the wheel stops on while it stays open', (tester) async {
-      final reports = <({int item, String shown})>[];
-      void onSelected(int item) => reports.add((item: item, shown: _wheelLabel(tester)));
-      await _pump(tester, _Picker(count: 8, current: 2, onSelected: onSelected));
-      final closed = _scrollViews();
-      await _open(tester);
-
-      await tester.timedDrag(
-        _listRow(_label(2)),
-        const Offset(0, -120),
-        const Duration(milliseconds: 300),
+          check(_scrollViews()).equals(closed);
+          check(picked).isEmpty();
+        },
+        variant: iosOnly,
       );
-      await pumpTransition(tester);
 
-      check(_scrollViews()).isGreaterThan(closed);
-      check(reports).isNotEmpty();
-      check(_label(reports.last.item)).equals(reports.last.shown);
-    }, variant: iosOnly);
-
-    // The test's app never takes a pick, so its value stays put.
-    scenarioOutlineWidgets<int?>(
-      "moves the wheel back when the app doesn't take the pick",
-      examples: {'with a value set': 2, 'with no value set': null},
-      outline: (tester, current) async {
-        final picked = <int>[];
-        await _pump(tester, _Picker(count: 8, current: current, onSelected: picked.add));
+  Bdd(feature)
+      .scenario('reports the row the wheel stops on while it stays open')
+      .runWidgets((tester) async {
+        final reports = <({int item, String shown})>[];
+        void onSelected(int item) => reports.add((item: item, shown: _wheelLabel(tester)));
+        await _pump(tester, _Picker(count: 8, current: 2, onSelected: onSelected));
+        final closed = _scrollViews();
         await _open(tester);
 
         await tester.timedDrag(
-          _listRow(_label(current ?? 0)),
+          _listRow(_label(2)),
+          const Offset(0, -120),
+          const Duration(milliseconds: 300),
+        );
+        await pumpTransition(tester);
+
+        check(_scrollViews()).isGreaterThan(closed);
+        check(reports).isNotEmpty();
+        check(_label(reports.last.item)).equals(reports.last.shown);
+      }, variant: iosOnly);
+
+  // The test's app never takes a pick, so its value stays put.
+  Bdd(feature)
+      .scenario("moves the wheel back when the app doesn't take the pick")
+      .runOutlineWidgets<int?>(
+        examples: {'with a value set': 2, 'with no value set': null},
+        outline: (tester, current) async {
+          final picked = <int>[];
+          await _pump(tester, _Picker(count: 8, current: current, onSelected: picked.add));
+          await _open(tester);
+
+          await tester.timedDrag(
+            _listRow(_label(current ?? 0)),
+            const Offset(0, -100),
+            const Duration(milliseconds: 300),
+          );
+          // The wheel coasts, reports, then moves back: longer than a transition.
+          await pumpThrough(tester, const Duration(seconds: 2));
+
+          // Reported once: not each row it passed, nor the way back.
+          check(picked).length.equals(1);
+          check(_wheelRow(tester)).equals(current ?? 0);
+        },
+        variant: iosOnly,
+      );
+
+  Bdd(feature)
+      .scenario("follows the app's value while the wheel is open")
+      .runWidgets((tester) async {
+        final picked = <int>[];
+        final pickerNotifier = await _pumpChangeable(
+          tester,
+          _Picker(count: 8, current: 2, onSelected: picked.add),
+        );
+        await _open(tester);
+
+        pickerNotifier.value = _Picker(count: 8, current: 6, onSelected: picked.add);
+        await pumpTransition(tester);
+
+        check(_wheelRow(tester)).equals(6);
+        check(picked).isEmpty();
+      }, variant: iosOnly);
+
+  Bdd(feature)
+      .scenario("picks the wheel's top row when no value is set")
+      .runWidgets((tester) async {
+        final picked = <int>[];
+        await _pump(tester, _Picker(count: 8, onSelected: picked.add));
+        await _open(tester);
+
+        // Away and back in one slow drag, so the wheel stops on the row it opened on.
+        final drag = await tester.startGesture(tester.getCenter(_listRow(_label(0))));
+        await drag.moveBy(const Offset(0, -64));
+        await tester.pump(const Duration(milliseconds: 100));
+        await drag.moveBy(const Offset(0, 64));
+        await tester.pump(const Duration(milliseconds: 300));
+        await drag.up();
+        await pumpTransition(tester);
+
+        check(_wheelRow(tester)).equals(0);
+        check(picked).deepEquals([0]);
+      }, variant: iosOnly);
+
+  Bdd(feature)
+      .scenario('reports nothing when the current value is picked again')
+      .runOutlineWidgets<int>(
+        examples: {'from a menu': 4, 'from a page of its own': 300},
+        outline: (tester, count) async {
+          final picked = <int>[];
+          await _pump(tester, _Picker(count: count, current: 2, onSelected: picked.add));
+          final closed = _scrollViews();
+
+          await _open(tester);
+          // The field shows the value too, so tap its row in the open list.
+          await tester.tap(_listRow(_label(2)));
+          await pumpTransition(tester);
+
+          check(_scrollViews()).equals(closed);
+          check(picked).isEmpty();
+        },
+      );
+
+  // 300 is past the cutoff for a page of its own.
+  Bdd(feature).scenario('gives a very long list a page of its own').runWidgets((tester) async {
+    await _pump(tester, const _Picker(count: 300));
+
+    await _open(tester);
+
+    // The page covers the screen the picker sits on.
+    check(find.byType(PlatformMenuPicker<int>).evaluate()).isEmpty();
+  }, variant: iosOnly);
+
+  Bdd(feature)
+      .scenario("picks from a very long list's page and goes back")
+      .runWidgets((tester) async {
+        final picked = <int>[];
+        await _pump(tester, _Picker(count: 300, onSelected: picked.add));
+
+        await _open(tester);
+        await tester.tap(find.text(_label(7)).hitTestable());
+        await pumpTransition(tester);
+
+        check(picked).deepEquals([7]);
+        check(find.byType(PlatformMenuPicker<int>).evaluate()).isNotEmpty();
+      }, variant: iosOnly);
+
+  Bdd(feature)
+      .scenario("tells a screen reader which row of a very long list's page is picked")
+      .runWidgets((tester) async {
+        final semantics = tester.ensureSemantics();
+        await _pump(tester, const _Picker(count: 300, current: 5));
+
+        await _open(tester);
+        final picked = tester.getSemantics(_listRow(_label(5))).getSemanticsData();
+        final next = tester.getSemantics(_listRow(_label(6))).getSemanticsData();
+        semantics.dispose();
+
+        check(picked.flagsCollection.isSelected).equals(Tristate.isTrue);
+        check(next.flagsCollection.isSelected).not((it) => it.equals(Tristate.isTrue));
+      }, variant: iosOnly);
+
+  Bdd(feature)
+      .scenario("reports the item an open wheel stops on after the app's items change")
+      .runWidgets((tester) async {
+        final reports = <({int item, String shown})>[];
+        void onSelected(int item) => reports.add((item: item, shown: _wheelLabel(tester)));
+        final pickerNotifier = await _pumpChangeable(
+          tester,
+          _Picker(count: 8, current: 2, onSelected: onSelected),
+        );
+        await _open(tester);
+
+        pickerNotifier.value = _Picker(count: 8, first: 1, current: 2, onSelected: onSelected);
+        await pumpTransition(tester);
+        await tester.timedDrag(
+          _listRow(_wheelLabel(tester)),
           const Offset(0, -100),
           const Duration(milliseconds: 300),
         );
-        // The wheel coasts, reports, then moves back: longer than a transition.
-        await pumpThrough(tester, const Duration(seconds: 2));
-
-        // Reported once: not each row it passed, nor the way back.
-        check(picked).length.equals(1);
-        check(_wheelRow(tester)).equals(current ?? 0);
-      },
-      variant: iosOnly,
-    );
-
-    scenarioWidgets("follows the app's value while the wheel is open", (tester) async {
-      final picked = <int>[];
-      final pickerNotifier = await _pumpChangeable(
-        tester,
-        _Picker(count: 8, current: 2, onSelected: picked.add),
-      );
-      await _open(tester);
-
-      pickerNotifier.value = _Picker(count: 8, current: 6, onSelected: picked.add);
-      await pumpTransition(tester);
-
-      check(_wheelRow(tester)).equals(6);
-      check(picked).isEmpty();
-    }, variant: iosOnly);
-
-    scenarioWidgets("picks the wheel's top row when no value is set", (tester) async {
-      final picked = <int>[];
-      await _pump(tester, _Picker(count: 8, onSelected: picked.add));
-      await _open(tester);
-
-      // Away and back in one slow drag, so the wheel stops on the row it opened on.
-      final drag = await tester.startGesture(tester.getCenter(_listRow(_label(0))));
-      await drag.moveBy(const Offset(0, -64));
-      await tester.pump(const Duration(milliseconds: 100));
-      await drag.moveBy(const Offset(0, 64));
-      await tester.pump(const Duration(milliseconds: 300));
-      await drag.up();
-      await pumpTransition(tester);
-
-      check(_wheelRow(tester)).equals(0);
-      check(picked).deepEquals([0]);
-    }, variant: iosOnly);
-
-    scenarioOutlineWidgets<int>(
-      'reports nothing when the current value is picked again',
-      examples: {'from a menu': 4, 'from a page of its own': 300},
-      outline: (tester, count) async {
-        final picked = <int>[];
-        await _pump(tester, _Picker(count: count, current: 2, onSelected: picked.add));
-        final closed = _scrollViews();
-
-        await _open(tester);
-        // The field shows the value too, so tap its row in the open list.
-        await tester.tap(_listRow(_label(2)));
         await pumpTransition(tester);
 
-        check(_scrollViews()).equals(closed);
-        check(picked).isEmpty();
-      },
-    );
+        check(reports).isNotEmpty();
+        check(_label(reports.last.item)).equals(reports.last.shown);
+      }, variant: iosOnly);
 
-    // 300 is past the cutoff for a page of its own.
-    scenarioWidgets('gives a very long list a page of its own', (tester) async {
-      await _pump(tester, const _Picker(count: 300));
-
-      await _open(tester);
-
-      // The page covers the screen the picker sits on.
-      check(find.byType(PlatformMenuPicker<int>).evaluate()).isEmpty();
-    }, variant: iosOnly);
-
-    scenarioWidgets("picks from a very long list's page and goes back", (tester) async {
-      final picked = <int>[];
-      await _pump(tester, _Picker(count: 300, onSelected: picked.add));
-
-      await _open(tester);
-      await tester.tap(find.text(_label(7)).hitTestable());
-      await pumpTransition(tester);
-
-      check(picked).deepEquals([7]);
-      check(find.byType(PlatformMenuPicker<int>).evaluate()).isNotEmpty();
-    }, variant: iosOnly);
-
-    scenarioWidgets("tells a screen reader which row of a very long list's page is picked", (
-      tester,
-    ) async {
-      final semantics = tester.ensureSemantics();
-      await _pump(tester, const _Picker(count: 300, current: 5));
-
-      await _open(tester);
-      final picked = tester.getSemantics(_listRow(_label(5))).getSemanticsData();
-      final next = tester.getSemantics(_listRow(_label(6))).getSemanticsData();
-      semantics.dispose();
-
-      check(picked.flagsCollection.isSelected).equals(Tristate.isTrue);
-      check(next.flagsCollection.isSelected).not((it) => it.equals(Tristate.isTrue));
-    }, variant: iosOnly);
-
-    scenarioWidgets("reports the item an open wheel stops on after the app's items change", (
-      tester,
-    ) async {
-      final reports = <({int item, String shown})>[];
-      void onSelected(int item) => reports.add((item: item, shown: _wheelLabel(tester)));
-      final pickerNotifier = await _pumpChangeable(
-        tester,
-        _Picker(count: 8, current: 2, onSelected: onSelected),
-      );
-      await _open(tester);
-
-      pickerNotifier.value = _Picker(count: 8, first: 1, current: 2, onSelected: onSelected);
-      await pumpTransition(tester);
-      await tester.timedDrag(
-        _listRow(_wheelLabel(tester)),
-        const Offset(0, -100),
-        const Duration(milliseconds: 300),
-      );
-      await pumpTransition(tester);
-
-      check(reports).isNotEmpty();
-      check(_label(reports.last.item)).equals(reports.last.shown);
-    }, variant: iosOnly);
-
-    scenarioWidgets(
-      'moves an open wheel to its top row, reporting nothing, when the current value leaves the list',
-      (tester) async {
+  Bdd(feature)
+      .scenario(
+        'moves an open wheel to its top row, reporting nothing, when the current value leaves the list',
+      )
+      .runWidgets((tester) async {
         final picked = <int>[];
         final pickerNotifier = await _pumpChangeable(
           tester,
@@ -506,13 +531,13 @@ void main() {
         check(_wheelRow(tester)).equals(0);
         check(_wheelLabel(tester)).equals(_label(4));
         check(picked).isEmpty();
-      },
-      variant: iosOnly,
-    );
+      }, variant: iosOnly);
 
-    scenarioWidgets(
-      "shows the app's new items on an open page, and marks and reports the ones it shows",
-      (tester) async {
+  Bdd(feature)
+      .scenario(
+        "shows the app's new items on an open page, and marks and reports the ones it shows",
+      )
+      .runWidgets((tester) async {
         final picked = <int>[];
         final semantics = tester.ensureSemantics();
         final pickerNotifier = await _pumpChangeable(
@@ -539,13 +564,13 @@ void main() {
         check(currentRow.flagsCollection.isSelected).equals(Tristate.isTrue);
         check(showsNewLastItem).isTrue();
         check(picked).deepEquals([300]);
-      },
-      variant: iosOnly,
-    );
+      }, variant: iosOnly);
 
-    scenarioWidgets(
-      "keeps showing the app's items on an open wheel after the count drops into the menu's range",
-      (tester) async {
+  Bdd(feature)
+      .scenario(
+        "keeps showing the app's items on an open wheel after the count drops into the menu's range",
+      )
+      .runWidgets((tester) async {
         final pickerNotifier = await _pumpChangeable(tester, const _Picker(count: 8, current: 3));
         await _open(tester);
 
@@ -554,20 +579,17 @@ void main() {
 
         check(_listRow(_label(0)).evaluate()).isEmpty();
         check(_wheelLabel(tester)).equals(_label(3));
-      },
-      variant: iosOnly,
-    );
+      }, variant: iosOnly);
 
-    scenarioWidgets("keeps an open menu open when the count grows past the menu's range", (
-      tester,
-    ) async {
-      final pickerNotifier = await _pumpChangeable(tester, const _Picker(count: 5, current: 1));
-      await _open(tester);
+  Bdd(feature)
+      .scenario("keeps an open menu open when the count grows past the menu's range")
+      .runWidgets((tester) async {
+        final pickerNotifier = await _pumpChangeable(tester, const _Picker(count: 5, current: 1));
+        await _open(tester);
 
-      pickerNotifier.value = const _Picker(count: 6, current: 1);
-      await pumpTransition(tester);
+        pickerNotifier.value = const _Picker(count: 6, current: 1);
+        await pumpTransition(tester);
 
-      check(find.byType(CupertinoMenuItem).evaluate()).length.equals(6);
-    }, variant: iosOnly);
-  });
+        check(find.byType(CupertinoMenuItem).evaluate()).length.equals(6);
+      }, variant: iosOnly);
 }

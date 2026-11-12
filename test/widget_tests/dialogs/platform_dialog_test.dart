@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bdd_framework/flutter_widget_test.dart' show Bdd, BddFeature;
 import 'package:checks/checks.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,59 +33,58 @@ Future<int> _seeThroughPixels(WidgetTester tester) async {
 }
 
 void main() {
-  feature('showPlatformFullscreenDialog', () {
-    scenarioWidgets('covers the whole screen, status bar included', (tester) async {
-      tester.view.padding = FakeViewPadding(top: _statusBarHeight * tester.view.devicePixelRatio);
-      addTearDown(tester.view.reset);
-      final context = await pumpForContext(tester);
-      // The bare app paints nothing, so any spot the dialog misses stays see-through.
-      check(await _seeThroughPixels(tester)).isGreaterThan(0);
+  final feature = BddFeature('showPlatformFullscreenDialog');
 
-      unawaited(_open(context));
-      await pumpTransition(tester);
+  Bdd(feature).scenario('covers the whole screen, status bar included').runWidgets((tester) async {
+    tester.view.padding = FakeViewPadding(top: _statusBarHeight * tester.view.devicePixelRatio);
+    addTearDown(tester.view.reset);
+    final context = await pumpForContext(tester);
+    // The bare app paints nothing, so any spot the dialog misses stays see-through.
+    check(await _seeThroughPixels(tester)).isGreaterThan(0);
 
-      check(await _seeThroughPixels(tester)).equals(0);
-    });
+    unawaited(_open(context));
+    await pumpTransition(tester);
 
-    scenarioWidgets('opens as a full-screen dialog, so its bar shows close, not back', (
+    check(await _seeThroughPixels(tester)).equals(0);
+  });
+
+  Bdd(feature)
+      .scenario('opens as a full-screen dialog, so its bar shows close, not back')
+      .runWidgets((tester) async {
+        final context = await pumpForContext(tester);
+
+        unawaited(_open(context));
+        await pumpTransition(tester);
+
+        // The flag both bars read, not the button, since what each bar draws is Flutter's call.
+        check(ModalRoute.of(tester.element(find.byWidget(_body)))!.fullscreenDialog).isTrue();
+      });
+
+  Bdd(feature).scenario('closes with the value of a Save in its bar').runWidgets((tester) async {
+    // go_router's tab branches are nested navigators, while the dialog goes on the root one.
+    await pumpPlatformWidget(
       tester,
-    ) async {
-      final context = await pumpForContext(tester);
-
-      unawaited(_open(context));
-      await pumpTransition(tester);
-
-      // The flag both bars read, not the button, since what each bar draws is Flutter's call.
-      check(ModalRoute.of(tester.element(find.byWidget(_body)))!.fullscreenDialog).isTrue();
-    });
-
-    scenarioWidgets('closes with the value of a Save in its bar', (tester) async {
-      // go_router's tab branches are nested navigators, while the dialog goes on the root one.
-      await pumpPlatformWidget(
-        tester,
-        Navigator(
-          onGenerateRoute: (_) =>
-              PageRouteBuilder<void>(pageBuilder: (_, _, _) => const SizedBox()),
+      Navigator(
+        onGenerateRoute: (_) => PageRouteBuilder<void>(pageBuilder: (_, _, _) => const SizedBox()),
+      ),
+    );
+    final result = showPlatformFullscreenDialog<String>(
+      context: tester.element(find.byType(SizedBox).last),
+      appBarBuilder: (context) => PlatformAppBar(
+        primaryAction: PlatformBarAction(
+          label: _save,
+          onPressed: () => Navigator.maybeOf(context)?.pop(_saved),
         ),
-      );
-      final result = showPlatformFullscreenDialog<String>(
-        context: tester.element(find.byType(SizedBox).last),
-        appBarBuilder: (context) => PlatformAppBar(
-          primaryAction: PlatformBarAction(
-            label: _save,
-            onPressed: () => Navigator.maybeOf(context)?.pop(_saved),
-          ),
-        ),
-        builder: (_) => _body,
-      );
-      await pumpTransition(tester);
+      ),
+      builder: (_) => _body,
+    );
+    await pumpTransition(tester);
 
-      await tester.tap(find.text(_save));
-      await pumpTransition(tester);
+    await tester.tap(find.text(_save));
+    await pumpTransition(tester);
 
-      // Closed first, or the result never comes.
-      check(find.byWidget(_body).evaluate()).isEmpty();
-      check(await result).equals(_saved);
-    });
+    // Closed first, or the result never comes.
+    check(find.byWidget(_body).evaluate()).isEmpty();
+    check(await result).equals(_saved);
   });
 }

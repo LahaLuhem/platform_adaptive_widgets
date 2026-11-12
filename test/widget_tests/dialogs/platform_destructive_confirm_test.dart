@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bdd_framework/flutter_widget_test.dart' show Bdd, BddFeature;
 import 'package:checks/checks.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,45 +17,46 @@ Future<bool> _show(BuildContext context) =>
 bool _isShowing() => find.text(_message).evaluate().isNotEmpty;
 
 void main() {
-  feature('showPlatformDestructiveConfirm', () {
-    scenarioOutlineWidgets<({String button, bool answer})>(
-      'answers whether the person confirmed',
-      examples: {
-        'when confirmed': (button: _confirm, answer: true),
-        'when cancelled': (button: 'Cancel', answer: false),
-      },
-      outline: (tester, row) async {
-        final context = await pumpForContext(tester);
-        final answerFuture = _show(context);
-        await pumpTransition(tester);
+  final feature = BddFeature('showPlatformDestructiveConfirm');
 
-        await tester.tap(find.text(row.button));
-        await pumpTransition(tester);
+  Bdd(feature)
+      .scenario('answers whether the person confirmed')
+      .runOutlineWidgets<({String button, bool answer})>(
+        examples: {
+          'when confirmed': (button: _confirm, answer: true),
+          'when cancelled': (button: 'Cancel', answer: false),
+        },
+        outline: (tester, row) async {
+          final context = await pumpForContext(tester);
+          final answerFuture = _show(context);
+          await pumpTransition(tester);
 
-        check(_isShowing()).isFalse();
-        check(await answerFuture).equals(row.answer);
-      },
-    );
+          await tester.tap(find.text(row.button));
+          await pumpTransition(tester);
 
-    scenarioWidgets('answers no when closed from outside', (tester) async {
-      final context = await pumpForContext(tester);
-      final answerFuture = _show(context);
-      await pumpTransition(tester);
-      check(_isShowing()).isTrue();
+          check(_isShowing()).isFalse();
+          check(await answerFuture).equals(row.answer);
+        },
+      );
 
-      await tester.tapAt(const Offset(4, 4));
-      await pumpTransition(tester);
+  Bdd(feature).scenario('answers no when closed from outside').runWidgets((tester) async {
+    final context = await pumpForContext(tester);
+    final answerFuture = _show(context);
+    await pumpTransition(tester);
+    check(_isShowing()).isTrue();
 
-      check(_isShowing()).isFalse();
-      check(await answerFuture).isFalse();
-    });
+    await tester.tapAt(const Offset(4, 4));
+    await pumpTransition(tester);
 
-    scenarioWidgets('marks the confirming button as destructive', (tester) async {
-      final context = await pumpForContext(tester);
-      unawaited(_show(context));
-      await pumpTransition(tester);
+    check(_isShowing()).isFalse();
+    check(await answerFuture).isFalse();
+  });
 
-      check(argbOf(labelStyle(tester, _confirm))).equals(destructiveArgbOf(context));
-    });
+  Bdd(feature).scenario('marks the confirming button as destructive').runWidgets((tester) async {
+    final context = await pumpForContext(tester);
+    unawaited(_show(context));
+    await pumpTransition(tester);
+
+    check(argbOf(labelStyle(tester, _confirm))).equals(destructiveArgbOf(context));
   });
 }

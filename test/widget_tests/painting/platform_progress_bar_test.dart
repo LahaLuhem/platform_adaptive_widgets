@@ -1,3 +1,4 @@
+import 'package:bdd_framework/flutter_widget_test.dart' show Bdd, BddFeature;
 import 'package:checks/checks.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -27,50 +28,53 @@ String _spokenValue() =>
     '';
 
 void main() {
-  feature('PlatformProgressBar', () {
-    scenarioWidgets('shows how far along known progress is', (tester) async {
-      await _pump(tester, const PlatformProgressBar(value: 0.3));
-      final atThird = (await pixelsOf(tester, find.byKey(_barKey))).rgba;
-      await _pump(tester, const PlatformProgressBar(value: 0.6));
-      final atTwoThirds = (await pixelsOf(tester, find.byKey(_barKey))).rgba;
+  final feature = BddFeature('PlatformProgressBar');
 
-      check(listEquals(atThird, atTwoThirds)).isFalse();
-    });
+  Bdd(feature).scenario('shows how far along known progress is').runWidgets((tester) async {
+    await _pump(tester, const PlatformProgressBar(value: 0.3));
+    final atThird = (await pixelsOf(tester, find.byKey(_barKey))).rgba;
+    await _pump(tester, const PlatformProgressBar(value: 0.6));
+    final atTwoThirds = (await pixelsOf(tester, find.byKey(_barKey))).rgba;
 
-    scenarioWidgets('draws the bar as thick as asked', (tester) async {
-      await _pump(tester, const PlatformProgressBar(value: 0.3, height: 9));
-
-      check(tester.getSize(find.byKey(_barKey)).height).equals(9);
-    });
-
-    // Material's bar says it by itself.
-    scenarioWidgets('tells screen readers how far along known progress is', (tester) async {
-      final semantics = tester.ensureSemantics();
-      await _pump(tester, const PlatformProgressBar(value: 0.3));
-      final atThird = _spokenValue();
-      await _pump(tester, const PlatformProgressBar(value: 0.6));
-      final atTwoThirds = _spokenValue();
-      semantics.dispose();
-
-      check(atThird).isNotEmpty();
-      check(atTwoThirds).not((it) => it.equals(atThird));
-    }, variant: iosOnly);
-
-    scenarioWidgets('tells screen readers what is loading', (tester) async {
-      final semantics = tester.ensureSemantics();
-      await _pump(tester, const PlatformProgressBar(value: 0.3, semanticsLabel: _label));
-      final isNamed = find.semantics.byLabel(_label).evaluate().isNotEmpty;
-      semantics.dispose();
-
-      check(isNamed).isTrue();
-    });
-
-    scenarioOutlineWidgets<double>(
-      'refuses progress outside 0 to 1',
-      examples: {'above 1': 1.2, 'below 0': -0.1},
-      outline: (tester, value) async {
-        check(() => PlatformProgressBar(value: value)).throws<AssertionError>();
-      },
-    );
+    check(listEquals(atThird, atTwoThirds)).isFalse();
   });
+
+  Bdd(feature).scenario('draws the bar as thick as asked').runWidgets((tester) async {
+    await _pump(tester, const PlatformProgressBar(value: 0.3, height: 9));
+
+    check(tester.getSize(find.byKey(_barKey)).height).equals(9);
+  });
+
+  // Material's bar says it by itself.
+  Bdd(feature)
+      .scenario('tells screen readers how far along known progress is')
+      .runWidgets((tester) async {
+        final semantics = tester.ensureSemantics();
+        await _pump(tester, const PlatformProgressBar(value: 0.3));
+        final atThird = _spokenValue();
+        await _pump(tester, const PlatformProgressBar(value: 0.6));
+        final atTwoThirds = _spokenValue();
+        semantics.dispose();
+
+        check(atThird).isNotEmpty();
+        check(atTwoThirds).not((it) => it.equals(atThird));
+      }, variant: iosOnly);
+
+  Bdd(feature).scenario('tells screen readers what is loading').runWidgets((tester) async {
+    final semantics = tester.ensureSemantics();
+    await _pump(tester, const PlatformProgressBar(value: 0.3, semanticsLabel: _label));
+    final isNamed = find.semantics.byLabel(_label).evaluate().isNotEmpty;
+    semantics.dispose();
+
+    check(isNamed).isTrue();
+  });
+
+  Bdd(feature)
+      .scenario('refuses progress outside 0 to 1')
+      .runOutlineWidgets<double>(
+        examples: {'above 1': 1.2, 'below 0': -0.1},
+        outline: (tester, value) async {
+          check(() => PlatformProgressBar(value: value)).throws<AssertionError>();
+        },
+      );
 }

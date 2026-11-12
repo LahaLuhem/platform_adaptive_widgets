@@ -47,7 +47,7 @@ dependencies:
 
 dev_dependencies:
   analyzer: ^14.7.0   # test/guards
-  bdd_framework: ^4.0.7
+  bdd_framework: ^5.2.1
   checks: ^0.3.2
   collection: ^1.19.1
   dartender_lints:
