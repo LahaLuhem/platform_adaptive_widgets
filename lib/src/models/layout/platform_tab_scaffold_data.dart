@@ -23,6 +23,7 @@ final class const TabDestination({
 
   final String? tooltip,
 
+  /// Keys the [NavigationDestination] on Material. Cupertino's [BottomNavigationBarItem] takes none.
   final Key? key,
 }) {
   //TODO(lahaluhem): account for material's `enabled` property

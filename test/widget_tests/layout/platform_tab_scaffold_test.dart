@@ -1,5 +1,7 @@
 import 'package:checks/checks.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart' show NavigationDestination;
 import 'package:platform_adaptive_widgets/platform_adaptive_widgets.dart';
 
 import '../../support/support.dart';
@@ -58,5 +60,23 @@ void main() {
 
       check(tester.takeException()).isNull();
     });
+  });
+
+  feature('PlatformTabScaffold destination key', () {
+    // Cupertino's BottomNavigationBarItem takes no key, so only Material has a widget to put it on.
+    scenarioWidgets("a tab's key reaches its Material destination", (tester) async {
+      const key = Key('second tab');
+      await pumpPlatformWidget(
+        tester,
+        const PlatformTabScaffold(
+          tabDestinations: [
+            _tab,
+            TabDestination(inactiveIcon: SizedBox(), view: SizedBox(), key: key),
+          ],
+        ),
+      );
+
+      check(tester.widget(find.byKey(key))).isA<NavigationDestination>();
+    }, variant: androidOnly);
   });
 }
