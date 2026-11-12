@@ -1,9 +1,8 @@
 # Costs
 
 What a widget or a pattern adds to an app's release build, so the next comparison starts from the
-numbers. Each section ends with the Flutter and package versions it was measured on, since its
-numbers only hold for those (the older entries have none). A rerun replaces them, and git keeps the
-old ones.
+numbers. The table holds for the versions pinned by the commit that wrote its stamp, so a rerun
+replaces it whole. A pattern's date marks the evidence behind its rule, and git has what it ran on.
 
 ## How to measure
 
@@ -38,20 +37,20 @@ and macOS. `Theme` adds its `CupertinoTheme` on every platform, and the rest pic
 Bytes of the look a platform doesn't draw that adding the widget to the harness brings in, on top of
 the base.
 
-| Widget                            | Cupertino on Android | Material on iOS | What stays                                                                                                                                         |
-|-----------------------------------|----------------------|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `PlatformSlider`                  | 10.8 KB              | 0 B             | Android: cupertino_ui's slider, which material_ui's `Slider` keeps for its `.adaptive` arm                                                         |
-| `PlatformTextField`               | 137 B                | 0 B             | Android: 72 B of cupertino_ui's text selection toolbar shape, which material_ui's adaptive toolbar keeps. The rest is code shifting in other files |
-| `PlatformSearchBar`               | 185 B                | 0 B             | Android: nothing of its own, only code shifting in the radio and checkbox files                                                                    |
-| `PlatformSingleSelectList`        | 8.9 KB               | 0 B             | cupertino_ui's radio, which material_ui's `Radio` keeps whole. The size check leaves it out                                                        |
-| `PlatformMultiSelectList`         | 10.2 KB              | 0 B             | cupertino_ui's checkbox, which material_ui's `Checkbox` keeps whole. The size check leaves it out                                                  |
-| `showPlatformRawModalBottomSheet` | 0 B                  | 0 B             | Nothing. smooth_sheets, the iOS side, drops out of Android. iOS grows 132 KB, 84.5 KB of it smooth_sheets itself                                   |
+| Widget                            | Cupertino on Android | Material on iOS | What stays                                                                                                                                                                 |
+|-----------------------------------|----------------------|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `PlatformSlider`                  | 10.1 KB              | 0 B             | Android: cupertino_ui's slider, which material_ui's `Slider` keeps for its `.adaptive` arm                                                                                 |
+| `PlatformTextField`               | 0 B                  | 0 B             | Nothing the search bar doesn't already keep                                                                                                                                |
+| `PlatformSearchBar`               | 217 B                | 0 B             | Android: cupertino_ui's text selection toolbar, which material_ui's adaptive toolbar keeps                                                                                 |
+| `PlatformSingleSelectList`        | 8.9 KB               | 0 B             | cupertino_ui's radio, which material_ui's `Radio` keeps whole. The size check leaves it out                                                                                |
+| `PlatformMultiSelectList`         | 9.3 KB               | 0 B             | cupertino_ui's checkbox, which material_ui's `Checkbox` keeps whole. The size check leaves it out                                                                          |
+| `showPlatformRawModalBottomSheet` | 0 B                  | 0 B             | Nothing. smooth_sheets, the iOS side, drops out of Android. iOS grows 133 KB, 84.6 KB of it smooth_sheets itself                                                           |
+| `PlatformBarAction.debounced`     | 4.1 KB               | 0 B             | Android: cupertino_ui's activity indicator, which material_ui's `CircularProgressIndicator` keeps for its `.adaptive` arm. The app grows 26 KB on Android and 15 KB on iOS |
 
 The iOS base is material_ui's bundled shaders and icon font, and the `TimeOfDay` the time picker
 takes.
 
-*2026-10-31, Flutter 3.47.8, material_ui 1.9.0, cupertino_ui 1.1.5. The raw sheet's row 2026-11-09,
-Flutter 3.47.9, material_ui 1.10.0, cupertino_ui 1.1.6, smooth_sheets 1.3.0.*
+*Measured 2026-11-12, on the versions this line's commit pins.*
 
 ## Patterns
 
@@ -113,7 +112,7 @@ from copy to read in the harness, with a text field, search bar and slider added
 - **iOS:** +320 B, where 2 builds of the same code came out 8 B apart. The slider is about 350 B
   here too, and the rest nets out.
 
-*2026-10-30, Flutter 3.47.8, material_ui 1.9.0, cupertino_ui 1.1.5.*
+*2026-10-30.*
 
 In a `*Data` record's default, such a function stays in the other look's build with everything it
 builds, though only its own look reads the field. **Switch its body on `designLanguage`.**
@@ -122,4 +121,4 @@ builds, though only its own look reads the field. **Switch its body on `designLa
   and the whole theme. Inside a switch it was back to 7,634 B. *Size harness.*
 - **Android:** not measured.
 
-*2026-11-02, Flutter 3.47.9, material_ui 1.9.0, cupertino_ui 1.1.5.*
+*2026-11-02.*
