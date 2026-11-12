@@ -3,6 +3,7 @@
 
 import 'dart:async';
 
+import 'package:bdd_framework/flutter_widget_test.dart' show Bdd, BddFeature;
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart'
     show
@@ -220,446 +221,472 @@ Future<List<Object>> _startSlowWork(
 }
 
 void main() {
-  feature('PlatformAppBar', () {
-    scenarioOutlineWidgets<({PlatformBarAction action, Finder content})>(
-      "draws each action as the platform's own bar button",
-      examples: {
-        'an icon': (action: _shareAction, content: find.byIcon(Icons.share)),
-        'text': (action: _editAction, content: find.text(_edit)),
-      },
-      outline: (tester, row) async {
+  final appBar = BddFeature('PlatformAppBar');
+
+  Bdd(appBar)
+      .scenario("draws each action as the platform's own bar button")
+      .runOutlineWidgets<({PlatformBarAction action, Finder content})>(
+        examples: {
+          'an icon': (action: _shareAction, content: find.byIcon(Icons.share)),
+          'text': (action: _editAction, content: find.text(_edit)),
+        },
+        outline: (tester, row) async {
+          await _pump(
+            tester,
+            PlatformAppBar(
+              title: const Text('Title'),
+              materialAppBarData: MaterialAppBarData(actions: [_OwnBarButton(row.action)]),
+              cupertinoNavigationBarData: CupertinoNavigationBarData(
+                trailing: _OwnBarButton(row.action),
+              ),
+            ),
+          );
+          final own = _placed(tester, row.content);
+
+          await _pump(tester, PlatformAppBar(title: const Text('Title'), actions: [row.action]));
+
+          check(_placed(tester, row.content)).equals(own);
+        },
+      );
+
+  Bdd(appBar).scenario('names an icon action for screen readers').runWidgets((tester) async {
+    final semantics = tester.ensureSemantics();
+    await _pump(tester, const PlatformAppBar(actions: [_shareAction]));
+
+    check(buttonsNamed(_share).evaluate()).isNotEmpty();
+    semantics.dispose();
+  });
+
+  Bdd(appBar)
+      .scenario('puts the primary action last, at the trailing edge')
+      .runWidgets((tester) async {
+        await _pump(
+          tester,
+          const PlatformAppBar(actions: [_shareAction, _editAction], primaryAction: _saveAction),
+        );
+
+        check(tester.getRect(find.text(_save)).left)
+            .isGreaterThan(tester.getRect(find.text(_edit)).right);
+      });
+
+  Bdd(appBar).scenario("sets the primary action's text semibold on iOS").runWidgets((tester) async {
+    await _pump(tester, const PlatformAppBar(actions: [_editAction], primaryAction: _saveAction));
+
+    check(weightOf(labelStyle(tester, _save))).isGreaterThan(weightOf(labelStyle(tester, _edit)));
+  }, variant: iosOnly);
+
+  Bdd(appBar).scenario('draws the primary action like any other on Android').runWidgets((
+    tester,
+  ) async {
+    await _pump(tester, const PlatformAppBar(actions: [_editAction], primaryAction: _saveAction));
+
+    check(labelStyle(tester, _save)).equals(labelStyle(tester, _edit));
+  }, variant: androidOnly);
+
+  // Only `.debounced` waits, since a push's or a share sheet's future runs until it closes.
+  Bdd(appBar)
+      .scenario('takes every tap on a plain action, even while its work runs')
+      .runWidgets((tester) async {
+        final work = _Work();
         await _pump(
           tester,
           PlatformAppBar(
-            title: const Text('Title'),
-            materialAppBarData: MaterialAppBarData(actions: [_OwnBarButton(row.action)]),
-            cupertinoNavigationBarData: CupertinoNavigationBarData(
-              trailing: _OwnBarButton(row.action),
-            ),
+            primaryAction: PlatformBarAction(label: _save, onPressed: work.run),
           ),
         );
-        final own = _placed(tester, row.content);
+        final saveButton = _buttonOf(find.text(_save));
 
-        await _pump(tester, PlatformAppBar(title: const Text('Title'), actions: [row.action]));
+        await tester.tap(saveButton);
+        await pumpThrough(tester, kBarActionBusyDelay);
+        await tester.tap(saveButton);
 
-        check(_placed(tester, row.content)).equals(own);
-      },
-    );
+        check(work.starts).equals(2);
+      });
 
-    scenarioWidgets('names an icon action for screen readers', (tester) async {
-      final semantics = tester.ensureSemantics();
-      await _pump(tester, const PlatformAppBar(actions: [_shareAction]));
+  Bdd(appBar)
+      .scenario("lets one platform's own widgets replace its side's actions")
+      .runOutlineWidgets<DesignLanguage>(
+        examples: {'Material': .material, 'Cupertino': .cupertino},
+        outline: (tester, overridden) async {
+          const custom = Text(_custom);
+          await _pump(
+            tester,
+            PlatformAppBar(
+              actions: [_shareAction],
+              primaryAction: _saveAction,
+              materialAppBarData: overridden == .material
+                  ? const MaterialAppBarData(actions: [custom])
+                  : const MaterialAppBarData(),
+              cupertinoNavigationBarData: overridden == .cupertino
+                  ? const CupertinoNavigationBarData(trailing: custom)
+                  : const CupertinoNavigationBarData(),
+            ),
+          );
+          final shown = {
+            if (find.text(_custom).evaluate().isNotEmpty) _custom,
+            if (find.byIcon(Icons.share).evaluate().isNotEmpty) _share,
+            if (find.text(_save).evaluate().isNotEmpty) _save,
+          };
 
-      check(buttonsNamed(_share).evaluate()).isNotEmpty();
-      semantics.dispose();
-    });
-
-    scenarioWidgets('puts the primary action last, at the trailing edge', (tester) async {
-      await _pump(
-        tester,
-        const PlatformAppBar(actions: [_shareAction, _editAction], primaryAction: _saveAction),
+          check(
+            because: designLanguage.name,
+            shown,
+          ).deepEquals(designLanguage == overridden ? {_custom} : {_share, _save});
+        },
       );
 
-      check(tester.getRect(find.text(_save)).left)
-          .isGreaterThan(tester.getRect(find.text(_edit)).right);
-    });
-
-    scenarioWidgets("sets the primary action's text semibold on iOS", (tester) async {
-      await _pump(tester, const PlatformAppBar(actions: [_editAction], primaryAction: _saveAction));
-
-      check(weightOf(labelStyle(tester, _save))).isGreaterThan(weightOf(labelStyle(tester, _edit)));
-    }, variant: iosOnly);
-
-    scenarioWidgets('draws the primary action like any other on Android', (tester) async {
-      await _pump(tester, const PlatformAppBar(actions: [_editAction], primaryAction: _saveAction));
-
-      check(labelStyle(tester, _save)).equals(labelStyle(tester, _edit));
-    }, variant: androidOnly);
-
-    // Only `.debounced` waits, since a push's or a share sheet's future runs until it closes.
-    scenarioWidgets('takes every tap on a plain action, even while its work runs', (tester) async {
-      final work = _Work();
-      await _pump(
-        tester,
-        PlatformAppBar(
-          primaryAction: PlatformBarAction(label: _save, onPressed: work.run),
-        ),
-      );
-      final saveButton = _buttonOf(find.text(_save));
-
-      await tester.tap(saveButton);
-      await pumpThrough(tester, kBarActionBusyDelay);
-      await tester.tap(saveButton);
-
-      check(work.starts).equals(2);
-    });
-
-    scenarioOutlineWidgets<DesignLanguage>(
-      "lets one platform's own widgets replace its side's actions",
-      examples: {'Material': .material, 'Cupertino': .cupertino},
-      outline: (tester, overridden) async {
+  // The own side's leading shows where it swaps a sheet's way out, below.
+  Bdd(appBar)
+      .scenario('leaves out a leading widget given for the other platform')
+      .runWidgets((tester) async {
         const custom = Text(_custom);
         await _pump(
           tester,
           PlatformAppBar(
-            actions: [_shareAction],
-            primaryAction: _saveAction,
-            materialAppBarData: overridden == .material
-                ? const MaterialAppBarData(actions: [custom])
+            materialAppBarData: designLanguage == .cupertino
+                ? const MaterialAppBarData(leading: custom)
                 : const MaterialAppBarData(),
-            cupertinoNavigationBarData: overridden == .cupertino
-                ? const CupertinoNavigationBarData(trailing: custom)
+            cupertinoNavigationBarData: designLanguage == .material
+                ? const CupertinoNavigationBarData(leading: custom)
                 : const CupertinoNavigationBarData(),
           ),
         );
-        final shown = {
-          if (find.text(_custom).evaluate().isNotEmpty) _custom,
-          if (find.byIcon(Icons.share).evaluate().isNotEmpty) _share,
-          if (find.text(_save).evaluate().isNotEmpty) _save,
-        };
 
-        check(
-          because: designLanguage.name,
-          shown,
-        ).deepEquals(designLanguage == overridden ? {_custom} : {_share, _save});
-      },
-    );
-
-    // The own side's leading shows where it swaps a sheet's way out, below.
-    scenarioWidgets('leaves out a leading widget given for the other platform', (tester) async {
-      const custom = Text(_custom);
-      await _pump(
-        tester,
-        PlatformAppBar(
-          materialAppBarData: designLanguage == .cupertino
-              ? const MaterialAppBarData(leading: custom)
-              : const MaterialAppBarData(),
-          cupertinoNavigationBarData: designLanguage == .material
-              ? const CupertinoNavigationBarData(leading: custom)
-              : const CupertinoNavigationBarData(),
-        ),
-      );
-
-      check(find.text(_custom).evaluate()).isEmpty();
-    });
-
-    scenarioWidgets("goes back through the platform's own back button", (tester) async {
-      await pumpInPlatformScaffold(tester, const Text(_first));
-      Navigator.of(tester.element(find.text(_first))).push(
-        PageRouteBuilder<void>(
-          pageBuilder: (_, _, _) =>
-              const PlatformScaffold(appBarData: PlatformAppBar(), body: SizedBox()),
-        ),
-      );
-      await pumpTransition(tester);
-
-      await tester.tap(switch (designLanguage) {
-        .material => find.byType(BackButton),
-        .cupertino => find.byType(CupertinoNavigationBarBackButton),
+        check(find.text(_custom).evaluate()).isEmpty();
       });
-      await pumpTransition(tester);
 
-      check(find.text(_first).evaluate()).isNotEmpty();
-    });
-
-    scenarioWidgets("closes a sheet through the platform's own way out", (tester) async {
-      await _openInSheet(tester, _sheetPage);
-
-      await tester.tap(_sheetWayOut(tester));
-      await pumpTransition(tester);
-
-      check(find.byKey(_sheetBody).evaluate()).isEmpty();
-    });
-
-    // Material's CloseButton asks it by itself.
-    scenarioWidgets("asks the sheet's PopScope before closing it", (tester) async {
-      var attempts = 0;
-      await _openInSheet(
-        tester,
-        PopScope<void>(
-          canPop: false,
-          onPopInvokedWithResult: (didPop, _) {
-            if (!didPop) attempts++;
-          },
-          child: _sheetPage,
-        ),
-      );
-
-      await tester.tap(_sheetWayOut(tester));
-      await pumpTransition(tester);
-
-      check(find.byKey(_sheetBody).evaluate()).isNotEmpty();
-      check(attempts).equals(1);
-    }, variant: iosOnly);
-
-    scenarioOutlineWidgets<PlatformAppBar>(
-      "lets a sheet's bar swap or drop its way out",
-      examples: {
-        'swapped for its own leading': const PlatformAppBar(
-          materialAppBarData: MaterialAppBarData(leading: Text(_custom)),
-          cupertinoNavigationBarData: CupertinoNavigationBarData(leading: Text(_custom)),
-        ),
-        'dropped': const PlatformAppBar(automaticallyImplyLeading: false),
-      },
-      outline: (tester, bar) async {
-        await _openInSheet(
-          tester,
-          PlatformScaffold(
-            appBarData: bar,
-            body: const SizedBox(key: _sheetBody),
+  Bdd(appBar)
+      .scenario("goes back through the platform's own back button")
+      .runWidgets((tester) async {
+        await pumpInPlatformScaffold(tester, const Text(_first));
+        Navigator.of(tester.element(find.text(_first))).push(
+          PageRouteBuilder<void>(
+            pageBuilder: (_, _, _) =>
+                const PlatformScaffold(appBarData: PlatformAppBar(), body: SizedBox()),
           ),
         );
-        check(find.byKey(_sheetBody).evaluate()).isNotEmpty();
+        await pumpTransition(tester);
 
-        check(_sheetWayOut(tester).evaluate()).isEmpty();
-      },
+        await tester.tap(switch (designLanguage) {
+          .material => find.byType(BackButton),
+          .cupertino => find.byType(CupertinoNavigationBarBackButton),
+        });
+        await pumpTransition(tester);
+
+        check(find.text(_first).evaluate()).isNotEmpty();
+      });
+
+  Bdd(appBar)
+      .scenario("closes a sheet through the platform's own way out")
+      .runWidgets((tester) async {
+        await _openInSheet(tester, _sheetPage);
+
+        await tester.tap(_sheetWayOut(tester));
+        await pumpTransition(tester);
+
+        check(find.byKey(_sheetBody).evaluate()).isEmpty();
+      });
+
+  // Material's CloseButton asks it by itself.
+  Bdd(appBar).scenario("asks the sheet's PopScope before closing it").runWidgets((tester) async {
+    var attempts = 0;
+    await _openInSheet(
+      tester,
+      PopScope<void>(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) attempts++;
+        },
+        child: _sheetPage,
+      ),
     );
+
+    await tester.tap(_sheetWayOut(tester));
+    await pumpTransition(tester);
+
+    check(find.byKey(_sheetBody).evaluate()).isNotEmpty();
+    check(attempts).equals(1);
+  }, variant: iosOnly);
+
+  Bdd(appBar)
+      .scenario("lets a sheet's bar swap or drop its way out")
+      .runOutlineWidgets<PlatformAppBar>(
+        examples: {
+          'swapped for its own leading': const PlatformAppBar(
+            materialAppBarData: MaterialAppBarData(leading: Text(_custom)),
+            cupertinoNavigationBarData: CupertinoNavigationBarData(leading: Text(_custom)),
+          ),
+          'dropped': const PlatformAppBar(automaticallyImplyLeading: false),
+        },
+        outline: (tester, bar) async {
+          await _openInSheet(
+            tester,
+            PlatformScaffold(
+              appBarData: bar,
+              body: const SizedBox(key: _sheetBody),
+            ),
+          );
+          check(find.byKey(_sheetBody).evaluate()).isNotEmpty();
+
+          check(_sheetWayOut(tester).evaluate()).isEmpty();
+        },
+      );
+
+  final debouncedAction = BddFeature('PlatformBarAction.debounced');
+
+  Bdd(debouncedAction)
+      .scenario('ignores taps while its work runs, then takes the next one')
+      .runOutlineWidgets<AnimatedSwitcherTransitionBuilder?>(
+        examples: _transitions,
+        outline: (tester, transition) async {
+          final work = _Work();
+          await _pumpPublish(tester, work, transition: transition);
+          final publishButton = _buttonOf(_textKind.content);
+
+          await tester.tap(publishButton);
+          await tester.pump();
+          await tester.tap(publishButton);
+          await pumpThrough(tester, kBarActionBusyDelay);
+          await tester.tap(publishButton);
+          check(because: 'while it runs', work.starts).equals(1);
+
+          // Lets the fade in finish, so there's one to come back from.
+          if (transition != null) await _settle(tester, _textKind.content);
+          work.end();
+          await tester.pump();
+          await tester.tap(publishButton);
+
+          check(because: 'once it is done', work.starts).equals(2);
+        },
+      );
+
+  Bdd(debouncedAction)
+      .scenario('shows nothing for work that ends before the delay')
+      .runOutlineWidgets<AnimatedSwitcherTransitionBuilder?>(
+        examples: _transitions,
+        outline: (tester, transition) async {
+          final work = _Work();
+          await _pumpPublish(tester, work, transition: transition);
+          final publishButton = _buttonOf(_textKind.content);
+          void drawsAsUsual(String moment) {
+            check(because: moment, _spinner.evaluate()).isEmpty();
+            check(because: moment, _paintsText(tester, publishButton)).isTrue();
+          }
+
+          await tester.tap(publishButton);
+          await tester.pump(kBarActionBusyDelay - const Duration(milliseconds: 1));
+          drawsAsUsual('just before the delay');
+
+          work.end();
+          await pumpThrough(tester, kBarActionBusyDelay);
+
+          drawsAsUsual('after it');
+        },
+      );
+
+  Bdd(debouncedAction)
+      .scenario("shows the spinner in the action's place once its work outlasts the delay")
+      .runOutlineWidgets<_Kind>(
+        examples: _kinds,
+        outline: (tester, kind) async {
+          await _pump(tester, PlatformAppBar(actions: [_debounced(_Work(), kind)]));
+          final button = _buttonOf(kind.content);
+          check(because: 'before the tap', _paintsText(tester, button)).isTrue();
+
+          await _startSlowWork(tester, kind.content);
+
+          check(because: 'it hides its own content', _paintsText(tester, button)).isFalse();
+          check((tester.getCenter(_spinner) - tester.getCenter(kind.content)).distance)
+              .isLessThan(0.5);
+        },
+      );
+
+  Bdd(debouncedAction)
+      .scenario('runs the transition it is given between its content and the spinner, both ways')
+      .runOutlineWidgets<_Kind>(
+        examples: _kinds,
+        outline: (tester, kind) async {
+          final work = _Work();
+          await _pump(
+            tester,
+            PlatformAppBar(actions: [_debounced(work, kind, transition: _Fade.new)]),
+          );
+          ({AnimationStatus content, AnimationStatus spinner}) directions() => (
+            content: _fadeOf(tester, kind.content).status,
+            spinner: _fadeOf(tester, _spinner).status,
+          );
+
+          await _startSlowWork(tester, kind.content);
+          check(
+            because: 'on the way in',
+            directions(),
+          ).equals((content: .reverse, spinner: .forward));
+
+          await _settle(tester, kind.content);
+          work.end();
+          await tester.pump();
+
+          check(
+            because: 'on the way out',
+            directions(),
+          ).equals((content: .forward, spinner: .reverse));
+        },
+      );
+
+  Bdd(debouncedAction)
+      .scenario('swaps at once when the device asks for less motion, even after the bar is built')
+      .runOutlineWidgets<FakeAccessibilityFeatures>(
+        examples: const {
+          "Android's Remove animations": FakeAccessibilityFeatures(disableAnimations: true),
+          "iOS's Reduce Motion": FakeAccessibilityFeatures(reduceMotion: true),
+        },
+        outline: (tester, lessMotion) async {
+          await _pumpPublish(tester, _Work(), transition: _Fade.new);
+
+          tester.platformDispatcher.accessibilityFeaturesTestValue = lessMotion;
+          addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+          await _startSlowWork(tester, _textKind.content);
+
+          check(_paintsText(tester, _buttonOf(_textKind.content))).isFalse();
+        },
+      );
+
+  Bdd(debouncedAction)
+      .scenario("keeps the action's width, so its neighbours stay put")
+      .runOutlineWidgets<AnimatedSwitcherTransitionBuilder?>(
+        examples: _transitions,
+        outline: (tester, transition) async {
+          await _pump(
+            tester,
+            PlatformAppBar(
+              actions: const [_shareAction],
+              primaryAction: _debounced(_Work(), _textKind, transition: transition),
+            ),
+          );
+          final shareRect = tester.getRect(_buttonOf(find.byIcon(Icons.share)));
+
+          await _startSlowWork(tester, _textKind.content, transition: transition);
+
+          check(tester.getRect(_buttonOf(find.byIcon(Icons.share)))).equals(shareRect);
+        },
+      );
+
+  Bdd(debouncedAction)
+      .scenario("draws the spinner in the action's own colour, not a disabled grey")
+      .runOutlineWidgets<_Kind>(
+        examples: _kinds,
+        outline: (tester, kind) async {
+          await _pump(tester, PlatformAppBar(actions: [_debounced(_Work(), kind)]));
+          final contentColour = _colourOf(tester, kind.content);
+
+          await _startSlowWork(tester, kind.content);
+          await _settleBusyButton(tester);
+
+          check(_spinnerColour(tester)?.toARGB32()).equals(contentColour.toARGB32());
+        },
+      );
+
+  Bdd(debouncedAction)
+      .scenario('fades its content out in its own colour, not a disabled grey')
+      .runOutlineWidgets<_Kind>(
+        examples: _kinds,
+        outline: (tester, kind) async {
+          await _pump(
+            tester,
+            PlatformAppBar(actions: [_debounced(_Work(), kind, transition: _Fade.new)]),
+          );
+          final contentColour = _colourOf(tester, kind.content);
+
+          await _startSlowWork(tester, kind.content);
+          final fadeOut = _fadeOf(tester, kind.content);
+          while (fadeOut.value > 0.5) {
+            await tester.pump(const Duration(milliseconds: 16));
+          }
+
+          check(_colourOf(tester, kind.content).toARGB32()).equals(contentColour.toARGB32());
+        },
+      );
+
+  // Only Material fades a button's colour between states.
+  Bdd(debouncedAction)
+      .scenario('brings its content back in its own colour, not a disabled grey')
+      .runOutlineWidgets<_Kind>(
+        examples: _kinds,
+        variant: androidOnly,
+        outline: (tester, kind) async {
+          final work = _Work();
+          await _pump(tester, PlatformAppBar(actions: [_debounced(work, kind)]));
+          final contentColour = _colourOf(tester, kind.content);
+          await _startSlowWork(tester, kind.content);
+          await _settleBusyButton(tester);
+
+          work.end();
+          await tester.pump();
+
+          check(_colourOf(tester, kind.content).toARGB32()).equals(contentColour.toARGB32());
+        },
+      );
+
+  Bdd(debouncedAction)
+      .scenario('tells screen readers it is disabled while its work runs, under its own name')
+      .runOutlineWidgets<AnimatedSwitcherTransitionBuilder?>(
+        examples: _transitions,
+        outline: (tester, transition) async {
+          final semantics = tester.ensureSemantics();
+          await _pumpPublish(tester, _Work(), transition: transition);
+          SemanticsData publishSemantics() =>
+              buttonsNamed(_publish).evaluate().single.getSemanticsData();
+          // An enabled Cupertino button reports no enabled state at all, so only "disabled" means anything.
+          check(
+            because: 'before the tap',
+            publishSemantics().flagsCollection.isEnabled,
+          ).not((isEnabled) => isEnabled.equals(.isFalse));
+
+          await _startSlowWork(tester, _textKind.content, transition: transition);
+
+          check(because: 'it keeps its name', buttonsNamed(_publish).evaluate()).length.equals(1);
+          check(publishSemantics())
+            ..has((data) => data.flagsCollection.isEnabled, 'enabled').equals(.isFalse)
+            ..has((data) => data.hasAction(.tap), 'tap').isFalse();
+          semantics.dispose();
+        },
+      );
+
+  Bdd(debouncedAction)
+      .scenario('keeps the busy look on its own action when one lands before it')
+      .runWidgets((tester) async {
+        final scanAction = _debounced(_Work(), _iconKind);
+        await _pump(tester, PlatformAppBar(actions: [scanAction]));
+        await _startSlowWork(tester, _iconKind.content);
+
+        await _pump(tester, PlatformAppBar(actions: [_shareAction, scanAction]));
+
+        check(find.descendant(of: _buttonOf(_iconKind.content), matching: _spinner).evaluate())
+            .length
+            .equals(1);
+      });
+
+  Bdd(debouncedAction).scenario('takes taps again once its work fails').runWidgets((tester) async {
+    final work = _Work();
+    await _pumpPublish(tester, work);
+    await _startSlowWork(tester, _textKind.content);
+
+    work.fail(StateError('offline'));
+    await tester.pump();
+    await tester.tap(_buttonOf(_textKind.content));
+
+    check(work.starts).equals(2);
   });
 
-  feature('PlatformBarAction.debounced', () {
-    scenarioOutlineWidgets<AnimatedSwitcherTransitionBuilder?>(
-      'ignores taps while its work runs, then takes the next one',
-      examples: _transitions,
-      outline: (tester, transition) async {
-        final work = _Work();
-        await _pumpPublish(tester, work, transition: transition);
-        final publishButton = _buttonOf(_textKind.content);
+  Bdd(debouncedAction).scenario("lets its work's error through").runWidgets((tester) async {
+    final work = _Work();
+    await _pumpPublish(tester, work);
+    final errors = await _startSlowWork(tester, _textKind.content);
+    final error = StateError('offline');
 
-        await tester.tap(publishButton);
-        await tester.pump();
-        await tester.tap(publishButton);
-        await pumpThrough(tester, kBarActionBusyDelay);
-        await tester.tap(publishButton);
-        check(because: 'while it runs', work.starts).equals(1);
+    work.fail(error);
+    await tester.pump();
 
-        // Lets the fade in finish, so there's one to come back from.
-        if (transition != null) await _settle(tester, _textKind.content);
-        work.end();
-        await tester.pump();
-        await tester.tap(publishButton);
-
-        check(because: 'once it is done', work.starts).equals(2);
-      },
-    );
-
-    scenarioOutlineWidgets<AnimatedSwitcherTransitionBuilder?>(
-      'shows nothing for work that ends before the delay',
-      examples: _transitions,
-      outline: (tester, transition) async {
-        final work = _Work();
-        await _pumpPublish(tester, work, transition: transition);
-        final publishButton = _buttonOf(_textKind.content);
-        void drawsAsUsual(String moment) {
-          check(because: moment, _spinner.evaluate()).isEmpty();
-          check(because: moment, _paintsText(tester, publishButton)).isTrue();
-        }
-
-        await tester.tap(publishButton);
-        await tester.pump(kBarActionBusyDelay - const Duration(milliseconds: 1));
-        drawsAsUsual('just before the delay');
-
-        work.end();
-        await pumpThrough(tester, kBarActionBusyDelay);
-
-        drawsAsUsual('after it');
-      },
-    );
-
-    scenarioOutlineWidgets<_Kind>(
-      "shows the spinner in the action's place once its work outlasts the delay",
-      examples: _kinds,
-      outline: (tester, kind) async {
-        await _pump(tester, PlatformAppBar(actions: [_debounced(_Work(), kind)]));
-        final button = _buttonOf(kind.content);
-        check(because: 'before the tap', _paintsText(tester, button)).isTrue();
-
-        await _startSlowWork(tester, kind.content);
-
-        check(because: 'it hides its own content', _paintsText(tester, button)).isFalse();
-        check((tester.getCenter(_spinner) - tester.getCenter(kind.content)).distance)
-            .isLessThan(0.5);
-      },
-    );
-
-    scenarioOutlineWidgets<_Kind>(
-      'runs the transition it is given between its content and the spinner, both ways',
-      examples: _kinds,
-      outline: (tester, kind) async {
-        final work = _Work();
-        await _pump(
-          tester,
-          PlatformAppBar(actions: [_debounced(work, kind, transition: _Fade.new)]),
-        );
-        ({AnimationStatus content, AnimationStatus spinner}) directions() => (
-          content: _fadeOf(tester, kind.content).status,
-          spinner: _fadeOf(tester, _spinner).status,
-        );
-
-        await _startSlowWork(tester, kind.content);
-        check(
-          because: 'on the way in',
-          directions(),
-        ).equals((content: .reverse, spinner: .forward));
-
-        await _settle(tester, kind.content);
-        work.end();
-        await tester.pump();
-
-        check(
-          because: 'on the way out',
-          directions(),
-        ).equals((content: .forward, spinner: .reverse));
-      },
-    );
-
-    scenarioOutlineWidgets<FakeAccessibilityFeatures>(
-      'swaps at once when the device asks for less motion, even after the bar is built',
-      examples: const {
-        "Android's Remove animations": FakeAccessibilityFeatures(disableAnimations: true),
-        "iOS's Reduce Motion": FakeAccessibilityFeatures(reduceMotion: true),
-      },
-      outline: (tester, lessMotion) async {
-        await _pumpPublish(tester, _Work(), transition: _Fade.new);
-
-        tester.platformDispatcher.accessibilityFeaturesTestValue = lessMotion;
-        addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
-        await _startSlowWork(tester, _textKind.content);
-
-        check(_paintsText(tester, _buttonOf(_textKind.content))).isFalse();
-      },
-    );
-
-    scenarioOutlineWidgets<AnimatedSwitcherTransitionBuilder?>(
-      "keeps the action's width, so its neighbours stay put",
-      examples: _transitions,
-      outline: (tester, transition) async {
-        await _pump(
-          tester,
-          PlatformAppBar(
-            actions: const [_shareAction],
-            primaryAction: _debounced(_Work(), _textKind, transition: transition),
-          ),
-        );
-        final shareRect = tester.getRect(_buttonOf(find.byIcon(Icons.share)));
-
-        await _startSlowWork(tester, _textKind.content, transition: transition);
-
-        check(tester.getRect(_buttonOf(find.byIcon(Icons.share)))).equals(shareRect);
-      },
-    );
-
-    scenarioOutlineWidgets<_Kind>(
-      "draws the spinner in the action's own colour, not a disabled grey",
-      examples: _kinds,
-      outline: (tester, kind) async {
-        await _pump(tester, PlatformAppBar(actions: [_debounced(_Work(), kind)]));
-        final contentColour = _colourOf(tester, kind.content);
-
-        await _startSlowWork(tester, kind.content);
-        await _settleBusyButton(tester);
-
-        check(_spinnerColour(tester)?.toARGB32()).equals(contentColour.toARGB32());
-      },
-    );
-
-    scenarioOutlineWidgets<_Kind>(
-      'fades its content out in its own colour, not a disabled grey',
-      examples: _kinds,
-      outline: (tester, kind) async {
-        await _pump(
-          tester,
-          PlatformAppBar(actions: [_debounced(_Work(), kind, transition: _Fade.new)]),
-        );
-        final contentColour = _colourOf(tester, kind.content);
-
-        await _startSlowWork(tester, kind.content);
-        final fadeOut = _fadeOf(tester, kind.content);
-        while (fadeOut.value > 0.5) {
-          await tester.pump(const Duration(milliseconds: 16));
-        }
-
-        check(_colourOf(tester, kind.content).toARGB32()).equals(contentColour.toARGB32());
-      },
-    );
-
-    // Only Material fades a button's colour between states.
-    scenarioOutlineWidgets<_Kind>(
-      'brings its content back in its own colour, not a disabled grey',
-      examples: _kinds,
-      variant: androidOnly,
-      outline: (tester, kind) async {
-        final work = _Work();
-        await _pump(tester, PlatformAppBar(actions: [_debounced(work, kind)]));
-        final contentColour = _colourOf(tester, kind.content);
-        await _startSlowWork(tester, kind.content);
-        await _settleBusyButton(tester);
-
-        work.end();
-        await tester.pump();
-
-        check(_colourOf(tester, kind.content).toARGB32()).equals(contentColour.toARGB32());
-      },
-    );
-
-    scenarioOutlineWidgets<AnimatedSwitcherTransitionBuilder?>(
-      'tells screen readers it is disabled while its work runs, under its own name',
-      examples: _transitions,
-      outline: (tester, transition) async {
-        final semantics = tester.ensureSemantics();
-        await _pumpPublish(tester, _Work(), transition: transition);
-        SemanticsData publishSemantics() =>
-            buttonsNamed(_publish).evaluate().single.getSemanticsData();
-        // An enabled Cupertino button reports no enabled state at all, so only "disabled" means anything.
-        check(
-          because: 'before the tap',
-          publishSemantics().flagsCollection.isEnabled,
-        ).not((isEnabled) => isEnabled.equals(.isFalse));
-
-        await _startSlowWork(tester, _textKind.content, transition: transition);
-
-        check(because: 'it keeps its name', buttonsNamed(_publish).evaluate()).length.equals(1);
-        check(publishSemantics())
-          ..has((data) => data.flagsCollection.isEnabled, 'enabled').equals(.isFalse)
-          ..has((data) => data.hasAction(.tap), 'tap').isFalse();
-        semantics.dispose();
-      },
-    );
-
-    scenarioWidgets('keeps the busy look on its own action when one lands before it', (
-      tester,
-    ) async {
-      final scanAction = _debounced(_Work(), _iconKind);
-      await _pump(tester, PlatformAppBar(actions: [scanAction]));
-      await _startSlowWork(tester, _iconKind.content);
-
-      await _pump(tester, PlatformAppBar(actions: [_shareAction, scanAction]));
-
-      check(find.descendant(of: _buttonOf(_iconKind.content), matching: _spinner).evaluate()).length
-          .equals(1);
-    });
-
-    scenarioWidgets('takes taps again once its work fails', (tester) async {
-      final work = _Work();
-      await _pumpPublish(tester, work);
-      await _startSlowWork(tester, _textKind.content);
-
-      work.fail(StateError('offline'));
-      await tester.pump();
-      await tester.tap(_buttonOf(_textKind.content));
-
-      check(work.starts).equals(2);
-    });
-
-    scenarioWidgets("lets its work's error through", (tester) async {
-      final work = _Work();
-      await _pumpPublish(tester, work);
-      final errors = await _startSlowWork(tester, _textKind.content);
-      final error = StateError('offline');
-
-      work.fail(error);
-      await tester.pump();
-
-      check(errors).deepEquals([error]);
-    });
+    check(errors).deepEquals([error]);
   });
 }

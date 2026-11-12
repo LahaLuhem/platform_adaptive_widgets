@@ -1,3 +1,4 @@
+import 'package:bdd_framework/flutter_widget_test.dart' show Bdd, BddFeature;
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoTextField;
 import 'package:flutter/widgets.dart';
@@ -10,25 +11,25 @@ BoxDecoration? _drawnDecoration(WidgetTester tester) =>
     tester.widget<CupertinoTextField>(find.byType(CupertinoTextField)).decoration;
 
 void main() {
-  feature('PlatformTextField', () {
-    scenarioWidgets('draws a decoration it was given instead', (tester) async {
-      const decoration = BoxDecoration(color: Color(0xFF123456));
-      await pumpPlatformWidget(
-        tester,
-        const PlatformTextField(
-          cupertinoTextFieldData: CupertinoTextFieldData(decoration: decoration),
-        ),
-      );
+  final feature = BddFeature('PlatformTextField');
 
-      check(_drawnDecoration(tester)).equals(decoration);
-    }, variant: iosOnly);
+  Bdd(feature).scenario('draws a decoration it was given instead').runWidgets((tester) async {
+    const decoration = BoxDecoration(color: Color(0xFF123456));
+    await pumpPlatformWidget(
+      tester,
+      const PlatformTextField(
+        cupertinoTextFieldData: CupertinoTextFieldData(decoration: decoration),
+      ),
+    );
 
-    scenarioWidgets('tells the keyboard to show inline predictions', (tester) async {
-      await pumpInPlatformScaffold(tester, const PlatformTextField(enableInlinePrediction: true));
+    check(_drawnDecoration(tester)).equals(decoration);
+  }, variant: iosOnly);
 
-      await tester.showKeyboard(find.byType(PlatformTextField));
+  Bdd(feature).scenario('tells the keyboard to show inline predictions').runWidgets((tester) async {
+    await pumpInPlatformScaffold(tester, const PlatformTextField(enableInlinePrediction: true));
 
-      check(tester.testTextInput.setClientArgs?['enableInlinePrediction']).equals(true);
-    });
+    await tester.showKeyboard(find.byType(PlatformTextField));
+
+    check(tester.testTextInput.setClientArgs?['enableInlinePrediction']).equals(true);
   });
 }

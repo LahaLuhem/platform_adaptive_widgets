@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui' show Brightness, SemanticsAction;
 
+import 'package:bdd_framework/flutter_widget_test.dart' show Bdd, BddFeature;
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart'
     show CupertinoDynamicColor, kCupertinoModalBarrierColor;
@@ -47,113 +48,117 @@ Color? _barrierColor(WidgetTester tester) =>
     tester.widget<ModalBarrier>(find.byType(ModalBarrier).last).color;
 
 void main() {
-  feature('showPlatformRawModalBottomSheet', () {
-    scenarioOutlineWidgets<bool>(
-      'closes on a tap outside only when barrierDismissible allows it',
-      examples: {'dismissible': true, 'not dismissible': false},
-      outline: (tester, barrierDismissible) async {
-        unawaited(_show(await _pumpPage(tester), barrierDismissible: barrierDismissible));
-        await pumpTransition(tester);
-        check(_isUp()).isTrue();
+  final feature = BddFeature('showPlatformRawModalBottomSheet');
 
-        await tester.tapAt(const Offset(4, 4));
-        await pumpTransition(tester);
+  Bdd(feature)
+      .scenario('closes on a tap outside only when barrierDismissible allows it')
+      .runOutlineWidgets<bool>(
+        examples: {'dismissible': true, 'not dismissible': false},
+        outline: (tester, barrierDismissible) async {
+          unawaited(_show(await _pumpPage(tester), barrierDismissible: barrierDismissible));
+          await pumpTransition(tester);
+          check(_isUp()).isTrue();
 
-        check(_isUp()).equals(!barrierDismissible);
-      },
-    );
+          await tester.tapAt(const Offset(4, 4));
+          await pumpTransition(tester);
 
-    // Material's sheet drags by itself, through enableDrag.
-    scenarioOutlineWidgets<bool>(
-      'closes on a drag down, whatever barrierDismissible says',
-      examples: {'dismissible': true, 'not dismissible': false},
-      outline: (tester, barrierDismissible) async {
-        unawaited(_show(await _pumpPage(tester), barrierDismissible: barrierDismissible));
+          check(_isUp()).equals(!barrierDismissible);
+        },
+      );
+
+  // Material's sheet drags by itself, through enableDrag.
+  Bdd(feature)
+      .scenario('closes on a drag down, whatever barrierDismissible says')
+      .runOutlineWidgets<bool>(
+        examples: {'dismissible': true, 'not dismissible': false},
+        outline: (tester, barrierDismissible) async {
+          unawaited(_show(await _pumpPage(tester), barrierDismissible: barrierDismissible));
+          await pumpTransition(tester);
+          check(_isUp()).isTrue();
+
+          await _dragDown(tester);
+
+          check(_isUp()).isFalse();
+        },
+        variant: iosOnly,
+      );
+
+  Bdd(feature)
+      .scenario("asks the content's PopScope before a drag closes it")
+      .runWidgets((tester) async {
+        var attempts = 0;
+        unawaited(
+          _show(
+            await _pumpPage(tester),
+            content: PopScope<void>(
+              canPop: false,
+              onPopInvokedWithResult: (didPop, _) {
+                if (!didPop) attempts++;
+              },
+              child: _content,
+            ),
+          ),
+        );
         await pumpTransition(tester);
-        check(_isUp()).isTrue();
 
         await _dragDown(tester);
 
-        check(_isUp()).isFalse();
-      },
-      variant: iosOnly,
+        check(_isUp()).isTrue();
+        check(attempts).equals(1);
+      }, variant: iosOnly);
+
+  Bdd(feature).scenario('closes when a screen reader dismisses it').runWidgets((tester) async {
+    final semantics = tester.ensureSemantics();
+    unawaited(_show(await _pumpPage(tester)));
+    await pumpTransition(tester);
+
+    tester.semantics.performAction(
+      find.semantics.byAction(SemanticsAction.dismiss),
+      SemanticsAction.dismiss,
     );
+    await pumpTransition(tester);
 
-    scenarioWidgets("asks the content's PopScope before a drag closes it", (tester) async {
-      var attempts = 0;
-      unawaited(
-        _show(
-          await _pumpPage(tester),
-          content: PopScope<void>(
-            canPop: false,
-            onPopInvokedWithResult: (didPop, _) {
-              if (!didPop) attempts++;
-            },
-            child: _content,
-          ),
-        ),
-      );
-      await pumpTransition(tester);
-
-      await _dragDown(tester);
-
-      check(_isUp()).isTrue();
-      check(attempts).equals(1);
-    }, variant: iosOnly);
-
-    scenarioWidgets('closes when a screen reader dismisses it', (tester) async {
-      final semantics = tester.ensureSemantics();
-      unawaited(_show(await _pumpPage(tester)));
-      await pumpTransition(tester);
-
-      tester.semantics.performAction(
-        find.semantics.byAction(SemanticsAction.dismiss),
-        SemanticsAction.dismiss,
-      );
-      await pumpTransition(tester);
-
-      check(_isUp()).isFalse();
-      semantics.dispose();
-    });
-
-    scenarioWidgets('sits at the bottom, as tall as its content', (tester) async {
-      unawaited(_show(await _pumpPage(tester)));
-      await pumpTransition(tester);
-
-      final content = tester.getRect(find.byKey(_contentKey));
-      check(content.bottom).equals(tester.getSize(find.byKey(_pageKey)).height);
-      check(content.height).equals(_contentHeight);
-    }, variant: iosOnly);
-
-    scenarioWidgets('leaves the page behind in place', (tester) async {
-      final context = await _pumpPage(tester);
-      final page = tester.getRect(find.byKey(_pageKey));
-      unawaited(_show(context));
-      await pumpTransition(tester);
-
-      check(tester.getRect(find.byKey(_pageKey))).equals(page);
-    }, variant: iosOnly);
-
-    scenarioWidgets('tints the barrier with barrierColor', (tester) async {
-      unawaited(_show(await _pumpPage(tester), barrierColor: _tint));
-      await pumpTransition(tester);
-
-      check(_barrierColor(tester)).equals(_tint);
-    });
-
-    scenarioWidgets('dims with the dark barrier in dark mode', (tester) async {
-      tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
-      addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
-      final context = await _pumpPage(tester);
-      final dark = CupertinoDynamicColor.resolve(kCupertinoModalBarrierColor, context).toARGB32();
-      check(
-        because: 'dark mode took',
-        dark,
-      ).not((it) => it.equals(kCupertinoModalBarrierColor.toARGB32()));
-      unawaited(_show(context));
-      await pumpTransition(tester);
-
-      check(_barrierColor(tester)?.toARGB32()).equals(dark);
-    }, variant: iosOnly);
+    check(_isUp()).isFalse();
+    semantics.dispose();
   });
+
+  Bdd(feature).scenario('sits at the bottom, as tall as its content').runWidgets((tester) async {
+    unawaited(_show(await _pumpPage(tester)));
+    await pumpTransition(tester);
+
+    final content = tester.getRect(find.byKey(_contentKey));
+    check(content.bottom).equals(tester.getSize(find.byKey(_pageKey)).height);
+    check(content.height).equals(_contentHeight);
+  }, variant: iosOnly);
+
+  Bdd(feature).scenario('leaves the page behind in place').runWidgets((tester) async {
+    final context = await _pumpPage(tester);
+    final page = tester.getRect(find.byKey(_pageKey));
+    unawaited(_show(context));
+    await pumpTransition(tester);
+
+    check(tester.getRect(find.byKey(_pageKey))).equals(page);
+  }, variant: iosOnly);
+
+  Bdd(feature).scenario('tints the barrier with barrierColor').runWidgets((tester) async {
+    unawaited(_show(await _pumpPage(tester), barrierColor: _tint));
+    await pumpTransition(tester);
+
+    check(_barrierColor(tester)).equals(_tint);
+  });
+
+  Bdd(feature).scenario('dims with the dark barrier in dark mode').runWidgets((tester) async {
+    tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+    addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+    final context = await _pumpPage(tester);
+    final dark = CupertinoDynamicColor.resolve(kCupertinoModalBarrierColor, context).toARGB32();
+    check(
+      because: 'dark mode took',
+      dark,
+    ).not((it) => it.equals(kCupertinoModalBarrierColor.toARGB32()));
+    unawaited(_show(context));
+    await pumpTransition(tester);
+
+    check(_barrierColor(tester)?.toARGB32()).equals(dark);
+  }, variant: iosOnly);
 }

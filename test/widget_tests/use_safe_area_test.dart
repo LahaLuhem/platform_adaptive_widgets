@@ -4,6 +4,7 @@ library;
 import 'dart:async';
 
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:bdd_framework/flutter_widget_test.dart' show Bdd, BddFeature;
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoNavigationBar;
 import 'package:flutter/widgets.dart';
@@ -143,60 +144,64 @@ String _nameOf(CompilationUnitMember declaration) => switch (declaration) {
 };
 
 void main() {
-  feature('useSafeArea', () {
-    scenarioOutlineWidgets<_Open>(
-      'keeps the body clear of the home indicator',
-      examples: _withSafeArea,
-      outline: (tester, open) async {
-        final rects = await _rectsAfter(tester, open);
+  final feature = BddFeature('useSafeArea');
 
-        check(rects.body.bottom).isLessOrEqual(_phone.height - _homeIndicatorHeight);
-      },
-    );
+  Bdd(feature)
+      .scenario('keeps the body clear of the home indicator')
+      .runOutlineWidgets<_Open>(
+        examples: _withSafeArea,
+        outline: (tester, open) async {
+          final rects = await _rectsAfter(tester, open);
 
-    // Material's scaffold lays the body out below its bar by itself.
-    scenarioOutlineWidgets<_Open>(
-      'keeps the body clear of the bar on iOS',
-      examples: _withSafeArea,
-      outline: (tester, open) async {
-        final rects = await _rectsAfter(tester, open);
+          check(rects.body.bottom).isLessOrEqual(_phone.height - _homeIndicatorHeight);
+        },
+      );
 
-        check(rects.body.top).isGreaterOrEqual(rects.bar.bottom);
-      },
-      variant: iosOnly,
-    );
+  // Material's scaffold lays the body out below its bar by itself.
+  Bdd(feature)
+      .scenario('keeps the body clear of the bar on iOS')
+      .runOutlineWidgets<_Open>(
+        examples: _withSafeArea,
+        outline: (tester, open) async {
+          final rects = await _rectsAfter(tester, open);
 
-    scenarioOutlineWidgets<_Open>(
-      'leaves the body down to the bottom edge without it, so a list can scroll under it',
-      examples: _byDefault,
-      outline: (tester, open) async {
-        final rects = await _rectsAfter(tester, open);
+          check(rects.body.top).isGreaterOrEqual(rects.bar.bottom);
+        },
+        variant: iosOnly,
+      );
 
-        check(rects.body.bottom).equals(_phone.height);
-      },
-    );
+  Bdd(feature)
+      .scenario('leaves the body down to the bottom edge without it, so a list can scroll under it')
+      .runOutlineWidgets<_Open>(
+        examples: _byDefault,
+        outline: (tester, open) async {
+          final rects = await _rectsAfter(tester, open);
 
-    scenarioOutlineWidgets<_Open>(
-      'leaves the body under the bar without it on iOS',
-      examples: _byDefault,
-      outline: (tester, open) async {
-        final rects = await _rectsAfter(tester, open);
+          check(rects.body.bottom).equals(_phone.height);
+        },
+      );
 
-        check(rects.body.top).isLessThan(rects.bar.bottom);
-      },
-      variant: iosOnly,
-    );
+  Bdd(feature)
+      .scenario('leaves the body under the bar without it on iOS')
+      .runOutlineWidgets<_Open>(
+        examples: _byDefault,
+        outline: (tester, open) async {
+          final rects = await _rectsAfter(tester, open);
 
-    test('covers every entry point that takes useSafeArea', () {
-      final entryPoints = parsedLibSrc
-          .expand((unit) => unit.ast.declarations.where(unit.barrelExports))
-          .where(_takesSafeArea)
-          .map(_nameOf);
+          check(rects.body.top).isLessThan(rects.bar.bottom);
+        },
+        variant: iosOnly,
+      );
 
-      check(
-        because: 'An entry point taking useSafeArea needs a row here.',
-        entryPoints,
-      ).unorderedEquals(_entryPoints.keys);
-    });
+  test('covers every entry point that takes useSafeArea', () {
+    final entryPoints = parsedLibSrc
+        .expand((unit) => unit.ast.declarations.where(unit.barrelExports))
+        .where(_takesSafeArea)
+        .map(_nameOf);
+
+    check(
+      because: 'An entry point taking useSafeArea needs a row here.',
+      entryPoints,
+    ).unorderedEquals(_entryPoints.keys);
   });
 }
