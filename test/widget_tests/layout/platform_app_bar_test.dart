@@ -200,6 +200,9 @@ bool _paintsText(WidgetTester tester, Finder finder) {
   );
 }
 
+// Lets a busy button settle into whatever colour it keeps while disabled.
+Future<void> _settleBusyButton(WidgetTester tester) => pumpTransition(tester);
+
 // The tap runs in a zone of its own, as an app's error handler would, so the work's errors land there.
 Future<List<Object>> _startSlowWork(
   WidgetTester tester,
@@ -553,6 +556,7 @@ void main() {
         final contentColour = _colourOf(tester, kind.content);
 
         await _startSlowWork(tester, kind.content);
+        await _settleBusyButton(tester);
 
         check(_spinnerColour(tester)?.toARGB32()).equals(contentColour.toARGB32());
       },
@@ -578,20 +582,24 @@ void main() {
       },
     );
 
-    // Only Material fades a label's colour between states, and only a text label's.
-    scenarioWidgets('brings its label back in its own colour, not a disabled grey', (tester) async {
-      final work = _Work();
-      await _pumpPublish(tester, work);
-      final labelColour = _colourOf(tester, _textKind.content);
-      await _startSlowWork(tester, _textKind.content);
-      // Lets the busy button settle into whatever colour it keeps while disabled.
-      await pumpTransition(tester);
+    // Only Material fades a button's colour between states.
+    scenarioOutlineWidgets<_Kind>(
+      'brings its content back in its own colour, not a disabled grey',
+      examples: _kinds,
+      variant: androidOnly,
+      outline: (tester, kind) async {
+        final work = _Work();
+        await _pump(tester, PlatformAppBar(actions: [_debounced(work, kind)]));
+        final contentColour = _colourOf(tester, kind.content);
+        await _startSlowWork(tester, kind.content);
+        await _settleBusyButton(tester);
 
-      work.end();
-      await tester.pump();
+        work.end();
+        await tester.pump();
 
-      check(_colourOf(tester, _textKind.content).toARGB32()).equals(labelColour.toARGB32());
-    }, variant: androidOnly);
+        check(_colourOf(tester, kind.content).toARGB32()).equals(contentColour.toARGB32());
+      },
+    );
 
     scenarioOutlineWidgets<AnimatedSwitcherTransitionBuilder?>(
       'tells screen readers it is disabled while its work runs, under its own name',

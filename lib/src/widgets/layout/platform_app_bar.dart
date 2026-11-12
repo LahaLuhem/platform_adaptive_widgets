@@ -272,6 +272,8 @@ class const _MaterialBarButton(
   Widget build(BuildContext context) {
     final icon = action.icon;
     final busySwap = swap;
+    // Material fades a button's colour between states, so a busy one keeps its own rather than grey.
+    final isBusy = busySwap != null && busySwap.isBusy;
     final content = icon ?? Text(action.label);
     final shownContent = busySwap == null
         ? content
@@ -286,13 +288,17 @@ class const _MaterialBarButton(
     return icon == null
         ? TextButton(
             onPressed: onPressed,
-            // Material fades label colours between states, so a busy label keeps its own, not grey.
-            style: busySwap != null && busySwap.isBusy
+            style: isBusy
                 ? TextButton.styleFrom(disabledForegroundColor: _textActionColour(context))
                 : null,
             child: shownContent,
           )
-        : IconButton(onPressed: onPressed, tooltip: action.label, icon: shownContent);
+        : IconButton(
+            onPressed: onPressed,
+            tooltip: action.label,
+            disabledColor: isBusy ? _iconActionColour(context) : null,
+            icon: shownContent,
+          );
   }
 }
 
@@ -300,17 +306,18 @@ Color _textActionColour(BuildContext context) =>
     TextButtonTheme.of(context).style?.foregroundColor?.resolve(const {}) ??
     Theme.of(context).colorScheme.primary;
 
+Color? _iconActionColour(BuildContext context) =>
+    IconButtonTheme.of(context).style?.foregroundColor?.resolve(const {}) ??
+    IconTheme.of(context).color;
+
 class const _MaterialSpinner({required final bool isInTextButton}) extends StatelessWidget {
   // M3's smallest circular indicator, the size of the icon it stands in for.
   static const _size = 24.0;
 
   @override
   Widget build(BuildContext context) => CircularProgressIndicator(
-    // M3 wants the content's own colour, with no track, not the grey of a disabled icon button.
-    color: isInTextButton
-        ? _textActionColour(context)
-        : IconButtonTheme.of(context).style?.foregroundColor?.resolve(const {}) ??
-              IconTheme.of(context).color,
+    // M3 wants the content's own colour, with no track.
+    color: isInTextButton ? _textActionColour(context) : _iconActionColour(context),
     backgroundColor: Colors.transparent,
     constraints: .tight(const .square(_size)),
   );
