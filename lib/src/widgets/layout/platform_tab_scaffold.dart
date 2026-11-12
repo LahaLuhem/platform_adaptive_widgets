@@ -404,6 +404,7 @@ class const _MaterialNavigationBar({
     destinations: [
       for (final tabDestination in tabDestinations)
         NavigationDestination(
+          key: tabDestination.key,
           icon: tabDestination.inactiveIcon,
           selectedIcon: tabDestination.activeIcon,
           label: tabDestination.label,
