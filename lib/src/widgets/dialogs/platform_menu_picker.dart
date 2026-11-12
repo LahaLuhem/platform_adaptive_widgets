@@ -82,8 +82,6 @@ class const PlatformMenuPicker<T extends Object>({
   super.key,
 }) extends PlatformWidgetKeyedBase {
   /// Turns each item into a [MenuPickerItem]. Left out, items get `toString()`d.
-  // A named param can't be private, so there's no getter to fall back on. Const construction still works.
-  // ignore: avoid_field_initializers_in_const_classes
   final MenuPickerItem Function(T choice) menuPickerItemTransformer =
       menuPickerItemTransformer ?? _defaultMenuPickerItemTransformer;
 
