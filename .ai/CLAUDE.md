@@ -40,7 +40,7 @@ triggers an automated publish).
 
 - **Read / Edit / Grep / Glob** over `cat` / `sed` / `grep` / `find`. Always.
 - **Bash** only for things without a dedicated tool: `flutter`, `dart`, `git`. The user's shell
-  aliases `flutter` / `dart` to whatever toolchain manager serves the `.fvmrc`-pinned channel,
+  aliases `flutter` / `dart` to whatever toolchain manager serves the `.fvmrc`-pinned version,
   invoke plain `flutter` / `dart`, not the manager directly.
 - **Lint with `dart analyze --fatal-infos --fatal-warnings .`**, as CI runs it. The shared lints
   promote many lints to `error:`: those are the contract, not suggestions.
