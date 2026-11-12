@@ -17,7 +17,7 @@ dependencies:
   cupertino_ui: ^1.1.6
   gap: ^3.1.0
   go_router: ^18.1.3
-  material_ui: ^1.10.0
+  material_ui: ^1.11.0
   minted_chronology: ^1.1.0
   multi_value_listenable_builder_typed: ^0.2.1
   platform_icons: ^0.1.1
@@ -30,4 +30,5 @@ dev_dependencies:
     git:
       url: https://github.com/LahaLuhem/dartender.git
       path: lints
-      ref: main
+      # Before Dart 3.14's lints, which 3.13 rejects. Back to main with the SDK bump.
+      ref: cc451a5

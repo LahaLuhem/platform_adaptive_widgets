@@ -57,7 +57,9 @@ class const DialogsDemoView({required final bool shouldEnable, super.key}) exten
         ),
         DemoCard(
           title: 'Full-screen dialog',
-          description: 'A full-screen dialog on Material, a page that slides up on Cupertino. Its bar closes it.',
+          description:
+              'A full-screen dialog on Material, a page that slides up on Cupertino. Its bar closes it, '
+              'and Save is slow on purpose, to show the spinner.',
           child: PlatformButton(
             onPressed: viewModel.onShowFullscreenDialogPressed,
             isEnabled: shouldEnable,

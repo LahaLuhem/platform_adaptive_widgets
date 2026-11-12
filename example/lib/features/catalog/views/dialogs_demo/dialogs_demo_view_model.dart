@@ -132,9 +132,14 @@ final class DialogsDemoViewModel() extends ViewModel {
       context: context,
       appBarBuilder: (context) => PlatformAppBar(
         title: const Text('New event'),
-        primaryAction: PlatformBarAction(
+        primaryAction: PlatformBarAction.debounced(
           label: 'Save',
-          onPressed: () => Navigator.maybeOf(context)?.pop('Team lunch'),
+          transitionBuilder: AnimatedSwitcher.defaultTransitionBuilder,
+          onPressed: () async {
+            // A fake slow save, so the spinner shows.
+            await Future<void>.delayed(const Duration(seconds: 2));
+            if (context.mounted) Navigator.maybeOf(context)?.pop('Team lunch');
+          },
         ),
       ),
       builder: (_) => const Center(child: Text('Team lunch')),
