@@ -8,9 +8,6 @@ import 'package:flutter/widgets.dart';
 
 /// Anything that can build an app bar for either platform. [PlatformAppBar] is the one that ships, and
 /// [PlatformScaffold] takes any of these in its `appBarData` slot and calls the right builder.
-// A pure interface with no fields needs no constructor, and an empty primary
-// one can't carry the dartdoc public_member_api_docs then demands.
-// ignore: use_primary_constructors
 abstract class PlatformAppBarData {
   /// Builds the Material bar.
   PreferredSizeWidget materialBuilder(BuildContext context);
