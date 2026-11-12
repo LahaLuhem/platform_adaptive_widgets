@@ -16,6 +16,7 @@ import '/src/widgets/interaction/internal/disabled_semantics.dart';
 /// Example:
 /// {@example /example/lib/snippets/interaction/platform_slider.dart#platform_slider}
 class const PlatformSlider({
+  /// Forwards to [Slider.value] on Material and [CupertinoSlider.value] on Cupertino.
   required final double value,
 
   /// Stays required and non-null even for a disabled slider. That's [isEnabled]'s job, not a null callback's.
@@ -32,8 +33,10 @@ class const PlatformSlider({
   /// Fires once as the drag ends.
   final ValueChanged<double>? onChangeEnd,
 
+  /// Forwards to [Slider.min] on Material and [CupertinoSlider.min] on Cupertino.
   final double min = 0.0,
 
+  /// Forwards to [Slider.max] on Material and [CupertinoSlider.max] on Cupertino.
   final double max = 1.0,
 
   /// Snaps the slider to this many steps instead of sliding freely.

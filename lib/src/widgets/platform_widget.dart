@@ -9,8 +9,10 @@ import '/src/models/platform_widget_base.dart';
 /// Example:
 /// {@example /example/lib/snippets/platform_widget.dart#platform_widget}
 class const PlatformWidget({
+  /// Builds the Material look.
   @protected required final WidgetBuilder materialBuilder,
 
+  /// Builds the Cupertino look.
   @protected required final WidgetBuilder cupertinoBuilder,
   super.key,
 }) extends PlatformWidgetBase {
@@ -35,9 +37,11 @@ class const PlatformWidget({
 /// {@example /example/lib/snippets/platform_widget.dart#platform_widget_builder}
 class const PlatformWidgetBuilder({
   @protected
+  /// Wraps [child] for Material.
   required final Widget Function(BuildContext context, Widget child) materialWidgetBuilder,
 
   @protected
+  /// Wraps [child] for Cupertino.
   required final Widget Function(BuildContext context, Widget child) cupertinoWidgetBuilder,
 
   /// Goes to whichever builder runs.

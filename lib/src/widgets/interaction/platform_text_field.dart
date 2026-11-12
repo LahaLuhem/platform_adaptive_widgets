@@ -44,10 +44,15 @@ class const PlatformTextField({
   /// Groups this field's undo history with other editors sharing the same id.
   final Object groupId = EditableText,
 
+  /// Forwards to [TextField.controller] on Material and [CupertinoTextField.controller] on Cupertino.
   final TextEditingController? controller,
 
+  /// {@macro flutter.widgets.Focus.focusNode}
+  ///
+  /// On Material, forwards to [TextField.focusNode].
   final FocusNode? focusNode,
 
+  /// {@macro flutter.widgets.undoHistory.controller}
   final UndoHistoryController? undoController,
 
   /// One boolean for both, though Material's own `enabled` is nullable. See `APPENDIX.md#cross-platform-field-mappings`.
@@ -56,20 +61,26 @@ class const PlatformTextField({
   /// Still selectable and focusable, just not editable, unlike [isEnabled].
   final bool readOnly = false,
 
+  /// {@macro flutter.widgets.editableText.autofocus}
   final bool autofocus = false,
 
   // ---- Keyboard / IME -------------------------------------------------------
+  /// {@macro flutter.widgets.editableText.keyboardType}
   final TextInputType? keyboardType,
 
   /// The action key in the keyboard's corner.
   final TextInputAction? textInputAction,
 
+  /// {@macro flutter.widgets.editableText.textCapitalization}
   final TextCapitalization textCapitalization = .none,
 
+  /// {@macro flutter.services.TextInputConfiguration.smartDashesType}
   final SmartDashesType? smartDashesType,
 
+  /// {@macro flutter.services.TextInputConfiguration.smartQuotesType}
   final SmartQuotesType? smartQuotesType,
 
+  /// {@macro flutter.services.TextInputConfiguration.enableSuggestions}
   final bool enableSuggestions = true,
 
   /// `true` to match Cupertino's own default. Material can't tell `true` from `null` anyway.
@@ -81,19 +92,29 @@ class const PlatformTextField({
   /// The keyboard's inline predictions, on iOS 17 and later. Left out, iOS keeps them off.
   final bool? enableInlinePrediction,
 
+  /// {@macro flutter.widgets.editableText.stylusHandwritingEnabled}
   final bool stylusHandwritingEnabled = true,
 
+  /// Forwards to [TextField.keyboardAppearance] on Material and [CupertinoTextField.keyboardAppearance]
+  /// on Cupertino.
   final Brightness? keyboardAppearance,
 
   // ---- Text rendering -------------------------------------------------------
+  /// Forwards to [TextField.style] on Material and [CupertinoTextField.style] on Cupertino.
   final TextStyle? style,
 
+  /// {@macro flutter.widgets.editableText.strutStyle}
   final StrutStyle? strutStyle,
 
+  /// {@macro flutter.widgets.editableText.textAlign}
   final TextAlign textAlign = .start,
 
+  /// {@macro cupertino_ui.InputDecorator.textAlignVertical}
   final TextAlignVertical? textAlignVertical,
 
+  /// {@macro flutter.widgets.editableText.textDirection}
+  ///
+  /// On Material, forwards to [TextField.textDirection].
   final TextDirection? textDirection,
 
   /// What each character turns into while [obscureText] is on.
@@ -105,23 +126,27 @@ class const PlatformTextField({
   /// `null` lets the field grow without limit.
   final int? maxLines = 1,
 
+  /// Forwards to [TextField.minLines] on Material and [CupertinoTextField.minLines] on Cupertino.
   final int? minLines,
 
   /// Fills the parent's height, which needs [maxLines] and [minLines] both `null`.
   final bool expands = false,
 
+  /// Forwards to [TextField.maxLength] on Material and [CupertinoTextField.maxLength] on Cupertino.
   final int? maxLength,
 
   /// Whether going over [maxLength] is blocked outright or merely flagged. Left out, upstream picks
   /// per platform.
   final MaxLengthEnforcement? maxLengthEnforcement,
 
+  /// {@macro flutter.widgets.editableText.inputFormatters}
   final List<TextInputFormatter>? inputFormatters,
 
   // ---- Cursor ---------------------------------------------------------------
   /// Left out, the field decides from whether it has focus.
   final bool? showCursor,
 
+  /// {@macro flutter.widgets.editableText.cursorWidth}
   final double cursorWidth = 2.0,
 
   /// Left out, the field sizes it from the text.
@@ -134,19 +159,26 @@ class const PlatformTextField({
   /// Material blinks, Cupertino fades.
   final bool? cursorOpacityAnimates,
 
+  /// Forwards to [TextField.cursorColor] on Material and [CupertinoTextField.cursorColor] on Cupertino.
   final Color? cursorColor,
 
   // ---- Selection ------------------------------------------------------------
+  /// Forwards to [TextField.selectionHeightStyle] on Material and [CupertinoTextField.selectionHeightStyle]
+  /// on Cupertino.
   final BoxHeightStyle? selectionHeightStyle,
 
+  /// Forwards to [TextField.selectionWidthStyle] on Material and [CupertinoTextField.selectionWidthStyle]
+  /// on Cupertino.
   final BoxWidthStyle? selectionWidthStyle,
 
   /// Lets the user select and copy text at all. Left out, upstream allows it except in a read-only
   /// password field.
   final bool? enableInteractiveSelection,
 
+  /// {@macro flutter.widgets.editableText.selectAllOnFocus}
   final bool? selectAllOnFocus,
 
+  /// {@macro flutter.widgets.editableText.selectionControls}
   final TextSelectionControls? selectionControls,
 
   // ---- Callbacks ------------------------------------------------------------
@@ -154,12 +186,18 @@ class const PlatformTextField({
   /// Same shape as Flutter's own [TextField.onChanged].
   final ValueChanged<String>? onChanged,
 
+  /// {@macro flutter.widgets.editableText.onEditingComplete}
   final VoidCallback? onEditingComplete,
 
+  /// Forwards to [TextField.onSubmitted] on Material and [CupertinoTextField.onSubmitted] on Cupertino.
   final ValueChanged<String>? onSubmitted,
 
+  /// Forwards to [TextField.onTap] on Material and [CupertinoTextField.onTap] on Cupertino.
   final GestureTapCallback? onTap,
 
+  /// {@macro flutter.widgets.editableText.onTapOutside}
+  ///
+  /// On Material, forwards to [TextField.onTapOutside].
   final TapRegionCallback? onTapOutside,
 
   /// Cupertino hands its version a [PointerDownEvent] where the type says [PointerUpEvent], so the build
@@ -167,15 +205,19 @@ class const PlatformTextField({
   final TapRegionUpCallback? onTapUpOutside,
 
   // ---- Scrolling / layout ---------------------------------------------------
+  /// {@macro flutter.widgets.editableText.scrollController}
   final ScrollController? scrollController,
 
+  /// {@macro flutter.widgets.editableText.scrollPhysics}
   final ScrollPhysics? scrollPhysics,
 
   /// How much room to keep around the cursor when scrolling it into view.
   final EdgeInsets scrollPadding = const .all(20),
 
+  /// {@macro flutter.widgets.scrollable.dragStartBehavior}
   final DragStartBehavior dragStartBehavior = .start,
 
+  /// Forwards to [TextField.clipBehavior] on Material and [CupertinoTextField.clipBehavior] on Cupertino.
   final Clip clipBehavior = .hardEdge,
 
   // ---- Autofill / context ---------------------------------------------------
@@ -185,11 +227,14 @@ class const PlatformTextField({
   /// Covers pasting and drag-and-drop of non-text content.
   final ContentInsertionConfiguration? contentInsertionConfiguration,
 
+  /// {@macro cupertino_ui.textfield.restorationId}
   final String? restorationId,
 
   /// Left out, each look shows its own upstream menu. `null` turns it off.
   final EditableTextContextMenuBuilder? contextMenuBuilder = _upstreamContextMenu,
 
+  /// Forwards to [TextField.spellCheckConfiguration] on Material and [CupertinoTextField.spellCheckConfiguration]
+  /// on Cupertino.
   final SpellCheckConfiguration? spellCheckConfiguration,
 
   /// The loupe that pops up while dragging the cursor.

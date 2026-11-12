@@ -9,6 +9,7 @@ final class const PlatformBarAction({
   /// Names the action. It's the text without an [icon], and the tooltip and screen-reader label with one.
   required final String label,
 
+  /// Runs on a tap while [isEnabled].
   required final VoidCallback onPressed,
 
   /// Drawn in place of the [label]. Both platforms prefer a symbol in a bar, except for an action like

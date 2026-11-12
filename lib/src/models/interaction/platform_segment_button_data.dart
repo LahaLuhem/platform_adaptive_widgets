@@ -81,8 +81,10 @@ final class const CupertinoSegmentButtonData({
   /// The sliding thumb behind the selected segment.
   final Color thumbColor = kDefaultCupertinoSegmentButtonThumbColor,
 
+  /// Forwards to [CupertinoSlidingSegmentedControl.padding].
   final EdgeInsetsGeometry padding = kDefaultCupertinoSegmentButtonPadding,
 
+  /// Forwards to [CupertinoSlidingSegmentedControl.backgroundColor].
   final Color backgroundColor = kDefaultCupertinoSegmentButtonBackgroundColor,
 
   /// Sizes each segment to its own content instead of splitting the width evenly.

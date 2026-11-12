@@ -1,3 +1,5 @@
+/// @docImport 'package:cupertino_ui/cupertino_ui.dart';
+/// @docImport 'package:material_ui/material_ui.dart';
 /// @docImport '/src/widgets/layout/platform_app_bar.dart';
 /// @docImport '/src/widgets/layout/platform_scaffold.dart';
 library;
@@ -43,6 +45,7 @@ final class const MaterialAppBarData({
   /// Sits behind the toolbar and tab bar.
   final Widget? flexibleSpace,
 
+  /// Forwards to [AppBar.elevation].
   final double? elevation,
 
   /// Takes over once content scrolls beneath the bar.
@@ -51,17 +54,22 @@ final class const MaterialAppBarData({
   /// Decides which scroll notifications count towards [scrolledUnderElevation].
   final ScrollNotificationPredicate notificationPredicate = kDefaultScrollNotificationPredicate,
 
+  /// Forwards to [AppBar.shadowColor].
   final Color? shadowColor,
 
+  /// Forwards to [AppBar.surfaceTintColor].
   final Color? surfaceTintColor,
 
+  /// Forwards to [AppBar.shape].
   final ShapeBorder? shape,
 
   /// Colours the title and icons.
   final Color? foregroundColor,
 
+  /// Forwards to [AppBar.iconTheme].
   final IconThemeData? iconTheme,
 
+  /// Forwards to [AppBar.actionsIconTheme].
   final IconThemeData? actionsIconTheme,
 
   /// Leaves room for the status bar.
@@ -70,31 +78,43 @@ final class const MaterialAppBarData({
   /// Left out, upstream reads `AppBarTheme`, then the platform.
   final bool? centerTitle,
 
+  /// {@macro material_ui.appbar.excludeHeaderSemantics}
   final bool excludeHeaderSemantics = kExcludeHeaderSemantics,
 
+  /// Forwards to [AppBar.titleSpacing].
   final double? titleSpacing,
 
+  /// {@macro material_ui.appbar.toolbarOpacity}
   final double toolbarOpacity = kToolbarOpacity,
 
+  /// {@macro material_ui.appbar.bottomOpacity}
   final double bottomOpacity = kBottomOpacity,
 
+  /// {@macro material_ui.appbar.toolbarHeight}
   final double? toolbarHeight,
 
+  /// {@macro material_ui.appbar.leadingWidth}
   final double? leadingWidth,
 
+  /// Forwards to [AppBar.toolbarTextStyle].
   final TextStyle? toolbarTextStyle,
 
+  /// Forwards to [AppBar.titleTextStyle].
   final TextStyle? titleTextStyle,
 
   /// Status bar icon and text colours while this bar is up.
   final SystemUiOverlayStyle? systemOverlayStyle,
 
+  /// {@macro material_ui.appbar.forceMaterialTransparency}
   final bool forceMaterialTransparency = kForceMaterialTransparency,
 
+  /// {@macro material_ui.appbar.useDefaultSemanticsOrder}
   final bool useDefaultSemanticsOrder = kUseDefaultSemanticsOrder,
 
+  /// {@macro cupertino_ui.Material.clipBehavior}
   final Clip? clipBehavior,
 
+  /// {@macro material_ui.appbar.actionsPadding}
   final EdgeInsetsGeometry? actionsPadding,
 
   /// Tweens [backgroundColor] changes instead of cutting straight to the new one.
@@ -141,6 +161,7 @@ final class const CupertinoNavigationBarData({
   /// driving the small one that appears on scroll.
   final bool large = false,
 
+  /// Forwards to [CupertinoNavigationBar.automaticallyImplyMiddle].
   final bool automaticallyImplyMiddle = kAutomaticallyImplyMiddle,
 
   /// What the back button reads, instead of the previous route's title.
@@ -157,13 +178,16 @@ final class const CupertinoNavigationBarData({
   /// Hairline along the bottom edge. `null` drops it.
   final Border? border = kBorder,
 
+  /// {@macro cupertino_ui.CupertinoNavigationBar.automaticBackgroundVisibility}
   final bool automaticBackgroundVisibility = kAutomaticBackgroundVisibility,
 
   /// The frosted glass behind the bar.
   final bool enableBackgroundFilterBlur = kEnableBackgroundFilterBlur,
 
+  /// {@macro cupertino_ui.CupertinoNavigationBar.brightness}
   final Brightness? brightness,
 
+  /// {@macro cupertino_ui.CupertinoNavigationBar.padding}
   final EdgeInsetsDirectional? padding,
 
   /// Animates the bar between routes rather than cutting.

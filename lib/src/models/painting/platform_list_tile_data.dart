@@ -60,17 +60,22 @@ final class const MaterialListTileData({
   super.color,
   super.padding,
 
+  /// {@macro material_ui.inkwell.statesController}
   final WidgetStatesController? statesController,
 
+  /// Forwards to [ListTile.mouseCursor].
   final MouseCursor? mouseCursor,
 
+  /// {@macro flutter.widgets.Focus.autofocus}
   final bool autofocus = kDefaultListTileAutofocus,
 
   /// Haptic feedback on tap.
   final bool? enableFeedback,
 
+  /// Forwards to [ListTile.focusColor].
   final Color? focusColor,
 
+  /// {@macro flutter.widgets.Focus.focusNode}
   final FocusNode? focusNode,
 
   /// Measured from the leading content's edge. [CupertinoListTileData.leadingToTitle] looks like the
@@ -78,30 +83,40 @@ final class const MaterialListTileData({
   /// See `APPENDIX.md#field-classification`.
   final double? horizontalTitleGap,
 
+  /// Forwards to [ListTile.hoverColor].
   final Color? hoverColor,
 
   /// Colours the leading and trailing icons.
   final Color? iconColor,
 
+  /// Forwards to [ListTile.isThreeLine].
   final bool? isThreeLine,
 
+  /// Forwards to [ListTile.leadingAndTrailingTextStyle].
   final TextStyle? leadingAndTrailingTextStyle,
 
+  /// {@macro material_ui.ListTile.minTileHeight}
   final double? minTileHeight,
 
+  /// {@macro material_ui.ListTile.minVerticalPadding}
   final double? minVerticalPadding,
 
+  /// {@macro cupertino_ui.inkwell.onFocusChange}
   final ValueChanged<bool>? onFocusChange,
 
+  /// Forwards to [ListTile.onLongPress].
   final VoidCallback? onLongPress,
 
+  /// Forwards to [ListTile.selected].
   final bool selected = kDefaultListTileSelected,
 
   /// Colours the selected tile's text and icons. [selectedTileColor] does its background.
   final Color? selectedColor,
 
+  /// Forwards to [ListTile.selectedTileColor].
   final Color? selectedTileColor,
 
+  /// Forwards to [ListTile.shape].
   final ShapeBorder? shape,
 
   /// Colours the ink splash.
@@ -110,15 +125,19 @@ final class const MaterialListTileData({
   /// Material's text styling preset.
   final ListTileStyle? style,
 
+  /// Forwards to [ListTile.subtitleTextStyle].
   final TextStyle? subtitleTextStyle,
 
+  /// Forwards to [ListTile.textColor].
   final Color? textColor,
 
   /// Left out, upstream reads `ListTileTheme`.
   final ListTileTitleAlignment? titleAlignment,
 
+  /// Forwards to [ListTile.titleTextStyle].
   final TextStyle? titleTextStyle,
 
+  /// Forwards to [ListTile.visualDensity].
   final VisualDensity? visualDensity,
 }) extends _PlatformListTileData {
   /// Creates Material-side settings for [PlatformListTile].

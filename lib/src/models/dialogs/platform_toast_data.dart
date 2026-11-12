@@ -17,7 +17,10 @@ const kDefaultPlatformToastDuration = Duration(seconds: 4);
 /// A [SnackBarAction] on Material, a text button in the banner on Cupertino. Tapping it runs [onPressed]
 /// and closes the toast.
 final class const PlatformToastAction({
+  /// The button's text, [SnackBarAction.label] on Material.
   required final String label,
+
+  /// Runs on tap, [SnackBarAction.onPressed] on Material.
   required final VoidCallback onPressed,
 }) {
   /// Creates the toast's action.
@@ -26,19 +29,25 @@ final class const PlatformToastAction({
 
 /// Material-side settings for `showPlatformToast`. Backed by [SnackBar].
 final class const MaterialToastData({
+  /// Forwards to [SnackBar.backgroundColor].
   final Color? backgroundColor,
 
+  /// Forwards to [SnackBar.elevation].
   final double? elevation,
 
+  /// Forwards to [SnackBar.margin].
   final EdgeInsetsGeometry? margin,
 
+  /// Forwards to [SnackBar.padding].
   final EdgeInsetsGeometry? padding,
 
   /// Left out, the bar spans the screen.
   final double? width,
 
+  /// Forwards to [SnackBar.shape].
   final ShapeBorder? shape,
 
+  /// Forwards to [SnackBar.hitTestBehavior].
   final HitTestBehavior? hitTestBehavior,
 
   /// Anchored to the bottom, or floating above it.
@@ -47,17 +56,22 @@ final class const MaterialToastData({
   /// How wide the toast's action may get before it drops onto its own line.
   final double? actionOverflowThreshold,
 
+  /// Forwards to [SnackBar.showCloseIcon].
   final bool? showCloseIcon,
 
+  /// Forwards to [SnackBar.closeIconColor].
   final Color? closeIconColor,
 
+  /// Forwards to [SnackBar.animation].
   final Animation<double>? animation,
 
+  /// Forwards to [SnackBar.onVisible].
   final VoidCallback? onVisible,
 
   /// Which way the user can swipe it away.
   final DismissDirection? dismissDirection,
 
+  /// Forwards to [SnackBar.clipBehavior].
   final Clip clipBehavior = Clip.hardEdge,
 }) {
   /// Creates Material-side settings for `showPlatformToast`.
@@ -67,6 +81,7 @@ final class const MaterialToastData({
 /// Cupertino-side settings for `showPlatformToast`. iOS has no toast of its own, so this styles the
 /// banner the package draws instead.
 final class const CupertinoToastData({
+  /// The banner's fill, dark in light mode and light in dark.
   final Color backgroundColor = const CupertinoDynamicColor.withBrightness(
     color: Color(0xCC1F1F1F),
     darkColor: Color(0xCCFAFAFA),
@@ -82,6 +97,7 @@ final class const CupertinoToastData({
   /// the inset on iOS's own notification banner.
   final EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
 
+  /// Holds the whole toast off the screen edges.
   final EdgeInsetsGeometry outerMargin = const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
 
   /// Matches iOS's own notification banner.

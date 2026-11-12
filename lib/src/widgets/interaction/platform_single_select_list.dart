@@ -29,8 +29,10 @@ class const PlatformSingleSelectList<T extends Object>({
   /// One of [options].
   required final T selected,
 
+  /// Turns an option into its row's text.
   required final String Function(T option) label,
 
+  /// Gets the option just picked.
   required final ValueChanged<T> onChanged,
 
   /// Material greys the rows out. Cupertino can't yet ([flutter/flutter#195327](https://github.com/flutter/flutter/issues/195327)),

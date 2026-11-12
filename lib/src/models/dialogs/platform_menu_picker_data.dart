@@ -54,7 +54,13 @@ final class CupertinoMenuPickerData {
 }
 
 /// One entry in the picker's list, built by [PlatformMenuPicker.menuPickerItemTransformer].
-final class const MenuPickerItem({final String? label, final IconData? iconData}) {
+final class const MenuPickerItem({
+  /// The row's text. Left out, the row shows none.
+  final String? label,
+
+  /// Leads the row on Material. Cupertino's wheel shows the label alone.
+  final IconData? iconData,
+}) {
   /// Creates a menu picker item.
   this;
 }

@@ -28,8 +28,10 @@ const kDefaultMaterialDialogSemanticsRole = SemanticsRole.dialog;
 /// Only what a full-screen dialog honours. The background is the flat `backgroundColor` on the show
 /// function, shared with Cupertino.
 final class const MaterialFullscreenDialogData({
+  /// Overrides the dialog's open and close animation, passed to [showDialog].
   final AnimationStyle? animationStyle,
 
+  /// Where focus goes past the dialog's first or last control, passed to [showDialog].
   final TraversalEdgeBehavior? traversalEdgeBehavior,
 
   /// Picks which screen of a foldable the dialog opens on.
@@ -38,8 +40,10 @@ final class const MaterialFullscreenDialogData({
   /// How the dialog slides up out of the keyboard's way.
   final Duration insetAnimationDuration = kDefaultMaterialDialogInsetAnimationDuration,
 
+  /// {@macro cupertino_ui.dialog.insetAnimationCurve}
   final Curve insetAnimationCurve = kDefaultMaterialDialogInsetAnimationCurve,
 
+  /// Forwards to [Dialog.semanticsRole].
   final SemanticsRole semanticsRole = kDefaultMaterialDialogSemanticsRole,
 }) {
   /// Creates Material-side settings for `showPlatformFullscreenDialog`.

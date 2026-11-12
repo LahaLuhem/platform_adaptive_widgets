@@ -38,6 +38,7 @@ const kDefaultMaterialButtonClipBehavior = Clip.none;
 /// the same ground over separate colour / border / padding fields on [CupertinoButtonData]. The mouse
 /// cursor is the one that catches people out: it's `style.mouseCursor` here, a plain field there.
 final class const MaterialButtonData({
+  /// Forwards to [ButtonStyleButton.onHover], or [IconButton.onHover] on an icon button.
   final ValueChanged<bool>? onHover,
 
   /// Material's whole visual surface, keyed by [WidgetState]. `null` leaves it to the theme.
@@ -47,6 +48,7 @@ final class const MaterialButtonData({
   /// button its own constructor's default.
   final Clip? clipBehavior,
 
+  /// {@macro material_ui.inkwell.statesController}
   final WidgetStatesController? statesController,
 
   /// Only reaches a `low` button built through [PlatformButton.new], since upstream's plain [TextButton]
@@ -63,8 +65,10 @@ final class const MaterialButtonData({
 /// Leave any of the nullable ones out and Cupertino falls back to whatever its size style or the
 /// button's emphasis says.
 final class const CupertinoButtonData({
+  /// Forwards to [CupertinoButton.sizeStyle].
   final CupertinoButtonSize sizeStyle = kDefaultCupertinoButtonSizeStyle,
 
+  /// Forwards to [CupertinoButton.padding].
   final EdgeInsetsGeometry? padding,
 
   /// Background colour. Left out, a `mediumNeutral` button takes [CupertinoColors.systemGrey].
@@ -76,16 +80,19 @@ final class const CupertinoButtonData({
   /// Left out, each Cupertino constructor's own default applies.
   final Color? disabledColor,
 
+  /// Forwards to [CupertinoButton.minimumSize].
   final Size? minimumSize,
 
   /// How far the button fades while held down.
   final double pressedOpacity = kDefaultCupertinoButtonPressedOpacity,
 
+  /// Forwards to [CupertinoButton.borderRadius].
   final BorderRadius? borderRadius,
 
   /// Where the content sits inside the button.
   final AlignmentGeometry alignment = kDefaultCupertinoButtonAlignment,
 
+  /// Forwards to [CupertinoButton.focusColor].
   final Color? focusColor,
 
   /// Material keeps its own at `style.mouseCursor` on [MaterialButtonData], since its button classes

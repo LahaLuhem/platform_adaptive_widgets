@@ -63,6 +63,7 @@ class const PlatformMenuPicker<T extends Object>({
   /// `null`, or a value missing from [items], shows nothing picked.
   final T? currentValue,
 
+  /// `false` shows the picker disabled, as an empty [items] does.
   final bool isEnabled = true,
 
   /// Sits before the label, or becomes the whole thing under an `.iconButton` variant.
@@ -76,7 +77,10 @@ class const PlatformMenuPicker<T extends Object>({
   final ValueChanged<T>? onSelected,
   MenuPickerItem Function(T choice)? menuPickerItemTransformer,
 
+  /// Material-branch overrides.
   final MaterialMenuPickerData materialMenuPickerData = const MaterialMenuPickerData(),
+
+  /// Cupertino-branch overrides.
   final CupertinoMenuPickerData cupertinoMenuPickerData = const CupertinoMenuPickerData(),
   super.widgetKey,
   super.key,

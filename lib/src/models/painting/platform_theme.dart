@@ -5,7 +5,10 @@ import '/src/utils/design_language.dart';
 
 /// Pulls colours off whichever theme the current platform is running, so you don't reach for [Theme]
 /// or [CupertinoTheme] by hand.
-final class const PlatformTheme.of(final BuildContext context) {
+final class const PlatformTheme.of(
+  /// Where each getter reads the theme from.
+  final BuildContext context,
+) {
   /// Creates a [PlatformTheme] with the given [context].
   this;
 

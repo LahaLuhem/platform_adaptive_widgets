@@ -72,8 +72,10 @@ const kDefaultCupertinoTextFieldSuffixMode = OverlayVisibilityMode.always;
 /// Reach for [decoration] for the rest of Material's surface (border, label, helper and error text,
 /// counter). Set `hintText` / `prefixIcon` / `suffixIcon` on it and yours beat the flat ones.
 final class const MaterialTextFieldData({
+  /// Forwards to [TextField.buildCounter].
   final InputCounterWidgetBuilder? buildCounter,
 
+  /// Forwards to [TextField.canRequestFocus].
   final bool canRequestFocus = kDefaultMaterialTextFieldCanRequestFocus,
 
   /// Falls through to the theme's `colorScheme.error` when left out.
@@ -91,11 +93,13 @@ final class const MaterialTextFieldData({
   /// [CupertinoTextField] takes no top-level cursor, so this one is Material's alone.
   final MouseCursor? mouseCursor,
 
+  /// {@macro flutter.widgets.editableText.onAppPrivateCommand}
   final AppPrivateCommandCallback? onAppPrivateCommand,
 
   /// Fires [PlatformTextField.onTap] even on a field that already has focus.
   final bool onTapAlwaysCalled = kDefaultMaterialTextFieldOnTapAlwaysCalled,
 
+  /// Forwards to [TextField.statesController].
   final WidgetStatesController? statesController,
 }) {
   /// Creates Material-side settings for [PlatformTextField].
@@ -115,10 +119,13 @@ final class const CupertinoTextFieldData({
   /// When the clear (x) button shows up. Never, out of the box.
   final OverlayVisibilityMode clearButtonMode = kDefaultCupertinoTextFieldClearButtonMode,
 
+  /// Forwards to [CupertinoTextField.clearButtonSemanticLabel].
   final String? clearButtonSemanticLabel,
 
+  /// Forwards to [CupertinoTextField.crossAxisAlignment].
   final CrossAxisAlignment crossAxisAlignment = kDefaultCupertinoTextFieldCrossAxisAlignment,
 
+  /// Forwards to [CupertinoTextField.padding].
   final EdgeInsetsGeometry padding = kDefaultCupertinoTextFieldPadding,
 
   /// Cupertino's name for the hint text.
@@ -130,11 +137,13 @@ final class const CupertinoTextFieldData({
   /// Sits before the input. [prefixMode] decides when it's on screen.
   final Widget? prefix,
 
+  /// Forwards to [CupertinoTextField.prefixMode].
   final OverlayVisibilityMode prefixMode = kDefaultCupertinoTextFieldPrefixMode,
 
   /// Sits after the input. [suffixMode] decides when it's on screen.
   final Widget? suffix,
 
+  /// Forwards to [CupertinoTextField.suffixMode].
   final OverlayVisibilityMode suffixMode = kDefaultCupertinoTextFieldSuffixMode,
 }) {
   /// Creates Cupertino-side settings for [PlatformTextField].

@@ -30,6 +30,7 @@ final class const MaterialProgressIndicatorData({
   /// Animates the ring's own colour, overriding [color] while it runs.
   final Animation<Color?>? valueColor,
 
+  /// Forwards to [CircularProgressIndicator.strokeWidth].
   final double? strokeWidth,
 
   /// Whether the stroke sits inside, outside or centred on the indicator's edge.
@@ -38,11 +39,13 @@ final class const MaterialProgressIndicatorData({
   /// Rounds or squares off the ends of the stroke.
   final StrokeCap? strokeCap,
 
+  /// Forwards to [CircularProgressIndicator.constraints].
   final BoxConstraints? constraints,
 
   /// Space between the filled part and the track behind it.
   final double? trackGap,
 
+  /// Forwards to [CircularProgressIndicator.padding].
   final EdgeInsetsGeometry? padding,
 
   /// Drives the animation yourself instead of letting it run free.
@@ -60,6 +63,7 @@ final class const CupertinoProgressIndicatorData({
   /// Freezes the spinner mid-turn when off. Material's has no such switch.
   final bool animating = kDefaultProgressIndicatorAnimating,
 
+  /// Forwards to [CupertinoActivityIndicator.radius].
   final double radius = kDefaultProgressIndicatorRadius,
 }) extends _PlatformProgressIndicatorData {
   /// Creates Cupertino-side settings for [PlatformProgressIndicator].

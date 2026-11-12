@@ -27,6 +27,9 @@ class const PlatformProgressBar({
   /// How far along, from 0 to 1.
   required final double value,
 
+  /// {@macro material_ui.progress_indicator.ProgressIndicator.color}
+  ///
+  /// On Cupertino, forwards to [CupertinoLinearActivityIndicator.color].
   final Color? color,
 
   /// The bar's thickness: [LinearProgressIndicator.minHeight] on Material, [CupertinoLinearActivityIndicator.height]

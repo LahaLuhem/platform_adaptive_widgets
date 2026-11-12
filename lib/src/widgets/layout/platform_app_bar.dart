@@ -41,8 +41,12 @@ class const PlatformAppBar({
   /// Cupertino-branch overrides, plus the knobs Material has no answer for.
   final CupertinoNavigationBarData cupertinoNavigationBarData = const CupertinoNavigationBarData(),
 
+  /// Forwards to [AppBar.title] on Material. On Cupertino it's [CupertinoNavigationBar.middle], or [CupertinoNavigationBar.largeTitle]
+  /// on a large bar.
   final Widget? title,
 
+  /// Forwards to [AppBar.backgroundColor] on Material and [CupertinoNavigationBar.backgroundColor] on
+  /// Cupertino.
   final Color? backgroundColor,
 
   /// Lets each bar add its own way out before the title: back, close or Cancel in a full-screen dialog or a

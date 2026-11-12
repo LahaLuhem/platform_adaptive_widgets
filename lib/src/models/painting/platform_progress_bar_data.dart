@@ -36,11 +36,13 @@ final class const MaterialProgressBarData({
   /// Animates the bar's own colour, overriding [color] while it runs.
   final Animation<Color?>? valueColor,
 
+  /// Forwards to [LinearProgressIndicator.borderRadius].
   final BorderRadiusGeometry? borderRadius,
 
   /// The dot at the end of the track, which M3 wants when the track is hard to see.
   final Color? stopIndicatorColor,
 
+  /// Forwards to [LinearProgressIndicator.stopIndicatorRadius].
   final double? stopIndicatorRadius,
 
   /// Space between the filled part and the track behind it.
