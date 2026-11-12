@@ -15,7 +15,7 @@ dependencies:
   cupertino_ui: ^1.1.6
   flutter:
     sdk: flutter
-  material_ui: ^1.10.0
+  material_ui: ^1.11.0
   minted_chronology: ^1.1.0
   platform_adaptive_widgets:
     path: ../..

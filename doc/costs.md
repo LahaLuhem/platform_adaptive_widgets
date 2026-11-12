@@ -47,8 +47,8 @@ the base.
 | `PlatformMultiSelectList`         | 10.2 KB              | 0 B             | cupertino_ui's checkbox, which material_ui's `Checkbox` keeps whole. The size check leaves it out                                                  |
 | `showPlatformRawModalBottomSheet` | 0 B                  | 0 B             | Nothing. smooth_sheets, the iOS side, drops out of Android. iOS grows 132 KB, 84.5 KB of it smooth_sheets itself                                   |
 
-The iOS base keeps 7.6 KB of Material: material_ui's bundled shaders and icon font, and the
-`TimeOfDay` the time picker takes.
+The iOS base is material_ui's bundled shaders and icon font, and the `TimeOfDay` the time picker
+takes.
 
 *2026-10-31, Flutter 3.47.8, material_ui 1.9.0, cupertino_ui 1.1.5. The raw sheet's row 2026-11-09,
 Flutter 3.47.9, material_ui 1.10.0, cupertino_ui 1.1.6, smooth_sheets 1.3.0.*
