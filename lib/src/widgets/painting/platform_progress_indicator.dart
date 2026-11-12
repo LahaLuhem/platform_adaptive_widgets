@@ -21,6 +21,9 @@ import '/src/models/platform_widget_base.dart';
 /// Example:
 /// {@example /example/lib/snippets/painting/platform_progress_indicator.dart#platform_progress_indicator}
 class const PlatformProgressIndicator({
+  /// {@macro material_ui.progress_indicator.ProgressIndicator.color}
+  ///
+  /// On Cupertino, forwards to [CupertinoActivityIndicator.color].
   final Color? color,
 
   /// What's loading, like "Loading inbox"

@@ -16,6 +16,9 @@ import '/src/models/platform_widget_base.dart';
 class const PlatformScrollbar({
   required super.child,
 
+  /// {@macro flutter.widgets.Scrollbar.controller}
+  ///
+  /// On Material, forwards to [Scrollbar.controller].
   final ScrollController? controller,
 
   /// Pins the thumb on screen. Left out, it fades away like the platform normally does.
@@ -24,11 +27,13 @@ class const PlatformScrollbar({
   /// Which scroll notifications the bar reacts to. Left out, each platform brings its own rule.
   final ScrollNotificationPredicate? notificationPredicate,
 
+  /// Forwards to [Scrollbar.thickness] on Material and [RawScrollbar.thickness] on Cupertino.
   final double? thickness,
 
   /// Rounds the thumb's ends.
   final Radius? radius,
 
+  /// {@macro flutter.widgets.Scrollbar.scrollbarOrientation}
   final ScrollbarOrientation? scrollbarOrientation,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.

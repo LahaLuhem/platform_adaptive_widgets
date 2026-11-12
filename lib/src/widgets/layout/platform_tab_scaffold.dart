@@ -32,16 +32,20 @@ class const PlatformTabScaffold({
   /// The starting tab when the scaffold owns selection, the current one when something else does.
   final int selectedIndex = 0,
 
+  /// Forwards to [NavigationBar.onDestinationSelected] on Material and [CupertinoTabBar.onTap] on Cupertino.
   final ValueChanged<int>? onTabDestinationTap,
 
   /// Passing this hands selection to the caller. See above.
   final IndexedWidgetBuilder? tabBodyBuilder,
 
+  /// Forwards to [Scaffold.backgroundColor] on Material and [CupertinoTabScaffold.backgroundColor] on
+  /// Cupertino.
   final Color? backgroundColor,
 
   /// Shrinks the body when the keyboard comes up, rather than letting it hide the bottom.
   final bool resizeToAvoidBottomInset = kDefaultResizeToAvoidBottomInset,
 
+  /// Forwards to [Scaffold.restorationId] on Material and [CupertinoTabScaffold.restorationId] on Cupertino.
   final String? restorationId,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.

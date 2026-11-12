@@ -5,6 +5,8 @@
 // are disjoint types, so theme is platform-only, not shared-visual.
 // ignore_for_file: prefer-match-file-name
 
+/// @docImport 'package:cupertino_ui/cupertino_ui.dart';
+/// @docImport 'package:material_ui/material_ui.dart';
 /// @docImport '/src/widgets/layout/platform_app.dart';
 library;
 
@@ -50,15 +52,19 @@ const kDebugShowMaterialGrid = false;
 /// and [CupertinoThemeData] share no ground at all, plus [scaffoldMessengerKey], which Cupertino has
 /// no use for.
 final class const MaterialAppData({
+  /// Forwards to [MaterialApp.scaffoldMessengerKey].
   final GlobalKey<ScaffoldMessengerState>? scaffoldMessengerKey,
 
   /// Used in light mode, and in dark mode too when [darkTheme] is left out.
   final ThemeData? theme,
 
+  /// Forwards to [MaterialApp.darkTheme].
   final ThemeData? darkTheme,
 
+  /// Forwards to [MaterialApp.highContrastTheme].
   final ThemeData? highContrastTheme,
 
+  /// Forwards to [MaterialApp.highContrastDarkTheme].
   final ThemeData? highContrastDarkTheme,
 
   /// Light, dark, or follow the system.
@@ -67,11 +73,13 @@ final class const MaterialAppData({
   /// How long a theme change takes to cross-fade.
   final Duration themeAnimationDuration = kMaterialDefaultThemeAnimationDuration,
 
+  /// Forwards to [MaterialApp.themeAnimationCurve].
   final Curve themeAnimationCurve = kMaterialDefaultThemeAnimationCurve,
 
   /// Paints the Material baseline grid over the app, for lining things up during development.
   final bool debugShowMaterialGrid = kDebugShowMaterialGrid,
 
+  /// Forwards to [MaterialApp.themeAnimationStyle].
   final AnimationStyle? themeAnimationStyle,
 }) {
   /// Creates Material-side settings for [PlatformApp].
@@ -80,7 +88,10 @@ final class const MaterialAppData({
 
 /// Cupertino-side settings for [PlatformApp] and [PlatformApp.router]. Just the theme, since the app
 /// surface proper stays flat on the widget.
-final class const CupertinoAppData({final CupertinoThemeData? theme}) {
+final class const CupertinoAppData({
+  /// Forwards to [CupertinoApp.theme].
+  final CupertinoThemeData? theme,
+}) {
   /// Creates Cupertino-side settings for [PlatformApp].
   this;
 }

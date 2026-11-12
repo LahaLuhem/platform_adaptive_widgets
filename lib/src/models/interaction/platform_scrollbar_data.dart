@@ -50,8 +50,10 @@ final class const CupertinoScrollbarData({
   super.radius = CupertinoScrollbar.defaultRadius,
   super.scrollbarOrientation,
 
+  /// Forwards to [CupertinoScrollbar.thicknessWhileDragging].
   final double thicknessWhileDragging = CupertinoScrollbar.defaultThicknessWhileDragging,
 
+  /// Forwards to [CupertinoScrollbar.radiusWhileDragging].
   final Radius radiusWhileDragging = CupertinoScrollbar.defaultRadiusWhileDragging,
 
   /// Keeps the bar clear of the scroll view's ends.

@@ -86,22 +86,31 @@ final class const MaterialSearchBarData({
   /// Usually action icons, at the far end of the bar.
   final Iterable<Widget>? trailing,
 
+  /// Forwards to [SearchBar.onTapOutside].
   final TapRegionCallback? onTapOutside,
 
+  /// Forwards to [SearchBar.constraints].
   final BoxConstraints? constraints,
 
+  /// Forwards to [SearchBar.elevation].
   final WidgetStateProperty<double?>? elevation,
 
+  /// Forwards to [SearchBar.backgroundColor].
   final WidgetStateProperty<Color?>? backgroundColor,
 
+  /// Forwards to [SearchBar.shadowColor].
   final WidgetStateProperty<Color?>? shadowColor,
 
+  /// Forwards to [SearchBar.surfaceTintColor].
   final WidgetStateProperty<Color?>? surfaceTintColor,
 
+  /// Forwards to [SearchBar.overlayColor].
   final WidgetStateProperty<Color?>? overlayColor,
 
+  /// Forwards to [SearchBar.side].
   final WidgetStateProperty<BorderSide?>? side,
 
+  /// Forwards to [SearchBar.shape].
   final WidgetStateProperty<OutlinedBorder?>? shape,
 
   /// Cupertino's flat twin is [CupertinoSearchBarData.padding].
@@ -113,8 +122,10 @@ final class const MaterialSearchBarData({
   /// Cupertino's flat twin is [CupertinoSearchBarData.placeholderStyle].
   final WidgetStateProperty<TextStyle?>? hintStyle,
 
+  /// {@macro flutter.widgets.editableText.textCapitalization}
   final TextCapitalization? textCapitalization,
 
+  /// Forwards to [SearchBar.textInputAction].
   final TextInputAction? textInputAction,
 
   /// How much room to keep around the field when scrolling it into view.
@@ -123,6 +134,7 @@ final class const MaterialSearchBarData({
   /// Left out, you get Material's own context menu. `null` turns it off.
   final EditableTextContextMenuBuilder? contextMenuBuilder = _upstreamContextMenu,
 
+  /// {@macro flutter.widgets.editableText.readOnly}
   final bool readOnly = kDefaultSearchBarReadOnly,
 }) {
   /// Creates Material-side settings for [PlatformSearchBar].
@@ -138,11 +150,13 @@ final class const CupertinoSearchBarData({
   /// Material's state-keyed twin is [MaterialSearchBarData.hintStyle].
   final TextStyle? placeholderStyle,
 
+  /// Forwards to [CupertinoSearchTextField.decoration].
   final BoxDecoration? decoration,
 
   /// Material's state-keyed twin is [MaterialSearchBarData.backgroundColor].
   final Color? backgroundColor,
 
+  /// Forwards to [CupertinoSearchTextField.borderRadius].
   final BorderRadius? borderRadius,
 
   /// Material's state-keyed twin is [MaterialSearchBarData.padding].
@@ -154,15 +168,19 @@ final class const CupertinoSearchBarData({
   /// Sizes the prefix and suffix glyphs.
   final double itemSize = kDefaultCupertinoSearchBarItemSize,
 
+  /// Forwards to [CupertinoSearchTextField.prefixInsets].
   final EdgeInsetsGeometry prefixInsets = kDefaultCupertinoSearchBarPrefixInsets,
 
+  /// Forwards to [CupertinoSearchTextField.suffixInsets].
   final EdgeInsetsGeometry suffixInsets = kDefaultCupertinoSearchBarSuffixInsets,
 
   /// The clear button, by default. [suffixMode] decides when it's on screen.
   final Icon suffixIcon = kDefaultCupertinoSearchBarSuffixIcon,
 
+  /// Forwards to [CupertinoSearchTextField.suffixMode].
   final OverlayVisibilityMode suffixMode = kDefaultCupertinoSearchBarSuffixMode,
 
+  /// Forwards to [CupertinoSearchTextField.onSuffixTap].
   final VoidCallback? onSuffixTap,
 
   /// Material's [SearchBar] has nothing like it, since restoration lives on [SearchAnchor] over there.
@@ -172,13 +190,16 @@ final class const CupertinoSearchBarData({
   final bool enableIMEPersonalizedLearning =
       kDefaultCupertinoSearchBarEnableIMEPersonalizedLearning,
 
+  /// Forwards to [CupertinoSearchTextField.autocorrect].
   final bool autocorrect = kDefaultCupertinoSearchBarAutocorrect,
 
+  /// {@macro flutter.widgets.editableText.cursorWidth}
   final double cursorWidth = kDefaultCupertinoSearchBarCursorWidth,
 
   /// Left out, Cupertino sizes it from the text.
   final double? cursorHeight,
 
+  /// {@macro flutter.widgets.editableText.cursorRadius}
   final Radius cursorRadius = kDefaultCupertinoSearchBarCursorRadius,
 
   /// Whether the cursor fades in and out rather than blinking.

@@ -87,14 +87,19 @@ final class const MaterialDatePickerData({
   /// Sits along the top of the picker.
   final String? helpText,
 
+  /// Label on the cancel button, passed to [showDatePicker].
   final String? cancelText,
 
+  /// Label on the OK button, passed to [showDatePicker].
   final String? confirmText,
 
+  /// Overrides the ambient locale, passed to [showDatePicker].
   final Locale? locale,
 
+  /// What screen readers call the barrier, passed to [showDatePicker].
   final String? barrierLabel,
 
+  /// Overrides the direction [locale] would pick, passed to [showDatePicker].
   final TextDirection? textDirection,
 
   /// Day grid or year list.
@@ -106,17 +111,22 @@ final class const MaterialDatePickerData({
   /// Shown when the date parses but falls outside the allowed range.
   final String? errorInvalidText,
 
+  /// Prompt in the empty date field, passed to [showDatePicker].
   final String? fieldHintText,
 
+  /// Label on the date field, passed to [showDatePicker].
   final String? fieldLabelText,
 
+  /// Keyboard for typing the date, passed to [showDatePicker].
   final TextInputType? keyboardType,
 
   /// Fires when the user flips between calendar and typed input.
   final ValueChanged<DatePickerEntryMode>? onDatePickerModeChange,
 
+  /// {@macro material_ui.date_picker.switchToInputEntryModeIcon}
   final Icon? switchToInputEntryModeIcon,
 
+  /// {@macro material_ui.date_picker.switchToCalendarEntryModeIcon}
   final Icon? switchToCalendarEntryModeIcon,
 
   /// Gregorian, Buddhist, and so on.
@@ -152,6 +162,7 @@ final class const CupertinoDatePickerData({
   /// Date mode only.
   final SelectableDayPredicate? selectableDayPredicate,
 
+  /// Forwards to [CupertinoDatePicker.backgroundColor].
   final Color? backgroundColor,
 
   /// Whether `onDateTimeChanged` fires mid-scroll or only once the wheel settles.
@@ -167,6 +178,7 @@ final class const CupertinoDatePickerData({
   /// Left out, the years run on without a ceiling.
   final int? maximumYear,
 
+  /// Forwards to [CupertinoDatePicker.minimumYear].
   final int minimumYear = kDefaultCupertinoDatePickerMinimumYear,
 
   /// Step between selectable minutes, so `15` gives you quarter hours.

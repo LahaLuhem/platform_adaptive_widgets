@@ -36,17 +36,22 @@ const kDefaultCupertinoModalPopupSemanticsDismissible = false;
 /// Material-side settings for `showPlatformRawModalBottomSheet` and `showPlatformChoices`, passed as
 /// `materialModalBottomSheetData`. None of it reaches Cupertino.
 final class const MaterialModalBottomSheetData({
+  /// The sheet's fill, passed to [showModalBottomSheet].
   final Color? backgroundColor,
 
+  /// What screen readers call the barrier, passed to [showModalBottomSheet].
   final String? barrierLabel,
 
+  /// How far the sheet lifts off the page, passed to [showModalBottomSheet].
   final double? elevation,
 
   /// Usually a rounded top edge.
   final ShapeBorder? shape,
 
+  /// How the sheet clips its content, passed to [showModalBottomSheet].
   final Clip? clipBehavior,
 
+  /// Limits the sheet's size, passed to [showModalBottomSheet].
   final BoxConstraints? constraints,
 
   /// Lets the sheet grow past its preferred height, up to the full screen.
@@ -62,11 +67,13 @@ final class const MaterialModalBottomSheetData({
   /// The little grab bar above the content. Left out, the theme decides.
   final bool? showDragHandle,
 
+  /// Keeps the sheet clear of system intrusions at the top and sides, passed to [showModalBottomSheet].
   final bool useSafeArea = kDefaultMaterialModalBottomSheetUseSafeArea,
 
   /// Rarely needed.
   final AnimationController? transitionAnimationController,
 
+  /// Overrides the sheet's open and close animation, passed to [showModalBottomSheet].
   final AnimationStyle? sheetAnimationStyle,
 }) {
   /// Creates Material-side settings for the raw sheet and the choices.

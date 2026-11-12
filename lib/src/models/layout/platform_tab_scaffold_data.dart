@@ -1,5 +1,6 @@
 // ignore_for_file: prefer-match-file-name
 
+/// @docImport 'package:material_ui/material_ui.dart';
 /// @docImport '/src/widgets/layout/platform_app_bar.dart';
 /// @docImport '/src/widgets/layout/platform_scaffold.dart';
 /// @docImport '/src/widgets/layout/platform_tab_scaffold.dart';
@@ -11,6 +12,7 @@ import 'platform_scaffold_data.dart';
 
 /// One tab: its icons, its label, and the content behind it.
 final class const TabDestination({
+  /// Forwards to [NavigationDestination.icon] on Material and [BottomNavigationBarItem.icon] on Cupertino.
   required final Widget inactiveIcon,
 
   /// What the tab shows when it's the selected one.
@@ -19,8 +21,11 @@ final class const TabDestination({
   /// Left out, [inactiveIcon] is used for both states.
   final Widget? activeIcon,
 
+  /// Forwards to [NavigationDestination.label] on Material and [BottomNavigationBarItem.label] on Cupertino.
   final String label = '',
 
+  /// Forwards to [NavigationDestination.tooltip] on Material and [BottomNavigationBarItem.tooltip] on
+  /// Cupertino.
   final String? tooltip,
 
   /// Keys the [NavigationDestination] on Material. Cupertino's [BottomNavigationBarItem] takes none.

@@ -20,6 +20,7 @@ class const PlatformSearchBar({
   /// Disable it with [isEnabled] instead. See `APPENDIX.md#callback-nullability`.
   required final ValueChanged<String> onChanged,
 
+  /// Forwards to [SearchBar.controller] on Material and [CupertinoSearchTextField.controller] on Cupertino.
   final TextEditingController? controller,
 
   /// Shown while the bar is empty. Cupertino calls it the placeholder.
@@ -41,13 +42,18 @@ class const PlatformSearchBar({
   /// Note the capital F, which Cupertino spells lowercase underneath. See `APPENDIX.md#cross-platform-field-mappings`.
   final bool autoFocus = false,
 
+  /// {@macro flutter.widgets.Focus.focusNode}
   final FocusNode? focusNode,
 
   /// One boolean for both, though Cupertino's own `enabled` is nullable and treats `null` as enabled.
   final bool isEnabled = true,
 
+  /// Forwards to [SearchBar.smartDashesType] on Material and [CupertinoSearchTextField.smartDashesType]
+  /// on Cupertino.
   final SmartDashesType? smartDashesType,
 
+  /// Forwards to [SearchBar.smartQuotesType] on Material and [CupertinoSearchTextField.smartQuotesType]
+  /// on Cupertino.
   final SmartQuotesType? smartQuotesType,
 
   /// Material-branch overrides, plus the knobs Cupertino has no answer for.
