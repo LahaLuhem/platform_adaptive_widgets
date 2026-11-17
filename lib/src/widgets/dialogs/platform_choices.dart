@@ -29,8 +29,6 @@ const _kMaterialChoicesHeaderPadding = EdgeInsetsDirectional.fromSTEB(16, 16, 24
 ///   ([flutter/flutter#195041](https://github.com/flutter/flutter/issues/195041)).
 /// - On iPad and Mac the action sheet spans the window
 ///   ([flutter/flutter#195042](https://github.com/flutter/flutter/issues/195042)).
-/// - Screen readers hear "Alert", untranslated
-///   ([flutter/flutter#195019](https://github.com/flutter/flutter/issues/195019)).
 ///
 /// Guidelines: [M3 bottom sheets](https://m3.material.io/components/bottom-sheets/guidelines),
 /// [HIG action sheets](https://developer.apple.com/design/human-interface-guidelines/action-sheets#Best-practices).

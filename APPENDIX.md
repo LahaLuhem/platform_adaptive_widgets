@@ -263,8 +263,8 @@ disabling mechanism, the underlying platform widget receives a `null` callback w
 
 On Cupertino, a `null` callback isn't always enough. Some cupertino_ui widgets never tell VoiceOver
 they're disabled, so `DisabledSemantics` adds that half, which stays right once upstream catches up.
-The disabled look stays each widget's own: where cupertino_ui draws none (the slider, the list
-tile), a stand-in would double up once upstream draws one.
+The disabled look stays each widget's own: where cupertino_ui draws none (the list tile), a
+stand-in would double up once upstream draws one.
 [`disabled_state_test.dart`](./test/widget_tests/disabled_state_test.dart) checks both halves on
 every disable path, and its canaries go red when upstream closes a gap.
 

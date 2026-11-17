@@ -28,9 +28,6 @@ import '/src/widgets/interaction/internal/material_destructive_theme.dart';
 ///
 /// Per-platform tuning lives in [materialButtonData] / [cupertinoButtonData]. See `APPENDIX.md#field-classification`.
 ///
-/// Known Flutter gap: in light mode, Cupertino's `medium` and `mediumNeutral` draw lighter than UIKit's
-/// tinted and gray buttons ([flutter/flutter#195265](https://github.com/flutter/flutter/issues/195265)).
-///
 /// Guidelines: [M3 buttons](https://m3.material.io/components/buttons/guidelines),
 /// [HIG buttons](https://developer.apple.com/design/human-interface-guidelines/buttons#Best-practices).
 ///
