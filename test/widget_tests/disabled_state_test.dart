@@ -258,7 +258,7 @@ final _segment = _Path(
 );
 
 // Each has its own row under 'until upstream' below.
-const _noLookOnIos = {'slider', 'row', 'multi-select list', 'single-select list', 'search bar'};
+const _noLookOnIos = {'row', 'multi-select list', 'single-select list', 'search bar'};
 
 // iOS draws every shape through one button.
 final _buttonIconShapes = {
@@ -410,10 +410,6 @@ void main() {
     scenarioOutlineWidgets<({_Path path, String issue})>(
       'draws no disabled look on iOS',
       examples: {
-        'slider': (
-          path: _paths['slider']!,
-          issue: 'https://github.com/flutter/flutter/issues/106691',
-        ),
         'search bar': (
           path: _paths['search bar']!,
           issue: 'https://github.com/LahaLuhem/platform_adaptive_widgets/issues/71',
