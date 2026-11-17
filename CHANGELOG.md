@@ -1,9 +1,13 @@
 ## [Unreleased]
 ### Added
-- PlatformCloseButton, a close button for content with no bar
+- \[#91\] PlatformCloseButton, a close button for content with no bar
+- \[#94\] PlatformBarAction.debounced, a bar action that ignores taps and shows a spinner while its work runs
+
+### Changed
+- Bumps cupertino_ui to 1.1.7 and material_ui to 1.11.1
 
 ### Fixed
-- Raw bottom sheet closes like an iOS sheet, and screen readers can close Cupertino popups
+- \[#91\] Raw bottom sheet closes like an iOS sheet, and screen readers can close Cupertino popups
 
 ## [3.1.0] - 2026-11-05
 ### Fixed

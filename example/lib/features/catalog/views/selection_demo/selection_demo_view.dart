@@ -83,7 +83,7 @@ class const SelectionDemoView({required final bool shouldEnable, super.key})
         ),
         DemoCard(
           title: 'PlatformSlider',
-          description: 'Material Slider · CupertinoSlider. No disabled look on iOS yet.',
+          description: 'Material Slider · CupertinoSlider.',
           child: PropertyEditor(
             preview: PlatformSlider(
               value: viewModel.sliderValue,

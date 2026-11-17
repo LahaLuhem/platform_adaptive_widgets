@@ -41,6 +41,10 @@ import '/src/widgets/interaction/internal/disabled_semantics.dart';
 /// bar slot wants a `PreferredSizeWidget`. So there's no `build`, just the 2 builders [PlatformScaffold]
 /// picks between.
 ///
+/// Known gap: on Cupertino, a title too long for the bar wraps and gets cut off, where iOS ends it in an
+/// ellipsis ([flutter/flutter#196774](https://github.com/flutter/flutter/issues/196774)). A `Text`
+/// with `maxLines: 1` and `TextOverflow.ellipsis` avoids it.
+///
 /// Guidelines: [M3 app bars](https://m3.material.io/components/app-bars/guidelines),
 /// [HIG toolbars](https://developer.apple.com/design/human-interface-guidelines/toolbars).
 ///
