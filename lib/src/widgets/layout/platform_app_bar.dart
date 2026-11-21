@@ -372,6 +372,7 @@ class const _CupertinoBarButton(
 
     return DisabledSemantics(
       isEnabled: onPressed != null,
+      // Left at large: its 44pt minimum is native bar items' tap height, probed and verified.
       child: CupertinoButton(
         // Flush, like cupertino_ui's own bar buttons. Any padding squeezes the content in a 44pt bar.
         padding: .zero,

@@ -51,6 +51,7 @@ class const PlatformCloseButton({
   @protected
   @visibleForOverriding
   Widget buildCupertino(BuildContext context) => CupertinoButton(
+    // Left at large: its 44pt minimum is UIKit's close-button tap area, probed and verified.
     key: widgetKey,
     // Unpadded, so taps land a little past the circle, as on UIKit.
     padding: .zero,
