@@ -1,4 +1,4 @@
-## [Unreleased]
+## [3.2.0] - 2026-11-21
 ### Added
 - \[#91\] PlatformCloseButton, a close button for content with no bar
 - \[#94\] PlatformBarAction.debounced, a bar action that ignores taps and shows a spinner while its work runs
@@ -257,7 +257,7 @@ or M3 asks for. Many old APIs are gone. Removed mentions the ones to now use
 - Platform scrollbar
 - Platform text-field
 
-[Unreleased]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/3.1.0...HEAD
+[3.2.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/3.1.0...3.2.0
 [3.1.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/3.0.0...3.1.0
 [3.0.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.2.0...3.0.0
 [2.2.0]: https://github.com/LahaLuhem/platform_adaptive_widgets/compare/2.1.2...2.2.0
