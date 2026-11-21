@@ -13,6 +13,9 @@ import '../support/lib_src.dart';
 
 const _ownBool = "The package's own non-null bool, which upstream reads the same as its null.";
 const _grayButton = "iOS's gray button for `.mediumNeutral`, cupertino_ui's own recipe.";
+const _mediumButton =
+    "Medium, the size UIKit and SwiftUI give a button, where upstream's is large "
+    '(https://github.com/flutter/flutter/issues/196373).';
 const _screenReaderDismiss =
     "Follows the barrier. Upstream's false leaves screen readers no way out.";
 
@@ -27,6 +30,9 @@ const _ownPicks = {
   'platform_button.dart: CupertinoButton.color': _grayButton,
   'platform_button.dart: CupertinoButton.filled.color': _grayButton,
   'platform_button.dart: CupertinoButton.tinted.color': _grayButton,
+  'platform_button.dart: CupertinoButton.sizeStyle': _mediumButton,
+  'platform_button.dart: CupertinoButton.filled.sizeStyle': _mediumButton,
+  'platform_button.dart: CupertinoButton.tinted.sizeStyle': _mediumButton,
   'platform_scaffold.dart: Scaffold.resizeToAvoidBottomInset': _ownBool,
   'platform_search_bar.dart: CupertinoSearchTextField.enabled': _ownBool,
   'platform_tab_scaffold.dart: Scaffold.resizeToAvoidBottomInset': _ownBool,
