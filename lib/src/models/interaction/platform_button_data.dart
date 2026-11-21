@@ -13,8 +13,8 @@ import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoButtonSize;
 import 'package:flutter/widgets.dart';
 import 'package:material_ui/material_ui.dart' show ButtonStyle;
 
-/// Default value for [CupertinoButtonData.sizeStyle]. Matches upstream `CupertinoButton.sizeStyle`.
-const kDefaultCupertinoButtonSizeStyle = CupertinoButtonSize.large;
+/// Default value for [CupertinoButtonData.sizeStyle].
+const kDefaultCupertinoButtonSizeStyle = CupertinoButtonSize.medium;
 
 /// Default value for [CupertinoButtonData.pressedOpacity]. Matches upstream.
 const kDefaultCupertinoButtonPressedOpacity = 0.4;
@@ -63,6 +63,8 @@ final class const MaterialButtonData({
 /// Leave any of the nullable ones out and Cupertino falls back to whatever its size style or the
 /// button's emphasis says.
 final class const CupertinoButtonData({
+  /// Medium by default, the size UIKit and SwiftUI give a button. `.large` brings back upstream's
+  /// classic look.
   final CupertinoButtonSize sizeStyle = kDefaultCupertinoButtonSizeStyle,
 
   final EdgeInsetsGeometry? padding,

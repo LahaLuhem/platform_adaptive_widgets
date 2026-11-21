@@ -13,8 +13,8 @@ final class ButtonsDemoViewModel() extends ViewModel {
 
   Color? _cupertinoColor;
   Color? _cupertinoForegroundColor;
-  var _cupertinoPressedOpacity = 0.4;
-  var _cupertinoSizeStyle = CupertinoButtonSize.large;
+  var _cupertinoPressedOpacity = kDefaultCupertinoButtonPressedOpacity;
+  var _cupertinoSizeStyle = kDefaultCupertinoButtonSizeStyle;
 
   ButtonShape get shape => _shape;
 
