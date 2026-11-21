@@ -1,8 +1,14 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:checks/checks.dart';
 import 'package:cupertino_ui/cupertino_ui.dart'
-    show CupertinoDynamicColor, CupertinoTextThemeData, CupertinoThemeData;
+    show
+        CupertinoButton,
+        CupertinoDynamicColor,
+        CupertinoTextThemeData,
+        CupertinoThemeData,
+        kMinInteractiveDimensionCupertino;
 import 'package:flutter/semantics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,12 +34,13 @@ Future<BuildContext> _pumpPage(WidgetTester tester, {CupertinoThemeData? cuperti
 
 void _show(
   BuildContext context, {
+  String message = _message,
   VoidCallback? onUndo,
   CupertinoToastData cupertinoToastData = const CupertinoToastData(),
 }) => unawaited(
   showPlatformToast(
     context: context,
-    message: _message,
+    message: message,
     duration: _duration,
     action: onUndo == null ? null : PlatformToastAction(label: 'Undo', onPressed: onUndo),
     cupertinoToastData: cupertinoToastData,
@@ -41,6 +48,10 @@ void _show(
 );
 
 bool _isShowing() => find.text(_message).evaluate().isNotEmpty;
+
+double _bannerHeight(WidgetTester tester, String message) => tester
+    .getSize(find.ancestor(of: find.text(message), matching: find.byType(BackdropFilter)).first)
+    .height;
 
 void main() {
   feature('showPlatformToast', () {
@@ -82,6 +93,34 @@ void main() {
       await pumpTransition(tester);
 
       check(_isShowing()).isTrue();
+    }, variant: iosOnly);
+
+    // The padding goes inside the action, not above and below it.
+    scenarioWidgets('grows to 44pt with an action, and no taller', (tester) async {
+      final context = await _pumpPage(tester);
+
+      _show(context);
+      await pumpTransition(tester);
+      final heightAlone = _bannerHeight(tester, _message);
+      await pumpThrough(tester, _duration + const Duration(seconds: 1));
+
+      _show(context, onUndo: noop);
+      await pumpTransition(tester);
+
+      check(_bannerHeight(tester, _message))
+          .equals(math.max(heightAlone, kMinInteractiveDimensionCupertino));
+    }, variant: iosOnly);
+
+    scenarioWidgets('takes taps on its action across its full height', (tester) async {
+      // Long enough to wrap, so the message sets the banner's height rather than the action.
+      const message = 'Deleted 3 messages from the conversation with the support team';
+      final context = await _pumpPage(tester);
+
+      _show(context, message: message, onUndo: noop);
+      await pumpTransition(tester);
+
+      final action = find.ancestor(of: find.text('Undo'), matching: find.byType(CupertinoButton));
+      check(tester.getSize(action).height).equals(_bannerHeight(tester, message));
     }, variant: iosOnly);
 
     // Up just before its duration, gone soon after, so a wrong duration fails either way.
