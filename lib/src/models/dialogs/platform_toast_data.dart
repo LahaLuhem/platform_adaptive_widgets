@@ -78,8 +78,8 @@ final class const CupertinoToastData({
     darkColor: CupertinoColors.black,
   ),
 
-  /// Around the message text, where [outerMargin] holds the whole toast off the screen edges. Matches
-  /// the inset on iOS's own notification banner.
+  /// Around the message text, where [outerMargin] holds the whole toast off the screen edges. Its top
+  /// and bottom go inside an action's tap area. Matches the inset on iOS's own notification banner.
   final EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
 
   final EdgeInsetsGeometry outerMargin = const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

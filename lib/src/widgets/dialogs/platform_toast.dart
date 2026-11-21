@@ -165,6 +165,7 @@ class _CupertinoToastOverlayState()
     final resolvedBackground = CupertinoDynamicColor.resolve(widget.data.backgroundColor, context);
     final resolvedForeground = CupertinoDynamicColor.resolve(widget.data.foregroundColor, context);
     final textTheme = CupertinoTheme.of(context).textTheme;
+    final padding = widget.data.padding.resolve(Directionality.of(context));
 
     return SafeArea(
       child: Align(
@@ -194,7 +195,11 @@ class _CupertinoToastOverlayState()
                         child: DecoratedBox(
                           decoration: BoxDecoration(color: resolvedBackground),
                           child: Padding(
-                            padding: widget.data.padding,
+                            // With an action, the top and bottom go inside it, so taps reach the banner's
+                            // edges without making the banner taller.
+                            padding: widget.action == null
+                                ? padding
+                                : padding.copyWith(top: 0, bottom: 0),
                             child: DefaultTextStyle(
                               style: textTheme.textStyle
                                   // iOS's 15pt Subhead, with SF's tracking at that size, which Flutter doesn't apply itself.
@@ -204,32 +209,51 @@ class _CupertinoToastOverlayState()
                                     letterSpacing: -0.23,
                                   )
                                   .merge(widget.data.textStyle),
-                              textAlign: widget.action == null ? TextAlign.center : TextAlign.start,
+                              textAlign: widget.action == null ? .center : .start,
                               child: widget.action == null
                                   ? Text(widget.message)
-                                  : Row(
-                                      children: [
-                                        Expanded(child: Text(widget.message)),
-                                        CupertinoButton(
-                                          padding: const EdgeInsetsDirectional.only(start: 16),
-                                          onPressed: () {
-                                            // Already sliding away, so a second tap can't run the action twice.
-                                            if (!_controller.isForwardOrCompleted) return;
-                                            widget.action!.onPressed();
-                                            unawaited(_startDismiss());
-                                          },
-                                          // The banner's own colour, since iOS blue is too dark to read on it.
-                                          child: Text(
-                                            widget.action!.label,
-                                            style: textTheme.actionSmallTextStyle
-                                                .copyWith(
-                                                  color: resolvedForeground,
-                                                  fontWeight: FontWeight.w600,
-                                                )
-                                                .merge(widget.data.textStyle),
+                                  // Fits its content, or the stretch would fill the screen.
+                                  : IntrinsicHeight(
+                                      child: Row(
+                                        crossAxisAlignment: .stretch,
+                                        children: [
+                                          Expanded(
+                                            child: Padding(
+                                              padding: .only(
+                                                top: padding.top,
+                                                bottom: padding.bottom,
+                                              ),
+                                              child: Align(
+                                                alignment: .centerStart,
+                                                child: Text(widget.message),
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                          CupertinoButton(
+                                            padding: EdgeInsetsDirectional.only(
+                                              start: 16,
+                                              top: padding.top,
+                                              bottom: padding.bottom,
+                                            ),
+                                            onPressed: () {
+                                              // Already sliding away, so a second tap can't run the action twice.
+                                              if (!_controller.isForwardOrCompleted) return;
+                                              widget.action!.onPressed();
+                                              unawaited(_startDismiss());
+                                            },
+                                            // The banner's own colour, since iOS blue is too dark to read on it.
+                                            child: Text(
+                                              widget.action!.label,
+                                              style: textTheme.actionSmallTextStyle
+                                                  .copyWith(
+                                                    color: resolvedForeground,
+                                                    fontWeight: .w600,
+                                                  )
+                                                  .merge(widget.data.textStyle),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                             ),
                           ),
