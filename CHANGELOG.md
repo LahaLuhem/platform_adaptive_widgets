@@ -4,7 +4,8 @@
 - \[#94\] PlatformBarAction.debounced, a bar action that ignores taps and shows a spinner while its work runs
 
 ### Changed
-- Bumps cupertino_ui to 1.1.7 and material_ui to 1.11.1
+- Bumps cupertino\_ui to 1.1.7 and material\_ui to 1.11.1
+- \[#99\] PlatformButton defaults to medium on Cupertino, and toast actions fill their banner
 
 ### Fixed
 - \[#91\] Raw bottom sheet closes like an iOS sheet, and screen readers can close Cupertino popups
