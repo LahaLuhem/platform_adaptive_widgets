@@ -63,21 +63,21 @@ void upstreamDefaultsGuard() {
         offenders
             .where((offender) => !listed.contains(offender.row))
             .map((offender) => offender.description),
-      ).isEmpty();
+      ).isEmpty;
     });
 
     test('every listed row still differs from upstream', () {
       check(
         because: 'Take a fixed row off the list, or it hides the next drift there.',
         listed.difference(offenders.map((offender) => offender.row).toSet()),
-      ).isEmpty();
+      ).isEmpty;
     });
 
     test('a record left out is its empty record, never null', () {
       check(
         because: 'Found no parameter that takes a record, so the check below passes on nothing.',
         recordParameters,
-      ).isNotEmpty();
+      ).isNotEmpty;
       check(
         because:
             'Default the record to its `const` empty one, or a left-out record and a left-out '
@@ -85,7 +85,7 @@ void upstreamDefaultsGuard() {
         recordParameters
             .where((parameter) => !_isEmptyWhenLeftOut(parameter))
             .map((parameter) => '${parameter.location}: ${parameter.node.name?.lexeme}'),
-      ).isEmpty();
+      ).isEmpty;
     });
   });
 }

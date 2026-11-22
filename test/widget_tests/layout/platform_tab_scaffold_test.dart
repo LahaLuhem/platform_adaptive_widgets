@@ -23,7 +23,7 @@ void main() {
   Bdd(tabCount).scenario('builds with 2 destinations').runWidgets((tester) async {
     await pumpPlatformWidget(tester, PlatformTabScaffold(tabDestinations: List.filled(2, _tab)));
 
-    check(tester.takeException()).isNull();
+    check(tester.takeException()).isNull;
   });
 
   final modeGuard = BddFeature('PlatformTabScaffold mode guard');
@@ -66,7 +66,7 @@ void main() {
           ),
         );
 
-        check(tester.takeException()).isNull();
+        check(tester.takeException()).isNull;
       });
 
   final destinationKey = BddFeature('PlatformTabScaffold destination key');

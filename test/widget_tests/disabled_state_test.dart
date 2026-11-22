@@ -319,16 +319,16 @@ Future<List<SemanticsData>> _disabledTargets(WidgetTester tester, _Path path) as
 }
 
 Future<void> _looksDisabled(WidgetTester tester, _Path path) async =>
-    check(await _disablingShows(tester, path)).isTrue();
+    check(await _disablingShows(tester, path)).isTrue;
 
 Future<void> _saysDisabled(WidgetTester tester, _Path path) async {
   final targets = await _disabledTargets(tester, path);
 
-  check(targets).isNotEmpty();
+  check(targets).isNotEmpty;
   check(targets).every(
-    (target) => target
-      ..has((data) => data.flagsCollection.isEnabled, 'enabled').equals(.isFalse)
-      ..has((data) => data.hasAction(.tap), 'tap').isFalse(),
+    .it()
+      ..has('enabled', (data) => data.flagsCollection.isEnabled).equals(.isFalse)
+      ..has('tap', (data) => data.hasAction(.tap)).isFalse,
   );
 }
 
@@ -427,7 +427,7 @@ void main() {
               'Upstream draws it now (${gap.issue}). Move it to "looks disabled", and drop any note '
               'on its `isEnabled`.',
           await _disablingShows(tester, gap.path),
-        ).isFalse(),
+        ).isFalse,
         variant: iosOnly,
       );
 
@@ -454,7 +454,7 @@ void main() {
               'Upstream drops it now (https://github.com/flutter/flutter/issues/195515). Move the '
               'segment into "tells screen readers it is disabled".',
           segment.hasAction(.tap),
-        ).isTrue();
+        ).isTrue;
       }, variant: iosOnly);
 
   Bdd(untilUpstream)
@@ -467,6 +467,6 @@ void main() {
               'Upstream keeps it now (https://github.com/flutter/packages/pull/12710). Drop this '
               'check.',
           slider.value,
-        ).isEmpty();
+        ).isEmpty;
       }, variant: iosOnly);
 }

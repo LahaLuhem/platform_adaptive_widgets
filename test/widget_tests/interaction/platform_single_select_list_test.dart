@@ -82,7 +82,7 @@ void main() {
     await tester.tap(find.text(_picked.name));
     await tester.pump();
 
-    check(picks).isEmpty();
+    check(picks).isEmpty;
   }, variant: iosOnly);
 
   // iOS's row has its own test.
@@ -125,8 +125,8 @@ void main() {
     final other = tester.getSemantics(find.text(_Fruit.plum.name)).getSemanticsData();
     semantics.dispose();
 
-    check(readsAsPicked(picked)).isTrue();
-    check(readsAsPicked(other)).isFalse();
+    check(readsAsPicked(picked)).isTrue;
+    check(readsAsPicked(other)).isFalse;
   });
 
   Bdd(feature).scenario("flags a selected value that isn't an option").runWidgets((tester) async {
@@ -141,6 +141,6 @@ void main() {
         await pumpInPlatformScaffold(tester, const _Fruits());
 
         check(find.byType(CupertinoCheckmarkRow).evaluate()).length.equals(_Fruit.values.length);
-        check(find.byWidgetPredicate((widget) => widget is CupertinoRadio).evaluate()).isEmpty();
+        check(find.byWidgetPredicate((widget) => widget is CupertinoRadio).evaluate()).isEmpty;
       }, variant: iosOnly);
 }

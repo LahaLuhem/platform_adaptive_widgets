@@ -57,7 +57,7 @@ void main() {
           await tester.tap(find.text(choice.label));
           await pumpTransition(tester);
 
-          check(_isShowing()).isFalse();
+          check(_isShowing()).isFalse;
           check(await answerFuture).equals(choice.value);
         },
       );
@@ -66,13 +66,13 @@ void main() {
     final context = await pumpForContext(tester);
     final answerFuture = _show(context);
     await pumpTransition(tester);
-    check(_isShowing()).isTrue();
+    check(_isShowing()).isTrue;
 
     await tester.tapAt(const Offset(4, 4));
     await pumpTransition(tester);
 
-    check(_isShowing()).isFalse();
-    check(await answerFuture).isNull();
+    check(_isShowing()).isFalse;
+    check(await answerFuture).isNull;
   });
 
   Bdd(feature).scenario('answers null when a screen reader closes it').runWidgets((tester) async {
@@ -87,8 +87,8 @@ void main() {
     );
     await pumpTransition(tester);
 
-    check(_isShowing()).isFalse();
-    check(await answerFuture).isNull();
+    check(_isShowing()).isFalse;
+    check(await answerFuture).isNull;
     semantics.dispose();
   });
 
@@ -100,8 +100,8 @@ void main() {
     await tester.tap(find.text('Cancel'));
     await pumpTransition(tester);
 
-    check(_isShowing()).isFalse();
-    check(await answerFuture).isNull();
+    check(_isShowing()).isFalse;
+    check(await answerFuture).isNull;
   }, variant: iosOnly);
 
   Bdd(feature).scenario('puts delete and discard choices on top on iOS').runWidgets((tester) async {
@@ -136,7 +136,7 @@ void main() {
     unawaited(_show(context));
     await pumpTransition(tester);
 
-    check(find.text(cancelLabel(context)).evaluate()).isNotEmpty();
+    check(find.text(cancelLabel(context)).evaluate()).isNotEmpty;
   }, variant: iosOnly);
 
   Bdd(feature).scenario('shows no Cancel row on Android').runWidgets((tester) async {
@@ -144,8 +144,8 @@ void main() {
     unawaited(_show(context));
     await pumpTransition(tester);
 
-    check(_isShowing()).isTrue();
-    check(find.text('Cancel').evaluate()).isEmpty();
+    check(_isShowing()).isTrue;
+    check(find.text('Cancel').evaluate()).isEmpty;
   }, variant: androidOnly);
 
   Bdd(feature)
@@ -218,12 +218,12 @@ void main() {
     final context = await pumpForContext(tester);
     unawaited(_show(context, choices: choices, scrollController: scrollController));
     await pumpTransition(tester);
-    check(find.text('Choice 30').hitTestable().evaluate()).isEmpty();
+    check(find.text('Choice 30').hitTestable().evaluate()).isEmpty;
 
     scrollController.jumpTo(scrollController.position.maxScrollExtent);
     await pumpTransition(tester);
 
-    check(find.text('Choice 30').hitTestable().evaluate()).isNotEmpty();
+    check(find.text('Choice 30').hitTestable().evaluate()).isNotEmpty;
   });
 
   Bdd(feature).scenario('tints the barrier with barrierColor').runWidgets((tester) async {

@@ -57,7 +57,7 @@ void main() {
         outline: (tester, barrierDismissible) async {
           unawaited(_show(await _pumpPage(tester), barrierDismissible: barrierDismissible));
           await pumpTransition(tester);
-          check(_isUp()).isTrue();
+          check(_isUp()).isTrue;
 
           await tester.tapAt(const Offset(4, 4));
           await pumpTransition(tester);
@@ -74,11 +74,11 @@ void main() {
         outline: (tester, barrierDismissible) async {
           unawaited(_show(await _pumpPage(tester), barrierDismissible: barrierDismissible));
           await pumpTransition(tester);
-          check(_isUp()).isTrue();
+          check(_isUp()).isTrue;
 
           await _dragDown(tester);
 
-          check(_isUp()).isFalse();
+          check(_isUp()).isFalse;
         },
         variant: iosOnly,
       );
@@ -103,7 +103,7 @@ void main() {
 
         await _dragDown(tester);
 
-        check(_isUp()).isTrue();
+        check(_isUp()).isTrue;
         check(attempts).equals(1);
       }, variant: iosOnly);
 
@@ -118,7 +118,7 @@ void main() {
     );
     await pumpTransition(tester);
 
-    check(_isUp()).isFalse();
+    check(_isUp()).isFalse;
     semantics.dispose();
   });
 
@@ -155,7 +155,7 @@ void main() {
     check(
       because: 'dark mode took',
       dark,
-    ).not((it) => it.equals(kCupertinoModalBarrierColor.toARGB32()));
+    ).not(.it()..equals(kCupertinoModalBarrierColor.toARGB32()));
     unawaited(_show(context));
     await pumpTransition(tester);
 

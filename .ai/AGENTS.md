@@ -4,6 +4,7 @@ Tool-agnostic brief for any coding agent (Copilot, Cursor, Codex, Claude Code, â
 package. Claude-Code-specific guidance lives in [CLAUDE.md](./CLAUDE.md).
 
 ## Project goal
+
 A Flutter package providing **platform-adaptive widgets**: a spiritual continuation of
 [`flutter_platform_widgets`](https://pub.dev/packages/flutter_platform_widgets). Each `PlatformXxx`
 widget automatically renders **Cupertino** on iOS and macOS and **Material** everywhere else, so app
@@ -176,6 +177,7 @@ under `lib/src/models/<category>/platform_xxx_data.dart`. The same sub-categorie
     sweep untrack `.idea/` wholesale. Extend the negations to share a new path.
 
 ## PR conventions
+
 The `.github/workflows/conventions.yml` workflow enforces branch-name, PR-label, and commit-subject
 rules on every PR. On merge, `.github/workflows/changelog.yml` auto-appends to `CHANGELOG.md` based
 on the PR's `sem-*` label (via `cider log`). **PRs that don't comply will be blocked by CI.** The
@@ -210,6 +212,7 @@ version, the CHANGELOG and `example/pubspec.lock` together, and pushes the tag `
 up. [dartender's Releasing](https://github.com/LahaLuhem/dartender#releasing) has the rest.
 
 ## Style
+
 Full guide: [`../CODESTYLE.md`](../CODESTYLE.md). The lint posture is deliberately strict (see the
 shared lints), the explicit `errors:` block promotes a long list of lints to errors. Top-level rules
 to keep in working memory:

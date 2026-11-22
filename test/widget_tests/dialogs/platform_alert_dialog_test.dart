@@ -53,7 +53,7 @@ void main() {
         final context = await pumpForContext(tester);
         final looks = await _fullAlertLooks(tester, context);
 
-        check(looks.title).not((it) => it.equals(looks.message));
+        check(looks.title).not(.it()..equals(looks.message));
         check(await _loneTitleLook(tester, context)).equals(looks.message);
       }, variant: androidOnly);
 
@@ -63,7 +63,7 @@ void main() {
         final context = await pumpForContext(tester);
         final looks = await _fullAlertLooks(tester, context);
 
-        check(looks.title).not((it) => it.equals(looks.message));
+        check(looks.title).not(.it()..equals(looks.message));
         check(await _loneTitleLook(tester, context)).equals(looks.title);
       }, variant: iosOnly);
 

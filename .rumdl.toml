@@ -1,0 +1,19 @@
+# rumdl (Markdown lint) config. AGENTS.md says how CI runs it.
+
+[global]
+exclude = [
+    "CHANGELOG.md",
+    "example/ios/**",
+    "example/android/**"
+]
+# MD033 inline HTML: intentional (<details>, <summary>, <a id> anchors, the README's screenshots).
+# MD041 first-line-heading: the README opens with a badge block, the CODESTYLEs with an intro line.
+disable = ["MD033", "MD041"]
+
+[MD013]
+# 100 to match .editorconfig. Code blocks and tables are exempt: fixed-width ASCII trees, sample
+# output and table rows can't reflow.
+line-length = 100
+code_blocks = false
+tables = false
+reflow = true

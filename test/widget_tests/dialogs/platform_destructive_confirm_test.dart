@@ -34,7 +34,7 @@ void main() {
           await tester.tap(find.text(row.button));
           await pumpTransition(tester);
 
-          check(_isShowing()).isFalse();
+          check(_isShowing()).isFalse;
           check(await answerFuture).equals(row.answer);
         },
       );
@@ -43,13 +43,13 @@ void main() {
     final context = await pumpForContext(tester);
     final answerFuture = _show(context);
     await pumpTransition(tester);
-    check(_isShowing()).isTrue();
+    check(_isShowing()).isTrue;
 
     await tester.tapAt(const Offset(4, 4));
     await pumpTransition(tester);
 
-    check(_isShowing()).isFalse();
-    check(await answerFuture).isFalse();
+    check(_isShowing()).isFalse;
+    check(await answerFuture).isFalse;
   });
 
   Bdd(feature).scenario('marks the confirming button as destructive').runWidgets((tester) async {

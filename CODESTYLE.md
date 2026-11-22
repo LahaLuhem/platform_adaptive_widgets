@@ -20,35 +20,36 @@ renames don't break callers.
 - [Constants & magic numbers](#constants--magic-numbers)
 - [Class structure](#class-structure)
 - [Platform-adaptive widget patterns](#platform-adaptive-widget-patterns)
-  * [Subclass `PlatformWidgetBase`, override the 2 builders](#subclass-platformwidgetbase-override-the-2-builders)
-  * [Field classification: functional vs visual](#field-classification-functional-vs-visual)
+  - [Subclass `PlatformWidgetBase`, override the 2 builders](#subclass-platformwidgetbase-override-the-2-builders)
+  - [Field classification: functional vs visual](#field-classification-functional-vs-visual)
 - [Idioms](#idioms)
-  * [Static dot shorthands (Dart 3.10+)](#static-dot-shorthands-dart-310)
-  * [Drop redundant `<Type>` on collection literals](#drop-redundant-type-on-collection-literals)
-  * [`Row.spacing` / `Column.spacing` / `Wrap.spacing` over interleaved `SizedBox` gaps](#rowspacing--columnspacing--wrapspacing-over-interleaved-sizedbox-gaps)
-  * [Enhanced enums for per-variant config](#enhanced-enums-for-per-variant-config)
-  * [`Navigator.maybeOf` over `Navigator.of` for fire-and-forget pops](#navigatormaybeof-over-navigatorof-for-fire-and-forget-pops)
-  * [Collection-for / collection-if over `Iterable.map(…).toList()`](#collection-for--collection-if-over-iterablemaptolist)
-  * [Library pipeline methods over hand-rolled loops (for data manipulation)](#library-pipeline-methods-over-hand-rolled-loops-for-data-manipulation)
-  * [`dart:async` `wait` extensions over static `Future.wait(...)`](#dartasync-wait-extensions-over-static-futurewait)
-  * [`List.unmodifiable(…)` over `UnmodifiableListView(…)`](#listunmodifiable-over-unmodifiablelistview)
-  * [`part` / `part of` only when structurally needed](#part--part-of-only-when-structurally-needed)
-  * [A switch over an if/else chain, never over a single if/else](#a-switch-over-an-ifelse-chain-never-over-a-single-ifelse)
-  * [`ValueNotifier` and `ValueListenableBuilder` over `setState`](#valuenotifier-and-valuelistenablebuilder-over-setstate)
+  - [Static dot shorthands (Dart 3.10+)](#static-dot-shorthands-dart-310)
+  - [Drop redundant `<Type>` on collection literals](#drop-redundant-type-on-collection-literals)
+  - [`Row.spacing` / `Column.spacing` / `Wrap.spacing` over interleaved `SizedBox` gaps](#rowspacing--columnspacing--wrapspacing-over-interleaved-sizedbox-gaps)
+  - [Enhanced enums for per-variant config](#enhanced-enums-for-per-variant-config)
+  - [`Navigator.maybeOf` over `Navigator.of` for fire-and-forget pops](#navigatormaybeof-over-navigatorof-for-fire-and-forget-pops)
+  - [Collection-for / collection-if over `Iterable.map(…).toList()`](#collection-for--collection-if-over-iterablemaptolist)
+  - [Library pipeline methods over hand-rolled loops (for data manipulation)](#library-pipeline-methods-over-hand-rolled-loops-for-data-manipulation)
+  - [`dart:async` `wait` extensions over static `Future.wait(...)`](#dartasync-wait-extensions-over-static-futurewait)
+  - [`List.unmodifiable(…)` over `UnmodifiableListView(…)`](#listunmodifiable-over-unmodifiablelistview)
+  - [`part` / `part of` only when structurally needed](#part--part-of-only-when-structurally-needed)
+  - [A switch over an if/else chain, never over a single if/else](#a-switch-over-an-ifelse-chain-never-over-a-single-ifelse)
+  - [`ValueNotifier` and `ValueListenableBuilder` over `setState`](#valuenotifier-and-valuelistenablebuilder-over-setstate)
 - [Test style](#test-style)
-  * [Conventions](#conventions)
+  - [Conventions](#conventions)
 - [Prose & voice](#prose--voice)
 - [Comments & dartdoc](#comments--dartdoc)
-  * [Every field gets a doc, from upstream first](#every-field-gets-a-doc-from-upstream-first)
-  * [Link the M3 and HIG pages behind a widget](#link-the-m3-and-hig-pages-behind-a-widget)
-  * [Wrap dartdoc past 100, not before it](#wrap-dartdoc-past-100-not-before-it)
-  * [`@docImport` for dartdoc-only references](#docimport-for-dartdoc-only-references)
+  - [Every field gets a doc, from upstream first](#every-field-gets-a-doc-from-upstream-first)
+  - [Link the M3 and HIG pages behind a widget](#link-the-m3-and-hig-pages-behind-a-widget)
+  - [Wrap dartdoc past 100, not before it](#wrap-dartdoc-past-100-not-before-it)
+  - [`@docImport` for dartdoc-only references](#docimport-for-dartdoc-only-references)
 - [DCM rules (applied by hand)](#dcm-rules-applied-by-hand)
 - [Documentation conventions (Markdown)](#documentation-conventions-markdown)
 
 <!-- TOC end -->
 
 <a id="type-safety-nullability"></a>
+
 ## Type safety & nullability
 
 - **Type-annotate every public symbol.** Inference is fine on locals. Public surfaces are not the
@@ -99,6 +100,7 @@ The `dynamic`-escape-hatch ban and the `print()`-in-library ban are listed under
 ---
 
 <a id="naming"></a>
+
 ## Naming
 
 - **Prefer abbreviations over initialisms for domain terms.** In code, comments, dartdocs, and log
@@ -215,6 +217,7 @@ The `dynamic`-escape-hatch ban and the `print()`-in-library ban are listed under
 ---
 
 <a id="formatting"></a>
+
 ## Formatting
 
 - **Wrap text-file content at 100 columns.** `formatter.page_width: 100` in the shared lints is
@@ -237,6 +240,7 @@ The `dynamic`-escape-hatch ban and the `print()`-in-library ban are listed under
 ---
 
 <a id="constants-magic-numbers"></a>
+
 ## Constants & magic numbers
 
 - **No magic numbers in `lib/` code.** Pull constants to named `static const`s with a descriptive
@@ -281,6 +285,7 @@ The `dynamic`-escape-hatch ban and the `print()`-in-library ban are listed under
 ---
 
 <a id="class-structure"></a>
+
 ## Class structure
 
 - **Any class with fields and constructors: fields → constructors → other members.** Lets a reader
@@ -335,12 +340,14 @@ The `dynamic`-escape-hatch ban and the `print()`-in-library ban are listed under
 ---
 
 <a id="platform-adaptive-widget-patterns"></a>
+
 ## Platform-adaptive widget patterns
 
 These rules are specific to this package. They encode the load-bearing dispatch invariant and the
 data-class composition shape.
 
 <a id="paw-subclass-base"></a>
+
 ### Subclass `PlatformWidgetBase`, override the 2 builders
 
 Every `PlatformXxx` widget in `lib/src/widgets/` subclasses one of the 4 base classes in
@@ -402,6 +409,7 @@ class PlatformSwitch extends StatelessWidget {
 ```
 
 <a id="paw-field-classification"></a>
+
 ### Field classification: functional vs visual
 
 Every widget parameter falls into one of 3 buckets:
@@ -426,9 +434,11 @@ For the full rule (which fields land where, carve-outs, field-mapping discipline
 ---
 
 <a id="idioms"></a>
+
 ## Idioms
 
 <a id="static-dot-shorthands-dart-310"></a>
+
 ### Static dot shorthands (Dart 3.10+)
 
 Use static dot shorthands wherever the context type is known. They resolve from the parameter /
@@ -470,6 +480,7 @@ remove it from any `show` clauses too. Re-running analyze surfaces `unused_shown
 orphaned ones.
 
 <a id="drop-redundant-collection-literal-type-args"></a>
+
 ### Drop redundant `<Type>` on collection literals
 
 When the surrounding context already pins the element / key / value type of a list, set, or map
@@ -498,6 +509,7 @@ Keep `<Type>` when inference would otherwise fall back to `dynamic`:
   the explicit `<Never>`: `const kDefault = {}` infers `Map<dynamic, dynamic>` and breaks.
 
 <a id="flex-spacing-over-sizedbox-gaps"></a>
+
 ### `Row.spacing` / `Column.spacing` / `Wrap.spacing` over interleaved `SizedBox` gaps
 
 Use the flex widgets' `spacing` parameter rather than interleaving `SizedBox` between every pair of
@@ -518,6 +530,7 @@ whether the spacing is uniform.
 **Doesn't apply.** Gaps that differ between pairs, or that depend on a sibling's resolved size. Use
 explicit `SizedBox` there, or group children into their own evenly-spaced `Row` / `Column`.
 <a id="enhanced-enums-for-per-variant-config"></a>
+
 ### Enhanced enums for per-variant config
 
 When a variant enum's values each carry a piece of configuration that diverges *per value*, a
@@ -571,6 +584,7 @@ carry one platform's config: `PlatformButtonEmphasis` holds nothing Cupertino-on
 new rank still has to choose one.
 
 <a id="navigator-maybeof-over-of"></a>
+
 ### `Navigator.maybeOf` over `Navigator.of` for fire-and-forget pops
 
 When dismissing a route (`pop`) from inside a callback whose only job is the pop, dialog action
@@ -618,6 +632,7 @@ result.
 semantic.
 
 <a id="collection-for-collection-if-over-iterablemaptolist"></a>
+
 ### Collection-for / collection-if over `Iterable.map(…).toList()`
 
 In a widget tree a literal list with embedded control flow reads as data. A `.map(…).toList()` reads
@@ -634,6 +649,7 @@ children: AxisDirection.values.map((dir) => DirectionTile(dir)).toList(),
 ```
 
 <a id="library-pipeline-methods-over-hand-rolled-loops"></a>
+
 ### Library pipeline methods over hand-rolled loops (for data manipulation)
 
 The deliberate flip side of the
@@ -688,6 +704,7 @@ guard `bases` is `.toList(growable: false)` (3 readers, never mutated) while eac
 stays a lazy `Iterable` (read once, by `check`).
 
 <a id="dartasync-wait-extensions-over-static-futurewait"></a>
+
 ### `dart:async` `wait` extensions over static `Future.wait(...)`
 
 Prefer the `wait` extensions over the static call: the record form `(f1, f2).wait` for a fixed
@@ -697,6 +714,7 @@ errors instead of throwing away the successes.
 
 Most of this package is synchronous UI code, so the opportunities are rare.
 <a id="listunmodifiable-over-unmodifiablelistview"></a>
+
 ### `List.unmodifiable(…)` over `UnmodifiableListView(…)`
 
 Default to `List.unmodifiable(…)`, and the `Set`/`Map` equivalents, for exposing an immutable
@@ -710,6 +728,7 @@ Not over a filter, which the view walks again on every read, and not where the r
 several times, since each read runs the mapping again.
 
 <a id="part-part-of-only-when-structurally-needed"></a>
+
 ### `part` / `part of` only when structurally needed
 
 Not a smell on its own. Legitimate uses: sealed-class cases across files (Dart 3 requires same
@@ -718,6 +737,7 @@ library for sealed subtypes), code-generation outputs (`*.g.dart` from `freezed`
 hide dependencies and leak `_private` symbols across files within the library.
 
 <a id="switch-over-if-else-chains"></a>
+
 ### A switch over an if/else chain, never over a single if/else
 
 A switch reads nicer than a chain of `if` / `else if` on one value. A single either/or stays an
@@ -752,6 +772,7 @@ ceremony.
 per case drops the other look early ([why](./APPENDIX.md#aot-pruning-rules)).
 
 <a id="valuenotifier-over-setstate"></a>
+
 ### `ValueNotifier` and `ValueListenableBuilder` over `setState`
 
 Keep a widget's changing state in a `ValueNotifier`, named `_xxxNotifier`, read it through a
@@ -762,6 +783,7 @@ Keep a widget's changing state in a `ValueNotifier`, named `_xxxNotifier`, read 
 ---
 
 <a id="test-style"></a>
+
 ## Test style
 
 Tests split by kind, a folder each under `test/`. The unit and widget tests mirror `lib/src/`.
@@ -794,6 +816,7 @@ failure paths too.
 a helper. A suite's `_pump*` wrapper only adds that suite's setup.
 
 <a id="test-conventions"></a>
+
 ### Conventions
 
 - **Test the package, not its dependencies.** What Flutter, material_ui or cupertino_ui does by
@@ -813,6 +836,7 @@ a helper. A suite's `_pump*` wrapper only adds that suite's setup.
 ---
 
 <a id="prose"></a>
+
 ## Prose & voice
 
 **Read <https://noslopgrenade.com/> before writing any prose here.** Open it, don't cite it from
@@ -835,6 +859,7 @@ PR and issue bodies.
 ---
 
 <a id="comments-dartdoc"></a>
+
 ## Comments & dartdoc
 
 Public symbols carry `///` dartdoc that explains *why*, not *what*, types already carry the *what*.
@@ -935,6 +960,7 @@ does not fire when a docImport is present.
 ---
 
 <a id="dcm-rules-applied-by-hand"></a>
+
 ## DCM rules (applied by hand)
 
 `flutter analyze` does not run these, and the project treats them as non-negotiable. Rule
@@ -971,6 +997,7 @@ change. What follows is only this project's policy on each.
 ---
 
 <a id="documentation-conventions-markdown"></a>
+
 ## Documentation conventions (Markdown)
 
 - **Never restate what another file already states.** Point at it instead. A version constraint, a

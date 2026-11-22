@@ -219,17 +219,17 @@ void main() {
       .runWidgets((tester) async {
         await _pump(tester, const _Picker(count: 4, current: 99));
 
-        check(_items(4).map(_label).where(_fieldShows)).isEmpty();
+        check(_items(4).map(_label).where(_fieldShows)).isEmpty;
       });
 
   // A value off the list takes the same path.
   Bdd(feature).scenario('clears the field when the value goes null').runWidgets((tester) async {
     await _pump(tester, const _Picker(count: 4, current: 2));
-    check(_fieldShows(_label(2))).isTrue();
+    check(_fieldShows(_label(2))).isTrue;
 
     await _pump(tester, const _Picker(count: 4));
 
-    check(_fieldShows(_label(2))).isFalse();
+    check(_fieldShows(_label(2))).isFalse;
   });
 
   // Say the app switched language while the picker was on screen.
@@ -237,11 +237,11 @@ void main() {
       .scenario("renames the field when the value's label changes")
       .runWidgets((tester) async {
         await _pump(tester, const _Picker(count: 4, current: 2));
-        check(_fieldShows(_label(2))).isTrue();
+        check(_fieldShows(_label(2))).isTrue;
 
         await _pump(tester, _Picker(count: 4, current: 2, label: (item) => 'Élément $item'));
 
-        check(_fieldShows('Élément 2')).isTrue();
+        check(_fieldShows('Élément 2')).isTrue;
       });
 
   Bdd(feature)
@@ -255,8 +255,8 @@ void main() {
         await pumpTransition(tester);
 
         check(picked).deepEquals([3]);
-        check(_fieldShows(_label(2))).isTrue();
-        check(_fieldShows(_label(3))).isFalse();
+        check(_fieldShows(_label(2))).isTrue;
+        check(_fieldShows(_label(3))).isFalse;
       });
 
   Bdd(feature)
@@ -276,8 +276,8 @@ void main() {
           await _open(tester);
 
           // The current row can share its label with row 0, so its neighbour tells them apart.
-          check(_rowInView(_label(row.current + 1))).isTrue();
-          check(_rowInView(_label(1))).isFalse();
+          check(_rowInView(_label(row.current + 1))).isTrue;
+          check(_rowInView(_label(1))).isFalse;
         },
       );
 
@@ -288,7 +288,7 @@ void main() {
     await tester.enterText(find.byType(EditableText), 'Anything');
     await pumpTransition(tester);
 
-    check(_fieldShows('Anything')).isFalse();
+    check(_fieldShows('Anything')).isFalse;
   }, variant: _materialDesktop);
 
   Bdd(feature)
@@ -305,7 +305,7 @@ void main() {
           await _open(tester);
 
           check(find.byIcon(_icon).evaluate().where((icon) => Scrollable.maybeOf(icon) != null))
-              .isNotEmpty();
+              .isNotEmpty;
         },
       );
 
@@ -343,7 +343,7 @@ void main() {
           await row.leave(tester);
 
           check(_scrollViews()).equals(closed);
-          check(picked).isEmpty();
+          check(picked).isEmpty;
         },
         variant: iosOnly,
       );
@@ -365,7 +365,7 @@ void main() {
         await pumpTransition(tester);
 
         check(_scrollViews()).isGreaterThan(closed);
-        check(reports).isNotEmpty();
+        check(reports).isNotEmpty;
         check(_label(reports.last.item)).equals(reports.last.shown);
       }, variant: iosOnly);
 
@@ -408,7 +408,7 @@ void main() {
         await pumpTransition(tester);
 
         check(_wheelRow(tester)).equals(6);
-        check(picked).isEmpty();
+        check(picked).isEmpty;
       }, variant: iosOnly);
 
   Bdd(feature)
@@ -446,7 +446,7 @@ void main() {
           await pumpTransition(tester);
 
           check(_scrollViews()).equals(closed);
-          check(picked).isEmpty();
+          check(picked).isEmpty;
         },
       );
 
@@ -457,7 +457,7 @@ void main() {
     await _open(tester);
 
     // The page covers the screen the picker sits on.
-    check(find.byType(PlatformMenuPicker<int>).evaluate()).isEmpty();
+    check(find.byType(PlatformMenuPicker<int>).evaluate()).isEmpty;
   }, variant: iosOnly);
 
   Bdd(feature)
@@ -471,7 +471,7 @@ void main() {
         await pumpTransition(tester);
 
         check(picked).deepEquals([7]);
-        check(find.byType(PlatformMenuPicker<int>).evaluate()).isNotEmpty();
+        check(find.byType(PlatformMenuPicker<int>).evaluate()).isNotEmpty;
       }, variant: iosOnly);
 
   Bdd(feature)
@@ -486,7 +486,7 @@ void main() {
         semantics.dispose();
 
         check(picked.flagsCollection.isSelected).equals(Tristate.isTrue);
-        check(next.flagsCollection.isSelected).not((it) => it.equals(Tristate.isTrue));
+        check(next.flagsCollection.isSelected).not(.it()..equals(Tristate.isTrue));
       }, variant: iosOnly);
 
   Bdd(feature)
@@ -509,7 +509,7 @@ void main() {
         );
         await pumpTransition(tester);
 
-        check(reports).isNotEmpty();
+        check(reports).isNotEmpty;
         check(_label(reports.last.item)).equals(reports.last.shown);
       }, variant: iosOnly);
 
@@ -530,7 +530,7 @@ void main() {
 
         check(_wheelRow(tester)).equals(0);
         check(_wheelLabel(tester)).equals(_label(4));
-        check(picked).isEmpty();
+        check(picked).isEmpty;
       }, variant: iosOnly);
 
   Bdd(feature)
@@ -562,7 +562,7 @@ void main() {
         semantics.dispose();
 
         check(currentRow.flagsCollection.isSelected).equals(Tristate.isTrue);
-        check(showsNewLastItem).isTrue();
+        check(showsNewLastItem).isTrue;
         check(picked).deepEquals([300]);
       }, variant: iosOnly);
 
@@ -577,7 +577,7 @@ void main() {
         pickerNotifier.value = const _Picker(count: 5, first: 2, current: 3);
         await pumpTransition(tester);
 
-        check(_listRow(_label(0)).evaluate()).isEmpty();
+        check(_listRow(_label(0)).evaluate()).isEmpty;
         check(_wheelLabel(tester)).equals(_label(3));
       }, variant: iosOnly);
 

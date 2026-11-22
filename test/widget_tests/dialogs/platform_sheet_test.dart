@@ -115,13 +115,13 @@ void main() {
       .runWidgets((tester) async {
         final result = _open(await _pumpPhone(tester));
         await pumpTransition(tester);
-        check(_isUp()).isTrue();
+        check(_isUp()).isTrue;
 
         await tester.tap(_wayOut(tester));
         await pumpTransition(tester);
 
-        check(_isUp()).isFalse();
-        check(await result).isNull();
+        check(_isUp()).isFalse;
+        check(await result).isNull;
       });
 
   Bdd(feature).scenario('closes with the value of a Save in its bar').runWidgets((tester) async {
@@ -139,7 +139,7 @@ void main() {
     await pumpTransition(tester);
 
     // Closed first, or the result never comes.
-    check(_isUp()).isFalse();
+    check(_isUp()).isFalse;
     check(await result).equals(_saved);
   });
 
@@ -198,13 +198,13 @@ void main() {
       .runWidgets((tester) async {
         final result = _open(await _pumpPhone(tester), appBarBuilder: null);
         await pumpTransition(tester);
-        check(find.text(cancelLabel(tester.element(find.byKey(_bodyKey)))).evaluate()).isNotEmpty();
+        check(find.text(cancelLabel(tester.element(find.byKey(_bodyKey)))).evaluate()).isNotEmpty;
 
         await tester.tap(_wayOut(tester));
         await pumpTransition(tester);
 
-        check(_isUp()).isFalse();
-        check(await result).isNull();
+        check(_isUp()).isFalse;
+        check(await result).isNull;
       }, variant: iosOnly);
 
   Bdd(feature)
@@ -213,8 +213,8 @@ void main() {
         unawaited(_open(await _pumpPhone(tester), appBarBuilder: null));
         await pumpTransition(tester);
 
-        check(_isUp()).isTrue();
-        check(find.byType(AppBar).evaluate()).isEmpty();
+        check(_isUp()).isTrue;
+        check(find.byType(AppBar).evaluate()).isEmpty;
       }, variant: androidOnly);
 
   Bdd(feature)
@@ -226,8 +226,8 @@ void main() {
         await tester.binding.handlePopRoute();
         await pumpTransition(tester);
 
-        check(_isAsking()).isTrue();
-        check(_isUp()).isTrue();
+        check(_isAsking()).isTrue;
+        check(_isUp()).isTrue;
       });
 
   Bdd(feature)
@@ -239,8 +239,8 @@ void main() {
         await tester.tapAt(const Offset(4, 4));
         await pumpTransition(tester);
 
-        check(_isAsking()).isTrue();
-        check(_isUp()).isTrue();
+        check(_isAsking()).isTrue;
+        check(_isUp()).isTrue;
       }, variant: androidOnly);
 
   Bdd(feature).scenario('stays up when the person keeps their changes').runWidgets((tester) async {
@@ -252,8 +252,8 @@ void main() {
     await tester.tap(_askCancel(tester));
     await pumpTransition(tester);
 
-    check(_isAsking()).isFalse();
-    check(_isUp()).isTrue();
+    check(_isAsking()).isFalse;
+    check(_isUp()).isTrue;
   });
 
   Bdd(feature)
@@ -267,8 +267,8 @@ void main() {
         await tester.tap(find.text(_discard));
         await pumpTransition(tester);
 
-        check(_isUp()).isFalse();
-        check(await result).isNull();
+        check(_isUp()).isFalse;
+        check(await result).isNull;
       });
 
   Bdd(feature).scenario('asks about changes made after it opened').runWidgets((tester) async {
@@ -281,7 +281,7 @@ void main() {
     await tester.tap(_wayOut(tester));
     await pumpTransition(tester);
 
-    check(_isAsking()).isTrue();
+    check(_isAsking()).isTrue;
   });
 
   Bdd(feature).scenario('closes at once when nothing is unsaved').runWidgets((tester) async {
@@ -291,8 +291,8 @@ void main() {
     await tester.tap(_wayOut(tester));
     await pumpTransition(tester);
 
-    check(_isAsking()).isFalse();
-    check(_isUp()).isFalse();
+    check(_isAsking()).isFalse;
+    check(_isUp()).isFalse;
   });
 
   Bdd(feature).scenario("closes with a Save's value without asking").runWidgets((tester) async {
@@ -306,7 +306,7 @@ void main() {
     await tester.tap(find.text(_save));
     await pumpTransition(tester);
 
-    check(_isAsking()).isFalse();
+    check(_isAsking()).isFalse;
     check(await result).equals(_saved);
   });
 

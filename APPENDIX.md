@@ -11,6 +11,7 @@ or grep-and-update every caller.
 ---
 
 <a id="ai-files-symlinked"></a>
+
 ## `AGENTS.md` and `CLAUDE.md` are symlinks into `.ai/`
 
 - **Decision:** the canonical text for both files lives under `.ai/`. The repo root holds symlinks
@@ -28,6 +29,7 @@ or grep-and-update every caller.
 ---
 
 <a id="public-api-via-single-export-file"></a>
+
 ## Public API funnelled through `lib/platform_adaptive_widgets.dart`
 
 - **Chosen:** `lib/platform_adaptive_widgets.dart` is the only file callers import. Implementation
@@ -55,6 +57,7 @@ or grep-and-update every caller.
 ---
 
 <a id="platform-widget-base-hierarchy"></a>
+
 ## `PlatformWidgetBase` is an abstract base, not a function or mixin
 
 - **Chosen:** every `PlatformXxx` extends one of the 4 bases in
@@ -77,6 +80,7 @@ or grep-and-update every caller.
 ---
 
 <a id="sdk-widgets-not-adaptive"></a>
+
 ## Real SDK widgets, not Flutter's `.adaptive` constructors
 
 - **Chosen:** each `PlatformXxx` builds the actual Material widget on Android and the actual
@@ -90,6 +94,7 @@ or grep-and-update every caller.
 ---
 
 <a id="pairing-principles"></a>
+
 ## Pairing principles
 
 How a `PlatformXxx` or `showPlatformXxx` pairing gets designed or fixed. Check a proposal against
@@ -121,6 +126,7 @@ all 8 before it ships.
 ---
 
 <a id="destructive-look"></a>
+
 ## A delete or discard is red on both looks
 
 Cupertino follows the HIG, which keeps an alert's Delete plain since the person asked for it. M3 has
@@ -132,6 +138,7 @@ red brand's `primary` lands on `error`'s hue, as it does for M3's own error stat
 ---
 
 <a id="raw-sheet-on-smooth-sheets"></a>
+
 ## The raw sheet's iOS side runs on smooth_sheets
 
 An iOS sheet as short as its content dims the page without pushing it back, and closes on a swipe
@@ -152,6 +159,7 @@ smooth_sheets, and the size check counts it there.
 ---
 
 <a id="debounced-bar-action"></a>
+
 ## A bar action waits only when asked, and draws its own spinner
 
 - **Only `.debounced` waits.** Waiting on any `onPressed` future would also catch navigation, share
@@ -167,6 +175,7 @@ smooth_sheets, and the size check counts it there.
 ---
 
 <a id="field-classification"></a>
+
 ## Field classification: functional vs visual
 
 Every parameter on a `PlatformXxx` widget (or `showPlatformXxx` helper) falls into exactly one of 3
@@ -245,6 +254,7 @@ Build-method resolution:
    fields, not a shared visual.
 
 <a id="callback-nullability"></a>
+
 ### Callback nullability
 
 For function-typed fields (callbacks, listeners), the functional-bucket rule forks based on whether
@@ -315,6 +325,7 @@ not to make the callback nullable.
   its public API. Per-platform records do not leak the underlying widget's full surface.
 
 <a id="parity-guard"></a>
+
 ### Enforcement: the data ↔ widget parity guard
 
 The 2 halves of this contract the Dart compiler does **not** check are guarded by a static AST test
@@ -347,6 +358,7 @@ per-platform record. That's the human judgement the buckets above describe.
 ---
 
 <a id="cross-platform-field-mappings"></a>
+
 ## Cross-platform field mappings
 
 Shared-visual fields where the package's unified surface diverges from the underlying widget
@@ -409,6 +421,7 @@ of fields whose mapping could silently break. Without it, a renamed underlying p
 through as a runtime mismatch.
 
 <a id="left-out-fields"></a>
+
 ### What a left-out field sends
 
 A wrapper writes every argument, and Dart applies a default only to one that's left out. So the
@@ -443,6 +456,7 @@ parameter that can be null.
 ---
 
 <a id="models-widgets-mirror-layout"></a>
+
 ## `lib/src/models/` mirrors `lib/src/widgets/`
 
 - **Chosen:** the `models/` and `widgets/` trees use the same sub-categories (`dialogs/`,
@@ -465,6 +479,7 @@ parameter that can be null.
 ---
 
 <a id="android-ios-only"></a>
+
 ## Cupertino on iOS and macOS, Material everywhere else
 
 - **Chosen:** [`designLanguage`](./lib/src/utils/design_language.dart) makes the call, and a guard
@@ -483,6 +498,7 @@ parameter that can be null.
 ---
 
 <a id="aot-pruning-rules"></a>
+
 ## AOT pruning: which patterns prune, which leak
 
 Release builds should carry only the look they show. `designLanguage` carries the same
@@ -547,6 +563,7 @@ and `Checkbox`, goes in that build's excluded files instead, with the widget nam
 ---
 
 <a id="two-entry-point-example"></a>
+
 ## Entry points in `example/`: `main.dart` and `main_go_router.dart`
 
 - **Chosen:** the demo app under `example/lib/` ships 2 `main()` functions:

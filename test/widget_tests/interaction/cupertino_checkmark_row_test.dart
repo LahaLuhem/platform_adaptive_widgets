@@ -48,8 +48,8 @@ void main() {
     final other = tester.getSemantics(find.text(_other)).getSemanticsData();
     semantics.dispose();
 
-    check(readsAsPicked(picked)).isTrue();
-    check(readsAsPicked(other)).isFalse();
+    check(readsAsPicked(picked)).isTrue;
+    check(readsAsPicked(other)).isFalse;
   }, variant: iosOnly);
 
   Bdd(feature)

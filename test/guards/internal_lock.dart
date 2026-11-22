@@ -23,7 +23,7 @@ void internalLockGuard() {
       check(
         because: 'Found no unexported declaration at all, so the check below passes on nothing.',
         declarations,
-      ).isNotEmpty();
+      ).isNotEmpty;
       check(
         because:
             'Another package can import anything in lib/src, and `@internal` makes that a warning.',
@@ -38,7 +38,7 @@ void internalLockGuard() {
                   '${declaration.unit.locate(declaration.member)}: '
                   '${_publicNames(declaration.member).join(', ')}',
             ),
-      ).isEmpty();
+      ).isEmpty;
     });
   });
 }

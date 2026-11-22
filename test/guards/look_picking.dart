@@ -32,11 +32,11 @@ void lookPickingGuard() {
             'Found no TargetPlatform even in $_designLanguageHomeBasename, so the check below '
             "can't see types.",
         offendersIn([home], _PlatformVisitor.new),
-      ).isNotEmpty();
+      ).isNotEmpty;
       check(
         because: 'Switch on `designLanguage` instead, so every site agrees on the look.',
         offendersIn(units.except({_designLanguageHomeBasename}), _PlatformVisitor.new),
-      ).isEmpty();
+      ).isEmpty;
     });
 
     test('every ${_halfNames.join(' / ')} is $_halfLocks', () {
@@ -48,7 +48,7 @@ void lookPickingGuard() {
       check(
         because: 'A half callable from outside skips `designLanguage`.',
         visitors.expand((visitor) => visitor.offenders),
-      ).isEmpty();
+      ).isEmpty;
     });
   });
 }

@@ -35,7 +35,7 @@ void dataWidgetParityGuard() {
             'Found no `_PlatformXxxData` base, so `_collectBases` is looking in the wrong place and '
             'every check below passes on nothing.',
         bases,
-      ).isNotEmpty();
+      ).isNotEmpty;
     });
 
     test('finds fields on every base (guards against checks passing on none)', () {
@@ -44,7 +44,7 @@ void dataWidgetParityGuard() {
             'A base exists to share fields, so one with none found means `instanceFieldNames` '
             'missed how they are declared, and the checks below pass on an empty set.',
         bases.where((base) => base.fields.isEmpty).map((base) => base.location),
-      ).isEmpty();
+      ).isEmpty;
     });
 
     test('every shared-visual `_PlatformXxxData` field is mirrored flat on '
@@ -77,7 +77,7 @@ void dataWidgetParityGuard() {
             'Cupertino record instead of the shared base. See '
             'APPENDIX.md#field-classification.',
         offenders,
-      ).isEmpty();
+      ).isEmpty;
     });
 
     test('every shared-visual field is merged via `data.field ?? field` in '
@@ -102,7 +102,7 @@ void dataWidgetParityGuard() {
             'compiles, but silently drops the per-platform override (or the flat default). Wire the '
             'field in both halves. See APPENDIX.md#field-classification.',
         offenders,
-      ).isEmpty();
+      ).isEmpty;
     });
 
     test('every per-look record field is read somewhere in lib/src', () {
@@ -111,7 +111,7 @@ void dataWidgetParityGuard() {
       check(
         because: 'Found no record field at all, so the check below passes on nothing.',
         fields,
-      ).isNotEmpty();
+      ).isNotEmpty;
       final read = visitAll(
         units,
         (_) => _FieldReadVisitor(),
@@ -119,7 +119,7 @@ void dataWidgetParityGuard() {
       check(
         because: 'A field nothing reads drops what the caller set. Pass it on, or remove it.',
         fields.difference(read).map((field) => '${field.enclosingElement.name}.${field.name}'),
-      ).isEmpty();
+      ).isEmpty;
     });
   });
 }

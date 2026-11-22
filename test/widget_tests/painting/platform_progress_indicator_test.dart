@@ -20,6 +20,6 @@ void main() {
     final isNamed = find.semantics.byLabel(_label).evaluate().isNotEmpty;
     semantics.dispose();
 
-    check(isNamed).isTrue();
+    check(isNamed).isTrue;
   });
 }

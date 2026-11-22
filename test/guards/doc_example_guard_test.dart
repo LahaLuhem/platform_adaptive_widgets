@@ -20,7 +20,7 @@ void main() {
             'example/lib/snippets/ (mirroring its lib/src/widgets/ path) and reference '
             'it with {@example <path>#<region>}.',
         dartFilesUnder('lib').expand(_dartFences),
-      ).isEmpty();
+      ).isEmpty;
     });
 
     test('finds the Dart files at all (guards against a vacuous pass)', () {
@@ -29,7 +29,7 @@ void main() {
             'No Dart file found under lib/, so this guard is scanning the wrong place and the '
             'check above is passing on an empty set.',
         dartFilesUnder('lib'),
-      ).isNotEmpty();
+      ).isNotEmpty;
     });
   });
 }

@@ -55,6 +55,7 @@ takes.
 ## Patterns
 
 <a id="both-looks-in-one-call"></a>
+
 ### Both looks handed to one call
 
 A value selector (`platformValue` and co, lazy forms too) or a helper taking both builders. **The
@@ -66,6 +67,7 @@ losing look stays in the release build.**
 - **iOS:** not measured.
 
 <a id="design-language-pragma"></a>
+
 ### `designLanguage` without its pragma
 
 A switch on it still drops the losing arm's own code, but not what that arm builds.
@@ -74,6 +76,7 @@ A switch on it still drops the losing arm's own code, but not what that arm buil
 - **iOS:** 885 KB more of the app, 395 KB of it Material. *2026-10-31.*
 
 <a id="runtime-override"></a>
+
 ### A look the app could switch at runtime
 
 - **Android:** both looks stay in every release build, 42 KB more Cupertino on the size harness.
@@ -81,6 +84,7 @@ A switch on it still drops the losing arm's own code, but not what that arm buil
 - **iOS:** not measured.
 
 <a id="base-dispatch"></a>
+
 ### Dispatching through `PlatformWidgetBase`
 
 - **Android:** about 30 B per subclass. Its `buildCupertino` vtable slot and name stay, the body
@@ -88,18 +92,21 @@ A switch on it still drops the losing arm's own code, but not what that arm buil
 - **iOS:** not measured.
 
 <a id="cupertino-const-defaults"></a>
+
 ### `static const` defaults in `*Data` classes that name Cupertino types
 
 - **Android:** no code. AOT keeps them as metadata, and drops them when unused. *2026-10-20.*
 - **iOS:** not measured.
 
 <a id="target-platform-shim"></a>
+
 ### `defaultTargetPlatform` through a re-exporting shim
 
 - **Android:** nothing. Importing it directly built a byte-identical `libapp.so`. *2026-05-30.*
 - **iOS:** not measured.
 
 <a id="plain-widget-read"></a>
+
 ### A default read off a plain upstream widget, instead of copied
 
 `cursorRadius ?? const CupertinoTextField().cursorRadius`, or a menu default that calls
