@@ -161,6 +161,6 @@ void main() {
         await pumpInPlatformScaffold(tester, const _Fruits(selected: {.pear}));
 
         check(find.byType(CupertinoCheckmarkRow).evaluate()).length.equals(_Fruit.values.length);
-        check(find.byType(CupertinoCheckbox).evaluate()).isEmpty();
+        check(find.byType(CupertinoCheckbox).evaluate()).isEmpty;
       }, variant: iosOnly);
 }

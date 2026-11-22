@@ -47,15 +47,14 @@ dependencies:
 
 dev_dependencies:
   analyzer: ^14.7.0   # test/guards
-  bdd_framework: ^5.2.1
-  checks: ^0.3.2
+  bdd_framework: ^5.2.3
+  checks: ^0.4.0
   collection: ^1.19.1
   dartender_lints:
     git:
       url: https://github.com/LahaLuhem/dartender.git
       path: lints
-      # Before Dart 3.14's lints, which 3.13 rejects. Back to main with the SDK bump.
-      ref: cc451a5
+      ref: main
   flutter_test:
     sdk: flutter
   # Analysis

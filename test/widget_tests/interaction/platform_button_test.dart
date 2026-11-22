@@ -280,7 +280,7 @@ void main() {
           final semantics = tester.ensureSemantics();
           await _pump(tester, _Button(emphasis, shape: .iconOnly));
 
-          check(buttonsNamed(_label).evaluate()).isNotEmpty();
+          check(buttonsNamed(_label).evaluate()).isNotEmpty;
           semantics.dispose();
         },
       );

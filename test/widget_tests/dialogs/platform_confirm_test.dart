@@ -63,7 +63,7 @@ void main() {
           await tester.tap(find.text(row.button).last);
           await pumpTransition(tester);
 
-          check(_isShowing()).isFalse();
+          check(_isShowing()).isFalse;
           check(await answerFuture).equals(row.answer);
         },
       );
@@ -76,8 +76,8 @@ void main() {
     await tester.tapAt(const Offset(4, 4));
     await pumpTransition(tester);
 
-    check(_isShowing()).isFalse();
-    check(await answerFuture).isFalse();
+    check(_isShowing()).isFalse;
+    check(await answerFuture).isFalse;
   }, variant: androidOnly);
 
   Bdd(feature).scenario('puts Cancel before the confirming button').runWidgets((tester) async {
@@ -123,7 +123,7 @@ void main() {
     unawaited(_show(context));
     await pumpTransition(tester);
 
-    check(find.text(cancelLabel(context)).evaluate()).isNotEmpty();
+    check(find.text(cancelLabel(context)).evaluate()).isNotEmpty;
   });
 
   Bdd(feature)

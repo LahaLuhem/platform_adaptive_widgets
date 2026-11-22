@@ -9,13 +9,13 @@ renames don't break callers.
 - [MVVM architecture](#mvvm-architecture)
 - [Reactivity (ValueNotifier-first)](#reactivity-valuenotifier-first)
 - [Naming](#naming)
-    * [Boolean fields, modal verbs](#boolean-fields-modal-verbs)
-    * [Callback methods, view-event suffix](#callback-methods-view-event-suffix)
+  - [Boolean fields, modal verbs](#boolean-fields-modal-verbs)
+  - [Callback methods, view-event suffix](#callback-methods-view-event-suffix)
 - [ViewModel member ordering](#viewmodel-member-ordering)
 - [Separation of concerns](#separation-of-concerns)
 - [Widget composition](#widget-composition)
-    * [Native widget parameters](#native-widget-parameters)
-    * [Spacing, rule of 8](#spacing-rule-of-8)
+  - [Native widget parameters](#native-widget-parameters)
+  - [Spacing, rule of 8](#spacing-rule-of-8)
 - [Playground knobs](#playground-knobs)
 - [Async-action buttons](#async-action-buttons)
 - [Routing, `go_router` integration](#routing-go-router-integration)
@@ -27,6 +27,7 @@ renames don't break callers.
 > code should comply, and refactors are welcome.
 
 <a id="mvvm-architecture"></a>
+
 ## MVVM architecture
 
 The example uses [pmvvm](https://pub.dev/packages/pmvvm),
@@ -40,6 +41,7 @@ the VM, the cost is small and the symmetry pays off when the feature grows.
 ---
 
 <a id="reactivity-valuenotifier-first"></a>
+
 ## Reactivity (ValueNotifier-first)
 
 All observable VM state is exposed as `ValueListenable<T>`, backed by a private `ValueNotifier<T>`.
@@ -92,9 +94,11 @@ Views subscribe via `ValueListenableBuilder`.
 ---
 
 <a id="naming"></a>
+
 ## Naming
 
 <a id="boolean-fields-modal-verbs"></a>
+
 ### Boolean fields, modal verbs
 
 For boolean values and their derivatives (notifiers, listenables, getters), prefix the identifier
@@ -125,6 +129,7 @@ bare-noun form even when they mutate a `shouldXxx` field, the event and the stat
 things.
 
 <a id="callback-methods-view-event-suffix"></a>
+
 ### Callback methods, view-event suffix
 
 VM methods invoked from the view are named **from the view's perspective**: what the user did, not
@@ -163,6 +168,7 @@ callback, with an `// ignore: avoid_positional_boolean_parameters` saying so.
 ---
 
 <a id="viewmodel-member-ordering"></a>
+
 ## ViewModel member ordering
 
 Apply this ordering to every `ViewModel` subclass. It lets a reader scan dependencies → construction
@@ -185,6 +191,7 @@ Apply this ordering to every `ViewModel` subclass. It lets a reader scan depende
 ---
 
 <a id="separation-of-concerns"></a>
+
 ## Separation of concerns
 
 - **The view is agnostic to the VM's inner workings.** It reads VM state, invokes VM callbacks,
@@ -204,9 +211,11 @@ Apply this ordering to every `ViewModel` subclass. It lets a reader scan depende
 ---
 
 <a id="widget-composition"></a>
+
 ## Widget composition
 
 <a id="native-widget-parameters"></a>
+
 ### Native widget parameters
 
 When a widget exposes a native parameter for what you need, use it. Do not reinvent it with extra
@@ -243,6 +252,7 @@ Column(
 ```
 
 <a id="spacing-rule-of-8"></a>
+
 ### Spacing, rule of 8
 
 All spacing values (`Gap`, `spacing:`, `Padding`, `EdgeInsets`, margins) follow an 8-pixel grid.
@@ -266,6 +276,7 @@ breathing room, `16` over `12` for section separation.
 ---
 
 <a id="playground-knobs"></a>
+
 ## Playground knobs
 
 A knob shows only what it changes. One that changes nothing, or 2 values that draw the same, reads
@@ -286,6 +297,7 @@ as a bug in the widget under edit.
 ---
 
 <a id="async-action-buttons"></a>
+
 ## Async-action buttons
 
 Every async button in the example should wrap `tap_debouncer` (with `cooldown: Duration.zero`) in a
@@ -318,6 +330,7 @@ Add a flexible (builder-based) variant only when a real non-icon caller appears.
 ---
 
 <a id="routing-go-router-integration"></a>
+
 ## Routing, `go_router` integration
 
 The router-flavoured entry point lives in [`lib/main_go_router.dart`](./lib/main_go_router.dart) and

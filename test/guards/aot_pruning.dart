@@ -43,7 +43,7 @@ void aotPruningGuard() {
             'Switch on `designLanguage` there and call a one-look helper instead (like '
             '`showMaterialDialogRoute`). See APPENDIX.md#aot-pruning-rules.',
         visitors.expand((visitor) => visitor.offenders),
-      ).isEmpty();
+      ).isEmpty;
     });
 
     test('every designLanguage read in lib/src is a switch whose cases are each one look', () {
@@ -57,7 +57,7 @@ void aotPruningGuard() {
             'Release builds fold `designLanguage` early only in a switch whose cases are each one '
             'look. Anything else keeps the other arm reachable. See APPENDIX.md#aot-pruning-rules.',
         visitors.expand((visitor) => visitor.offenders),
-      ).isEmpty();
+      ).isEmpty;
     });
   });
 }

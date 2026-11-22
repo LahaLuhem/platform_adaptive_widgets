@@ -36,7 +36,7 @@ void main() {
     await _pump(tester, const PlatformProgressBar(value: 0.6));
     final atTwoThirds = (await pixelsOf(tester, find.byKey(_barKey))).rgba;
 
-    check(listEquals(atThird, atTwoThirds)).isFalse();
+    check(listEquals(atThird, atTwoThirds)).isFalse;
   });
 
   Bdd(feature).scenario('draws the bar as thick as asked').runWidgets((tester) async {
@@ -56,8 +56,8 @@ void main() {
         final atTwoThirds = _spokenValue();
         semantics.dispose();
 
-        check(atThird).isNotEmpty();
-        check(atTwoThirds).not((it) => it.equals(atThird));
+        check(atThird).isNotEmpty;
+        check(atTwoThirds).not(.it()..equals(atThird));
       }, variant: iosOnly);
 
   Bdd(feature).scenario('tells screen readers what is loading').runWidgets((tester) async {
@@ -66,7 +66,7 @@ void main() {
     final isNamed = find.semantics.byLabel(_label).evaluate().isNotEmpty;
     semantics.dispose();
 
-    check(isNamed).isTrue();
+    check(isNamed).isTrue;
   });
 
   Bdd(feature)

@@ -161,7 +161,7 @@ final _transitions = <String, AnimatedSwitcherTransitionBuilder?>{
 
 Animation<double> _fadeOf(WidgetTester tester, Finder side) {
   final fade = find.ancestor(of: side, matching: find.byType(_Fade));
-  check(because: 'the bar runs the transition it was given', fade.evaluate()).isNotEmpty();
+  check(because: 'the bar runs the transition it was given', fade.evaluate()).isNotEmpty;
 
   return tester.widget<_Fade>(fade.first).animation;
 }
@@ -253,7 +253,7 @@ void main() {
     final semantics = tester.ensureSemantics();
     await _pump(tester, const PlatformAppBar(actions: [_shareAction]));
 
-    check(buttonsNamed(_share).evaluate()).isNotEmpty();
+    check(buttonsNamed(_share).evaluate()).isNotEmpty;
     semantics.dispose();
   });
 
@@ -352,7 +352,7 @@ void main() {
           ),
         );
 
-        check(find.text(_custom).evaluate()).isEmpty();
+        check(find.text(_custom).evaluate()).isEmpty;
       });
 
   Bdd(appBar)
@@ -373,7 +373,7 @@ void main() {
         });
         await pumpTransition(tester);
 
-        check(find.text(_first).evaluate()).isNotEmpty();
+        check(find.text(_first).evaluate()).isNotEmpty;
       });
 
   Bdd(appBar)
@@ -384,7 +384,7 @@ void main() {
         await tester.tap(_sheetWayOut(tester));
         await pumpTransition(tester);
 
-        check(find.byKey(_sheetBody).evaluate()).isEmpty();
+        check(find.byKey(_sheetBody).evaluate()).isEmpty;
       });
 
   // Material's CloseButton asks it by itself.
@@ -404,7 +404,7 @@ void main() {
     await tester.tap(_sheetWayOut(tester));
     await pumpTransition(tester);
 
-    check(find.byKey(_sheetBody).evaluate()).isNotEmpty();
+    check(find.byKey(_sheetBody).evaluate()).isNotEmpty;
     check(attempts).equals(1);
   }, variant: iosOnly);
 
@@ -426,9 +426,9 @@ void main() {
               body: const SizedBox(key: _sheetBody),
             ),
           );
-          check(find.byKey(_sheetBody).evaluate()).isNotEmpty();
+          check(find.byKey(_sheetBody).evaluate()).isNotEmpty;
 
-          check(_sheetWayOut(tester).evaluate()).isEmpty();
+          check(_sheetWayOut(tester).evaluate()).isEmpty;
         },
       );
 
@@ -469,8 +469,8 @@ void main() {
           await _pumpPublish(tester, work, transition: transition);
           final publishButton = _buttonOf(_textKind.content);
           void drawsAsUsual(String moment) {
-            check(because: moment, _spinner.evaluate()).isEmpty();
-            check(because: moment, _paintsText(tester, publishButton)).isTrue();
+            check(because: moment, _spinner.evaluate()).isEmpty;
+            check(because: moment, _paintsText(tester, publishButton)).isTrue;
           }
 
           await tester.tap(publishButton);
@@ -491,11 +491,11 @@ void main() {
         outline: (tester, kind) async {
           await _pump(tester, PlatformAppBar(actions: [_debounced(_Work(), kind)]));
           final button = _buttonOf(kind.content);
-          check(because: 'before the tap', _paintsText(tester, button)).isTrue();
+          check(because: 'before the tap', _paintsText(tester, button)).isTrue;
 
           await _startSlowWork(tester, kind.content);
 
-          check(because: 'it hides its own content', _paintsText(tester, button)).isFalse();
+          check(because: 'it hides its own content', _paintsText(tester, button)).isFalse;
           check((tester.getCenter(_spinner) - tester.getCenter(kind.content)).distance)
               .isLessThan(0.5);
         },
@@ -547,7 +547,7 @@ void main() {
           addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
           await _startSlowWork(tester, _textKind.content);
 
-          check(_paintsText(tester, _buttonOf(_textKind.content))).isFalse();
+          check(_paintsText(tester, _buttonOf(_textKind.content))).isFalse;
         },
       );
 
@@ -640,14 +640,14 @@ void main() {
           check(
             because: 'before the tap',
             publishSemantics().flagsCollection.isEnabled,
-          ).not((isEnabled) => isEnabled.equals(.isFalse));
+          ).not(.it()..equals(.isFalse));
 
           await _startSlowWork(tester, _textKind.content, transition: transition);
 
           check(because: 'it keeps its name', buttonsNamed(_publish).evaluate()).length.equals(1);
           check(publishSemantics())
-            ..has((data) => data.flagsCollection.isEnabled, 'enabled').equals(.isFalse)
-            ..has((data) => data.hasAction(.tap), 'tap').isFalse();
+            ..has('enabled', (data) => data.flagsCollection.isEnabled).equals(.isFalse)
+            ..has('tap', (data) => data.hasAction(.tap)).isFalse;
           semantics.dispose();
         },
       );

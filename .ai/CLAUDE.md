@@ -5,6 +5,7 @@ Claude-Code-specific guidance. Project facts, stack, hard rules, and AI-agent gu
 design rationale lives in [`APPENDIX.md`](../APPENDIX.md). Read AGENTS.md and CODESTYLE.md first.
 
 ## Role & context
+
 You're assisting with **platform_adaptive_widgets**: a Flutter package that exposes `PlatformXxx`
 widgets which render Cupertino on iOS and macOS and Material everywhere else, without app code
 branching. Treat the user as technical and direct. The package is published on pub.dev, changes are

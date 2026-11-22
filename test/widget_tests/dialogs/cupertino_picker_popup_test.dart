@@ -26,9 +26,9 @@ void main() {
           ),
         );
         await pumpTransition(tester);
-        check(find.byType(CupertinoDatePicker).evaluate()).isNotEmpty();
+        check(find.byType(CupertinoDatePicker).evaluate()).isNotEmpty;
 
-        check(find.semantics.byAction(SemanticsAction.dismiss).evaluate()).isNotEmpty();
+        check(find.semantics.byAction(SemanticsAction.dismiss).evaluate()).isNotEmpty;
         semantics.dispose();
       }, variant: iosOnly);
 }

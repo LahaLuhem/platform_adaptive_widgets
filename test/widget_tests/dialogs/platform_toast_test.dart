@@ -68,8 +68,8 @@ void main() {
         await tester.tap(find.text('Undo'));
         await pumpTransition(tester);
 
-        check(isUndone).isTrue();
-        check(_isShowing()).isFalse();
+        check(isUndone).isTrue;
+        check(_isShowing()).isFalse;
       });
 
   // Material's SnackBarAction takes only the first tap by itself.
@@ -100,7 +100,7 @@ void main() {
         await tester.pump(_duration * 3);
         await pumpTransition(tester);
 
-        check(_isShowing()).isTrue();
+        check(_isShowing()).isTrue;
       }, variant: iosOnly);
 
   // The padding goes inside the action, not above and below it.
@@ -139,10 +139,10 @@ void main() {
 
     _show(context);
     await pumpThrough(tester, _duration - const Duration(milliseconds: 100));
-    check(_isShowing()).isTrue();
+    check(_isShowing()).isTrue;
 
     await pumpThrough(tester, const Duration(seconds: 1));
-    check(_isShowing()).isFalse();
+    check(_isShowing()).isFalse;
   });
 
   // Material's SnackBar marks itself a live region.
@@ -160,7 +160,7 @@ void main() {
     final isReadOut = node != null;
     semantics.dispose();
 
-    check(isReadOut).isTrue();
+    check(isReadOut).isTrue;
   }, variant: iosOnly);
 
   // M3's SnackBar takes the theme's font by itself.

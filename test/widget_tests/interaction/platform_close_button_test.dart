@@ -29,13 +29,13 @@ void main() {
   Bdd(feature).scenario('closes the route it sits in, with no value').runWidgets((tester) async {
     final result = _open(await pumpForContext(tester));
     await pumpTransition(tester);
-    check(_isOpen()).isTrue();
+    check(_isOpen()).isTrue;
 
     await tester.tap(find.byType(PlatformCloseButton));
     await pumpTransition(tester);
 
-    check(_isOpen()).isFalse();
-    check(await result).isNull();
+    check(_isOpen()).isFalse;
+    check(await result).isNull;
   });
 
   Bdd(feature).scenario("asks the route's PopScope before closing it").runWidgets((tester) async {
@@ -57,7 +57,7 @@ void main() {
     await tester.tap(find.byType(PlatformCloseButton));
     await pumpTransition(tester);
 
-    check(_isOpen()).isTrue();
+    check(_isOpen()).isTrue;
     check(attempts).equals(1);
   });
 
@@ -72,7 +72,7 @@ void main() {
       .cupertino => _label,
     };
 
-    check(buttonsNamed(name).evaluate()).isNotEmpty();
+    check(buttonsNamed(name).evaluate()).isNotEmpty;
     semantics.dispose();
   });
 
@@ -95,7 +95,7 @@ void main() {
 
             return data.flagsCollection.isButton && data.label.isNotEmpty;
           }).evaluate(),
-        ).isNotEmpty();
+        ).isNotEmpty;
         semantics.dispose();
       }, variant: iosOnly);
 }

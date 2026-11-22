@@ -85,10 +85,10 @@ void main() {
         await _pump(tester, _Page(actions: _actions([])));
 
         await _tap(tester, _more);
-        check(_isOpen()).isTrue();
+        check(_isOpen()).isTrue;
 
         await _tap(tester, _more);
-        check(_isOpen()).isFalse();
+        check(_isOpen()).isFalse;
       });
 
   Bdd(feature).scenario('runs a picked action').runWidgets((tester) async {
@@ -108,7 +108,7 @@ void main() {
 
     await _tap(tester, _under);
 
-    check(_isOpen()).isFalse();
+    check(_isOpen()).isFalse;
     check(underPressCount).equals(0);
     // With the menu closed, the same tap reaches the button.
     await _tap(tester, _under);
@@ -127,8 +127,8 @@ void main() {
 
           await _tap(tester, _delete);
 
-          check(find.text(_confirmMessage).evaluate()).isNotEmpty();
-          check(pressedLabels).isEmpty();
+          check(find.text(_confirmMessage).evaluate()).isNotEmpty;
+          check(pressedLabels).isEmpty;
 
           await _tap(tester, runs ? _delete : 'Cancel');
 
@@ -154,7 +154,7 @@ void main() {
               .color!
               .toARGB32(),
         ).equals(redArgb);
-        check(argbOf(labelStyle(tester, _share))).not((it) => it.equals(redArgb));
+        check(argbOf(labelStyle(tester, _share))).not(.it()..equals(redArgb));
       });
 
   Bdd(feature)

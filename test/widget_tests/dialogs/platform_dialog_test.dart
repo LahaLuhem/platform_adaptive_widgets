@@ -57,7 +57,7 @@ void main() {
         await pumpTransition(tester);
 
         // The flag both bars read, not the button, since what each bar draws is Flutter's call.
-        check(ModalRoute.of(tester.element(find.byWidget(_body)))!.fullscreenDialog).isTrue();
+        check(ModalRoute.of(tester.element(find.byWidget(_body)))!.fullscreenDialog).isTrue;
       });
 
   Bdd(feature).scenario('closes with the value of a Save in its bar').runWidgets((tester) async {
@@ -84,7 +84,7 @@ void main() {
     await pumpTransition(tester);
 
     // Closed first, or the result never comes.
-    check(find.byWidget(_body).evaluate()).isEmpty();
+    check(find.byWidget(_body).evaluate()).isEmpty;
     check(await result).equals(_saved);
   });
 }

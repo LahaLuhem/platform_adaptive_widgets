@@ -27,12 +27,12 @@ void main() {
           ).then((_) => isDone = true),
         );
         await pumpTransition(tester);
-        check(isDone).isFalse();
+        check(isDone).isFalse;
 
         await tester.tap(find.text(_okLabel));
         await pumpTransition(tester);
 
-        check(find.text(_title).evaluate()).isEmpty();
-        check(isDone).isTrue();
+        check(find.text(_title).evaluate()).isEmpty;
+        check(isDone).isTrue;
       });
 }
